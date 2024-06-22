@@ -1,12 +1,12 @@
 {
-  "name": "sample-tactics",
+  "name": "pixel-war",
   "version": "1.0.0",
   "description": "",
   "scripts": {
     "start": "parcel serve index.html",
     "build": "parcel build ./index.html --dist-dir ./docs --public-url ./"
   },
-  "author": "Erik Onarheim",
+  "author": "Jean Fernandes",
   "license": "BSD-2-Clause",
   "dependencies": {
     "excalibur": "0.29.0",
