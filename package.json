@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "parcel serve index.html",
-    "build": "parcel build ./index.html --dist-dir ./dist --public-url ./"
+    "build": "parcel build ./index.html --dist-dir ./docs --public-url ./"
   },
   "author": "Erik Onarheim",
   "license": "BSD-2-Clause",
