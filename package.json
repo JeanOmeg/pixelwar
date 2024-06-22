@@ -1,0 +1,20 @@
+{
+  "name": "sample-tactics",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "parcel serve index.html",
+    "build": "parcel build ./index.html --dist-dir ./dist --public-url ./"
+  },
+  "author": "Erik Onarheim",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "excalibur": "0.29.0",
+    "lit": "3.1.2"
+  },
+  "devDependencies": {
+    "parcel": "2.11.0",
+    "ts-lit-plugin": "2.0.1",
+    "typescript": "5.3.3"
+  }
+}
