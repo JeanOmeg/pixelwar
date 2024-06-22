@@ -69,10 +69,10 @@ export class LevelBase extends ex.Scene {
     this.input.keyboard.on('press', (evt) => {
       // DELETEME for debugging
       if (evt.key === ex.Keys.W) {
-        (this.players[ 1 ] as ComputerPlayer).lose()
+        (this.players[1] as ComputerPlayer).lose()
       }
       if (evt.key === ex.Keys.L) {
-        (this.players[ 0 ] as HumanPlayer).lose()
+        (this.players[0] as HumanPlayer).lose()
       }
     })
     // Add entities to resetAndLoad()!
@@ -86,7 +86,7 @@ export class LevelBase extends ex.Scene {
   resetAndLoad() {
     const entities = this.entities
     for (let i = entities.length - 1; i >= 0; i--) {
-      this.world.remove(entities[ i ], false)
+      this.world.remove(entities[i], false)
     }
 
     Resources.LevelMusic2.stop()
@@ -151,16 +151,21 @@ export class LevelBase extends ex.Scene {
     this.selectionManager.showCursor(0, 0)
     this.uiManager = new UIManager(this.engine)
     // TODO support arbitrary players
-    const mode = localStorage.getItem('start_screen')
-    if (mode === 'CPU') {
+    debugger
+    let mode = localStorage.getItem('start_screen')
+    while (!mode || mode?.length === 0) {
+      mode = localStorage.getItem('start_screen')
+    }
+
+    if (mode == 'CPU') {
       this.players = [
-        new HumanPlayer(levelData.players[ 0 ], this.engine, this.selectionManager, this.uiManager, board),
-        new ComputerPlayer(levelData.players[ 1 ], this.selectionManager, board)
+        new HumanPlayer(levelData.players[0], this.engine, this.selectionManager, this.uiManager, board),
+        new ComputerPlayer(levelData.players[1], this.selectionManager, board)
       ]
     } else {
       this.players = [
-        new HumanPlayer(levelData.players[ 0 ], this.engine, this.selectionManager, this.uiManager, board),
-        new HumanPlayer(levelData.players[ 1 ], this.engine, this.selectionManager, this.uiManager, board),
+        new HumanPlayer(levelData.players[0], this.engine, this.selectionManager, this.uiManager, board),
+        new HumanPlayer(levelData.players[1], this.engine, this.selectionManager, this.uiManager, board),
       ]
     }
 
@@ -168,14 +173,14 @@ export class LevelBase extends ex.Scene {
 
     for (let y = 0; y < levelData.height; y++) {
       for (let x = 0; x < levelData.width; x++) {
-        const data = levelData.data[ x + y * levelData.width ]
+        const data = levelData.data[x + y * levelData.width]
         const terrain = data.charAt(0) as Terrain
         let unit: Unit | null = null
         if (data.length === 3) {
-          const unitType: UnitType = CharToUnit[ data.charAt(1) as 'K' | 'S' | 'M' | 'C' ]
+          const unitType: UnitType = CharToUnit[data.charAt(1) as 'K' | 'S' | 'M' | 'C']
           const playerIndex = (+data.charAt(2)) - 1
 
-          unit = new Unit(x, y, unitType, board, this.players[ playerIndex ])
+          unit = new Unit(x, y, unitType, board, this.players[playerIndex])
           if (playerIndex == 0) {
             unit.graphics.flipHorizontal = false
           } else {
