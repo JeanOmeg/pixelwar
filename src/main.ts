@@ -11,7 +11,8 @@ const game = new ex.Engine({
   displayMode: ex.DisplayMode.FitScreenAndFill,
   pixelArt: true,
   pixelRatio: 2,
-  suppressHiDPIScaling: true,
+  suppressConsoleBootMessage: true,
+  suppressPlayButton: true,
   configurePerformanceCanvas2DFallback: {
     allow: false
   }
@@ -26,22 +27,22 @@ const Level1Data: LevelData = {
   displayName: 'Gentle Plains',
   name: 'level1',
   nextLevel: 'level2',
-  width: 26,
+  width: 22,
   height: 11,
   maxTurns: 100,
-  players: [ 'human', 'computer' ],
+  players: ['human', 'computer'],
   data: [
-    'GK1', 'T', 'G', 'G', 'W', 'G', 'G', 'G', 'T', 'GK2', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'T', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'S', 'S', 'S', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'S', 'S', 'S', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'T', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'GK1', 'T', 'G', 'G', 'W', 'G', 'G', 'G', 'T', 'GK2', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'T', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'S', 'S', 'S', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'S', 'S', 'S', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'T', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
   ]
 }
 
@@ -55,7 +56,7 @@ export const Level2Data: LevelData = {
   width: 6,
   height: 6,
   maxTurns: 100,
-  players: [ 'human', 'computer' ],
+  players: ['human', 'computer'],
   data: [
     'GK1', 'G', 'GM2', 'G', 'G', 'GS2',
     'GK1', 'G', 'G', 'G', 'G', 'GS2',
@@ -77,7 +78,7 @@ export const Level3Data: LevelData = {
   width: 6,
   height: 6,
   maxTurns: 100,
-  players: [ 'human', 'computer' ],
+  players: ['human', 'computer'],
   data: [
     'S', 'S', 'SM2', 'S', 'SK1', 'W',
     'SK1', 'S', 'S', 'SK1', 'W', 'W',

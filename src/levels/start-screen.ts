@@ -5,23 +5,21 @@ import { SCALE } from '../config'
 
 export class StartScreen extends ex.Scene {
   title!: ex.Actor
-  instructions!: ex.Actor
+  p1VsCpuButton!: ex.Actor
+  p1VsP2Button!: ex.Actor
+
   override onInitialize(engine: ex.Engine): void {
     this.engine = engine
-    this.input.pointers.on('down', () => {
-      this.engine.goToScene('level1')
-    })
-    this.input.keyboard.on('press', () => {
-      this.engine.goToScene('level1')
-    })
 
+    // Adicionando as nuvens ao fundo
     this.add(new Cloud(ex.vec(800, 0)))
     this.add(new Cloud(ex.vec(400, 300)))
     this.add(new Cloud(ex.vec(700, 700)))
 
+    // Adicionando o título
     this.title = new ex.Actor({
       name: 'title',
-      pos: ex.vec(400, 400),
+      pos: ex.vec(400, 300),
       coordPlane: ex.CoordPlane.Screen,
     })
     this.title.scale = SCALE
@@ -30,37 +28,95 @@ export class StartScreen extends ex.Scene {
       ctx.easeBy(ex.vec(0, -30 * SCALE.y), 1000, ex.EasingFunctions.EaseInOutQuad)
         .easeBy(ex.vec(0, 30 * SCALE.y), 1000, ex.EasingFunctions.EaseInOutQuad)
     })
-
     this.add(this.title)
 
-    this.instructions = new ex.Actor({
-      name: 'instructions',
-      pos: ex.vec(400, 600),
-      coordPlane: ex.CoordPlane.Screen
-    })
-    const font = new ex.Font({
+    // Estilo de fonte para os botões
+    const buttonFont = new ex.Font({
       family: 'notjamslab14',
       size: 32 * SCALE.x,
       unit: ex.FontUnit.Px,
       color: ex.Color.White,
       baseAlign: ex.BaseAlign.Top,
-      quality: 4,
       shadow: {
-        offset: ex.vec(10, 10).scale(SCALE),
+        offset: ex.vec(2, 2).scale(SCALE),
         color: ex.Color.Black
       }
     })
-    const text = new ex.Text({
-      text: 'Click to Play!',
-      font: font
-    })
-    this.instructions.graphics.use(text)
-    this.instructions.actions.repeatForever(ctx => {
-      ctx.rotateTo(Math.PI / 32, .2)
-      ctx.rotateTo(-Math.PI / 32, .2)
-    })
 
-    this.add(this.instructions)
+    // Criando botão P1 vs CPU
+    this.p1VsCpuButton = new ex.Actor({
+      name: 'p1VsCpuButton',
+      pos: ex.vec(400, 500),
+      width: 200 * SCALE.x,
+      height: 50 * SCALE.y,
+      color: ex.Color.fromHex('#ff6347'),
+      coordPlane: ex.CoordPlane.Screen
+    })
+    const p1VsCpuText = new ex.Text({
+      text: 'P1 vs CPU',
+      font: buttonFont,
+    })
+    this.p1VsCpuButton.graphics.use(new ex.GraphicsGroup({
+      members: [
+        {
+          graphic: new ex.Rectangle({
+            width: this.p1VsCpuButton.width,
+            height: this.p1VsCpuButton.height,
+            color: this.p1VsCpuButton.color,
+            strokeColor: ex.Color.Black,
+            lineWidth: 4,
+          }), offset: ex.vec(0, 0),
+        },
+        {
+          graphic: p1VsCpuText,
+          offset: ex.vec(this.p1VsCpuButton.width / 2 - p1VsCpuText.width / 2,
+            this.p1VsCpuButton.height / 2 - p1VsCpuText.height / 2),
+        }
+      ]
+    }))
+    this.p1VsCpuButton.on('pointerup', () => {
+      localStorage.setItem('start_screen', 'CPU')
+      this.engine.goToScene('level1')
+    })
+    this.add(this.p1VsCpuButton)
+
+    // Criando botão P1 vs P2
+    this.p1VsP2Button = new ex.Actor({
+      name: 'p1VsP2Button',
+      pos: ex.vec(400, 630),
+      width: 200 * SCALE.x,
+      height: 50 * SCALE.y,
+      color: ex.Color.fromHex('#4682b4'),
+      coordPlane: ex.CoordPlane.Screen
+    })
+    const p1VsP2Text = new ex.Text({
+      text: 'P1 vs P2',
+      font: buttonFont,
+    })
+    this.p1VsP2Button.graphics.use(new ex.GraphicsGroup({
+      members: [
+        {
+          graphic: new ex.Rectangle({
+            width: this.p1VsP2Button.width,
+            height: this.p1VsP2Button.height,
+            color: this.p1VsP2Button.color,
+            strokeColor: ex.Color.Black,
+            lineWidth: 4,
+          }),
+          offset: ex.vec(0, 0),
+        },
+        {
+          graphic: p1VsP2Text,
+          offset: ex.vec(this.p1VsP2Button.width / 2 - p1VsP2Text.width / 2,
+            this.p1VsP2Button.height / 2 - p1VsP2Text.height / 2),
+        }
+      ]
+    }))
+    this.p1VsP2Button.on('pointerup', () => {
+      localStorage.setItem('start_screen', 'P2')
+      this.engine.goToScene('level1')
+    })
+    this.add(this.p1VsP2Button)
   }
 
   _subscriptions: ex.Subscription[] = [];
@@ -68,10 +124,8 @@ export class StartScreen extends ex.Scene {
     console.log('activate start screen')
     Resources.TitleMusic.loop = true
     Resources.TitleMusic.play()
-
-
-
   }
+
   onDeactivate(): void {
     Resources.TitleMusic.stop()
     this._subscriptions.forEach(h => h.close())
