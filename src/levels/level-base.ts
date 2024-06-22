@@ -151,7 +151,6 @@ export class LevelBase extends ex.Scene {
     this.selectionManager.showCursor(0, 0)
     this.uiManager = new UIManager(this.engine)
     // TODO support arbitrary players
-    debugger
     let mode = localStorage.getItem('start_screen')
     while (!mode || mode?.length === 0) {
       mode = localStorage.getItem('start_screen')
