@@ -26,6 +26,7 @@ export class TurnManager {
   private victoryDirections: ex.Actor
   private failure: ex.Actor
   private turn: number = this.maxTurns
+  private originalMaxTurns: number = this.maxTurns
 
   constructor(public engine: ex.Engine, public level: LevelBase, public players: Player[], selectionManager: SelectionManager, public maxTurns: number) {
     if (players.length === 0) throw Error('Players should be non-zero in length')
@@ -162,8 +163,8 @@ export class TurnManager {
 
   async showTurnDisplay() {
     this.turnText.text = `Turno ${(this.turn - this.maxTurns) + 1} - Rodada ${this.currentTurn}`
-    const transitionTime = 900
-    const waitTime = 200
+    const transitionTime = 500
+    const waitTime = 500
     await this.turnActor.actions.runAction(
       new ex.ParallelActions([
         new ex.ActionSequence(this.turnActor, ctx => ctx.easeTo(this.centerScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic).delay(waitTime).easeTo(this.bottomScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic)),
@@ -207,7 +208,7 @@ export class TurnManager {
   }
 
   async checkWin(player: Player) {
-    if (player.hasLost()) {
+    if (player.hasLost() || this.maxTurns == 0) {
       console.log('Player lost!', player.name)
       if (player instanceof HumanPlayer) {
         await this.showGameOver()
@@ -231,11 +232,11 @@ export class TurnManager {
   }
 
   async start() {
-    while (this.maxTurns > 0) {
+    while (this.maxTurns >= 0) {
       console.log('Current player turn:', this.currentPlayer.name)
       if (await this.checkWin(this.currentPlayer)) return
       this.selectionManager.selectPlayer(this.currentPlayer)
-      this.showTurnDisplay()
+      await this.showTurnDisplay()
       await this.currentPlayer.turnStart()
       let move = true
       do {
@@ -244,6 +245,7 @@ export class TurnManager {
       await this.currentPlayer.turnEnd()
       this.nextTurn()
       this.maxTurns--
+      if (await this.checkWin(this.currentPlayer)) return
     }
   }
 

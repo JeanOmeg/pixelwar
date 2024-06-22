@@ -8,7 +8,7 @@ export class Cloud extends ex.Actor {
     super({
       name: 'cloud',
       pos,
-      vel: ex.vec(ex.randomInRange(-30, -100), 0),
+      vel: ex.vec(ex.randomInRange(-50, -70), 0),
       width: 100,
       height: 100
     })
@@ -20,8 +20,8 @@ export class Cloud extends ex.Actor {
 
   }
   override onPostUpdate(engine: ex.Engine, _delta: number): void {
-    if (this.pos.x + this.cloudSprite.width < 0) {
-      this.pos.x = engine.screen.contentArea.right + this.cloudSprite.width
+    if (this.pos.x + (this.cloudSprite.width - 5100) < 0) {
+      this.pos.x = engine.screen.contentArea.right
     }
   }
 }

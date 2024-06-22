@@ -12,6 +12,7 @@ const game = new ex.Engine({
   pixelArt: true,
   pixelRatio: 2,
   suppressConsoleBootMessage: true,
+  backgroundColor: ex.Color.Black,
   suppressPlayButton: true,
   configurePerformanceCanvas2DFallback: {
     allow: false
@@ -29,7 +30,7 @@ const Level1Data: LevelData = {
   nextLevel: 'level2',
   width: 22,
   height: 11,
-  maxTurns: 100,
+  maxTurns: 30,
   players: ['human', 'computer'],
   data: [
     'GK1', 'T', 'G', 'G', 'W', 'G', 'G', 'G', 'T', 'GK2', 'G', 'G', 'G', 'G', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G',

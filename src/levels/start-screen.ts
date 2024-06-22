@@ -12,9 +12,7 @@ export class StartScreen extends ex.Scene {
     this.engine = engine
 
     // Adicionando as nuvens ao fundo
-    this.add(new Cloud(ex.vec(800, 0)))
-    this.add(new Cloud(ex.vec(400, 300)))
-    this.add(new Cloud(ex.vec(700, 700)))
+    this.add(new Cloud(ex.vec(0, 0)))
 
     // Adicionando o título
     this.title = new ex.Actor({

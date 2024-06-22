@@ -92,9 +92,6 @@ export class LevelBase extends ex.Scene {
     Resources.LevelMusic2.stop()
 
     this.add(new Cloud(ex.vec(800, 0)))
-    this.add(new Cloud(ex.vec(400, 300)))
-    this.add(new Cloud(ex.vec(700, 700)))
-
 
     this.board = this.parse(this.levelData)
 
@@ -159,7 +156,7 @@ export class LevelBase extends ex.Scene {
       new ComputerPlayer(levelData.players[ 1 ], this.selectionManager, board)
     ]
 
-    this.turnManager = new TurnManager(this.engine, this, this.players, this.selectionManager, 10)
+    this.turnManager = new TurnManager(this.engine, this, this.players, this.selectionManager, this.levelData.maxTurns)
 
     for (let y = 0; y < levelData.height; y++) {
       for (let x = 0; x < levelData.width; x++) {
