@@ -151,10 +151,18 @@ export class LevelBase extends ex.Scene {
     this.selectionManager.showCursor(0, 0)
     this.uiManager = new UIManager(this.engine)
     // TODO support arbitrary players
-    this.players = [
-      new HumanPlayer(levelData.players[ 0 ], this.engine, this.selectionManager, this.uiManager, board),
-      new ComputerPlayer(levelData.players[ 1 ], this.selectionManager, board)
-    ]
+    const mode = localStorage.getItem('start_screen')
+    if (mode === 'CPU') {
+      this.players = [
+        new HumanPlayer(levelData.players[ 0 ], this.engine, this.selectionManager, this.uiManager, board),
+        new ComputerPlayer(levelData.players[ 1 ], this.selectionManager, board)
+      ]
+    } else {
+      this.players = [
+        new HumanPlayer(levelData.players[ 0 ], this.engine, this.selectionManager, this.uiManager, board),
+        new HumanPlayer(levelData.players[ 1 ], this.engine, this.selectionManager, this.uiManager, board),
+      ]
+    }
 
     this.turnManager = new TurnManager(this.engine, this, this.players, this.selectionManager, this.levelData.maxTurns)
 
