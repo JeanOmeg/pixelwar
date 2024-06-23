@@ -80,7 +80,7 @@ export class LevelBase extends ex.Scene {
 
   async showLevelName() {
     const transitionTime = 1500
-    await this.levelName.actions.easeTo(ex.vec(600, 50), transitionTime, ex.EasingFunctions.EaseInOutCubic).toPromise()
+    await this.levelName.actions.easeTo(ex.vec(904, 25), transitionTime, ex.EasingFunctions.EaseInOutCubic).toPromise()
   }
 
   resetAndLoad() {
@@ -114,7 +114,7 @@ export class LevelBase extends ex.Scene {
 
     this.levelName = new ex.Actor({
       name: 'level',
-      pos: ex.vec(2000, 50),
+      pos: ex.vec(2000, 25),
       coordPlane: ex.CoordPlane.Screen,
       z: 10
     })
@@ -124,7 +124,7 @@ export class LevelBase extends ex.Scene {
     this.levelName.addChild(new ex.Actor({
       color: new ex.Color(50, 240, 50, .4),
       width: 400,
-      height: 100,
+      height: 50,
     }))
     this.add(this.levelName)
   }

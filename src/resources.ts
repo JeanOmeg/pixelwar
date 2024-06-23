@@ -1,17 +1,16 @@
 import * as ex from 'excalibur'
-
-
 import TitleImagePath from '../res/title.png'
-import KnightSpriteSheetPath from '../res/KnightSheet.png'
+import KnightSpriteSheetPath from '../res/minis/SwordFighter_LongHair_Blue1.png'
 import SpiderSheetPath from '../res/SpiderSheet.png'
 import SlimeSheetPath from '../res/slime.png'
 import CrabSheetPath from '../res/crab.png'
-import HeartSheetPath from '../res/HeartSheet.png'
+import HeartSheetPath from '../res/utils/HeartSheet.png'
 import UISheetPath from '../res/UISheet.png'
 import TerrainSheetPath from '../res/TerrainSheet.png'
+import TileSpritePath from '../res/tiles/FullTileset.png'
 import HighlightSheetPath from '../res/HighlightSheet.png'
 import RedHighlightSheetPath from '../res/RedHighlightSheet.png'
-import CloudSheetPath from '../res/utils/Stars Small_1.png'
+import CloudSheetPath from '../res/utils/StarsScreen.png'
 import SmokePath from '../res/Smoke.png'
 import HitSoundPath from '../res/hit.wav'
 import MoveSoundPath from '../res/move.wav'
@@ -33,6 +32,7 @@ export const Resources = {
   HeartSheet: new ex.ImageSource(HeartSheetPath),
   UISheet: new ex.ImageSource(UISheetPath),
   TerrainSheet: new ex.ImageSource(TerrainSheetPath),
+  TileSheet: new ex.ImageSource(TileSpritePath),
   HighlightSheet: new ex.ImageSource(HighlightSheetPath),
   RedHighlightSheet: new ex.ImageSource(RedHighlightSheetPath),
   CloudSheet: new ex.ImageSource(CloudSheetPath),
@@ -56,6 +56,16 @@ export const TutorialTextSheet = ex.SpriteSheet.fromImageSource({
     columns: 8,
     spriteWidth: 128,
     spriteHeight: 64
+  }
+})
+
+export const TileSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.TileSheet,
+  grid: {
+    rows: 19,
+    columns: 17,
+    spriteHeight: 32,
+    spriteWidth: 32
   }
 })
 
@@ -191,7 +201,7 @@ export const CrabIdle = ex.Animation.fromSpriteSheetCoordinates({
 export const KnightSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.KnightSpriteSheet,
   grid: {
-    rows: 1,
+    rows: 4,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -213,7 +223,7 @@ export const HeartSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.HeartSheet,
   grid: {
     rows: 1,
-    columns: 6,
+    columns: 36,
     spriteHeight: 32,
     spriteWidth: 32
   }

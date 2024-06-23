@@ -1,6 +1,6 @@
 import * as ex from "excalibur"
 import { Board } from "./board"
-import { CursorAnimation, HighlightAnimation, RedHighlightAnimation, TerrainSpriteSheet } from "./resources"
+import { CursorAnimation, HighlightAnimation, RedHighlightAnimation, TileSpriteSheet } from "./resources"
 import { BOARD_OFFSET, SCALE } from "./config"
 import { PathNodeComponent } from "./path-finding/path-node-component"
 import { Unit } from "./unit"
@@ -69,26 +69,32 @@ export class Cell extends ex.Actor {
     this._terrain = terrain
     switch (this.terrain) {
       case Terrain.Grass:
-        this.sprite = TerrainSpriteSheet.sprites[ ex.randomIntInRange(0, 1) ]
+        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(4, 34)]
         break
       case Terrain.Sand:
-        this.sprite = TerrainSpriteSheet.sprites[ ex.randomIntInRange(2, 3) ]
+        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(4, 0)]
         // TODO slower to move through sand
         break
       case Terrain.Water:
-        this.sprite = TerrainSpriteSheet.sprites[ 4 ]
+        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(5, 221)]
         this.pathNode.isWalkable = false
         break
       case Terrain.Stone:
-        this.sprite = TerrainSpriteSheet.sprites[ 5 ]
+        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(3, 112)]
         break
     }
     this.sprite.scale = SCALE
     this.graphics.use(this.sprite.clone())
   }
 
+  getRandomNumber(num1: number, num2: number) {
+    return Math.floor(Math.random() * num1) + num2
+  }
+
   addUnit(unit: Unit) {
     this.unit = unit
+    this.unit.scale = ex.vec(1.5, 1.5)
+    this.unit.offset = ex.vec(-3.5, 1)
     this.unit.cell = this
     this.pathNode.walkableMask = unit.player.mask
   }

@@ -63,6 +63,6 @@ export class Board {
   getCell(x: number, y: number): Cell | null {
     if (x < 0 || x >= this.cols) return null
     if (y < 0 || y >= this.rows) return null
-    return this.cells[ x + y * this.cols ]
+    return this.cells[x + y * this.cols]
   }
 }

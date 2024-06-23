@@ -9,6 +9,7 @@ const game = new ex.Engine({
   width: 800,
   height: 800,
   displayMode: ex.DisplayMode.FitScreenAndFill,
+  maxFps: 60,
   pixelArt: true,
   pixelRatio: 2,
   suppressConsoleBootMessage: true,

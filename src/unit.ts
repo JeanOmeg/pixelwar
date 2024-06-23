@@ -27,7 +27,7 @@ export class Unit extends ex.Actor {
       anchor: ex.vec(0, 0),
       z: 2
     })
-    this.unitConfig = { ...UNIT_CONFIG[ unitType ] }
+    this.unitConfig = { ...UNIT_CONFIG[unitType] }
 
     this.health = this.unitConfig.health
 
@@ -68,12 +68,12 @@ export class Unit extends ex.Actor {
 
   onPostDraw(ctx: ex.ExcaliburGraphicsContext) {
     if (this.health > 0) {
-      const heart = HeartSpriteSheet.getSprite(ex.clamp(this.health, 0, 5), 0)
+      const heart = HeartSpriteSheet.getSprite(ex.clamp(this.health, 0, 35), 0)
       if (heart) {
-        heart.scale = SCALE
+        heart.scale = ex.vec(0.7, 0.7)
         heart.draw(ctx,
-          10 * SCALE.x + this.unitConfig.graphics.offset.x,
-          10 * SCALE.y + this.unitConfig.graphics.offset.y
+          5 * SCALE.x + this.unitConfig.graphics.offset.x,
+          9 * SCALE.y + this.unitConfig.graphics.offset.y
         )
       }
     }
