@@ -6,7 +6,7 @@ export class PathFinder {
   query: ex.Query<typeof PathNodeComponent>
 
   constructor(scene: ex.Scene) {
-    this.query = scene.world.queryManager.createQuery([ PathNodeComponent ])
+    this.query = scene.world.queryManager.createQuery([PathNodeComponent])
   }
 
   heuristicWeight = 1;
@@ -30,10 +30,15 @@ export class PathFinder {
 
   private _getRangeHelper(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number) {
     if (range >= 0) {
+      let newRange
       accum.push(cell)
-      cell.connections
-        .filter(node => node.isWalkable && !!(node.walkableMask & mask))
-        .forEach(cell => this._getRangeHelper(cell, accum, mask, range - 1))
+      cell.connections.filter(node => node.isWalkable && !!(node.walkableMask & mask)).forEach(cell => {
+        newRange = 1
+        if (!cell.isFast) {
+          newRange = 2
+        }
+        this._getRangeHelper(cell, accum, mask, range - newRange)
+      })
     }
   }
 
@@ -66,7 +71,7 @@ export class PathFinder {
     start.hScore = start.gScore + this.heuristic(start, end) * this.heuristicWeight
     start.direction = ex.Vector.Down
 
-    const openNodes: PathNodeComponent[] = [ start ]
+    const openNodes: PathNodeComponent[] = [start]
     const closedNodes: PathNodeComponent[] = []
 
     while (openNodes.length > 0) {
@@ -84,7 +89,7 @@ export class PathFinder {
       })
 
       // tie breaking for aesthetics
-      const current = priorityNodes[ 0 ]
+      const current = priorityNodes[0]
 
       // Done!
       if (current === end) {

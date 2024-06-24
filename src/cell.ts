@@ -81,7 +81,7 @@ export class Cell extends ex.Actor {
         break
       case Terrain.Water:
         this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(4, 21)]
-        this.pathNode.isWalkable = false
+        this.pathNode.isFast = false
         break
       case Terrain.Stone:
         this.pathNode.isWalkable = false

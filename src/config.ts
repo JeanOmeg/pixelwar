@@ -28,11 +28,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(0, 12 * SCALE.y),
       idle: KnightIdle
     },
-    health: 5,
-    movement: 2,
+    health: 10,
+    movement: 6,
     attack: 2,
     defense: 2,
-    range: 1,
+    range: 4,
     direction: 'direita'
   },
   Spider: {

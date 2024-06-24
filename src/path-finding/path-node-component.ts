@@ -8,6 +8,7 @@ export class PathNodeComponent<T = any> extends ex.Component {
    * Is this path node traversable by anything at all?
    */
   isWalkable = true;
+  isFast = true;
   /**
    * Is this path node traversable by certain things
    */
