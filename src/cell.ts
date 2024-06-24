@@ -48,17 +48,21 @@ export class Cell extends ex.Actor {
     this.terrain = Terrain.Grass
 
     RangeHighlightAnimation.scale = SCALE
-    RangeHighlightAnimation.opacity = 0.75
     PathHighlightAnimation.scale = SCALE
+    AttackHighlightAnimation.scale = SCALE
+    RangeHighlightAnimation.opacity = 0.75
     PathHighlightAnimation.opacity = 0.75
     PathHighlightAnimation.tint = ex.Color.Green
-    AttackHighlightAnimation.scale = SCALE
     AttackHighlightAnimation.opacity = 0.75
-    CursorAnimation.scale = SCALE
+    AttackHighlightAnimation.scale = ex.vec(2.5, 2.5)
+    RangeHighlightAnimation.scale = ex.vec(2.5, 2.5)
+    PathHighlightAnimation.scale = ex.vec(2.5, 2.5)
+    CursorAnimation.scale = ex.vec(2.5, 2.5)
     this.decoration.graphics.add('range', RangeHighlightAnimation)
     this.decoration.graphics.add('path', PathHighlightAnimation)
     this.decoration.graphics.add('attack', AttackHighlightAnimation)
     this.decoration.graphics.add('cursor', CursorAnimation)
+    this.decoration.graphics.offset = ex.vec(-3, -3)
   }
 
   get terrain() {
@@ -69,18 +73,19 @@ export class Cell extends ex.Actor {
     this._terrain = terrain
     switch (this.terrain) {
       case Terrain.Grass:
-        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(4, 34)]
+        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(4, 14)]
         break
       case Terrain.Sand:
         this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(4, 0)]
         // TODO slower to move through sand
         break
       case Terrain.Water:
-        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(5, 221)]
+        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(4, 21)]
         this.pathNode.isWalkable = false
         break
       case Terrain.Stone:
-        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(3, 112)]
+        this.pathNode.isWalkable = false
+        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(3, 18)]
         break
     }
     this.sprite.scale = SCALE

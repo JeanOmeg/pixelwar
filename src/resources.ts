@@ -6,10 +6,10 @@ import SlimeSheetPath from '../res/slime.png'
 import CrabSheetPath from '../res/crab.png'
 import HeartSheetPath from '../res/utils/HeartSheet.png'
 import UISheetPath from '../res/UISheet.png'
-import TerrainSheetPath from '../res/TerrainSheet.png'
+import SelectionCursorPath from '../res/utils/SelectionCursor.png'
 import TileSpritePath from '../res/tiles/FullTileset.png'
-import HighlightSheetPath from '../res/HighlightSheet.png'
-import RedHighlightSheetPath from '../res/RedHighlightSheet.png'
+import HighlightSheetPath from '../res/utils/MoveCursor.png'
+import RedHighlightSheetPath from '../res/utils/DamageCursor.png'
 import CloudSheetPath from '../res/utils/StarsScreen.png'
 import SmokePath from '../res/Smoke.png'
 import HitSoundPath from '../res/hit.wav'
@@ -31,7 +31,7 @@ export const Resources = {
   CrabSheet: new ex.ImageSource(CrabSheetPath),
   HeartSheet: new ex.ImageSource(HeartSheetPath),
   UISheet: new ex.ImageSource(UISheetPath),
-  TerrainSheet: new ex.ImageSource(TerrainSheetPath),
+  CursorSheet: new ex.ImageSource(SelectionCursorPath),
   TileSheet: new ex.ImageSource(TileSpritePath),
   HighlightSheet: new ex.ImageSource(HighlightSheetPath),
   RedHighlightSheet: new ex.ImageSource(RedHighlightSheetPath),
@@ -62,32 +62,30 @@ export const TutorialTextSheet = ex.SpriteSheet.fromImageSource({
 export const TileSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.TileSheet,
   grid: {
-    rows: 19,
-    columns: 17,
+    rows: 8,
+    columns: 7,
     spriteHeight: 32,
     spriteWidth: 32
   }
 })
 
-export const TerrainSpriteSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.TerrainSheet,
+export const CursorSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.CursorSheet,
   grid: {
-    rows: 5,
-    columns: 5,
+    rows: 1,
+    columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
   }
 })
 
 export const CursorAnimation = ex.Animation.fromSpriteSheetCoordinates({
-  spriteSheet: TerrainSpriteSheet,
+  spriteSheet: CursorSpriteSheet,
   frameCoordinates: [
-    { x: 1, y: 1, duration: 200 },
-    { x: 2, y: 1, duration: 200 },
-    { x: 3, y: 1, duration: 200 },
-    { x: 3, y: 1, duration: 200 },
-    { x: 3, y: 1, duration: 200 },
-    { x: 2, y: 1, duration: 200 },
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 },
   ]
 })
 
@@ -95,7 +93,7 @@ export const HighlightSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.HighlightSheet,
   grid: {
     rows: 1,
-    columns: 5,
+    columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
   }
@@ -104,7 +102,7 @@ export const RedHighlightSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.RedHighlightSheet,
   grid: {
     rows: 1,
-    columns: 5,
+    columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
   }
@@ -114,11 +112,10 @@ export const HighlightAnimation = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: HighlightSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
   frameCoordinates: [
-    { x: 0, y: 0, duration: 100 },
-    { x: 1, y: 0, duration: 100 },
-    { x: 2, y: 0, duration: 100 },
-    { x: 3, y: 0, duration: 100 },
-    { x: 4, y: 0, duration: 100 },
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 },
   ]
 })
 
@@ -126,11 +123,10 @@ export const RedHighlightAnimation = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: RedHighlightSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
   frameCoordinates: [
-    { x: 0, y: 0, duration: 100 },
-    { x: 1, y: 0, duration: 100 },
-    { x: 2, y: 0, duration: 100 },
-    { x: 3, y: 0, duration: 100 },
-    { x: 4, y: 0, duration: 100 },
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 },
   ]
 })
 
