@@ -13,10 +13,8 @@ export class StartScreen extends ex.Scene {
   override onInitialize(engine: ex.Engine): void {
     this.engine = engine
 
-    // Adicionando as nuvens ao fundo
     this.add(new Cloud(ex.vec(0, 0)))
 
-    // Adicionando o título
     this.title = new ex.Actor({
       name: 'title',
       pos: ex.vec(400, 300),
@@ -30,7 +28,6 @@ export class StartScreen extends ex.Scene {
     })
     this.add(this.title)
 
-    // Estilo de fonte para os botões
     const buttonFont = new ex.Font({
       family: 'notjamslab14',
       size: 32 * SCALE.x,
@@ -43,7 +40,6 @@ export class StartScreen extends ex.Scene {
       }
     })
 
-    // Criando botão P1 vs CPU
     this.p1VsCpuButton = new ex.Actor({
       name: 'p1VsCpuButton',
       pos: ex.vec(400, 500),
@@ -52,10 +48,12 @@ export class StartScreen extends ex.Scene {
       color: ex.Color.fromHex('#ff6347'),
       coordPlane: ex.CoordPlane.Screen
     })
+
     const p1VsCpuText = new ex.Text({
       text: 'P1 vs CPU',
       font: buttonFont,
     })
+
     this.p1VsCpuButton.graphics.use(new ex.GraphicsGroup({
       members: [
         {
@@ -74,6 +72,7 @@ export class StartScreen extends ex.Scene {
         }
       ]
     }))
+
     this.p1VsCpuButton.on('pointerup', () => {
       if (this.isMobile()) {
         this.setLandscapeAndFullscreen()
@@ -81,6 +80,7 @@ export class StartScreen extends ex.Scene {
       localStorage.setItem('start_screen', 'CPU')
       this.engine.goToScene('level1')
     })
+
     this.add(this.p1VsCpuButton)
 
     this.p1VsP2Button = new ex.Actor({
@@ -91,10 +91,12 @@ export class StartScreen extends ex.Scene {
       color: ex.Color.fromHex('#4682b4'),
       coordPlane: ex.CoordPlane.Screen
     })
+
     const p1VsP2Text = new ex.Text({
       text: 'P1 vs P2',
       font: buttonFont,
     })
+
     this.p1VsP2Button.graphics.use(new ex.GraphicsGroup({
       members: [
         {
@@ -114,6 +116,7 @@ export class StartScreen extends ex.Scene {
         }
       ]
     }))
+
     this.p1VsP2Button.on('pointerup', () => {
       if (this.isMobile()) {
         this.setLandscapeAndFullscreen()
@@ -121,6 +124,7 @@ export class StartScreen extends ex.Scene {
       localStorage.setItem('start_screen', 'P2')
       this.engine.goToScene('level1')
     })
+
     this.add(this.p1VsP2Button)
   }
 
@@ -136,7 +140,7 @@ export class StartScreen extends ex.Scene {
       webkitRequestFullscreen?: () => Promise<void>
       msRequestFullscreen?: () => Promise<void>
     }
-  
+
     if (docElement.requestFullscreen) {
       docElement.requestFullscreen()
     } else if (docElement.mozRequestFullScreen) {
@@ -146,13 +150,13 @@ export class StartScreen extends ex.Scene {
     } else if (docElement.msRequestFullscreen) {
       docElement.msRequestFullscreen()
     }
-  
+
     const screenOrientation = screen.orientation as ScreenOrientation & {
       lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>
     }
-  
+
     if (screenOrientation && screenOrientation.lock) {
-      screenOrientation.lock('landscape').catch(function(error) {
+      screenOrientation.lock('landscape').catch(function (error) {
         console.error('Erro ao tentar definir a orientação para paisagem:', error)
       })
     }
