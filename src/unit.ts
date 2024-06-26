@@ -183,26 +183,28 @@ export class Unit extends ex.Actor {
   async attack(other: Unit) {
     const d6atk1 = Math.floor(Math.random() * 6) + 1
     const d6atk2 = Math.floor(Math.random() * 6) + 1
-    const diceatk = d6atk1 + d6atk2
+    const d6atk3 = Math.floor(Math.random() * 6) + 1
+    const diceatk = d6atk1 + d6atk2 + d6atk3
 
     const d6def1 = Math.floor(Math.random() * 6) + 1
     const d6def2 = Math.floor(Math.random() * 6) + 1
-    const dicedef = d6def1 + d6def2
+    const d6def3 = Math.floor(Math.random() * 6) + 1
+    const dicedef = d6def1 + d6def2 + d6def3
 
     let atk: number
     let def: number
     
-    if (diceatk === 12) {
-      atk = (this.unitConfig.attack * 2) + diceatk
-    } else if (diceatk === 2) {
+    if (diceatk === 18) {
+      atk = (this.unitConfig.attack * 3) + diceatk
+    } else if (diceatk === 3) {
       atk = diceatk
     } else {
       atk = this.unitConfig.attack + diceatk
     }
 
-    if (dicedef === 12) {
-      def = (other.unitConfig.defense * 2) + dicedef
-    } else if (dicedef === 2) {
+    if (dicedef === 18) {
+      def = (other.unitConfig.defense * 3) + dicedef
+    } else if (dicedef === 3) {
       def = dicedef
     } else {
       def = other.unitConfig.defense + dicedef

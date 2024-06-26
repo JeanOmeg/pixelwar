@@ -27,10 +27,10 @@ export class Damage extends ex.Actor {
       font
     })
 
-    if (dice === 2) {
+    if (dice === 3) {
       font.color = ex.Color.Red
       text.text = `Critical Failure! ${damage}`
-    } else if (dice === 12) {
+    } else if (dice === 18) {
       font.color = ex.Color.Green
       text.text = `Critical Hit! ${damage}`
     }
