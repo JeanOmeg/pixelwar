@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 import * as ex from 'excalibur'
 import { Cloud } from '../cloud'
 import { Resources, Title } from '../resources'
@@ -111,10 +113,52 @@ export class StartScreen extends ex.Scene {
       ]
     }))
     this.p1VsP2Button.on('pointerup', () => {
+      if (this.isMobile()) {
+        alert('Fullscren')
+        this.setLandscapeAndFullscreen()
+      }
       localStorage.setItem('start_screen', 'P2')
       this.engine.goToScene('level1')
     })
     this.add(this.p1VsP2Button)
+  }
+
+  isMobile() {
+    const userAgent = navigator.userAgent
+    const mobileRegex = /Android|webOS|iPhone/i
+    return mobileRegex.test(userAgent)
+  }
+
+  setLandscapeAndFullscreen(): void {
+    // Solicita a tela cheia
+    const docElm = document.documentElement as HTMLElement & {
+      mozRequestFullScreen?: () => Promise<void>;
+      webkitRequestFullscreen?: () => Promise<void>;
+      msRequestFullscreen?: () => Promise<void>;
+    };
+  
+    if (docElm.requestFullscreen) {
+      docElm.requestFullscreen();
+    } else if (docElm.mozRequestFullScreen) { // Firefox
+      docElm.mozRequestFullScreen();
+    } else if (docElm.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+      docElm.webkitRequestFullscreen();
+    } else if (docElm.msRequestFullscreen) { // IE/Edge
+      docElm.msRequestFullscreen();
+    }
+  
+    // Define a orientação da tela para paisagem
+    const screenOrientation = screen.orientation as ScreenOrientation & {
+      lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>;
+    };
+  
+    if (screenOrientation && screenOrientation.lock) {
+      screenOrientation.lock('landscape').catch(function(error) {
+        console.error('Erro ao tentar definir a orientação para paisagem:', error);
+      });
+    } else {
+      console.error('API de bloqueio de orientação não é suportada.');
+    }
   }
 
   _subscriptions: ex.Subscription[] = [];
