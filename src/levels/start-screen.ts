@@ -75,12 +75,14 @@ export class StartScreen extends ex.Scene {
       ]
     }))
     this.p1VsCpuButton.on('pointerup', () => {
+      if (this.isMobile()) {
+        this.setLandscapeAndFullscreen()
+      }
       localStorage.setItem('start_screen', 'CPU')
       this.engine.goToScene('level1')
     })
     this.add(this.p1VsCpuButton)
 
-    // Criando botão P1 vs P2
     this.p1VsP2Button = new ex.Actor({
       name: 'p1VsP2Button',
       pos: ex.vec(400, 630),
@@ -114,7 +116,6 @@ export class StartScreen extends ex.Scene {
     }))
     this.p1VsP2Button.on('pointerup', () => {
       if (this.isMobile()) {
-        alert('Fullscren')
         this.setLandscapeAndFullscreen()
       }
       localStorage.setItem('start_screen', 'P2')
@@ -129,39 +130,35 @@ export class StartScreen extends ex.Scene {
     return mobileRegex.test(userAgent)
   }
 
-  setLandscapeAndFullscreen(): void {
-    // Solicita a tela cheia
-    const docElm = document.documentElement as HTMLElement & {
-      mozRequestFullScreen?: () => Promise<void>;
-      webkitRequestFullscreen?: () => Promise<void>;
-      msRequestFullscreen?: () => Promise<void>;
-    };
-  
-    if (docElm.requestFullscreen) {
-      docElm.requestFullscreen();
-    } else if (docElm.mozRequestFullScreen) { // Firefox
-      docElm.mozRequestFullScreen();
-    } else if (docElm.webkitRequestFullscreen) { // Chrome, Safari, and Opera
-      docElm.webkitRequestFullscreen();
-    } else if (docElm.msRequestFullscreen) { // IE/Edge
-      docElm.msRequestFullscreen();
+  setLandscapeAndFullscreen() {
+    const docElement = document.documentElement as HTMLElement & {
+      mozRequestFullScreen?: () => Promise<void>
+      webkitRequestFullscreen?: () => Promise<void>
+      msRequestFullscreen?: () => Promise<void>
     }
   
-    // Define a orientação da tela para paisagem
+    if (docElement.requestFullscreen) {
+      docElement.requestFullscreen()
+    } else if (docElement.mozRequestFullScreen) {
+      docElement.mozRequestFullScreen()
+    } else if (docElement.webkitRequestFullscreen) {
+      docElement.webkitRequestFullscreen()
+    } else if (docElement.msRequestFullscreen) {
+      docElement.msRequestFullscreen()
+    }
+  
     const screenOrientation = screen.orientation as ScreenOrientation & {
-      lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>;
-    };
+      lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>
+    }
   
     if (screenOrientation && screenOrientation.lock) {
       screenOrientation.lock('landscape').catch(function(error) {
-        console.error('Erro ao tentar definir a orientação para paisagem:', error);
-      });
-    } else {
-      console.error('API de bloqueio de orientação não é suportada.');
+        console.error('Erro ao tentar definir a orientação para paisagem:', error)
+      })
     }
   }
 
-  _subscriptions: ex.Subscription[] = [];
+  _subscriptions: ex.Subscription[] = []
   onActivate(): void {
     console.log('activate start screen')
     Resources.TitleMusic.loop = true
