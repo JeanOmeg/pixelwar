@@ -181,24 +181,40 @@ export class Unit extends ex.Actor {
   }
 
   async attack(other: Unit) {
-    const d6um = Math.floor(Math.random() * 6) + 1
-    const d6dois = Math.floor(Math.random() * 6) + 1
-    const d6tres = Math.floor(Math.random() * 6) + 1
-    const tresd6 = d6um + d6dois + d6tres
+    const d6atk1 = Math.floor(Math.random() * 6) + 1
+    const d6atk2 = Math.floor(Math.random() * 6) + 1
+    const diceatk = d6atk1 + d6atk2
 
-    let atq: number
-    if (tresd6 === 18) {
-      atq = this.unitConfig.attack * 4
-    } else if (tresd6 === 3) {
-      atq = this.unitConfig.attack * 0
+    const d6def1 = Math.floor(Math.random() * 6) + 1
+    const d6def2 = Math.floor(Math.random() * 6) + 1
+    const dicedef = d6def1 + d6def2
+
+    let atk: number
+    let def: number
+    
+    if (diceatk === 12) {
+      atk = (this.unitConfig.attack * 2) + diceatk
+    } else if (diceatk === 2) {
+      atk = diceatk
     } else {
-      atq = this.unitConfig.attack
+      atk = this.unitConfig.attack + diceatk
     }
 
-    other.health -= atq
+    if (dicedef === 12) {
+      def = (other.unitConfig.defense * 2) + dicedef
+    } else if (dicedef === 2) {
+      def = dicedef
+    } else {
+      def = other.unitConfig.defense + dicedef
+    }
+
+    let damage = atk - def
+    damage = damage > 0 ? damage : 1
+
+    other.health -= damage
     Resources.HitSound.play()
 
-    this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), atq, tresd6)
+    this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, diceatk)
     await other.actions.blink(200, 200, 5).toPromise()
     this.attacked = true
   }
