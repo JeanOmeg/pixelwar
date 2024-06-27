@@ -44,7 +44,7 @@ export class UIManager {
 
   worldDistanceToPage(distance: number) {
     const mobile = this.isMobile()
-    const scaleX = mobile ? 5 : SCALE.x
+    const scaleX = mobile ? 4 : SCALE.x
     const pageOrigin = this.engine.screen.worldToPageCoordinates(ex.Vector.Zero)
     const pageDistance = this.engine.screen.worldToPageCoordinates(ex.vec(distance * scaleX, 0)).sub(pageOrigin)
     return pageDistance.x
@@ -58,7 +58,7 @@ export class UIManager {
     const mobile = this.isMobile()
     const menu = this.unitMenu
     const pagePos = this.engine.screen.worldToPageCoordinates(unit.pos)
-    menu.left = pagePos.x + (mobile ? this.worldDistanceToPage(8) : this.worldDistanceToPage(32))
+    menu.left = pagePos.x + (mobile ? this.worldDistanceToPage(16) : this.worldDistanceToPage(32))
     menu.top = pagePos.y
     menu.unit = unit
 
