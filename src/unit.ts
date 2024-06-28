@@ -181,42 +181,34 @@ export class Unit extends ex.Actor {
   }
 
   async attack(other: Unit) {
-    const d6atk1 = Math.floor(Math.random() * 6) + 1
-    const d6atk2 = Math.floor(Math.random() * 6) + 1
-    const d6atk3 = Math.floor(Math.random() * 6) + 1
-    const diceatk = d6atk1 + d6atk2 + d6atk3
+    const fD20 = Math.floor(Math.random() * 20) + 1
+    const lD20 = Math.floor(Math.random() * 20) + 1
+    const fD6 = Math.floor(Math.random() * 6) + 1
+    const lD6 = Math.floor(Math.random() * 6) + 1
 
-    const d6def1 = Math.floor(Math.random() * 6) + 1
-    const d6def2 = Math.floor(Math.random() * 6) + 1
-    const d6def3 = Math.floor(Math.random() * 6) + 1
-    const dicedef = d6def1 + d6def2 + d6def3
+    const d20 = fD20 > lD20 ? fD20 : lD20
+    const d6 = fD6 > lD6 ? fD6 : lD6
 
-    let atk: number
-    let def: number
+    const atk = this.unitConfig.attack + d20
+    const def = other.unitConfig.defense + 10
+    let damage
     
-    if (diceatk === 18) {
-      atk = (this.unitConfig.attack * 3) + diceatk
-    } else if (diceatk === 3) {
-      atk = diceatk
+    if (d20 === 20) {
+      damage = 12 + this.unitConfig.attack - other.unitConfig.defense
     } else {
-      atk = this.unitConfig.attack + diceatk
+      damage = d6 + this.unitConfig.attack - other.unitConfig.defense
     }
 
-    if (dicedef === 18) {
-      def = (other.unitConfig.defense * 3) + dicedef
-    } else if (dicedef === 3) {
-      def = dicedef
+    if (atk > def) {
+      damage = damage > 0 ? damage : 1
     } else {
-      def = other.unitConfig.defense + dicedef
+      damage = 1
     }
-
-    let damage = atk - def
-    damage = damage > 0 ? damage : 1
 
     other.health -= damage
     Resources.HitSound.play()
 
-    this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, diceatk)
+    this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, d20)
     await other.actions.blink(200, 200, 5).toPromise()
     this.attacked = true
   }

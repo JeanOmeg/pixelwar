@@ -27,10 +27,7 @@ export class Damage extends ex.Actor {
       font
     })
 
-    if (dice === 3) {
-      font.color = ex.Color.Red
-      text.text = `Critical Failure! ${damage}`
-    } else if (dice === 18) {
+    if (dice === 20) {
       font.color = ex.Color.Green
       text.text = `Critical Hit! ${damage}`
     }
@@ -43,8 +40,8 @@ export class DamageManager {
 
   constructor(public scene: ex.Scene) { }
 
-  spawnDamageNumber(pos: ex.Vector, damage: number, dice: number) {
-    const damageNumber = new Damage(pos, damage, dice)
+  spawnDamageNumber(pos: ex.Vector, damage: number, d20: number) {
+    const damageNumber = new Damage(pos, damage, d20)
     damageNumber.actions.easeBy(ex.vec(0, -100), 1000, ex.EasingFunctions.EaseOutCubic).die()
     this.scene.add(damageNumber)
   }
