@@ -126,9 +126,7 @@ export class HumanPlayer extends Player {
   async maybeAttack(attacker: Unit, destination: Cell | null) {
     if (destination && attacker.canAttack() && this.hasNonPlayerUnit(destination)) {
       this.active = false
-      const enemyUnit = destination.unit as Unit
-      this.selectionManager.reset()
-      await attacker.attack(enemyUnit)
+      await this.selectionManager.selectDestinationAndAttack(attacker, destination)
       this.humanMove.resolve()
     } else {
       this.selectionManager.reset()

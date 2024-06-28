@@ -68,6 +68,15 @@ export class SelectionManager {
     this.reset()
   }
 
+  async selectDestinationAndAttack(unit: Unit, destination: Cell) {
+    if (unit.player !== this.currentPlayer) return
+    const range = this.findAttackRange(unit)
+    if (range.length > 1 && range.find(enemy => enemy.owner?.name == destination.name)) {
+      await unit.attack(destination.unit as Unit)
+    }
+    this.reset()
+  }
+
   findAttackRange(unit: Unit): PathNodeComponent[] {
     if (!this.currentUnitSelection) return []
     if (!unit.cell) return []

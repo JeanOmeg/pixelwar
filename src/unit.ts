@@ -181,6 +181,7 @@ export class Unit extends ex.Actor {
   }
 
   async attack(other: Unit) {
+    this.defineDirection(this.cell?.pos.x as number, other.pos.x)
     const fD20 = Math.floor(Math.random() * 20) + 1
     const lD20 = Math.floor(Math.random() * 20) + 1
     const fD6 = Math.floor(Math.random() * 6) + 1
