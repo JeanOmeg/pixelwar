@@ -10,7 +10,6 @@ import { Resources } from "./resources"
 
 export class HumanPlayer extends Player {
   public passed = false
-  public direction: string = 'direita'
   private humanMove = new ex.Future<void>()
 
   constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public uiManger: UIManager, board: Board) {

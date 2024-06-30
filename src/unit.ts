@@ -1,6 +1,6 @@
 import * as ex from "excalibur"
 import { Board } from "./board"
-import { Explosion, HeartSpriteSheet, Resources, Smoke, SpiderSpriteSheet } from "./resources"
+import { HeartSpriteSheet, Resources } from "./resources"
 import { SCALE, UNIT_CONFIG, UnitConfig, UnitType } from "./config"
 import { Cell } from "./cell"
 import { PathNodeComponent } from "./path-finding/path-node-component"
@@ -120,13 +120,13 @@ export class Unit extends ex.Actor {
 
   defineDirection(x_first: number, x_last: number) {
     if (x_first > x_last) {
-      if (this.direction !== 'esquerda') {
-        this.direction = 'esquerda'
+      if (this.direction !== 'left') {
+        this.direction = 'left'
         this.graphics.flipHorizontal = true
       }
     } else if (x_first < x_last) {
-      if (this.direction !== 'direita') {
-        this.direction = 'direita'
+      if (this.direction !== 'right') {
+        this.direction = 'right'
         this.graphics.flipHorizontal = false
       }
     }

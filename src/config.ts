@@ -32,7 +32,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     attack: 4,
     defense: 2,
     range: 5,
-    direction: 'direita'
+    direction: 'right'
   },
   Spider: {
     graphics: {
@@ -43,7 +43,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     movement: 2,
     attack: 1,
     range: 1,
-    direction: 'direita',
+    direction: 'right',
     defense: 0
   },
   Slime: {
@@ -55,7 +55,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     movement: 1,
     attack: 2,
     range: 1,
-    direction: 'direita',
+    direction: 'right',
     defense: 0
   },
   Crab: {
@@ -67,7 +67,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     movement: 3,
     attack: 2,
     range: 1,
-    direction: 'direita',
+    direction: 'right',
     defense: 0
   }
 } as const
