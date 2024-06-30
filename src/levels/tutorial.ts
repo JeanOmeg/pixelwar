@@ -22,8 +22,8 @@ export const TutorialData: LevelData = {
 export class Tutorial extends LevelBase {
   focus!: ex.Actor
   tutorialDirections!: ex.Actor
-  private bottomScreen = ex.vec(400, 2000);
-  private centerScreen = ex.vec(400, 700);
+  private bottomScreen = ex.vec(400, 2000)
+  private centerScreen = ex.vec(400, 700)
   constructor() {
     super(TutorialData, 'tutorial')
   }
@@ -35,7 +35,7 @@ export class Tutorial extends LevelBase {
         this.engine.goToScene('level1')
       }
     })
-    this.input.pointers.on('down', evt => {
+    this.input.pointers.on('down', () => {
       this.engine.goToScene('level1')
     })
     this.resetAndLoad()
@@ -75,7 +75,6 @@ export class Tutorial extends LevelBase {
       height: 100,
       z: 10
     })
-    // this.tutorialDirections.graphics.opacity = 0;
     this.tutorialDirections.graphics.add('text', tutorialDirections)
     this.tutorialDirections.graphics.show('text')
     engine.add(this.tutorialDirections)
@@ -138,9 +137,6 @@ export class Tutorial extends LevelBase {
   }
 
   async highlightEnemyRange() {
-    const humanPlayer = this.players[ 0 ] as HumanPlayer
-    const enemyCell = this.board.getCell(2, 1)
-    await humanPlayer.highlightUnitRange(enemyCell)
 
     await ex.Util.delay(1000)
     this.selectionManager.reset()
@@ -157,20 +153,15 @@ export class Tutorial extends LevelBase {
     this.focus.graphics.use(text)
     this.focus.graphics.opacity = 1
     await ex.Util.delay(1000)
-    // await this.focus.actions.fade(1, 200).toPromise();
   }
 
   async hideText() {
     this.focus.graphics.opacity = 0
     await ex.Util.delay(1000)
-    // await this.focus.actions.fade(0, 200).toPromise();
   }
 
-  private _subs: ex.Subscription[] = [];
   async onActivate() {
     this.showSkip()
-    console.log('activate tutorial')
-
 
     Resources.LevelMusic2.loop = true
     Resources.LevelMusic2.play()
@@ -182,24 +173,20 @@ export class Tutorial extends LevelBase {
 
     await ex.Util.delay(1000)
 
-    // hey look at all these spiders!
     await this.showText(1)
     await this.focus.actions.delay(1000)
     await this.hideText()
 
-    // we need to take them out to get home!
     await this.moveToUnit2()
     await this.showText(2)
     await this.focus.actions.delay(1000)
     await this.hideText()
 
-    // how do we do that?!?
     await this.moveToUnit1()
     await this.showText(3)
     await this.focus.actions.delay(1000)
     await this.hideText()
 
-    // left click to move/attack, right click to see friendly/enemy range
     await this.moveToUnit2()
     await this.showText(4)
     await this.focus.actions.delay(4000)
@@ -207,7 +194,6 @@ export class Tutorial extends LevelBase {
 
     await this.selectUnit1()
 
-    // we have a limited amount of turns to complete the level!
     await this.moveToUnit2()
     await this.showText(5)
     await this.focus.actions.delay(1000)

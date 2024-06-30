@@ -11,13 +11,12 @@ import { Player } from './player'
  */
 export class SelectionManager {
 
-  currentPlayer: Player | null = null;
-  currentSelectionMode: 'move' | 'attack' = 'move';
-  currentUnitSelection: Unit | null = null;
-  currentRange: PathNodeComponent[] = [];
-  currentPath: PathNodeComponent[] = [];
-
-  currentCursor: { x: number, y: number } = { x: 0, y: 0 };
+  currentPlayer: Player | null = null
+  currentSelectionMode: 'move' | 'attack' = 'move'
+  currentUnitSelection: Unit | null = null
+  currentRange: PathNodeComponent[] = []
+  currentPath: PathNodeComponent[] = []
+  currentCursor: { x: number, y: number } = { x: 0, y: 0 }
 
   constructor(private board: Board) { }
 
@@ -57,11 +56,9 @@ export class SelectionManager {
   async selectDestinationAndMove(unit: Unit, destination: Cell) {
     if (unit.player !== this.currentPlayer) return
     const range = this.findMovementRange(unit)
-    // select a destination if there is no path
     if (this.currentPath.length === 0) {
       this.currentPath = this.findPath(destination, range)
     }
-    // if a valid path was found move!
     if (this.currentPath.length > 1) {
       await unit.move(this.currentPath)
     }
@@ -80,21 +77,19 @@ export class SelectionManager {
   findAttackRange(unit: Unit): PathNodeComponent[] {
     if (!this.currentUnitSelection) return []
     if (!unit.cell) return []
-    let range = this.board.pathFinder.getRange(
+    let range = this.board.pathFinder.getRangeAttack(
       unit.cell.pathNode,
-      ~unit.player.mask, // don't attack friends!
+      ~unit.player.mask,
       this.currentUnitSelection.unitConfig.range)
     return range
   }
 
   findMovementRange(unit: Unit): PathNodeComponent[] {
-    // if (!this.currentUnitSelection) return [];
     if (!unit.cell) return []
     let range = this.board.pathFinder.getRange(
       unit.cell.pathNode,
       unit.player.mask,
       unit.unitConfig.movement)
-    range = range.filter(node => node.isWalkable && !!(node.walkableMask & unit.player.mask))
     return range
   }
 

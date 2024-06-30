@@ -16,7 +16,7 @@ export interface MenuOptions {
  * UI manager create html elements for game UI
  */
 export class UIManager {
-  uiToWorldPos = new Map<UnitMenu, ex.Vector>();
+  uiToWorldPos = new Map<UnitMenu, ex.Vector>()
 
   unitMenu: UnitMenu
   constructor(private engine: ex.Engine) {

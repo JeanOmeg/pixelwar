@@ -13,20 +13,19 @@ import { LevelBase } from './levels/level-base'
  * Requests moves from either human or AI players
  */
 export class TurnManager {
-  public currentTurn = 1;
+  public currentTurn = 1
   public currentPlayer: Player
-  private currentPlayerIndex = 0;
+  private currentPlayerIndex = 0
   public selectionManager: SelectionManager
   private turnActor: ex.Actor
   private turnText: ex.Text
-  private topScreen = ex.vec(400, -2000);
-  private centerScreen = ex.vec(400, 400);
-  private bottomScreen = ex.vec(400, 2000);
+  private topScreen = ex.vec(400, -2000)
+  private centerScreen = ex.vec(400, 400)
+  private bottomScreen = ex.vec(400, 2000)
   private victory: ex.Actor
   private victoryDirections: ex.Actor
   private failure: ex.Actor
   private turn: number = this.maxTurns
-  private originalMaxTurns: number = this.maxTurns
 
   constructor(public engine: ex.Engine, public level: LevelBase, public players: Player[], selectionManager: SelectionManager, public maxTurns: number) {
     if (players.length === 0) throw Error('Players should be non-zero in length')
@@ -56,7 +55,6 @@ export class TurnManager {
     this.turnActor.graphics.opacity = 0
     this.turnActor.graphics.add('text', this.turnText)
     this.turnActor.graphics.use('text')
-    // background graphic
     this.turnActor.addChild(new ex.Actor({
       color: new ex.Color(240, 50, 50, .4),
       width: screenWidth,
@@ -209,7 +207,6 @@ export class TurnManager {
 
   async checkWin(player: Player) {
     if (player.hasLost() || this.maxTurns == 0) {
-      console.log('Player lost!', player.name)
       if (player instanceof HumanPlayer) {
         await this.showGameOver()
         this.engine.input.pointers.once('down', () => {
@@ -233,7 +230,6 @@ export class TurnManager {
 
   async start() {
     while (this.maxTurns >= 0) {
-      console.log('Current player turn:', this.currentPlayer.name)
       if (await this.checkWin(this.currentPlayer)) return
       this.selectionManager.selectPlayer(this.currentPlayer)
       await this.showTurnDisplay()

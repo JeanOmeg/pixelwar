@@ -92,25 +92,25 @@ export class UnitMenu extends LitElement {
   `
 
   @property({ type: Number })
-  left: number = 0;
+  left: number = 0
 
   @property({ type: Number })
-  top: number = 0;
+  top: number = 0
 
   @property({ type: Number })
-  fontSize: number = 0;
+  fontSize: number = 0
 
   @property({ type: Number })
-  width: number = 0;
+  width: number = 0
 
   @property({ attribute: false })
-  unit: Unit | null = null;
+  unit: Unit | null = null
 
   @property({ type: Number })
-  pixelConversion: number = 1;
+  pixelConversion: number = 1
 
   @state()
-  private _show: boolean = false;
+  private _show: boolean = false
 
   @query('.menu')
   menuHtml?: HTMLDivElement
@@ -135,9 +135,7 @@ export class UnitMenu extends LitElement {
     }
   }
 
-  // Debounce needed for mobile for some reason
-  // Overlay is also receiving the event
-  private _debounce: number = 0;
+  private _debounce: number = 0
   show() {
     this._show = true
     this._debounce = Date.now()

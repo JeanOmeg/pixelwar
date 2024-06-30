@@ -27,23 +27,6 @@ export interface LevelData {
   data: string[]
 }
 
-// export const TestLevelData: LevelData = {
-//     name: 'Gentle Plains',
-//     nextLevel: 'level2',
-//     width: 6,
-//     height: 6,
-//     maxTurns: 100,
-//     players: ['human', 'computer'],
-//     data: [
-//         'GK1', 'G', 'G', 'G', 'G', 'GK1',
-//         'G', 'G', 'G', 'G', 'G', 'G',
-//         'G', 'G', 'W', 'W', 'G', 'G',
-//         'G', 'G', 'W', 'W', 'G', 'G',
-//         'G', 'G', 'W', 'W', 'G', 'G',
-//         'GS2', 'GS2', 'GS2', 'GS2', 'GS2', 'GS2'
-//     ]
-// }
-
 export const CharToUnit = {
   K: 'Knight',
   S: 'Spider',
@@ -75,7 +58,6 @@ export class LevelBase extends ex.Scene {
         (this.players[0] as HumanPlayer).lose()
       }
     })
-    // Add entities to resetAndLoad()!
   }
 
   async showLevelName() {
@@ -154,7 +136,6 @@ export class LevelBase extends ex.Scene {
     })
     this.levelName.graphics.add('text', levelName)
     this.levelName.graphics.use('text')
-    // cyan background using child actor
     this.levelName.addChild(new ex.Actor({
       color: new ex.Color(50, 240, 50, .4),
       width: 400,
@@ -163,7 +144,7 @@ export class LevelBase extends ex.Scene {
     this.add(this.levelName)
   }
 
-  private _subscriptions: ex.Subscription[] = [];
+  private _subscriptions: ex.Subscription[] = []
   override onActivate() {
     if (this.isMobile()) {
       this.setLandscapeAndFullscreen()
@@ -176,7 +157,6 @@ export class LevelBase extends ex.Scene {
   }
 
   override onDeactivate(): void {
-    // TODO deactivate event handlers on types that have them!!
     Resources.LevelMusic2.instances.forEach(i => i.stop())
     Resources.LevelMusic2.stop()
     this._subscriptions.forEach(s => s.close())
@@ -187,7 +167,6 @@ export class LevelBase extends ex.Scene {
     this.selectionManager = new SelectionManager(board)
     this.selectionManager.showCursor(0, 0)
     this.uiManager = new UIManager(this.engine)
-    // TODO support arbitrary players
     let mode = localStorage.getItem('start_screen')
     while (!mode || mode?.length === 0) {
       mode = localStorage.getItem('start_screen')

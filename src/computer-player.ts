@@ -3,13 +3,13 @@ import * as ex from 'excalibur'
 import { Player } from "./player"
 import { SelectionManager } from "./selection-manager"
 import { Board } from './board'
-import { ENEMY_SPEED, RANDOM } from './config'
+import { ENEMY_SPEED } from './config'
 import { PathNodeComponent } from './path-finding/path-node-component'
 import { Cell } from './cell'
 import { Unit } from './unit'
 
 export class ComputerPlayer extends Player {
-  public active: boolean = false;
+  public active: boolean = false
   constructor(name: string, private selectionManger: SelectionManager, board: Board) {
     super(name, board)
   }
@@ -35,10 +35,8 @@ export class ComputerPlayer extends Player {
   }
 
   findValidMoveCells(unit: Unit): Cell[] {
-    // pick a random valid move
     let range: PathNodeComponent[] = []
     if (unit.cell) {
-      // find empty or enemy occupied cells
       range = this.board.pathFinder.getRange(unit.cell.pathNode, this.mask, unit.unitConfig.movement).filter(node => {
         const cell = node.owner as Cell
         return cell.unit?.player !== this
@@ -79,7 +77,6 @@ export class ComputerPlayer extends Player {
 
   async maybeAttack(unit: Unit, closestEnemy: Unit) {
     let attacked = false
-    // possible targets
     const possibleTargets = this.findAttackableTargets(unit)
     if (possibleTargets.length > 0) {
       const currentRange = possibleTargets.map(c => c.pathNode)
@@ -89,7 +86,6 @@ export class ComputerPlayer extends Player {
       this.selectionManger.showHighlight([ closestEnemy.cell!.pathNode ], 'path')
       await ex.Util.delay(ENEMY_SPEED)
 
-      // attack
       await unit.attack(closestEnemy)
       attacked = true
     }
@@ -104,7 +100,6 @@ export class ComputerPlayer extends Player {
 
 
     for (let unit of units) {
-      // wait before moving each unit
       await ex.Util.delay(ENEMY_SPEED)
 
       let range: PathNodeComponent[] = []
@@ -112,20 +107,15 @@ export class ComputerPlayer extends Player {
         range = this.board.pathFinder.getRange(unit.cell.pathNode, this.mask, unit.unitConfig.movement)
       }
 
-      // find valid moves
       let validCells = this.findValidMoveCells(unit)
 
-      // find the closest enemy
       const closestEnemy = this.findClosestEnemy(unit)
 
       if (closestEnemy) {
-        // attack if right next to enemy
         const attacked = await this.maybeAttack(unit, closestEnemy)
 
-        // find the closest valid move to an enemy
         const closestCell = this.findClosestCell(closestEnemy, validCells)
 
-        // move if did not attack
         if (!attacked) {
           this.selectionManger.selectUnit(unit, 'move')
           await ex.Util.delay(ENEMY_SPEED)
@@ -137,7 +127,6 @@ export class ComputerPlayer extends Player {
           await this.selectionManger.selectDestinationAndMove(unit, closestCell!)
           await ex.Util.delay(ENEMY_SPEED)
 
-          // try again to attack
           await this.maybeAttack(unit, closestEnemy)
         }
         this.selectionManger.reset()

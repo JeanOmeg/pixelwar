@@ -9,9 +9,9 @@ import { Resources } from "./resources"
 
 
 export class HumanPlayer extends Player {
-  public passed = false;
+  public passed = false
   public direction: string = 'direita'
-  private humanMove = new ex.Future<void>();
+  private humanMove = new ex.Future<void>()
 
   constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public uiManger: UIManager, board: Board) {
     super(name, board)
@@ -55,7 +55,6 @@ export class HumanPlayer extends Player {
     const maybeClickedCell = this.board.getCellByWorldPos(pointer.worldPos)
 
     if (pointer.button === ex.PointerButton.Left) {
-      // a unit is currently selected
       if (this.selectionManager.currentUnitSelection) {
         const unit = this.selectionManager.currentUnitSelection
         if (this.selectionManager.currentSelectionMode === 'move') {
@@ -67,14 +66,17 @@ export class HumanPlayer extends Player {
             await this.maybeSelectUnit(unit.cell)
           }
         }
-        // no unit selected, make a selection
       } else {
         this.maybeSelectUnit(maybeClickedCell)
       }
     }
 
     if (pointer.button === ex.PointerButton.Right) {
-      this.highlightUnitRange(maybeClickedCell)
+      this.highlightUnitMoveRange(maybeClickedCell)
+    }
+
+    if (pointer.button === ex.PointerButton.Middle) {
+      this.highlightUnitAttackRange(maybeClickedCell)
     }
   }
 
@@ -90,7 +92,6 @@ export class HumanPlayer extends Player {
 
     this.selectionManager.resetHighlight()
 
-    // move
     if (this.selectionManager.currentSelectionMode === 'move') {
       const currentRange = this.selectionManager.findMovementRange(this.selectionManager.currentUnitSelection)
       this.selectionManager.showHighlight(currentRange, 'range')
@@ -100,7 +101,6 @@ export class HumanPlayer extends Player {
         const currentPath = this.selectionManager.findPath(destination, currentRange)
         this.selectionManager.showHighlight(currentPath, 'path')
       }
-      // attack
     } else {
       const currentRange = this.selectionManager.findAttackRange(this.selectionManager.currentUnitSelection)
       this.selectionManager.showHighlight(currentRange, 'attack')
@@ -142,21 +142,9 @@ export class HumanPlayer extends Player {
    * Highlight the range of any unit friendly or not
    * @param cell 
    */
-  async highlightUnitRange(cell: Cell | null) {
+  async highlightUnitMoveRange(cell: Cell | null) {
     if (cell?.unit) {
       const unit = cell.unit
-      const rangePlusAttack = this.board.pathFinder.getRange(
-        cell.pathNode,
-        unit.player.mask,
-        unit.unitConfig.movement + 1)
-      this.selectionManager.showHighlight(rangePlusAttack, 'attack')
-
-      const attack = this.board.pathFinder.getRange(
-        cell.pathNode,
-        ~unit.player.mask, // don't attack friends!
-        unit.unitConfig.range)
-      this.selectionManager.showHighlight(attack, 'attack')
-
       const currentRange = this.selectionManager.findMovementRange(unit)
       this.selectionManager.showHighlight(currentRange, 'range')
     } else {
@@ -164,8 +152,20 @@ export class HumanPlayer extends Player {
     }
   }
 
+  async highlightUnitAttackRange(cell: Cell | null) {
+    if (cell?.unit) {
+      const unit = cell.unit
+      const attack = this.board.pathFinder.getRangeAttack(
+        cell.pathNode,
+        ~unit.player.mask,
+        unit.unitConfig.range)
+      this.selectionManager.showHighlight(attack, 'attack')
+    } else {
+      this.selectionManager.reset()
+    }
+  }
+
   async maybeSelectUnit(cell: Cell | null) {
-    // check if the cell clicked has a unit, then select it
     if (cell?.unit && this.hasPlayerUnitWithActions(cell)) {
       Resources.SelectSound.play()
 
@@ -182,7 +182,6 @@ export class HumanPlayer extends Player {
           this.humanMove.resolve()
         }
       })
-      // otherwise clear selection
     } else {
       this.selectionManager.reset()
     }

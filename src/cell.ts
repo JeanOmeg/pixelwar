@@ -1,7 +1,7 @@
 import * as ex from "excalibur"
 import { Board } from "./board"
 import { CursorAnimation, HighlightAnimation, RedHighlightAnimation, TileSpriteSheet } from "./resources"
-import { BOARD_OFFSET, SCALE } from "./config"
+import { SCALE } from "./config"
 import { PathNodeComponent } from "./path-finding/path-node-component"
 import { Unit } from "./unit"
 
@@ -20,8 +20,8 @@ export class Cell extends ex.Actor {
   decoration: ex.Actor
   sprite!: ex.Sprite
   pathNode: PathNodeComponent
-  unit: Unit | null = null;
-  private _terrain: Terrain = Terrain.Grass;
+  unit: Unit | null = null
+  private _terrain: Terrain = Terrain.Grass
 
   /**
    * Individual cells on the board
@@ -73,19 +73,18 @@ export class Cell extends ex.Actor {
     this._terrain = terrain
     switch (this.terrain) {
       case Terrain.Grass:
-        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(4, 14)]
+        this.sprite = TileSpriteSheet.sprites[ this.getRandomNumber(4, 14) ]
         break
       case Terrain.Sand:
-        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(4, 0)]
-        // TODO slower to move through sand
+        this.sprite = TileSpriteSheet.sprites[ this.getRandomNumber(4, 0) ]
         break
       case Terrain.Water:
-        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(4, 21)]
+        this.sprite = TileSpriteSheet.sprites[ this.getRandomNumber(4, 21) ]
         this.pathNode.isFast = false
         break
       case Terrain.Stone:
         this.pathNode.isWalkable = false
-        this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(3, 18)]
+        this.sprite = TileSpriteSheet.sprites[ this.getRandomNumber(3, 18) ]
         break
     }
     this.sprite.scale = SCALE
@@ -111,7 +110,6 @@ export class Cell extends ex.Actor {
   }
 
   toggleHighlight(show: boolean, type: 'range' | 'path' | 'attack') {
-    // reset highlight
     this.decoration.graphics.hide()
 
     if (show) {

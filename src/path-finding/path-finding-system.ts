@@ -9,13 +9,10 @@ export class PathFinder {
     this.query = scene.world.queryManager.createQuery([PathNodeComponent])
   }
 
-  heuristicWeight = 1;
+  heuristicWeight = 1
   heuristic: (start: PathNodeComponent, end: PathNodeComponent) => number = (start: PathNodeComponent, end: PathNodeComponent) => {
     // manhattan distance
-    return Math.abs(start.pos.x - end.pos.x) + Math.abs(end.pos.y - end.pos.y)
-
-    // euclidean distance
-    // return start.pos.distance(end.pos);
+    return Math.abs(start.pos.x - end.pos.x) + Math.abs(start.pos.y - end.pos.y)
   }
 
   private _buildPath(currentNode: PathNodeComponent) {
@@ -26,6 +23,38 @@ export class PathFinder {
     }
     path.unshift(currentNode)
     return path
+  }
+
+  private _getRangeHelperAttack(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number) {
+    if (range >= 0) {
+      const startX = localStorage.getItem('x')
+      const startY = localStorage.getItem('y')
+      const x = cell.owner?.name.split(' ')[1].split(')')[0]
+      const y = cell.owner?.name.split(',')[0].split('(')[1]
+      let newRange
+      accum.push(cell)
+      cell.connections.filter(node => node.isWalkable && !!(node.walkableMask & mask) && (startY == y || startX == x)).forEach(cell => {
+        newRange = 1
+        if (!cell.isFast) {
+          newRange = 2
+        }
+        this._getRangeHelperAttack(cell, accum, mask, range - newRange)
+      })
+    }
+  }
+
+  getRangeAttack(start: PathNodeComponent, mask: number, range: number): PathNodeComponent[] {
+    let result: PathNodeComponent[] = []
+    const x = start.owner?.name.split(' ')[1].split(')')[0]
+    const y = start.owner?.name.split(',')[0].split('(')[1]
+    localStorage.setItem('x', x as string)
+    localStorage.setItem('y', y as string)
+    this._getRangeHelperAttack(start, result, mask, range)
+    result = result.filter((node, index, nodeArray) => nodeArray.indexOf(node) === index)
+    result = result.filter(node => node.isWalkable && (node.owner?.name.split(' ')[1].split(')')[0] == x || node.owner?.name.split(',')[0].split('(')[1] == y))
+    localStorage.removeItem(x as string)
+    localStorage.removeItem(y as string)
+    return result
   }
 
   private _getRangeHelper(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number) {
@@ -45,7 +74,6 @@ export class PathFinder {
   getRange(start: PathNodeComponent, mask: number, range: number): PathNodeComponent[] {
     let result: PathNodeComponent[] = []
     this._getRangeHelper(start, result, mask, range)
-    // dedup results
     result = result.filter((node, index, nodeArray) => nodeArray.indexOf(node) === index)
     result = result.filter(node => node.isWalkable)
     return result
@@ -75,46 +103,30 @@ export class PathFinder {
     const closedNodes: PathNodeComponent[] = []
 
     while (openNodes.length > 0) {
-      // priority queue, evaluate nodes with the lowest cost
       const priorityNodes = openNodes.sort((a, b) => {
-        // tie breaking for aesthetics
-        // if (a.hScore === b.hScore) {
-        //     // console.log(b.direction.normalize());
-        //     // console.log(a.direction.normalize());
-        //     console.log(b.direction.dot(ex.Vector.Down) - a.direction.dot(ex.Vector.Down));
-        //     return b.direction.dot(ex.Vector.Down) - a.direction.dot(ex.Vector.Down);
-        //     // return b.pos.y - a.pos.y;
-        // }
         return a.hScore - b.hScore
       })
 
-      // tie breaking for aesthetics
       const current = priorityNodes[0]
 
-      // Done!
       if (current === end) {
         return this._buildPath(current)
       }
 
-      // Remove current from the open node set
       const index = openNodes.indexOf(current)
       openNodes.splice(index, 1)
       closedNodes.push(current)
 
-
-      // Find the neighbors that haven't been explored
       let neighbors = current.connections.filter(node => {
         return node.isWalkable && !!(node.walkableMask & mask)
       }).filter(node => {
         return closedNodes.indexOf(node) === -1
       })
 
-      // If a range is supplied only look for nodes in there
       if (range) {
         neighbors = neighbors.filter(node => range.indexOf(node) > -1)
       }
 
-      // Current direction!
       let currentDirection = current.direction
 
       neighbors.forEach((node) => {
@@ -123,7 +135,6 @@ export class PathFinder {
           node.gScore = node.weight + current.gScore
           node.hScore = node.gScore + this.heuristic(node, end) * this.heuristicWeight
 
-          // Turn penalty if direction is not straight
           const newDirection = node.pos.sub(current.pos).normalize()
           node.direction = newDirection
           const inline = currentDirection.dot(newDirection)
@@ -136,7 +147,6 @@ export class PathFinder {
       })
     }
 
-    // error case
     return []
   }
 }

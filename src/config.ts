@@ -2,7 +2,6 @@ import * as ex from "excalibur"
 
 import { CrabIdle, KnightIdle, SlimeIdle, SpiderIdle } from "./resources"
 const seed = Date.now()
-console.log("Random seed:", seed)
 export const RANDOM = new ex.Random(seed)
 
 export const SCALE = ex.vec(2, 2)
@@ -32,7 +31,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     movement: 6,
     attack: 4,
     defense: 2,
-    range: 1,
+    range: 5,
     direction: 'direita'
   },
   Spider: {
@@ -71,5 +70,5 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     direction: 'direita',
     defense: 0
   }
-} as const;
+} as const
 

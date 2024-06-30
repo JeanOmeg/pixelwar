@@ -12,10 +12,10 @@ import { AnimationManager } from "./animation-manager"
 
 
 export class Unit extends ex.Actor {
-  cell: Cell | null = null;
+  cell: Cell | null = null
   unitConfig: UnitConfig
-  moved = false;
-  attacked = false;
+  moved = false
+  attacked = false
   anim: ex.Animation
   direction!: string
   health: number
@@ -120,13 +120,11 @@ export class Unit extends ex.Actor {
 
   defineDirection(x_first: number, x_last: number) {
     if (x_first > x_last) {
-      // Movendo para a esquerda
       if (this.direction !== 'esquerda') {
         this.direction = 'esquerda'
         this.graphics.flipHorizontal = true
       }
     } else if (x_first < x_last) {
-      // Movendo para a direita
       if (this.direction !== 'direita') {
         this.direction = 'direita'
         this.graphics.flipHorizontal = false
@@ -169,7 +167,7 @@ export class Unit extends ex.Actor {
 
   getPossibleTargets() {
     if (this.cell) {
-      const range = this.cell.board.pathFinder.getRange(this.cell.pathNode, ~this.player.mask, this.unitConfig.range)
+      const range = this.cell.board.pathFinder.getRangeAttack(this.cell.pathNode, ~this.player.mask, this.unitConfig.range)
       const cellsWithEnemies = range.map(node => node.owner as Cell).filter(cell => {
         if (cell.unit?.player) {
           return cell.unit.player !== this.player

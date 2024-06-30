@@ -5,13 +5,13 @@ import { PathFinder } from './path-finding/path-finding-system'
 import { Unit } from './unit'
 
 export class Board {
-  tileWidth: number = 32;
-  tileHeight: number = 32;
-  margin: number = 0.5;
+  tileWidth: number = 32
+  tileHeight: number = 32
+  margin: number = 0.5
   rows: number
   cols: number
 
-  cells: Cell[] = [];
+  cells: Cell[] = []
 
   pathFinder: PathFinder
 
@@ -22,9 +22,8 @@ export class Board {
       const cell = new Cell(i % this.cols, Math.floor(i / this.cols), this)
       this.cells.push(cell)
       scene.add(cell)
-    }
+    };
 
-    // setup neighbors connections
     for (let cell of this.cells) {
       cell.pathNode.connections = cell.getNeighbors().map(c => c.pathNode)
     }
@@ -63,6 +62,6 @@ export class Board {
   getCell(x: number, y: number): Cell | null {
     if (x < 0 || x >= this.cols) return null
     if (y < 0 || y >= this.rows) return null
-    return this.cells[x + y * this.cols]
+    return this.cells[ x + y * this.cols ]
   }
 }
