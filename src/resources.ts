@@ -1,41 +1,47 @@
 import * as ex from 'excalibur'
-import KnightSpriteSheetPath from '../res/minis/SwordFighter_LongHair_Blue1.png'
-import SpiderSheetPath from '../res/SpiderSheet.png'
-import SlimeSheetPath from '../res/slime.png'
-import CrabSheetPath from '../res/crab.png'
-import HeartSheetPath from '../res/utils/HeartSheet.png'
-import UISheetPath from '../res/UISheet.png'
-import SelectionCursorPath from '../res/utils/SelectionCursor.png'
+// Utils
 import TileSpritePath from '../res/tiles/FullTileset.png'
+import CursorPath from '../res/utils/SelectionCursor.png'
 import HighlightSheetPath from '../res/utils/MoveCursor.png'
 import RedHighlightSheetPath from '../res/utils/DamageCursor.png'
-import CloudSheetPath from '../res/utils/StarsScreen.png'
+import HeartSheetPath from '../res/utils/HeartSheet.png'
+import ExplosionPath from '../res/explosion.png'
+import ExplosionSoundPath from '../res/explosion.wav'
+import UISheetPath from '../res/UISheet.png'
 import SmokePath from '../res/Smoke.png'
 import HitSoundPath from '../res/hit.wav'
 import MoveSoundPath from '../res/move.wav'
 import SelectSoundPath from '../res/unitselect.wav'
 import TargetSelectPath from '../res/targetselect.wav'
-import TutorialTextPath from '../res/tutorial-text.png'
 import LevelMusic1Path from '../res/5 Action Chiptunes By Juhani Junkala/Juhani Junkala [Retro Game Music Pack] Level 3.wav'
 import LevelMusic2Path from '../res/gba1complete.mp3'
-import ExplosionPath from '../res/explosion.png'
-import ExplosionSoundPath from '../res/explosion.wav'
 import TitleScreenMusic from '../res/two_left_socks.ogg'
+import CloudSheetPath from '../res/utils/StarsScreen.png'
+// Minis
+import ArcherASpriteSheetPath from '../res/minis/ArcherA.png'
+import ArcherBSpriteSheetPath from '../res/minis/ArcherB.png'
+import BarbarianASpriteSheetPath from '../res/minis/BarbarianA.png'
+import BarbarianBSpriteSheetPath from '../res/minis/BarbarianB.png'
+import ClericASpriteSheetPath from '../res/minis/ClericA.png'
+import ClericBSpriteSheetPath from '../res/minis/ClericB.png'
+import FighterASpriteSheetPath from '../res/minis/FighterA.png'
+import FighterBSpriteSheetPath from '../res/minis/FighterB.png'
+import MageASpriteSheetPath from '../res/minis/MageA.png'
+import MageBSpriteSheetPath from '../res/minis/MageB.png'
+import SpearmanASpriteSheetPath from '../res/minis/SpearmanA.png'
+import SpearmanBSpriteSheetPath from '../res/minis/SpearmanB.png'
+import WarriorASpriteSheetPath from '../res/minis/WarriorA.png'
+import WarriorBSpriteSheetPath from '../res/minis/WarriorB.png'
 
 export const Resources = {
-  KnightSpriteSheet: new ex.ImageSource(KnightSpriteSheetPath),
-  SpiderSheet: new ex.ImageSource(SpiderSheetPath),
-  SlimeSheet: new ex.ImageSource(SlimeSheetPath),
-  CrabSheet: new ex.ImageSource(CrabSheetPath),
+  // Utils
+  TileSheet: new ex.ImageSource(TileSpritePath),
+  CursorSheet: new ex.ImageSource(CursorPath),
   HeartSheet: new ex.ImageSource(HeartSheetPath),
   UISheet: new ex.ImageSource(UISheetPath),
-  CursorSheet: new ex.ImageSource(SelectionCursorPath),
-  TileSheet: new ex.ImageSource(TileSpritePath),
   HighlightSheet: new ex.ImageSource(HighlightSheetPath),
   RedHighlightSheet: new ex.ImageSource(RedHighlightSheetPath),
-  CloudSheet: new ex.ImageSource(CloudSheetPath),
   SmokeSheet: new ex.ImageSource(SmokePath),
-  TutorialText: new ex.ImageSource(TutorialTextPath),
   ExplosionSheet: new ex.ImageSource(ExplosionPath),
   HitSound: new ex.Sound(HitSoundPath),
   MoveSound: new ex.Sound(MoveSoundPath),
@@ -45,17 +51,23 @@ export const Resources = {
   LevelMusic2: new ex.Sound(LevelMusic2Path),
   ExplosionSound: new ex.Sound(ExplosionSoundPath),
   TitleMusic: new ex.Sound(TitleScreenMusic),
+  CloudSheet: new ex.ImageSource(CloudSheetPath),
+  // Minis
+  ArcherASpriteSheet: new ex.ImageSource(ArcherASpriteSheetPath),
+  ArcherBSpriteSheet: new ex.ImageSource(ArcherBSpriteSheetPath),
+  BarbarianASpriteSheet: new ex.ImageSource(BarbarianASpriteSheetPath),
+  BarbarianBSpriteSheet: new ex.ImageSource(BarbarianBSpriteSheetPath),
+  ClericASpriteSheet: new ex.ImageSource(ClericASpriteSheetPath),
+  ClericBSpriteSheet: new ex.ImageSource(ClericBSpriteSheetPath),
+  FighterASpriteSheet: new ex.ImageSource(FighterASpriteSheetPath),
+  FighterBSpriteSheet: new ex.ImageSource(FighterBSpriteSheetPath),
+  MageASpriteSheet: new ex.ImageSource(MageASpriteSheetPath),
+  MageBSpriteSheet: new ex.ImageSource(MageBSpriteSheetPath),
+  SpearmanASpriteSheet: new ex.ImageSource(SpearmanASpriteSheetPath),
+  SpearmanBSpriteSheet: new ex.ImageSource(SpearmanBSpriteSheetPath),
+  WarriorASpriteSheet: new ex.ImageSource(WarriorASpriteSheetPath),
+  WarriorBSpriteSheet: new ex.ImageSource(WarriorBSpriteSheetPath),
 } as const
-
-export const TutorialTextSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.TutorialText,
-  grid: {
-    rows: 1,
-    columns: 8,
-    spriteWidth: 128,
-    spriteHeight: 64
-  }
-})
 
 export const TileSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.TileSheet,
@@ -96,15 +108,6 @@ export const HighlightSpriteSheet = ex.SpriteSheet.fromImageSource({
     spriteWidth: 32
   }
 })
-export const RedHighlightSpriteSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.RedHighlightSheet,
-  grid: {
-    rows: 1,
-    columns: 4,
-    spriteHeight: 32,
-    spriteWidth: 32
-  }
-})
 
 export const HighlightAnimation = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: HighlightSpriteSheet,
@@ -115,6 +118,16 @@ export const HighlightAnimation = ex.Animation.fromSpriteSheetCoordinates({
     { x: 2, y: 0, duration: 150 },
     { x: 3, y: 0, duration: 150 },
   ]
+})
+
+export const RedHighlightSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.RedHighlightSheet,
+  grid: {
+    rows: 1,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
 })
 
 export const RedHighlightAnimation = ex.Animation.fromSpriteSheetCoordinates({
@@ -128,90 +141,6 @@ export const RedHighlightAnimation = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
-
-export const SpiderSpriteSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.SpiderSheet,
-  grid: {
-    rows: 1,
-    columns: 4,
-    spriteHeight: 32,
-    spriteWidth: 32
-  }
-})
-
-export const SpiderIdle = ex.Animation.fromSpriteSheetCoordinates({
-  spriteSheet: SpiderSpriteSheet,
-  strategy: ex.AnimationStrategy.Loop,
-  frameCoordinates: [
-    { x: 0, y: 0, duration: 200 },
-    { x: 1, y: 0, duration: 200 },
-    { x: 2, y: 0, duration: 200 },
-    { x: 3, y: 0, duration: 200 }
-  ]
-})
-
-export const SlimeSpriteSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.SlimeSheet,
-  grid: {
-    rows: 1,
-    columns: 4,
-    spriteHeight: 32,
-    spriteWidth: 32
-  }
-})
-
-export const SlimeIdle = ex.Animation.fromSpriteSheetCoordinates({
-  spriteSheet: SlimeSpriteSheet,
-  strategy: ex.AnimationStrategy.Loop,
-  frameCoordinates: [
-    { x: 0, y: 0, duration: 200 },
-    { x: 1, y: 0, duration: 200 },
-    { x: 2, y: 0, duration: 200 },
-    { x: 3, y: 0, duration: 200 }
-  ]
-})
-
-export const CrabSpriteSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.CrabSheet,
-  grid: {
-    rows: 1,
-    columns: 4,
-    spriteHeight: 32,
-    spriteWidth: 32
-  }
-})
-
-export const CrabIdle = ex.Animation.fromSpriteSheetCoordinates({
-  spriteSheet: CrabSpriteSheet,
-  strategy: ex.AnimationStrategy.Loop,
-  frameCoordinates: [
-    { x: 0, y: 0, duration: 200 },
-    { x: 1, y: 0, duration: 200 },
-    { x: 2, y: 0, duration: 200 },
-    { x: 3, y: 0, duration: 200 }
-  ]
-})
-
-export const KnightSpriteSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.KnightSpriteSheet,
-  grid: {
-    rows: 4,
-    columns: 4,
-    spriteHeight: 32,
-    spriteWidth: 32
-  }
-})
-
-export const KnightIdle = ex.Animation.fromSpriteSheetCoordinates({
-  spriteSheet: KnightSpriteSheet,
-  strategy: ex.AnimationStrategy.Loop,
-  frameCoordinates: [
-    { x: 0, y: 0, duration: 200 },
-    { x: 1, y: 0, duration: 200 },
-    { x: 2, y: 0, duration: 200 },
-    { x: 3, y: 0, duration: 200 }
-  ]
-})
 
 export const HeartSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.HeartSheet,
@@ -248,6 +177,307 @@ export const Explosion = ex.Animation.fromSpriteSheetCoordinates({
 })
 
 export const Smoke = Resources.SmokeSheet.toSprite()
+
+// Archers
+export const ArcherASpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.ArcherASpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const ArcherAIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+export const ArcherBSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.ArcherBSpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const ArcherBIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+// Barbarians
+export const BarbarianASpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.BarbarianASpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const BarbarianAIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+export const BarbarianBSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.BarbarianBSpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const BarbarianBIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+// Clerics
+export const ClericASpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.ClericASpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const ClericAIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+export const ClericBSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.ClericBSpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const ClericBIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+// Fighters
+export const FighterASpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.FighterASpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const FighterAIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+export const FighterBSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.FighterBSpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const FighterBIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+// Mages
+export const MageASpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.MageASpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const MageAIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+export const MageBSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.MageBSpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const MageBIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+// Spearmans
+export const SpearmanASpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.SpearmanASpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const SpearmanAIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+export const SpearmanBSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.SpearmanBSpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const SpearmanBIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+// Warriors
+export const WarriorASpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.WarriorASpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const WarriorAIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
+
+export const WarriorBSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.WarriorBSpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const WarriorBIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 150 },
+    { x: 1, y: 0, duration: 150 },
+    { x: 2, y: 0, duration: 150 },
+    { x: 3, y: 0, duration: 150 }
+  ]
+})
 
 export const loader = new ex.Loader()
 loader.backgroundColor = 'black'

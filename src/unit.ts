@@ -9,15 +9,13 @@ import { DustParticles } from "./dust-particles"
 import { DamageManager } from "./damage-manager"
 import { AnimationManager } from "./animation-manager"
 
-
-
 export class Unit extends ex.Actor {
   cell: Cell | null = null
   unitConfig: UnitConfig
   moved = false
   attacked = false
   anim: ex.Animation
-  direction!: string
+  miniDirection: string = 'right'
   health: number
   damageManager!: DamageManager
   animationManger!: AnimationManager
@@ -120,13 +118,13 @@ export class Unit extends ex.Actor {
 
   defineDirection(x_first: number, x_last: number) {
     if (x_first > x_last) {
-      if (this.direction !== 'left') {
-        this.direction = 'left'
+      if (this.miniDirection !== 'left') {
+        this.miniDirection = 'left'
         this.graphics.flipHorizontal = true
       }
     } else if (x_first < x_last) {
-      if (this.direction !== 'right') {
-        this.direction = 'right'
+      if (this.miniDirection !== 'right') {
+        this.miniDirection = 'right'
         this.graphics.flipHorizontal = false
       }
     }

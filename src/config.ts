@@ -1,74 +1,191 @@
-import * as ex from "excalibur"
+import * as ex from 'excalibur'
 
-import { CrabIdle, KnightIdle, SlimeIdle, SpiderIdle } from "./resources"
-const seed = Date.now()
-export const RANDOM = new ex.Random(seed)
-
+import { ArcherAIdle, ArcherBIdle, BarbarianAIdle, BarbarianBIdle, ClericAIdle, ClericBIdle, FighterAIdle, FighterBIdle, MageAIdle, MageBIdle, SpearmanAIdle, SpearmanBIdle, WarriorAIdle, WarriorBIdle } from './resources'
 export const SCALE = ex.vec(2, 2)
-export const BOARD_OFFSET = ex.vec(32 * 3, 32 * 4)
 export const ENEMY_SPEED = 200
 
-export type UnitType = "Knight" | "Spider" | "Slime" | "Crab"
+export type UnitType = 'ArcherA' | 'ArcherB' | 'BarbarianA' | 'BarbarianB' | 'ClericA' | 'ClericB' | 'FighterA' | 'FighterB' | 'MageA' | 'MageB' | 'SpearmanA' | 'SpearmanB' | 'WarriorA' | 'WarriorB'
+export type ClassType = 'AA' | 'AB' | 'BA' | 'BB' | 'CA' | 'CB' | 'FA' | 'FB' | 'MA' | 'MB' | 'SA' | 'SB' | 'WA' | 'WB'
+
 export interface UnitConfig {
   graphics: {
     offset: ex.Vector,
     idle: ex.Animation
   }
   health: number
-  movement: number
-  direction: string
   attack: number
   defense: number
+  movement: number
   range: number
 }
+
 export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
-  Knight: {
+  // Archers
+  ArcherA: {
     graphics: {
       offset: ex.vec(0, 12 * SCALE.y),
-      idle: KnightIdle
+      idle: ArcherAIdle
+    },
+    health: 10,
+    movement: 4,
+    attack: 3,
+    defense: 2,
+    range: 6
+  },
+  ArcherB: {
+    graphics: {
+      offset: ex.vec(0, 12 * SCALE.y),
+      idle: ArcherBIdle
+    },
+    health: 10,
+    movement: 4,
+    attack: 3,
+    defense: 2,
+    range: 6
+  },
+
+  // Barbarians
+  BarbarianA: {
+    graphics: {
+      offset: ex.vec(0, 12 * SCALE.y),
+      idle: BarbarianAIdle
+    },
+    health: 20,
+    movement: 4,
+    attack: 6,
+    defense: 4,
+    range: 1
+  },
+  BarbarianB: {
+    graphics: {
+      offset: ex.vec(0, 12 * SCALE.y),
+      idle: BarbarianBIdle
+    },
+    health: 20,
+    movement: 4,
+    attack: 6,
+    defense: 4,
+    range: 1
+  },
+  
+  // Clerics
+  ClericA: {
+    graphics: {
+      offset: ex.vec(0, 12 * SCALE.y),
+      idle: ClericAIdle
+    },
+    health: 12,
+    movement: 6,
+    attack: 3,
+    defense: 3,
+    range: 5
+  },
+  ClericB: {
+    graphics: {
+      offset: ex.vec(0, 12 * SCALE.y),
+      idle: ClericBIdle
     },
     health: 12,
     movement: 6,
     attack: 4,
     defense: 2,
-    range: 5,
-    direction: 'right'
+    range: 5
   },
-  Spider: {
+  
+  // Fighters
+  FighterA: {
+    graphics: {
+      offset: ex.vec(0, 12 * SCALE.y),
+      idle: FighterAIdle
+    },
+    health: 20,
+    movement: 6,
+    attack: 4,
+    defense: 4,
+    range: 1
+  },
+  FighterB: {
+    graphics: {
+      offset: ex.vec(0, 12 * SCALE.y),
+      idle: FighterBIdle
+    },
+    health: 20,
+    movement: 6,
+    attack: 4,
+    defense: 4,
+    range: 1
+  },
+
+  // Mages
+  MageA: {
     graphics: {
       offset: ex.vec(0, 8 * SCALE.y),
-      idle: SpiderIdle
+      idle: MageAIdle
     },
-    health: 3,
-    movement: 2,
-    attack: 1,
-    range: 1,
-    direction: 'right',
-    defense: 0
+    health: 15,
+    movement: 4,
+    attack: 3,
+    defense: 3,
+    range: 5
   },
-  Slime: {
+  MageB: {
     graphics: {
       offset: ex.vec(0, 8 * SCALE.y),
-      idle: SlimeIdle
+      idle: MageBIdle
     },
-    health: 2,
-    movement: 1,
-    attack: 2,
-    range: 1,
-    direction: 'right',
-    defense: 0
+    health: 15,
+    movement: 4,
+    attack: 3,
+    defense: 3,
+    range: 5
   },
-  Crab: {
+
+  // Spearmans
+  SpearmanA: {
     graphics: {
       offset: ex.vec(0, 8 * SCALE.y),
-      idle: CrabIdle
+      idle: SpearmanAIdle
     },
-    health: 3,
-    movement: 3,
-    attack: 2,
-    range: 1,
-    direction: 'right',
-    defense: 0
+    health: 15,
+    movement: 6,
+    attack: 3,
+    defense: 3,
+    range: 3
+  },
+  SpearmanB: {
+    graphics: {
+      offset: ex.vec(0, 8 * SCALE.y),
+      idle: SpearmanBIdle
+    },
+    health: 15,
+    movement: 6,
+    attack: 3,
+    defense: 3,
+    range: 3
+  },
+
+  // Warriors
+  WarriorA: {
+    graphics: {
+      offset: ex.vec(0, 8 * SCALE.y),
+      idle: WarriorAIdle
+    },
+    health: 25,
+    movement: 5,
+    attack: 4,
+    defense: 5,
+    range: 1
+  },
+  WarriorB: {
+    graphics: {
+      offset: ex.vec(0, 8 * SCALE.y),
+      idle: WarriorBIdle
+    },
+    health: 25,
+    movement: 5,
+    attack: 4,
+    defense: 5,
+    range: 1
   }
 } as const
 

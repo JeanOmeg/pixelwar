@@ -1,6 +1,6 @@
 import * as ex from 'excalibur'
 import { Cell } from "./cell"
-import { BOARD_OFFSET, SCALE } from './config'
+import { SCALE } from './config'
 import { PathFinder } from './path-finding/path-finding-system'
 import { Unit } from './unit'
 

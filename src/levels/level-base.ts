@@ -1,7 +1,7 @@
 import * as ex from 'excalibur'
 import { Board } from '../board'
 import { Terrain } from '../cell'
-import { SCALE, UnitType } from '../config'
+import { ClassType, SCALE, UnitType } from '../config'
 import { Unit } from '../unit'
 import { Player } from '../player'
 import { HumanPlayer } from '../human-player'
@@ -28,10 +28,20 @@ export interface LevelData {
 }
 
 export const CharToUnit = {
-  K: 'Knight',
-  S: 'Spider',
-  M: 'Slime',
-  C: 'Crab'
+  AA: 'ArcherA',
+  AB: 'ArcherB',
+  BA: 'BarbarianA',
+  BB: 'BarbarianB',
+  CA: 'ClericA',
+  CB: 'ClericB',
+  FA: 'FighterA',
+  FB: 'FighterB',
+  MA: 'MageA',
+  MB: 'MageB',
+  SA: 'SpearmanA',
+  SB: 'SpearmanB',
+  WA: 'WarriorA',
+  WB: 'WarriorB',
 } as const
 
 export class LevelBase extends ex.Scene {
@@ -157,9 +167,9 @@ export class LevelBase extends ex.Scene {
         const data = levelData.data[x + y * levelData.width]
         const terrain = data.charAt(0) as Terrain
         let unit: Unit | null = null
-        if (data.length === 3) {
-          const unitType: UnitType = CharToUnit[data.charAt(1) as 'K' | 'S' | 'M' | 'C']
-          const playerIndex = (+data.charAt(2)) - 1
+        if (data.length === 4) {
+          const unitType: UnitType = CharToUnit[`${data.charAt(1)}${data.charAt(2)}` as ClassType]
+          const playerIndex = (+data.charAt(3)) - 1
 
           unit = new Unit(x, y, unitType, board, this.players[playerIndex])
           if (playerIndex == 0) {

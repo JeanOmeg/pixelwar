@@ -28,7 +28,7 @@ game.addScene('start', startScreen)
 const Level1Data: LevelData = {
   displayName: 'Gentle Plains',
   name: 'level1',
-  nextLevel: 'level2',
+  nextLevel: 'start',
   width: 22,
   height: 11,
   maxTurns: 100,
@@ -37,11 +37,11 @@ const Level1Data: LevelData = {
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'GK1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GK2',
-    'GK1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'S', 'S', 'S', 'S', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GK2',
-    'GK1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GK2',
-    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'GAA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GAB2',
+    'G', 'GFA1', 'GSA1', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'GSB2', 'GFB2', 'G',
+    'GMA1', 'GBA1', 'GSA1', 'GWA1', 'G', 'G', 'G', 'G', 'G', 'S', 'S', 'S', 'S', 'G', 'G', 'G', 'G', 'G', 'GWB2', 'GSB2', 'GBB2', 'GMB2',
+    'G', 'GFA1', 'GSA1', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'GSB2', 'GFB2', 'G',
+    'GAA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GAB2',
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
@@ -50,49 +50,6 @@ const Level1Data: LevelData = {
 
 const level1 = new LevelBase(Level1Data, 'level1')
 game.addScene(level1.name, level1)
-
-export const Level2Data: LevelData = {
-  displayName: 'Gentle Plains 2',
-  name: 'level2',
-  nextLevel: 'level3',
-  width: 6,
-  height: 6,
-  maxTurns: 100,
-  players: ['human', 'computer'],
-  data: [
-    'GK1', 'G', 'GM2', 'G', 'G', 'GS2',
-    'GK1', 'G', 'G', 'G', 'G', 'GS2',
-    'GK1', 'G', 'W', 'W', 'G', 'G',
-    'G', 'G', 'W', 'W', 'G', 'G',
-    'G', 'G', 'W', 'W', 'G', 'G',
-    'GM2', 'GM2', 'W', 'W', 'GS2', 'GS2',
-  ]
-}
-
-const level2 = new LevelBase(Level2Data, 'level2')
-game.addScene(level2.name, level2)
-
-
-export const Level3Data: LevelData = {
-  displayName: 'Beach Danger',
-  name: 'level3',
-  nextLevel: 'start',
-  width: 6,
-  height: 6,
-  maxTurns: 100,
-  players: ['human', 'computer'],
-  data: [
-    'S', 'S', 'SM2', 'S', 'SK1', 'W',
-    'SK1', 'S', 'S', 'SK1', 'W', 'W',
-    'SK1', 'S', 'W', 'W', 'W', 'W',
-    'S', 'S', 'S', 'W', 'W', 'W',
-    'S', 'S', 'SM2', 'SC2', 'SC2', 'W',
-    'S', 'SC2', 'S', 'SM2', 'SM2', 'W',
-  ]
-}
-
-const level3 = new LevelBase(Level3Data, 'level3')
-game.addScene(level3.name, level3)
 
 export const originalCameraPos = game.currentScene.camera.pos.clone()
 export const originalZoom = game.currentScene.camera.zoom
