@@ -1,5 +1,4 @@
 import * as ex from 'excalibur'
-import TitleImagePath from '../res/title.png'
 import KnightSpriteSheetPath from '../res/minis/SwordFighter_LongHair_Blue1.png'
 import SpiderSheetPath from '../res/SpiderSheet.png'
 import SlimeSheetPath from '../res/slime.png'
@@ -24,7 +23,6 @@ import ExplosionSoundPath from '../res/explosion.wav'
 import TitleScreenMusic from '../res/two_left_socks.ogg'
 
 export const Resources = {
-  TitleImage: new ex.ImageSource(TitleImagePath),
   KnightSpriteSheet: new ex.ImageSource(KnightSpriteSheetPath),
   SpiderSheet: new ex.ImageSource(SpiderSheetPath),
   SlimeSheet: new ex.ImageSource(SlimeSheetPath),
@@ -251,9 +249,11 @@ export const Explosion = ex.Animation.fromSpriteSheetCoordinates({
 
 export const Smoke = Resources.SmokeSheet.toSprite()
 
-export const Title = Resources.TitleImage.toSprite()
-
 export const loader = new ex.Loader()
+loader.backgroundColor = 'black'
+loader.logoWidth = 256
+loader.logoHeight = 54
+loader.logo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAwCAYAAAD+f6R/AAAAAXNSR0IArs4c6QAAAkRJREFUeJzt3NtyhCAMgGHs9P1fmd7UjrNTDzmQBPy/621EYAMYt60BAAAAAAAAAAAAAAAAmN4m+XDvvbs3YNvc2iCNtZqn43PXT9pxHtn/Fdu0gq/sBvRf1WKtbFQ/Vex75sS19AQAIE+ZBCDZvrKtA3yUSQCt1dxCAiv7zm7Apz0J3K3y7AIAu1I7AACxVKtoxFb9uMJHl7f+i+PVBkksaVxp7BHlwKuYHiVc73Kgtb/O/v7zs5brjCx9q44A+0Xvbko7GaCnSZx3sSzj7K1im2a21BHAq+ZriTOyxr5y0pzh/iTts9xL1HVaWywBAJApVwVYkefK9rRKgnNRq7OFZhegmRPsAIAXIwFMaoYzM2Jp5kRKApA20mu7y2vEOvSZXdW5N/QZgOcK9bT84xkrqtTkUaMe7arPrs6g0ns4ixVZ9rOMx9M3WKuU0DkCKEVk84orxpURDzsrWfH19FcngBkHDPCct5QBlY4rlHVAKq52qG3bts1j3pRJAFmrseezBSCSx3fm1UeAI0tnkjwwKxIARKqWs6CT/l+B/xoyoOxh+UmmlkcpTHs9r356otquR3IPGfMgcmwkhj4DyF4peu/d0gbNl8vjXf3oftP0U/azk+y5dcc6945xWht3vxwBgBcrUwVYmbRk4/HGGc55ldBWQAIIkr1lriLqFden7bD8LmWFseQIEMxr5ebXgPlW2IWRAIAXEyWArBqw13UtcTzvfVQfzjw2eyyPONJrRlRseH8CAAAAAAAAAAAAAAAAwDA/212gaw4Jm7oAAAAASUVORK5CYII='
 
 for (let res of Object.values(Resources)) {
   loader.addResource(res)

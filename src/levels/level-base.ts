@@ -60,11 +60,6 @@ export class LevelBase extends ex.Scene {
     })
   }
 
-  async showLevelName() {
-    const transitionTime = 1500
-    await this.levelName.actions.easeTo(ex.vec(904, 25), transitionTime, ex.EasingFunctions.EaseInOutCubic).toPromise()
-  }
-
   isMobile() {
     const userAgent = navigator.userAgent
     const mobileRegex = /Android|webOS|iPhone/i
@@ -114,34 +109,6 @@ export class LevelBase extends ex.Scene {
     this.add(DustParticles)
 
     this.camera.pos = this.board.getCenter()
-
-    const levelName = new ex.Text({
-      text: this.levelData.displayName,
-      font: new ex.Font({
-        family: 'notjamslab14',
-        size: 16,
-        unit: ex.FontUnit.Px,
-        color: ex.Color.White,
-        baseAlign: ex.BaseAlign.Top,
-        quality: 2
-      }),
-    })
-    levelName.scale = SCALE
-
-    this.levelName = new ex.Actor({
-      name: 'level',
-      pos: ex.vec(2000, 25),
-      coordPlane: ex.CoordPlane.Screen,
-      z: 10
-    })
-    this.levelName.graphics.add('text', levelName)
-    this.levelName.graphics.use('text')
-    this.levelName.addChild(new ex.Actor({
-      color: new ex.Color(50, 240, 50, .4),
-      width: 400,
-      height: 50,
-    }))
-    this.add(this.levelName)
   }
 
   private _subscriptions: ex.Subscription[] = []
@@ -151,7 +118,6 @@ export class LevelBase extends ex.Scene {
     }
     this.resetAndLoad()
     this.turnManager.start()
-    this.showLevelName()
     Resources.LevelMusic2.loop = true
     Resources.LevelMusic2.play()
   }

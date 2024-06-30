@@ -2,7 +2,7 @@
 
 import * as ex from 'excalibur'
 import { Cloud } from '../cloud'
-import { Resources, Title } from '../resources'
+import { Resources } from '../resources'
 import { SCALE } from '../config'
 
 export class StartScreen extends ex.Scene {
@@ -15,13 +15,31 @@ export class StartScreen extends ex.Scene {
 
     this.add(new Cloud(ex.vec(0, 0)))
 
+    const titleFont = new ex.Font({
+      family: 'notjamslab14',
+      size: 32 * SCALE.x,
+      unit: ex.FontUnit.Px,
+      color: ex.Color.White,
+      baseAlign: ex.BaseAlign.Top,
+      shadow: {
+        offset: ex.vec(2, 2).scale(SCALE),
+        color: ex.Color.White
+      }
+    })
+
     this.title = new ex.Actor({
       name: 'title',
       pos: ex.vec(400, 300),
       coordPlane: ex.CoordPlane.Screen,
     })
+
+    const titleText = new ex.Text({
+      text: 'PixelWar',
+      font: titleFont,
+    })
+
     this.title.scale = SCALE
-    this.title.graphics.use(Title)
+    this.title.graphics.use(titleText)
     this.title.actions.repeatForever(ctx => {
       ctx.easeBy(ex.vec(0, -30 * SCALE.y), 1000, ex.EasingFunctions.EaseInOutQuad)
         .easeBy(ex.vec(0, 30 * SCALE.y), 1000, ex.EasingFunctions.EaseInOutQuad)

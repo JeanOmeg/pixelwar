@@ -61,7 +61,7 @@ export class ComputerPlayer extends Player {
     return null
   }
 
-  findAttackableTargets(unit: Unit): Cell[] {
+  findAttackableTargets(unit: Unit): PathNodeComponent<any>[] {
     this.selectionManger.selectUnit(unit, "attack")
     const attackRange = this.selectionManger.findAttackRange(unit)
     return attackRange.filter(node => {
@@ -72,14 +72,14 @@ export class ComputerPlayer extends Player {
         }
       }
       return false
-    }).map(node => node.owner as Cell)
+    })
   }
 
   async maybeAttack(unit: Unit, closestEnemy: Unit) {
     let attacked = false
     const possibleTargets = this.findAttackableTargets(unit)
-    if (possibleTargets.length > 0) {
-      const currentRange = possibleTargets.map(c => c.pathNode)
+    if (possibleTargets.length > 0 && possibleTargets.find(enemy => enemy.owner?.name == closestEnemy.cell?.name)) {
+      const currentRange = possibleTargets
       this.selectionManger.showHighlight(currentRange, 'attack')
       await ex.Util.delay(ENEMY_SPEED)
 
@@ -94,10 +94,7 @@ export class ComputerPlayer extends Player {
   }
 
   override async makeMove(): Promise<boolean> {
-    const enemyUnits = this.board.getUnits().filter(u => u.player !== this)
-
     const units = this.board.getUnits().filter(u => u.player === this)
-
 
     for (let unit of units) {
       await ex.Util.delay(ENEMY_SPEED)
