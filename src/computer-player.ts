@@ -16,6 +16,9 @@ export class ComputerPlayer extends Player {
 
   override async turnStart(): Promise<void> {
     this.active = true
+    const units = this.board.getUnits()
+      .filter(u => u.player === this)
+    units.forEach(u => u.reset())
   }
   override async turnEnd(): Promise<void> {
     this.active = false
@@ -89,7 +92,7 @@ export class ComputerPlayer extends Player {
       await unit.attack(closestEnemy)
       attacked = true
     }
-
+    this.selectionManger.reset()
     return attacked
   }
 
@@ -128,8 +131,8 @@ export class ComputerPlayer extends Player {
         }
         this.selectionManger.reset()
       }
+      unit.pass()
     }
-
     return true
   }
 

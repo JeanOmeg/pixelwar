@@ -1,7 +1,6 @@
 import * as ex from 'excalibur'
 import { PathNodeComponent } from "./path-node-component"
 
-
 export class PathFinder {
   query: ex.Query<typeof PathNodeComponent>
 
