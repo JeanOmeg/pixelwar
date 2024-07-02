@@ -11,12 +11,12 @@ const game = new ex.Engine({
     height: 800,
   },
   resolution: {
-    width: 1920,
-    height: 1080,
+    width: 900,
+    height: 900,
   },
   displayMode: ex.DisplayMode.FitScreenAndFill,
+  pixelArt: true,
   antialiasing: true,
-  pixelRatio: 1,
   suppressHiDPIScaling: true,
   suppressConsoleBootMessage: true,
   backgroundColor: ex.Color.Black,
@@ -24,7 +24,7 @@ const game = new ex.Engine({
   configurePerformanceCanvas2DFallback: {
     allow: true,
     threshold: {
-      numberOfFrames: 60,
+      numberOfFrames: 30,
       fps: 30
     }
   }
