@@ -28,7 +28,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     },
     health: 10,
     movement: 4,
-    attack: 3,
+    attack: 2,
     defense: 2,
     range: 6
   },
@@ -39,7 +39,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     },
     health: 10,
     movement: 4,
-    attack: 3,
+    attack: 2,
     defense: 2,
     range: 6
   },
@@ -52,7 +52,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     },
     health: 20,
     movement: 4,
-    attack: 6,
+    attack: 5,
     defense: 4,
     range: 1
   },
@@ -74,22 +74,22 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(0, 12 * SCALE.y),
       idle: ClericAIdle
     },
-    health: 12,
+    health: 20,
     movement: 6,
     attack: 3,
-    defense: 3,
-    range: 5
+    defense: 4,
+    range: 1
   },
   ClericB: {
     graphics: {
       offset: ex.vec(0, 12 * SCALE.y),
       idle: ClericBIdle
     },
-    health: 12,
+    health: 20,
     movement: 6,
-    attack: 4,
-    defense: 2,
-    range: 5
+    attack: 3,
+    defense: 4,
+    range: 1
   },
   
   // Fighters
@@ -98,10 +98,10 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(0, 12 * SCALE.y),
       idle: FighterAIdle
     },
-    health: 20,
+    health: 15,
     movement: 6,
     attack: 4,
-    defense: 4,
+    defense: 3,
     range: 1
   },
   FighterB: {
@@ -109,10 +109,10 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(0, 12 * SCALE.y),
       idle: FighterBIdle
     },
-    health: 20,
+    health: 15,
     movement: 6,
     attack: 4,
-    defense: 4,
+    defense: 3,
     range: 1
   },
 
@@ -122,10 +122,10 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(0, 8 * SCALE.y),
       idle: MageAIdle
     },
-    health: 15,
-    movement: 4,
-    attack: 3,
-    defense: 3,
+    health: 10,
+    movement: 5,
+    attack: 2,
+    defense: 2,
     range: 5
   },
   MageB: {
@@ -133,10 +133,10 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(0, 8 * SCALE.y),
       idle: MageBIdle
     },
-    health: 15,
-    movement: 4,
-    attack: 3,
-    defense: 3,
+    health: 10,
+    movement: 5,
+    attack: 2,
+    defense: 2,
     range: 5
   },
 
@@ -146,10 +146,10 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(0, 8 * SCALE.y),
       idle: SpearmanAIdle
     },
-    health: 15,
+    health: 10,
     movement: 6,
     attack: 3,
-    defense: 3,
+    defense: 2,
     range: 3
   },
   SpearmanB: {
@@ -157,10 +157,10 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(0, 8 * SCALE.y),
       idle: SpearmanBIdle
     },
-    health: 15,
+    health: 10,
     movement: 6,
     attack: 3,
-    defense: 3,
+    defense: 2,
     range: 3
   },
 
@@ -171,7 +171,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       idle: WarriorAIdle
     },
     health: 25,
-    movement: 5,
+    movement: 4,
     attack: 4,
     defense: 5,
     range: 1
@@ -182,7 +182,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       idle: WarriorBIdle
     },
     health: 25,
-    movement: 5,
+    movement: 4,
     attack: 4,
     defense: 5,
     range: 1
