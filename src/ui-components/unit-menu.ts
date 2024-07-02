@@ -143,7 +143,7 @@ export class UnitMenu extends LitElement {
 
   hide() {
     const now = Date.now()
-    if (now - this._debounce > 200) {
+    if (now - this._debounce > 100) {
       this.menuHtml?.classList.add('hide')
       this.clearEvents()
     }
