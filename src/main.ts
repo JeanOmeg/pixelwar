@@ -6,11 +6,18 @@ import './ui-components/audio-menu'
 import { AudioManager } from './audio-manager'
 
 const game = new ex.Engine({
-  width: 800,
-  height: 800,
+  viewport: {
+    width: 800,
+    height: 800,
+  },
+  resolution: {
+    width: 1920,
+    height: 1080,
+  },
   displayMode: ex.DisplayMode.FitScreenAndFill,
   antialiasing: true,
-  pixelRatio: 0,
+  pixelRatio: 1,
+  suppressHiDPIScaling: true,
   suppressConsoleBootMessage: true,
   backgroundColor: ex.Color.Black,
   suppressPlayButton: true,
@@ -35,7 +42,7 @@ const Level1Data: LevelData = {
   width: 22,
   height: 11,
   maxTurns: 1000,
-  players: ['Human', 'CPU'],
+  players: [ 'Human', 'CPU' ],
   data: [
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
