@@ -11,22 +11,17 @@ const game = new ex.Engine({
     height: 800,
   },
   resolution: {
-    width: 900,
-    height: 900,
+    width: 1300,
+    height: 1300,
   },
   displayMode: ex.DisplayMode.FitScreenAndFill,
   pixelArt: true,
-  antialiasing: true,
   suppressHiDPIScaling: true,
   suppressConsoleBootMessage: true,
   backgroundColor: ex.Color.Black,
   suppressPlayButton: true,
   configurePerformanceCanvas2DFallback: {
-    allow: true,
-    threshold: {
-      numberOfFrames: 30,
-      fps: 30
-    }
+    allow: false
   }
 })
 
@@ -39,22 +34,29 @@ const Level1Data: LevelData = {
   displayName: 'Gentle Plains',
   name: 'level1',
   nextLevel: 'start',
-  width: 22,
-  height: 11,
+  width: 32,
+  height: 18,
   maxTurns: 1000,
   players: [ 'Human', 'CPU' ],
   data: [
-    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'GAA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GAB2',
-    'GBA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GBB2',
-    'GSA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GSB2',
-    'GWA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'S', 'S', 'S', 'S', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GWB2',
-    'GFA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GFB2',
-    'GCA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GCB2',
-    'GMA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GMB2',
-    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'C', 'C', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'GAA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GAB2',
+    'GBA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GBB2',
+    'GSA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GSB2',
+    'GWA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'S', 'S', 'S', 'S', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GWB2',
+    'GFA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GFB2',
+    'GCA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GCB2',
+    'GMA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GMB2',
+    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'C', 'C', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
   ]
 }
 
