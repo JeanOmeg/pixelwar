@@ -9,6 +9,7 @@ export class StartScreen extends ex.Scene {
   title!: ex.Actor
   p1VsCpuButton!: ex.Actor
   p1VsP2Button!: ex.Actor
+  cpuVscpuButton!: ex.Actor
 
   override onInitialize(engine: ex.Engine): void {
     this.engine = engine
@@ -29,7 +30,7 @@ export class StartScreen extends ex.Scene {
 
     this.title = new ex.Actor({
       name: 'title',
-      pos: ex.vec(400, 300),
+      pos: ex.vec(400, 200),
       coordPlane: ex.CoordPlane.Screen,
     })
 
@@ -60,7 +61,7 @@ export class StartScreen extends ex.Scene {
 
     this.p1VsCpuButton = new ex.Actor({
       name: 'p1VsCpuButton',
-      pos: ex.vec(400, 500),
+      pos: ex.vec(400, 400),
       width: 200 * SCALE.x,
       height: 50 * SCALE.y,
       color: ex.Color.fromHex('#ff6347'),
@@ -92,7 +93,7 @@ export class StartScreen extends ex.Scene {
     }))
 
     this.p1VsCpuButton.on('pointerup', () => {
-      localStorage.setItem('start_screen', 'CPU')
+      localStorage.setItem('start_screen', 'p1vscpu')
       this.engine.goToScene('level1')
     })
 
@@ -100,7 +101,7 @@ export class StartScreen extends ex.Scene {
 
     this.p1VsP2Button = new ex.Actor({
       name: 'p1VsP2Button',
-      pos: ex.vec(400, 630),
+      pos: ex.vec(400, 525),
       width: 200 * SCALE.x,
       height: 50 * SCALE.y,
       color: ex.Color.fromHex('#4682b4'),
@@ -133,11 +134,52 @@ export class StartScreen extends ex.Scene {
     }))
 
     this.p1VsP2Button.on('pointerup', () => {
-      localStorage.setItem('start_screen', 'P2')
+      localStorage.setItem('start_screen', 'p1vsp2')
       this.engine.goToScene('level1')
     })
 
     this.add(this.p1VsP2Button)
+
+    this.cpuVscpuButton = new ex.Actor({
+      name: 'cpuVscpuButton',
+      pos: ex.vec(400, 650),
+      width: 200 * SCALE.x,
+      height: 50 * SCALE.y,
+      color: ex.Color.fromHex('#ff6347'),
+      coordPlane: ex.CoordPlane.Screen
+    })
+
+    const cpuVscputext = new ex.Text({
+      text: 'CPU vs CPU',
+      font: buttonFont,
+    })
+
+    this.cpuVscpuButton.graphics.use(new ex.GraphicsGroup({
+      members: [
+        {
+          graphic: new ex.Rectangle({
+            width: this.cpuVscpuButton.width,
+            height: this.cpuVscpuButton.height,
+            color: this.cpuVscpuButton.color,
+            strokeColor: ex.Color.Black,
+            lineWidth: 4,
+          }),
+          offset: ex.vec(0, 0),
+        },
+        {
+          graphic: cpuVscputext,
+          offset: ex.vec(this.cpuVscpuButton.width / 2 - cpuVscputext.width / 2,
+            this.cpuVscpuButton.height / 2 - cpuVscputext.height / 2),
+        }
+      ]
+    }))
+
+    this.cpuVscpuButton.on('pointerup', () => {
+      localStorage.setItem('start_screen', 'cpuvscpu')
+      this.engine.goToScene('level1')
+    })
+
+    this.add(this.cpuVscpuButton)
   }
 
   _subscriptions: ex.Subscription[] = []

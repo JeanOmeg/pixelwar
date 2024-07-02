@@ -56,7 +56,7 @@ export class TurnManager {
     this.turnActor.graphics.add('text', this.turnText)
     this.turnActor.graphics.use('text')
     this.turnActor.addChild(new ex.Actor({
-      color: new ex.Color(240, 50, 50, .4),
+      color: new ex.Color(255, 255, 255, .4),
       width: screenWidth,
       height: 100,
     }))
@@ -160,7 +160,30 @@ export class TurnManager {
   }
 
   async showTurnDisplay() {
-    this.turnText.text = `Turno ${(this.turn - this.maxTurns) + 1} - Rodada ${this.currentTurn}`
+    let color
+    switch (this.currentPlayer.name) {
+      case 'Human':
+        color = ex.Color.Blue
+        break
+      case 'Human A':
+        color = ex.Color.Blue
+        break
+      case 'CPU A':
+        color = ex.Color.Blue
+        break
+      case 'CPU':
+        color = ex.Color.Red
+        break
+      case 'CPU B':
+        color = ex.Color.Red
+        break
+      case 'Human B':
+        color = ex.Color.Red
+        break
+    }
+
+    this.turnText.text = `Turn ${(this.turn - this.maxTurns) + 1} - Round ${this.currentTurn}`
+    this.turnText.color = color
     const transitionTime = 500
     const waitTime = 500
     await this.turnActor.actions.runAction(
@@ -169,7 +192,15 @@ export class TurnManager {
         new ex.ActionSequence(this.turnActor, ctx => ctx.fade(1, transitionTime).delay(waitTime).fade(0, transitionTime))
       ])
     ).toPromise()
+    this.turnActor.pos = this.topScreen
 
+    this.turnText.text = `${this.currentPlayer.name} - Phase`
+    await this.turnActor.actions.runAction(
+      new ex.ParallelActions([
+        new ex.ActionSequence(this.turnActor, ctx => ctx.easeTo(this.centerScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic).delay(waitTime).easeTo(this.bottomScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic)),
+        new ex.ActionSequence(this.turnActor, ctx => ctx.fade(1, transitionTime).delay(waitTime).fade(0, transitionTime))
+      ])
+    ).toPromise()
     this.turnActor.pos = this.topScreen
   }
 

@@ -31,8 +31,8 @@ const Level1Data: LevelData = {
   nextLevel: 'start',
   width: 22,
   height: 11,
-  maxTurns: 100,
-  players: ['human', 'computer'],
+  maxTurns: 1000,
+  players: ['Human', 'CPU'],
   data: [
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
@@ -44,7 +44,7 @@ const Level1Data: LevelData = {
     'GAA1', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'T', 'W', 'W', 'T', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'GAB2',
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
     'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
-    'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'W', 'W', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+    'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'C', 'C', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
   ]
 }
 

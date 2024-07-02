@@ -11,7 +11,9 @@ const AttackHighlightAnimation = RedHighlightAnimation.clone()
 
 export enum Terrain {
   Grass = 'G',
+  BaackGrass = 'B',
   Water = 'W',
+  Cascate = 'C',
   Sand = 'S',
   Stone = 'T'
 }
@@ -75,11 +77,18 @@ export class Cell extends ex.Actor {
       case Terrain.Grass:
         this.sprite = TileSpriteSheet.sprites[ this.getRandomNumber(4, 14) ]
         break
+      case Terrain.BaackGrass:
+        this.sprite = TileSpriteSheet.sprites[ this.getRandomNumber(4, 52) ]
+        break
       case Terrain.Sand:
         this.sprite = TileSpriteSheet.sprites[ this.getRandomNumber(4, 0) ]
         break
       case Terrain.Water:
         this.sprite = TileSpriteSheet.sprites[ this.getRandomNumber(4, 21) ]
+        this.pathNode.isFast = false
+        break
+      case Terrain.Cascate:
+        this.sprite = TileSpriteSheet.sprites[ this.getRandomNumber(2, 47) ]
         this.pathNode.isFast = false
         break
       case Terrain.Stone:
