@@ -261,7 +261,6 @@ export class TurnManager {
 
   async start() {
     while (this.maxTurns >= 0) {
-      if (await this.checkWin(this.currentPlayer)) return
       this.selectionManager.selectPlayer(this.currentPlayer)
       await this.showTurnDisplay()
       await this.currentPlayer.turnStart()
@@ -271,12 +270,12 @@ export class TurnManager {
       } while (!move)
       await this.currentPlayer.turnEnd()
       this.nextTurn()
-      this.maxTurns--
       if (await this.checkWin(this.currentPlayer)) return
     }
   }
 
   nextTurn() {
+    this.maxTurns--
     this.currentPlayerIndex++
     this.currentPlayerIndex = this.currentPlayerIndex % this.players.length
     this.currentPlayer = this.players[ this.currentPlayerIndex ]
