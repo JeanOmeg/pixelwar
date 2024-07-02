@@ -9,10 +9,9 @@ import { Resources } from "./resources"
 
 
 export class HumanPlayer extends Player {
-  public passed = false
   private humanMove = new ex.Future<void>()
 
-  constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public uiManger: UIManager, board: Board) {
+  constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public uiManager: UIManager, board: Board) {
     super(name, board)
     engine.input.pointers.on('down', this.pointerClick.bind(this))
     engine.input.pointers.on('move', this.pointerMove.bind(this))
@@ -133,7 +132,7 @@ export class HumanPlayer extends Player {
 
     if (this.hasWon()) {
       this.humanMove.resolve()
-      this.uiManger.dismissAll()
+      this.uiManager.dismissAll()
     }
   }
 
@@ -168,7 +167,7 @@ export class HumanPlayer extends Player {
     if (cell?.unit && this.hasPlayerUnitWithActions(cell)) {
       Resources.SelectSound.play()
 
-      this.uiManger.showUnitMenu(cell.unit, {
+      this.uiManager.showUnitMenu(cell.unit, {
         move: () => {
           this.selectionManager.selectUnit(cell.unit!, 'move')
         },
@@ -205,7 +204,7 @@ export class HumanPlayer extends Player {
     const units = this.board.getUnits()
       .filter(u => u.player === this)
       .filter(u => u.hasActions())
-    return units.length > 0 && !this.passed && !this.hasWon()
+    return units.length > 0 && !this.hasWon()
   }
 
   override async makeMove(): Promise<boolean> {

@@ -215,6 +215,7 @@ export class TurnManager {
       ])
     ).toPromise()
   }
+  
   async showVictory() {
     const transitionTime = 1200
     await this.victory.actions.runAction(
