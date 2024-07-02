@@ -264,7 +264,7 @@ export class TurnManager {
       this.selectionManager.selectPlayer(this.currentPlayer)
       await this.showTurnDisplay()
       await this.currentPlayer.turnStart()
-      let move = true
+      let move
       do {
         move = await this.currentPlayer.makeMove()
       } while (!move)
