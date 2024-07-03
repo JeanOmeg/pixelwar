@@ -2,7 +2,7 @@ import * as ex from 'excalibur'
 
 import { ArcherAIdle, ArcherBIdle, BarbarianAIdle, BarbarianBIdle, ClericAIdle, ClericBIdle, FighterAIdle, FighterBIdle, MageAIdle, MageBIdle, SpearmanAIdle, SpearmanBIdle, WarriorAIdle, WarriorBIdle } from './resources'
 export const SCALE = ex.vec(1.5, 1.5)
-export const ENEMY_SPEED = 300
+export const ENEMY_SPEED = 150
 
 export type UnitType = 'ArcherA' | 'ArcherB' | 'BarbarianA' | 'BarbarianB' | 'ClericA' | 'ClericB' | 'FighterA' | 'FighterB' | 'MageA' | 'MageB' | 'SpearmanA' | 'SpearmanB' | 'WarriorA' | 'WarriorB'
 export type ClassType = 'AA' | 'AB' | 'BA' | 'BB' | 'CA' | 'CB' | 'FA' | 'FB' | 'MA' | 'MB' | 'SA' | 'SB' | 'WA' | 'WB'
@@ -23,7 +23,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Archers
   ArcherA: {
     graphics: {
-      offset: ex.vec(0, 12 * SCALE.y),
+      offset: ex.vec(14, 11 * SCALE.y),
       idle: ArcherAIdle
     },
     health: 10,
@@ -34,7 +34,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   ArcherB: {
     graphics: {
-      offset: ex.vec(0, 12 * SCALE.y),
+      offset: ex.vec(14, 11 * SCALE.y),
       idle: ArcherBIdle
     },
     health: 10,
@@ -47,7 +47,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Barbarians
   BarbarianA: {
     graphics: {
-      offset: ex.vec(0, 12 * SCALE.y),
+      offset: ex.vec(14, 8 * SCALE.y),
       idle: BarbarianAIdle
     },
     health: 20,
@@ -58,7 +58,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   BarbarianB: {
     graphics: {
-      offset: ex.vec(0, 12 * SCALE.y),
+      offset: ex.vec(14, 8 * SCALE.y),
       idle: BarbarianBIdle
     },
     health: 20,
@@ -71,7 +71,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Clerics
   ClericA: {
     graphics: {
-      offset: ex.vec(0, 12 * SCALE.y),
+      offset: ex.vec(14, 6 * SCALE.y),
       idle: ClericAIdle
     },
     health: 20,
@@ -82,7 +82,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   ClericB: {
     graphics: {
-      offset: ex.vec(0, 12 * SCALE.y),
+      offset: ex.vec(14, 6 * SCALE.y),
       idle: ClericBIdle
     },
     health: 20,
@@ -95,7 +95,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Fighters
   FighterA: {
     graphics: {
-      offset: ex.vec(0, 12 * SCALE.y),
+      offset: ex.vec(14, 6 * SCALE.y),
       idle: FighterAIdle
     },
     health: 15,
@@ -106,7 +106,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   FighterB: {
     graphics: {
-      offset: ex.vec(0, 12 * SCALE.y),
+      offset: ex.vec(14, 6 * SCALE.y),
       idle: FighterBIdle
     },
     health: 15,
@@ -119,7 +119,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Mages
   MageA: {
     graphics: {
-      offset: ex.vec(0, 8 * SCALE.y),
+      offset: ex.vec(14, 6 * SCALE.y),
       idle: MageAIdle
     },
     health: 10,
@@ -130,7 +130,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   MageB: {
     graphics: {
-      offset: ex.vec(0, 8 * SCALE.y),
+      offset: ex.vec(14, 6 * SCALE.y),
       idle: MageBIdle
     },
     health: 10,
@@ -143,7 +143,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Spearmans
   SpearmanA: {
     graphics: {
-      offset: ex.vec(0, 8 * SCALE.y),
+      offset: ex.vec(14, 6 * SCALE.y),
       idle: SpearmanAIdle
     },
     health: 10,
@@ -154,7 +154,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   SpearmanB: {
     graphics: {
-      offset: ex.vec(0, 8 * SCALE.y),
+      offset: ex.vec(14, 6 * SCALE.y),
       idle: SpearmanBIdle
     },
     health: 10,
@@ -167,7 +167,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Warriors
   WarriorA: {
     graphics: {
-      offset: ex.vec(0, 8 * SCALE.y),
+      offset: ex.vec(14, 6 * SCALE.y),
       idle: WarriorAIdle
     },
     health: 25,
@@ -178,7 +178,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   WarriorB: {
     graphics: {
-      offset: ex.vec(0, 8 * SCALE.y),
+      offset: ex.vec(14, 6 * SCALE.y),
       idle: WarriorBIdle
     },
     health: 25,

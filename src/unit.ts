@@ -68,10 +68,10 @@ export class Unit extends ex.Actor {
     if (this.health > 0) {
       const heart = HeartSpriteSheet.getSprite(ex.clamp(this.health, 0, 35), 0)
       if (heart) {
-        heart.scale = ex.vec(1, 1)
+        heart.scale = ex.vec(0.7, 0.7)
         heart.draw(ctx,
-          5 * SCALE.x + this.unitConfig.graphics.offset.x,
-          9 * SCALE.y + this.unitConfig.graphics.offset.y
+          6 * SCALE.x + this.unitConfig.graphics.offset.x,
+          8 * SCALE.y + this.unitConfig.graphics.offset.y
         )
       }
     }

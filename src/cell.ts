@@ -49,22 +49,24 @@ export class Cell extends ex.Actor {
 
     this.terrain = Terrain.Grass
 
-    RangeHighlightAnimation.scale = SCALE
-    PathHighlightAnimation.scale = SCALE
-    AttackHighlightAnimation.scale = SCALE
-    RangeHighlightAnimation.opacity = 0.75
-    PathHighlightAnimation.opacity = 0.75
-    PathHighlightAnimation.tint = ex.Color.Green
-    AttackHighlightAnimation.opacity = 0.75
-    AttackHighlightAnimation.scale = ex.vec(2.5, 2.5)
-    RangeHighlightAnimation.scale = ex.vec(2.5, 2.5)
-    PathHighlightAnimation.scale = ex.vec(2.5, 2.5)
-    CursorAnimation.scale = ex.vec(2.5, 2.5)
+    RangeHighlightAnimation.scale = ex.vec(2, 2)
+    RangeHighlightAnimation.opacity = 0.8
+
+    PathHighlightAnimation.scale = ex.vec(2, 2)
+    PathHighlightAnimation.opacity = 0.5
+
+    AttackHighlightAnimation.scale = ex.vec(2, 2)
+    AttackHighlightAnimation.opacity = 0.8
+
+    CursorAnimation.scale = ex.vec(2, 2)
+    CursorAnimation.opacity = 0.8
+
     this.decoration.graphics.add('range', RangeHighlightAnimation)
     this.decoration.graphics.add('path', PathHighlightAnimation)
     this.decoration.graphics.add('attack', AttackHighlightAnimation)
     this.decoration.graphics.add('cursor', CursorAnimation)
-    this.decoration.graphics.offset = ex.vec(-3.3, -3.3)
+
+    this.decoration.graphics.offset = ex.vec(-4, -4)
   }
 
   get terrain() {
@@ -106,8 +108,8 @@ export class Cell extends ex.Actor {
 
   addUnit(unit: Unit) {
     this.unit = unit
-    this.unit.scale = ex.vec(1.3, 1.3)
-    this.unit.offset = ex.vec(-3, 3)
+    this.unit.scale = SCALE
+    this.unit.offset = ex.vec(0, 0)
     this.unit.cell = this
     this.pathNode.walkableMask = unit.player.mask
   }

@@ -30,7 +30,7 @@ export class StartScreen extends ex.Scene {
 
     this.title = new ex.Actor({
       name: 'title',
-      pos: ex.vec(400, 200),
+      pos: ex.vec(650, 200),
       coordPlane: ex.CoordPlane.Screen,
     })
 
@@ -61,7 +61,7 @@ export class StartScreen extends ex.Scene {
 
     this.p1VsCpuButton = new ex.Actor({
       name: 'p1VsCpuButton',
-      pos: ex.vec(400, 400),
+      pos: ex.vec(650, 400),
       width: 200 * SCALE.x,
       height: 50 * SCALE.y,
       color: ex.Color.fromHex('#ff6347'),
@@ -101,7 +101,7 @@ export class StartScreen extends ex.Scene {
 
     this.p1VsP2Button = new ex.Actor({
       name: 'p1VsP2Button',
-      pos: ex.vec(400, 525),
+      pos: ex.vec(650, 525),
       width: 200 * SCALE.x,
       height: 50 * SCALE.y,
       color: ex.Color.fromHex('#4682b4'),
@@ -142,7 +142,7 @@ export class StartScreen extends ex.Scene {
 
     this.cpuVscpuButton = new ex.Actor({
       name: 'cpuVscpuButton',
-      pos: ex.vec(400, 650),
+      pos: ex.vec(650, 650),
       width: 200 * SCALE.x,
       height: 50 * SCALE.y,
       color: ex.Color.fromHex('#ff6347'),
