@@ -481,6 +481,40 @@ export const WarriorBIdle = ex.Animation.fromSpriteSheetCoordinates({
 
 export const loader = new ex.Loader()
 loader.backgroundColor = 'black'
+loader.startButtonFactory = () => {
+  // Create the button
+  let myButton = document.createElement('button');
+  myButton.textContent = 'PLAY';
+
+  // Apply the styles directly to the button
+  myButton.style.backgroundColor = 'red';
+  myButton.style.color = 'white';
+  myButton.style.fontFamily = "'Press Start 2P', cursive";
+  myButton.style.fontSize = '60px';
+  myButton.style.textDecoration = 'none';
+  myButton.style.border = 'none';
+  myButton.style.paddingTop = '20px';
+  myButton.style.paddingLeft = '20px';
+  myButton.style.paddingBottom = '10px';
+  myButton.style.paddingRight = '10px';
+  myButton.style.textAlign = 'center';
+  myButton.style.textDecoration = 'none';
+  myButton.style.display = 'inline-block';
+  myButton.style.cursor = 'pointer';
+
+  // Remove the focus outline when the button is focused
+  myButton.onfocus = () => {
+      myButton.style.outline = 'none';
+  };
+
+  // Import the font
+  const fontLink = document.createElement('link');
+  fontLink.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap';
+  fontLink.rel = 'stylesheet';
+  document.head.appendChild(fontLink);
+
+  return myButton;
+}
 loader.logoWidth = 256
 loader.logoHeight = 54
 loader.logo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAwCAYAAAD+f6R/AAAAAXNSR0IArs4c6QAAAkRJREFUeJzt3NtyhCAMgGHs9P1fmd7UjrNTDzmQBPy/621EYAMYt60BAAAAAAAAAAAAAAAAmN4m+XDvvbs3YNvc2iCNtZqn43PXT9pxHtn/Fdu0gq/sBvRf1WKtbFQ/Vex75sS19AQAIE+ZBCDZvrKtA3yUSQCt1dxCAiv7zm7Apz0J3K3y7AIAu1I7AACxVKtoxFb9uMJHl7f+i+PVBkksaVxp7BHlwKuYHiVc73Kgtb/O/v7zs5brjCx9q44A+0Xvbko7GaCnSZx3sSzj7K1im2a21BHAq+ZriTOyxr5y0pzh/iTts9xL1HVaWywBAJApVwVYkefK9rRKgnNRq7OFZhegmRPsAIAXIwFMaoYzM2Jp5kRKApA20mu7y2vEOvSZXdW5N/QZgOcK9bT84xkrqtTkUaMe7arPrs6g0ns4ixVZ9rOMx9M3WKuU0DkCKEVk84orxpURDzsrWfH19FcngBkHDPCct5QBlY4rlHVAKq52qG3bts1j3pRJAFmrseezBSCSx3fm1UeAI0tnkjwwKxIARKqWs6CT/l+B/xoyoOxh+UmmlkcpTHs9r356otquR3IPGfMgcmwkhj4DyF4peu/d0gbNl8vjXf3oftP0U/azk+y5dcc6945xWht3vxwBgBcrUwVYmbRk4/HGGc55ldBWQAIIkr1lriLqFden7bD8LmWFseQIEMxr5ebXgPlW2IWRAIAXEyWArBqw13UtcTzvfVQfzjw2eyyPONJrRlRseH8CAAAAAAAAAAAAAAAAwDA/212gaw4Jm7oAAAAASUVORK5CYII='

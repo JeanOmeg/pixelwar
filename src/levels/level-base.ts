@@ -76,34 +76,6 @@ export class LevelBase extends ex.Scene {
     return mobileRegex.test(userAgent)
   }
 
-  setLandscapeAndFullscreen() {
-    const docElement = document.documentElement as HTMLElement & {
-      mozRequestFullScreen?: () => Promise<void>
-      webkitRequestFullscreen?: () => Promise<void>
-      msRequestFullscreen?: () => Promise<void>
-    }
-
-    if (docElement.requestFullscreen) {
-      docElement.requestFullscreen()
-    } else if (docElement.mozRequestFullScreen) {
-      docElement.mozRequestFullScreen()
-    } else if (docElement.webkitRequestFullscreen) {
-      docElement.webkitRequestFullscreen()
-    } else if (docElement.msRequestFullscreen) {
-      docElement.msRequestFullscreen()
-    }
-
-    const screenOrientation = screen.orientation as ScreenOrientation & {
-      lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>
-    }
-
-    if (screenOrientation && screenOrientation.lock) {
-      screenOrientation.lock('landscape').catch(function (error) {
-        console.error('Erro ao tentar definir a orientação para paisagem:', error)
-      })
-    }
-  }
-
   resetAndLoad() {
     const entities = this.entities
     for (let i = entities.length - 1; i >= 0; i--) {
@@ -123,9 +95,6 @@ export class LevelBase extends ex.Scene {
 
   private _subscriptions: ex.Subscription[] = []
   override onActivate() {
-    if (this.isMobile()) {
-      this.setLandscapeAndFullscreen()
-    }
     this.resetAndLoad()
     this.turnManager.start()
     Resources.LevelMusic2.loop = true
