@@ -12,7 +12,6 @@ export class StartScreen extends ex.Scene {
   cpuVscpuButton!: ex.Actor
 
   override onInitialize(engine: ex.Engine): void {
-    this.setLandscapeAndFullscreen()
     this.engine = engine
 
     this.add(new Cloud(ex.vec(0, 0)))
@@ -180,6 +179,16 @@ export class StartScreen extends ex.Scene {
 
     this.cpuVscpuButton.scale = SCALE
     this.add(this.cpuVscpuButton)
+
+    if (this.isMobile()) {
+      this.setLandscapeAndFullscreen()
+    }
+  }
+
+  isMobile() {
+    const userAgent = navigator.userAgent
+    const mobileRegex = /Android|Tablet|webOS|iPhone/i
+    return mobileRegex.test(userAgent)
   }
 
   setLandscapeAndFullscreen() {
