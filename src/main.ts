@@ -16,8 +16,7 @@ const game = new ex.Engine({
   suppressConsoleBootMessage: true,
   backgroundColor: ex.Color.Black,
   configurePerformanceCanvas2DFallback: {
-    allow: true,
-    threshold: { numberOfFrames: 100, fps: 30 }
+    allow: false
   }
 })
 

@@ -180,9 +180,9 @@ export class StartScreen extends ex.Scene {
     this.cpuVscpuButton.scale = SCALE
     this.add(this.cpuVscpuButton)
 
-    if (this.isMobile()) {
-      this.setLandscapeAndFullscreen()
-    }
+    // if (this.isMobile()) {
+    //   this.setLandscapeAndFullscreen()
+    // }
   }
 
   isMobile() {
@@ -191,33 +191,33 @@ export class StartScreen extends ex.Scene {
     return mobileRegex.test(userAgent)
   }
 
-  setLandscapeAndFullscreen() {
-    const docElement = document.documentElement as HTMLElement & {
-      mozRequestFullScreen?: () => Promise<void>
-      webkitRequestFullscreen?: () => Promise<void>
-      msRequestFullscreen?: () => Promise<void>
-    }
+  // setLandscapeAndFullscreen() {
+  //   const docElement = document.documentElement as HTMLElement & {
+  //     mozRequestFullScreen?: () => Promise<void>
+  //     webkitRequestFullscreen?: () => Promise<void>
+  //     msRequestFullscreen?: () => Promise<void>
+  //   }
   
-    if (docElement.requestFullscreen) {
-      docElement.requestFullscreen()
-    } else if (docElement.mozRequestFullScreen) {
-      docElement.mozRequestFullScreen()
-    } else if (docElement.webkitRequestFullscreen) {
-      docElement.webkitRequestFullscreen()
-    } else if (docElement.msRequestFullscreen) {
-      docElement.msRequestFullscreen()
-    }
+  //   if (docElement.requestFullscreen) {
+  //     docElement.requestFullscreen()
+  //   } else if (docElement.mozRequestFullScreen) {
+  //     docElement.mozRequestFullScreen()
+  //   } else if (docElement.webkitRequestFullscreen) {
+  //     docElement.webkitRequestFullscreen()
+  //   } else if (docElement.msRequestFullscreen) {
+  //     docElement.msRequestFullscreen()
+  //   }
   
-    const screenOrientation = screen.orientation as ScreenOrientation & {
-      lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>
-    }
+  //   const screenOrientation = screen.orientation as ScreenOrientation & {
+  //     lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>
+  //   }
   
-    if (screenOrientation && screenOrientation.lock) {
-      screenOrientation.lock('landscape').catch(function (error) {
-        console.error('Erro ao tentar definir a orientação para paisagem:', error)
-      })
-    }
-  }
+  //   if (screenOrientation && screenOrientation.lock) {
+  //     screenOrientation.lock('landscape').catch(function (error) {
+  //       console.error('Erro ao tentar definir a orientação para paisagem:', error)
+  //     })
+  //   }
+  // }
 
   _subscriptions: ex.Subscription[] = []
   onActivate(): void {

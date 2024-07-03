@@ -68,12 +68,43 @@ export class LevelBase extends ex.Scene {
         (this.players[0] as HumanPlayer).lose()
       }
     })
+    if (this.isMobile()) {
+      this.setLandscapeAndFullscreen()
+    }
   }
 
   isMobile() {
     const userAgent = navigator.userAgent
     const mobileRegex = /Android|webOS|iPhone/i
     return mobileRegex.test(userAgent)
+  }
+
+  setLandscapeAndFullscreen() {
+    const docElement = document.documentElement as HTMLElement & {
+      mozRequestFullScreen?: () => Promise<void>
+      webkitRequestFullscreen?: () => Promise<void>
+      msRequestFullscreen?: () => Promise<void>
+    }
+  
+    if (docElement.requestFullscreen) {
+      docElement.requestFullscreen()
+    } else if (docElement.mozRequestFullScreen) {
+      docElement.mozRequestFullScreen()
+    } else if (docElement.webkitRequestFullscreen) {
+      docElement.webkitRequestFullscreen()
+    } else if (docElement.msRequestFullscreen) {
+      docElement.msRequestFullscreen()
+    }
+  
+    const screenOrientation = screen.orientation as ScreenOrientation & {
+      lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>
+    }
+  
+    if (screenOrientation && screenOrientation.lock) {
+      screenOrientation.lock('landscape').catch(function (error) {
+        console.error('Erro ao tentar definir a orientação para paisagem:', error)
+      })
+    }
   }
 
   resetAndLoad() {
