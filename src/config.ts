@@ -1,7 +1,7 @@
 import * as ex from 'excalibur'
 
 import { ArcherAIdle, ArcherBIdle, BarbarianAIdle, BarbarianBIdle, ClericAIdle, ClericBIdle, FighterAIdle, FighterBIdle, MageAIdle, MageBIdle, SpearmanAIdle, SpearmanBIdle, WarriorAIdle, WarriorBIdle } from './resources'
-export const SCALE = ex.vec(3.5, 3.5)
+export const SCALE = ex.vec(2, 2)
 export const ENEMY_SPEED = 300
 
 export type UnitType = 'ArcherA' | 'ArcherB' | 'BarbarianA' | 'BarbarianB' | 'ClericA' | 'ClericB' | 'FighterA' | 'FighterB' | 'MageA' | 'MageB' | 'SpearmanA' | 'SpearmanB' | 'WarriorA' | 'WarriorB'
