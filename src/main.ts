@@ -11,8 +11,8 @@ const game = new ex.Engine({
     height: 800,
   },
   resolution: {
-    width: 900,
-    height: 900,
+    width: 1000,
+    height: 1000,
   },
   displayMode: ex.DisplayMode.FitScreenAndFill,
   pixelArt: true,
