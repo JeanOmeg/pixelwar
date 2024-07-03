@@ -56,15 +56,15 @@ export class Cell extends ex.Actor {
     PathHighlightAnimation.opacity = 0.75
     PathHighlightAnimation.tint = ex.Color.Green
     AttackHighlightAnimation.opacity = 0.75
-    AttackHighlightAnimation.scale = ex.vec(2.5, 2.5)
-    RangeHighlightAnimation.scale = ex.vec(2.5, 2.5)
-    PathHighlightAnimation.scale = ex.vec(2.5, 2.5)
-    CursorAnimation.scale = ex.vec(2.5, 2.5)
+    AttackHighlightAnimation.scale = ex.vec(4.5, 4.5)
+    RangeHighlightAnimation.scale = ex.vec(4.5, 4.5)
+    PathHighlightAnimation.scale = ex.vec(4.5, 4.5)
+    CursorAnimation.scale = ex.vec(4.5, 4.5)
     this.decoration.graphics.add('range', RangeHighlightAnimation)
     this.decoration.graphics.add('path', PathHighlightAnimation)
     this.decoration.graphics.add('attack', AttackHighlightAnimation)
     this.decoration.graphics.add('cursor', CursorAnimation)
-    this.decoration.graphics.offset = ex.vec(-3, -3)
+    this.decoration.graphics.offset = ex.vec(-4, -4)
   }
 
   get terrain() {
