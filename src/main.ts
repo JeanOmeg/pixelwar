@@ -6,17 +6,13 @@ import './ui-components/audio-menu'
 import { AudioManager } from './audio-manager'
 
 const game = new ex.Engine({
-  viewport: {
-    width: 800,
-    height: 800,
-  },
   resolution: {
-    width: 1000,
-    height: 1000,
+    width: 1360,
+    height: 768,
   },
   displayMode: ex.DisplayMode.FitScreenAndFill,
   pixelArt: true,
-  suppressHiDPIScaling: false,
+  suppressHiDPIScaling: true,
   suppressConsoleBootMessage: true,
   backgroundColor: ex.Color.Black,
   suppressPlayButton: true,
