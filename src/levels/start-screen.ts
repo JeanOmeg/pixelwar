@@ -35,12 +35,13 @@ export class StartScreen extends ex.Scene {
       font: titleFont,
     })
 
-    this.title.scale = SCALE
+    this.title.scale = ex.vec(2, 2)
     this.title.graphics.use(titleText)
     this.title.actions.repeatForever(ctx => {
       ctx.easeBy(ex.vec(0, -30 * SCALE.y), 1000, ex.EasingFunctions.EaseInOutQuad)
         .easeBy(ex.vec(0, 30 * SCALE.y), 1000, ex.EasingFunctions.EaseInOutQuad)
     })
+
     this.add(this.title)
 
     const buttonFont = new ex.Font({
@@ -56,7 +57,7 @@ export class StartScreen extends ex.Scene {
       pos: ex.vec(650, 400),
       width: 200 * SCALE.x,
       height: 45 * SCALE.y,
-      color: ex.Color.fromHex('#ff6347'),
+      color: ex.Color.Red,
       coordPlane: ex.CoordPlane.Screen
     })
 
@@ -83,19 +84,22 @@ export class StartScreen extends ex.Scene {
       ]
     }))
 
-    this.p1VsCpuButton.on('pointerup', () => {
+    this.p1VsCpuButton.on('pointerup', async () => {
+      Resources.SelectSound.play()
       localStorage.setItem('start_screen', 'p1vscpu')
+      await this.p1VsCpuButton.actions.blink(100, 100, 6).toPromise()
       this.engine.goToScene('level1')
     })
 
+    this.p1VsCpuButton.scale = SCALE
     this.add(this.p1VsCpuButton)
 
     this.p1VsP2Button = new ex.Actor({
       name: 'p1VsP2Button',
-      pos: ex.vec(650, 480),
+      pos: ex.vec(650, 520),
       width: 200 * SCALE.x,
       height: 45 * SCALE.y,
-      color: ex.Color.fromHex('#4682b4'),
+      color: ex.Color.Blue,
       coordPlane: ex.CoordPlane.Screen
     })
 
@@ -123,19 +127,22 @@ export class StartScreen extends ex.Scene {
       ]
     }))
 
-    this.p1VsP2Button.on('pointerup', () => {
+    this.p1VsP2Button.on('pointerup', async () => {
+      Resources.SelectSound.play()
       localStorage.setItem('start_screen', 'p1vsp2')
+      await this.p1VsP2Button.actions.blink(100, 100, 6).toPromise()
       this.engine.goToScene('level1')
     })
 
+    this.p1VsP2Button.scale = SCALE
     this.add(this.p1VsP2Button)
 
     this.cpuVscpuButton = new ex.Actor({
       name: 'cpuVscpuButton',
-      pos: ex.vec(650, 560),
+      pos: ex.vec(650, 640),
       width: 200 * SCALE.x,
       height: 45 * SCALE.y,
-      color: ex.Color.fromHex('#ff6347'),
+      color: ex.Color.Red,
       coordPlane: ex.CoordPlane.Screen
     })
 
@@ -163,14 +170,15 @@ export class StartScreen extends ex.Scene {
       ]
     }))
 
-    this.cpuVscpuButton.on('pointerup', () => {
+    this.cpuVscpuButton.on('pointerup', async () => {
+      Resources.SelectSound.play()
       localStorage.setItem('start_screen', 'cpuvscpu')
+      await this.cpuVscpuButton.actions.blink(100, 100, 6).toPromise()
       this.engine.goToScene('level1')
     })
 
+    this.cpuVscpuButton.scale = SCALE
     this.add(this.cpuVscpuButton)
-    Resources.TitleMusic.loop = true
-    Resources.TitleMusic.play()
   }
 
   _subscriptions: ex.Subscription[] = []
