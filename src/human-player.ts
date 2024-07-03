@@ -9,6 +9,7 @@ import { Resources } from "./resources"
 
 
 export class HumanPlayer extends Player {
+  public passed = false
   private humanMove = new ex.Future<void>()
 
   constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public uiManager: UIManager, board: Board) {
@@ -204,7 +205,7 @@ export class HumanPlayer extends Player {
     const units = this.board.getUnits()
       .filter(u => u.player === this)
       .filter(u => u.hasActions())
-    return units.length > 0 && !this.hasWon()
+    return units.length > 0 && !this.passed && !this.hasWon()
   }
 
   override async makeMove(): Promise<boolean> {
