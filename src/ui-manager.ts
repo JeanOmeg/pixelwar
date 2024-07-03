@@ -2,9 +2,7 @@ import * as ex from 'excalibur'
 
 import './ui-components/unit-menu'
 import { UnitMenu } from "./ui-components/unit-menu"
-import { SCALE } from "./config"
 import { Unit } from "./unit"
-import { LitElement } from 'lit'
 
 export interface MenuOptions {
   move: () => any
@@ -44,7 +42,7 @@ export class UIManager {
 
   worldDistanceToPage(distance: number) {
     const mobile = this.isMobile()
-    const scaleX = mobile ? 4 : SCALE.x
+    const scaleX = mobile ? 4 : 3
     const pageOrigin = this.engine.screen.worldToPageCoordinates(ex.Vector.Zero)
     const pageDistance = this.engine.screen.worldToPageCoordinates(ex.vec(distance * scaleX, 0)).sub(pageOrigin)
     return pageDistance.x

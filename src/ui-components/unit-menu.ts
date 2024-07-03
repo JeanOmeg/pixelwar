@@ -71,8 +71,8 @@ export class UnitMenu extends LitElement {
 
     .title-bar {
         background-color: red;
-        width: 100%;
         height: calc(7px * var(--pixel-conversion));
+        padding: calc(2px * var(--pixel-conversion));
     }
 
     button {
@@ -161,8 +161,9 @@ export class UnitMenu extends LitElement {
       left: `${this.left}px`,
       top: `${this.top}px`
     })}>
-        <div class="title-bar"></div>
+        <div class="title-bar" style="display: flex; justify-content: center; align-items: center;">${this.unit?.name.replace(/[AB]$/, '')}</div>
         <div class="options">
+            <div style="display: flex; justify-content: center; align-items: center;">A${this.unit?.unitConfig.attack}|D${this.unit?.unitConfig.defense}|R${this.unit?.unitConfig.range}|M${this.unit?.unitConfig.movement}|H${this.unit?.unitConfig.health}</div>
             <button style=${styleMap({ display: this.unit?.canMove() ? 'block' : 'none' })} @click="${this.sendEvent('move')}">Move</button>
             <button style=${styleMap({ display: this.unit?.canAttack() ? 'block' : 'none' })} @click="${this.sendEvent('attack')}">Attack</button>
             <button  @click="${this.sendEvent('pass')}">Done</button>

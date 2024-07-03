@@ -169,6 +169,8 @@ export class StartScreen extends ex.Scene {
     })
 
     this.add(this.cpuVscpuButton)
+    Resources.TitleMusic.loop = true
+    Resources.TitleMusic.play()
   }
 
   _subscriptions: ex.Subscription[] = []
