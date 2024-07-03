@@ -262,6 +262,7 @@ export class TurnManager {
 
   async start() {
     while (this.maxTurns >= 0) {
+      if (await this.checkWin(this.currentPlayer)) return
       this.selectionManager.selectPlayer(this.currentPlayer)
       await this.showTurnDisplay()
       await this.currentPlayer.turnStart()

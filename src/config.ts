@@ -148,9 +148,9 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     },
     health: 10,
     movement: 6,
-    attack: 3,
+    attack: 4,
     defense: 2,
-    range: 3
+    range: 2
   },
   SpearmanB: {
     graphics: {
@@ -159,9 +159,9 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     },
     health: 10,
     movement: 6,
-    attack: 3,
+    attack: 4,
     defense: 2,
-    range: 3
+    range: 2
   },
 
   // Warriors

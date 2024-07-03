@@ -18,14 +18,10 @@ export class StartScreen extends ex.Scene {
 
     const titleFont = new ex.Font({
       family: 'notjamslab14',
-      size: 32 * SCALE.x,
+      size: 64 * SCALE.x,
       unit: ex.FontUnit.Px,
       color: ex.Color.White,
       baseAlign: ex.BaseAlign.Top,
-      shadow: {
-        offset: ex.vec(2, 2).scale(SCALE),
-        color: ex.Color.White
-      }
     })
 
     this.title = new ex.Actor({
@@ -53,17 +49,13 @@ export class StartScreen extends ex.Scene {
       unit: ex.FontUnit.Px,
       color: ex.Color.White,
       baseAlign: ex.BaseAlign.Top,
-      shadow: {
-        offset: ex.vec(2, 2).scale(SCALE),
-        color: ex.Color.Black
-      }
     })
 
     this.p1VsCpuButton = new ex.Actor({
       name: 'p1VsCpuButton',
       pos: ex.vec(650, 400),
       width: 200 * SCALE.x,
-      height: 50 * SCALE.y,
+      height: 45 * SCALE.y,
       color: ex.Color.fromHex('#ff6347'),
       coordPlane: ex.CoordPlane.Screen
     })
@@ -80,7 +72,6 @@ export class StartScreen extends ex.Scene {
             width: this.p1VsCpuButton.width,
             height: this.p1VsCpuButton.height,
             color: this.p1VsCpuButton.color,
-            strokeColor: ex.Color.Black,
             lineWidth: 4,
           }), offset: ex.vec(0, 0),
         },
@@ -101,9 +92,9 @@ export class StartScreen extends ex.Scene {
 
     this.p1VsP2Button = new ex.Actor({
       name: 'p1VsP2Button',
-      pos: ex.vec(650, 525),
+      pos: ex.vec(650, 480),
       width: 200 * SCALE.x,
-      height: 50 * SCALE.y,
+      height: 45 * SCALE.y,
       color: ex.Color.fromHex('#4682b4'),
       coordPlane: ex.CoordPlane.Screen
     })
@@ -120,7 +111,6 @@ export class StartScreen extends ex.Scene {
             width: this.p1VsP2Button.width,
             height: this.p1VsP2Button.height,
             color: this.p1VsP2Button.color,
-            strokeColor: ex.Color.Black,
             lineWidth: 4,
           }),
           offset: ex.vec(0, 0),
@@ -142,9 +132,9 @@ export class StartScreen extends ex.Scene {
 
     this.cpuVscpuButton = new ex.Actor({
       name: 'cpuVscpuButton',
-      pos: ex.vec(650, 650),
+      pos: ex.vec(650, 560),
       width: 200 * SCALE.x,
-      height: 50 * SCALE.y,
+      height: 45 * SCALE.y,
       color: ex.Color.fromHex('#ff6347'),
       coordPlane: ex.CoordPlane.Screen
     })
@@ -161,7 +151,6 @@ export class StartScreen extends ex.Scene {
             width: this.cpuVscpuButton.width,
             height: this.cpuVscpuButton.height,
             color: this.cpuVscpuButton.color,
-            strokeColor: ex.Color.Black,
             lineWidth: 4,
           }),
           offset: ex.vec(0, 0),
