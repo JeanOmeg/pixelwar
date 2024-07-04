@@ -7,7 +7,7 @@ import { Unit } from './unit'
 export class Board {
   tileWidth: number = 32
   tileHeight: number = 32
-  margin: number = 1
+  margin: number = 0.5
   rows: number
   cols: number
 

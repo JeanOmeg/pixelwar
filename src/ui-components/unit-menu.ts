@@ -40,8 +40,7 @@ export class UnitMenu extends LitElement {
         opacity: 0;
         flex-direction: column;
         font-size: calc(8px * var(--pixel-conversion));
-        background-color: rgba(240, 220, 220, 1);
-
+        background-color: white;
         border: black calc(1px * var(--pixel-conversion)) solid;
         z-index: 1;
     }
@@ -70,9 +69,22 @@ export class UnitMenu extends LitElement {
     }
 
     .title-bar {
-        background-color: red;
-        height: calc(7px * var(--pixel-conversion));
-        padding: calc(2px * var(--pixel-conversion));
+        display: flex;
+        color: white;
+        justify-content: center;
+        align-items: center;
+        height: calc(8px * var(--pixel-conversion));
+        padding: calc(1px * var(--pixel-conversion));
+    }
+
+    .sheet {
+        display: flex;
+        color: white;
+        justify-content: center;
+        align-items: center;
+        font-size: calc(6px * var(--pixel-conversion));
+        hheight: calc(8px * var(--pixel-conversion));
+        padding: calc(1px * var(--pixel-conversion));
     }
 
     button {
@@ -161,9 +173,9 @@ export class UnitMenu extends LitElement {
       left: `${this.left}px`,
       top: `${this.top}px`
     })}>
-        <div class="title-bar" style="display: flex; justify-content: center; align-items: center;">${this.unit?.name.replace(/[AB]$/, '')}</div>
+        <div class="title-bar" style="background-color: #${this.unit?.unitConfig.primary_color}">${this.unit?.name.replace(/[AB]$/, '')}</div>
         <div class="options">
-            <div style="display: flex; justify-content: center; align-items: center;">A${this.unit?.unitConfig.attack}|D${this.unit?.unitConfig.defense}|R${this.unit?.unitConfig.range}|M${this.unit?.unitConfig.movement}|H${this.unit?.unitConfig.health}</div>
+            <div class="sheet" style="background-color: #${this.unit?.unitConfig.secondary_color}">A${this.unit?.unitConfig.attack} D${this.unit?.unitConfig.defense} R${this.unit?.unitConfig.range} M${this.unit?.unitConfig.movement} H${this.unit?.unitConfig.health}</div>
             <button style=${styleMap({ display: this.unit?.canMove() ? 'block' : 'none' })} @click="${this.sendEvent('move')}">Move</button>
             <button style=${styleMap({ display: this.unit?.canAttack() ? 'block' : 'none' })} @click="${this.sendEvent('attack')}">Attack</button>
             <button  @click="${this.sendEvent('pass')}">Done</button>

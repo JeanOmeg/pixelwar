@@ -270,9 +270,10 @@ export class TurnManager {
       do {
         move = await this.currentPlayer.makeMove()
       } while (!move)
+      const win = await this.checkWin(this.currentPlayer)
+      if (win) return
       await this.currentPlayer.turnEnd()
       this.nextTurn()
-      if (await this.checkWin(this.currentPlayer)) return
     }
   }
 

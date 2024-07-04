@@ -97,7 +97,8 @@ export class Unit extends ex.Actor {
       })
 
       const move = new ex.ActionSequence(this, (ctx) => {
-        ctx.easeTo(currentCell!.pos.sub(this.unitConfig.graphics.offset), 300, ex.EasingFunctions.EaseInOutCubic)
+        this.setAnim(this.unitConfig.graphics.move.clone())
+        ctx.easeTo(currentCell!.pos.sub(this.unitConfig.graphics.offset), 400, ex.EasingFunctions.EaseInOutCubic)
         ctx.callMethod(() => {
           DustParticles.pos = this.pos.add(SCALE.scale(32))
           DustParticles.emitParticles(5)
@@ -109,10 +110,13 @@ export class Unit extends ex.Actor {
         move
       ])
       await this.actions.runAction(parallel).toPromise()
+      this.setAnim(this.unitConfig.graphics.idle.clone())
+      this.graphics.onPostDraw = this.onPostDraw.bind(this)
     }
     if (currentCell) {
       currentCell.addUnit(this)
     }
+    await ex.Util.delay(250)
     this.moved = true
   }
 
@@ -176,8 +180,23 @@ export class Unit extends ex.Actor {
     }
   }
 
+  setAnim(animation: ex.Animation) {
+    this.anim = animation
+    this.anim.scale = SCALE
+    this.graphics.use(this.anim)
+  }
+
   async attack(other: Unit) {
     this.defineDirection(this.cell?.pos.x as number, other.pos.x)
+    const atkAnim = new ex.ActionSequence(this, (ctx) => {
+      this.setAnim(this.unitConfig.graphics.attack.clone())
+      ctx.easeTo(this!.pos, 500, ex.EasingFunctions.EaseInOutCubic)
+    })
+
+    const parallel = new ex.ParallelActions([
+      atkAnim
+    ])
+
     const fD20 = Math.floor(Math.random() * 20) + 1
     const lD20 = Math.floor(Math.random() * 20) + 1
     const fD6 = Math.floor(Math.random() * 6) + 1
@@ -202,11 +221,21 @@ export class Unit extends ex.Actor {
       damage = 1
     }
 
-    other.health -= damage
+    
     Resources.HitSound.play()
+    await this.actions.runAction(parallel).toPromise()
+    this.setAnim(this.unitConfig.graphics.idle.clone())
+    this.graphics.onPostDraw = this.onPostDraw.bind(this)
+    
+    await this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, d20)
+    
+    other.health -= damage
+    await ex.Util.delay(500)
 
-    this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, d20)
-    await other.actions.blink(200, 200, 5).toPromise()
+    if (other.health > 0) {
+      await other.actions.blink(100, 100, 4).toPromise()
+    }
+
     this.attacked = true
   }
 }

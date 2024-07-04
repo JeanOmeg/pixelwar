@@ -133,6 +133,7 @@ export class ComputerPlayer extends Player {
       }
       unit.pass()
     }
+    await ex.Util.delay(ENEMY_SPEED)
     return true
   }
 

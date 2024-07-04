@@ -18,7 +18,8 @@ export class Cloud extends ex.Actor {
 
   }
   override onPostUpdate(engine: ex.Engine, _delta: number): void {
-    if (this.pos.x + (this.cloudSprite.width - 4000) < 0) {
+    console.log(this.pos.x + (this.cloudSprite.width - 3800))
+    if (this.pos.x + (this.cloudSprite.width - 3800) > 2400) {
       this.pos.x = engine.screen.contentArea.right
     }
   }

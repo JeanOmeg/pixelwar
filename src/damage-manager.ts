@@ -40,9 +40,9 @@ export class DamageManager {
 
   constructor(public scene: ex.Scene) { }
 
-  spawnDamageNumber(pos: ex.Vector, damage: number, d20: number) {
+  async spawnDamageNumber(pos: ex.Vector, damage: number, d20: number) {
     const damageNumber = new Damage(pos, damage, d20)
-    damageNumber.actions.easeBy(ex.vec(0, -100), 1000, ex.EasingFunctions.EaseOutCubic).die()
+    damageNumber.actions.easeBy(ex.vec(0, -50), 500, ex.EasingFunctions.EaseOutCubic).die()
     this.scene.add(damageNumber)
   }
 } 

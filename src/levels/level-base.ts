@@ -170,11 +170,11 @@ export class LevelBase extends ex.Scene {
     for (let y = 0; y < levelData.height; y++) {
       for (let x = 0; x < levelData.width; x++) {
         const data = levelData.data[x + y * levelData.width]
-        const terrain = data.charAt(0) as Terrain
+        const terrain = `${data.charAt(0)}${data.charAt(1)}` as Terrain
         let unit: Unit | null = null
-        if (data.length === 4) {
-          const unitType: UnitType = CharToUnit[`${data.charAt(1)}${data.charAt(2)}` as ClassType]
-          const playerIndex = (+data.charAt(3)) - 1
+        if (data.length === 5) {
+          const unitType: UnitType = CharToUnit[`${data.charAt(2)}${data.charAt(3)}` as ClassType]
+          const playerIndex = (+data.charAt(4)) - 1
 
           unit = new Unit(x, y, unitType, board, this.players[playerIndex])
           if (playerIndex == 0) {
