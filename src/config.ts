@@ -2,7 +2,7 @@ import * as ex from 'excalibur'
 
 import { ArcherAAttack, ArcherAIdle, ArcherAMove, ArcherBAttack, ArcherBIdle, ArcherBMove, BarbarianAAttack, BarbarianAIdle, BarbarianAMove, BarbarianBAttack, BarbarianBIdle, BarbarianBMove, ClericAAttack, ClericAIdle, ClericAMove, ClericBAttack, ClericBIdle, ClericBMove, FighterAAttack, FighterAIdle, FighterAMove, FighterBAttack, FighterBIdle, FighterBMove, MageAAttack, MageAIdle, MageAMove, MageBAttack, MageBIdle, MageBMove, SpearmanAAttack, SpearmanAIdle, SpearmanAMove, SpearmanBAttack, SpearmanBIdle, SpearmanBMove, WarriorAAttack, WarriorAIdle, WarriorAMove, WarriorBAttack, WarriorBIdle, WarriorBMove } from './resources'
 export const SCALE = ex.vec(1.5, 1.5)
-export const ENEMY_SPEED = 150
+export const ENEMY_SPEED = 200
 
 export type UnitType = 'ArcherA' | 'ArcherB' | 'BarbarianA' | 'BarbarianB' | 'ClericA' | 'ClericB' | 'FighterA' | 'FighterB' | 'MageA' | 'MageB' | 'SpearmanA' | 'SpearmanB' | 'WarriorA' | 'WarriorB'
 export type ClassType = 'AA' | 'AB' | 'BA' | 'BB' | 'CA' | 'CB' | 'FA' | 'FB' | 'MA' | 'MB' | 'SA' | 'SB' | 'WA' | 'WB'
@@ -27,7 +27,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Archers
   ArcherA: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: ArcherAIdle,
       move: ArcherAMove,
       attack: ArcherAAttack
@@ -42,7 +42,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   ArcherB: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: ArcherBIdle,
       move: ArcherBMove,
       attack: ArcherBAttack
@@ -59,7 +59,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Barbarians
   BarbarianA: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: BarbarianAIdle,
       move: BarbarianAMove,
       attack: BarbarianAAttack
@@ -74,7 +74,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   BarbarianB: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: BarbarianBIdle,
       move: BarbarianBMove,
       attack: BarbarianBAttack
@@ -91,7 +91,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Clerics
   ClericA: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: ClericAIdle,
       move: ClericAMove,
       attack: ClericAAttack
@@ -106,7 +106,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   ClericB: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: ClericBIdle,
       move: ClericBMove,
       attack: ClericBAttack
@@ -123,7 +123,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Fighters
   FighterA: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: FighterAIdle,
       move: FighterAMove,
       attack: FighterAAttack
@@ -138,7 +138,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   FighterB: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: FighterBIdle,
       move: FighterBMove,
       attack: FighterBAttack
@@ -155,7 +155,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Mages
   MageA: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: MageAIdle,
       move: MageAMove,
       attack: MageAAttack
@@ -170,7 +170,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   MageB: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: MageBIdle,
       move: MageBMove,
       attack: MageBAttack
@@ -187,7 +187,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Spearmans
   SpearmanA: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: SpearmanAIdle,
       move: SpearmanAMove,
       attack: SpearmanAAttack
@@ -202,7 +202,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   SpearmanB: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: SpearmanBIdle,
       move: SpearmanBMove,
       attack: SpearmanBAttack
@@ -219,7 +219,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Warriors
   WarriorA: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: WarriorAIdle,
       move: WarriorAMove,
       attack: WarriorAAttack
@@ -234,7 +234,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   WarriorB: {
     graphics: {
-      offset: ex.vec(14, 16 * SCALE.y),
+      offset: ex.vec(14, 14 * SCALE.y),
       idle: WarriorBIdle,
       move: WarriorBMove,
       attack: WarriorBAttack

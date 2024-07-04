@@ -1,6 +1,6 @@
 import * as ex from "excalibur"
 import { Board } from "./board"
-import { HeartSpriteSheet, Resources } from "./resources"
+import { Resources } from "./resources"
 import { SCALE, UNIT_CONFIG, UnitConfig, UnitType } from "./config"
 import { Cell } from "./cell"
 import { PathNodeComponent } from "./path-finding/path-node-component"
@@ -32,7 +32,6 @@ export class Unit extends ex.Actor {
     this.anim = this.unitConfig.graphics.idle.clone()
     this.anim.scale = SCALE
     this.graphics.use(this.anim)
-    this.graphics.onPostDraw = this.onPostDraw.bind(this)
 
     const cell = board.getCell(x, y)
     if (cell) {
@@ -61,19 +60,6 @@ export class Unit extends ex.Actor {
       }).callMethod(() => {
         this.kill()
       })
-    }
-  }
-
-  onPostDraw(ctx: ex.ExcaliburGraphicsContext) {
-    if (this.health > 0) {
-      const heart = HeartSpriteSheet.getSprite(ex.clamp(this.health, 0, 35), 0)
-      if (heart) {
-        heart.scale = ex.vec(0.7, 0.7)
-        heart.draw(ctx,
-          6 * SCALE.x + this.unitConfig.graphics.offset.x,
-          8 * SCALE.y + this.unitConfig.graphics.offset.y
-        )
-      }
     }
   }
 
@@ -111,7 +97,6 @@ export class Unit extends ex.Actor {
       ])
       await this.actions.runAction(parallel).toPromise()
       this.setAnim(this.unitConfig.graphics.idle.clone())
-      this.graphics.onPostDraw = this.onPostDraw.bind(this)
     }
     if (currentCell) {
       currentCell.addUnit(this)
@@ -225,15 +210,15 @@ export class Unit extends ex.Actor {
     Resources.HitSound.play()
     await this.actions.runAction(parallel).toPromise()
     this.setAnim(this.unitConfig.graphics.idle.clone())
-    this.graphics.onPostDraw = this.onPostDraw.bind(this)
     
-    await this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, d20)
     
     other.health -= damage
-    await ex.Util.delay(500)
+    await ex.Util.delay(250)
+
+    await this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, d20)
 
     if (other.health > 0) {
-      await other.actions.blink(100, 100, 4).toPromise()
+      other.actions.blink(100, 100, 4)
     }
 
     this.attacked = true

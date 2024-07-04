@@ -93,6 +93,7 @@ export class ComputerPlayer extends Player {
       attacked = true
     }
     this.selectionManger.reset()
+    await ex.Util.delay(ENEMY_SPEED)
     return attacked
   }
 
@@ -100,25 +101,24 @@ export class ComputerPlayer extends Player {
     const units = this.board.getUnits().filter(u => u.player === this)
 
     for (let unit of units) {
-      await ex.Util.delay(ENEMY_SPEED)
-
       let range: PathNodeComponent[] = []
       if (unit.cell) {
         range = this.board.pathFinder.getRange(unit.cell.pathNode, this.mask, unit.unitConfig.movement)
+        await ex.Util.delay(ENEMY_SPEED)
       }
 
       let validCells = this.findValidMoveCells(unit)
 
       const closestEnemy = this.findClosestEnemy(unit)
+      await ex.Util.delay(ENEMY_SPEED)
 
       if (closestEnemy) {
         const attacked = await this.maybeAttack(unit, closestEnemy)
 
-        const closestCell = this.findClosestCell(closestEnemy, validCells)
-
         if (!attacked) {
-          this.selectionManger.selectUnit(unit, 'move')
+          const closestCell = this.findClosestCell(closestEnemy, validCells)
           await ex.Util.delay(ENEMY_SPEED)
+          this.selectionManger.selectUnit(unit, 'move')
 
           const currentPath = this.selectionManger.findPath(closestCell!, range)
           this.selectionManger.showHighlight(currentPath, 'path')
