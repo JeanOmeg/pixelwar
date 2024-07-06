@@ -83,7 +83,7 @@ export class UnitMenu extends LitElement {
         justify-content: center;
         align-items: center;
         font-size: calc(6px * var(--pixel-conversion));
-        hheight: calc(8px * var(--pixel-conversion));
+        height: calc(8px * var(--pixel-conversion));
         padding: calc(1px * var(--pixel-conversion));
     }
 

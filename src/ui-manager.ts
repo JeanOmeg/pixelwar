@@ -3,6 +3,7 @@ import * as ex from 'excalibur'
 import './ui-components/unit-menu'
 import { UnitMenu } from "./ui-components/unit-menu"
 import { Unit } from "./unit"
+import { SCALE } from './config'
 
 export interface MenuOptions {
   move: () => any
@@ -32,6 +33,7 @@ export class UIManager {
       }
     })
 
+
   }
 
   isMobile() {
@@ -42,7 +44,7 @@ export class UIManager {
 
   worldDistanceToPage(distance: number) {
     const mobile = this.isMobile()
-    const scaleX = mobile ? 4 : 3
+    const scaleX = mobile ? SCALE.x + 2.5 : SCALE.x + 2
     const pageOrigin = this.engine.screen.worldToPageCoordinates(ex.Vector.Zero)
     const pageDistance = this.engine.screen.worldToPageCoordinates(ex.vec(distance * scaleX, 0)).sub(pageOrigin)
     return pageDistance.x
@@ -53,10 +55,15 @@ export class UIManager {
   }
 
   showUnitMenu(unit: Unit, options: MenuOptions): UnitMenu {
-    const mobile = this.isMobile()
     const menu = this.unitMenu
     const pagePos = this.engine.screen.worldToPageCoordinates(unit.pos)
-    menu.left = pagePos.x + (mobile ? this.worldDistanceToPage(16) : this.worldDistanceToPage(32))
+    
+    if (unit.name.lastIndexOf('A') > 0) {
+      menu.left = pagePos.x + (this.worldDistanceToPage(1) * 18)
+    } else {
+      menu.left = pagePos.x - (this.worldDistanceToPage(1) * 64)
+    }
+    
     menu.top = pagePos.y
     menu.unit = unit
 
