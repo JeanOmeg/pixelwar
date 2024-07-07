@@ -26,13 +26,15 @@ export class PathFinder {
 
   private _getRangeHelperAttack(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number) {
     if (range >= 0) {
+      let newRange
       const startX = localStorage.getItem('x')
       const startY = localStorage.getItem('y')
       const x = cell.owner?.name.split(' ')[1].split(')')[0]
       const y = cell.owner?.name.split(',')[0].split('(')[1]
       accum.push(cell)
-      cell.connections.filter(node => node.isWalkable && !!(node.walkableMask & mask) && (startY == y || startX == x)).forEach(cell => {
-        this._getRangeHelperAttack(cell, accum, mask, range - 1)
+      cell.connections.filter(node => node.isAttackable && !!(node.walkableMask & mask) && (startY == y || startX == x)).forEach(cell => {
+        newRange = cell.isFast ? 1 : 2
+        this._getRangeHelperAttack(cell, accum, mask, range - newRange)
       })
     }
   }
@@ -47,7 +49,7 @@ export class PathFinder {
     localStorage.removeItem('x')
     localStorage.removeItem('y')
     result = result.filter((node, index, nodeArray) => nodeArray.indexOf(node) === index)
-    result = result.filter(node => node.isWalkable && (node.owner?.name.split(' ')[1].split(')')[0] == x || node.owner?.name.split(',')[0].split('(')[1] == y))
+    result = result.filter(node => node.isAttackable && (node.owner?.name.split(' ')[1].split(')')[0] == x || node.owner?.name.split(',')[0].split('(')[1] == y))
     return result
   }
 

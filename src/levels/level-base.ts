@@ -1,6 +1,5 @@
 import * as ex from 'excalibur'
 import { Board } from '../board'
-import { Terrain } from '../cell'
 import { ClassType, SCALE, UnitType } from '../config'
 import { Unit } from '../unit'
 import { Player } from '../player'
@@ -12,6 +11,7 @@ import { ComputerPlayer } from '../computer-player'
 import { Cloud } from '../cloud'
 import { DustParticles } from '../dust-particles'
 import { Resources } from '../resources'
+import { Terrain } from '../maps/tarrain-enum'
 
 export interface LevelData {
   name: string
@@ -170,11 +170,11 @@ export class LevelBase extends ex.Scene {
     for (let y = 0; y < levelData.height; y++) {
       for (let x = 0; x < levelData.width; x++) {
         const data = levelData.data[x + y * levelData.width]
-        const terrain = `${data.charAt(0)}${data.charAt(1)}` as Terrain
+        const terrain = `${data.charAt(0)}${data.charAt(1)}${data.charAt(2)}` as Terrain
         let unit: Unit | null = null
-        if (data.length === 5) {
-          const unitType: UnitType = CharToUnit[`${data.charAt(2)}${data.charAt(3)}` as ClassType]
-          const playerIndex = (+data.charAt(4)) - 1
+        if (data.length === 6) {
+          const unitType: UnitType = CharToUnit[`${data.charAt(3)}${data.charAt(4)}` as ClassType]
+          const playerIndex = (+data.charAt(5)) - 1
 
           unit = new Unit(x, y, unitType, board, this.players[playerIndex])
           if (playerIndex == 0) {
