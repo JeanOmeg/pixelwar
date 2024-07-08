@@ -175,7 +175,7 @@ export class UnitMenu extends LitElement {
     })}>
         <div class="title-bar" style="background-color: #${this.unit?.unitConfig.primary_color}">${this.unit?.name.replace(/[AB]$/, '')}</div>
         <div class="options">
-            <div class="sheet" style="background-color: #${this.unit?.unitConfig.secondary_color}">A${this.unit?.unitConfig.attack} D${this.unit?.unitConfig.defense} R${this.unit?.unitConfig.range} M${this.unit?.unitConfig.movement} H${this.unit?.unitConfig.health}</div>
+            <div class="sheet" style="background-color: #${this.unit?.unitConfig.secondary_color}">A${this.unit?.unitConfig.attack} D${this.unit?.unitConfig.defense} R${this.unit?.unitConfig.range} M${this.unit?.unitConfig.movement} H${this.unit?.health}</div>
             <button style=${styleMap({ display: this.unit?.canMove() ? 'block' : 'none' })} @click="${this.sendEvent('move')}">Move</button>
             <button style=${styleMap({ display: this.unit?.canAttack() ? 'block' : 'none' })} @click="${this.sendEvent('attack')}">Attack</button>
             <button  @click="${this.sendEvent('pass')}">Done</button>
