@@ -80,7 +80,9 @@ export class SelectionManager {
     let range = this.board.pathFinder.getRangeAttack(
       unit.cell.pathNode,
       ~unit.player.mask,
-      this.currentUnitSelection.unitConfig.range)
+      this.currentUnitSelection.unitConfig.range,
+      unit.name
+    )
     return range
   }
 

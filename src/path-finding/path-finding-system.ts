@@ -27,6 +27,7 @@ export class PathFinder {
   private _getRangeHelperAttack(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number) {
     if (range >= 0) {
       let newRange
+      const unitName = localStorage.getItem('unitName')
       const startX = localStorage.getItem('x')
       const startY = localStorage.getItem('y')
       const x = cell.owner?.name.split(' ')[1].split(')')[0]
@@ -34,15 +35,20 @@ export class PathFinder {
       accum.push(cell)
       cell.connections.filter(node => node.isAttackable && !!(node.walkableMask & mask) && (startY == y || startX == x)).forEach(cell => {
         newRange = cell.isFast ? 1 : 2
+        if (!cell.isFast && unitName !== 'Archer' && unitName !== 'Mage' && unitName !== 'Spearman') {
+          newRange = 1
+        }
+        
         this._getRangeHelperAttack(cell, accum, mask, range - newRange)
       })
     }
   }
 
-  getRangeAttack(start: PathNodeComponent, mask: number, range: number): PathNodeComponent[] {
+  getRangeAttack(start: PathNodeComponent, mask: number, range: number, unitName: string): PathNodeComponent[] {
     let result: PathNodeComponent[] = []
     const x = start.owner?.name.split(' ')[1].split(')')[0]
     const y = start.owner?.name.split(',')[0].split('(')[1]
+    localStorage.setItem('unitName', unitName.replace(/[AB]$/, '') as string)
     localStorage.setItem('x', x as string)
     localStorage.setItem('y', y as string)
     this._getRangeHelperAttack(start, result, mask, range)

@@ -154,7 +154,7 @@ export class Unit extends ex.Actor {
 
   getPossibleTargets() {
     if (this.cell) {
-      const range = this.cell.board.pathFinder.getRangeAttack(this.cell.pathNode, ~this.player.mask, this.unitConfig.range)
+      const range = this.cell.board.pathFinder.getRangeAttack(this.cell.pathNode, ~this.player.mask, this.unitConfig.range, this.name)
       const cellsWithEnemies = range.map(node => node.owner as Cell).filter(cell => {
         if (cell.unit?.player) {
           return cell.unit.player !== this.player
@@ -195,9 +195,9 @@ export class Unit extends ex.Actor {
     let damage
     
     if (d20 === 20) {
-      damage = 12 + this.unitConfig.attack - other.unitConfig.defense
+      damage = (12 + this.unitConfig.attack) - other.unitConfig.defense
     } else {
-      damage = d6 + this.unitConfig.attack - other.unitConfig.defense
+      damage = (d6 + this.unitConfig.attack) - other.unitConfig.defense
     }
 
     if (atk > def) {
@@ -206,14 +206,13 @@ export class Unit extends ex.Actor {
       damage = 1
     }
 
-    
     Resources.HitSound.play()
     await this.actions.runAction(parallel).toPromise()
     this.setAnim(this.unitConfig.graphics.idle.clone())
     
     
     other.health -= damage
-    await ex.Util.delay(250)
+    await ex.Util.delay(350)
 
     await this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, d20)
 

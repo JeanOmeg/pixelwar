@@ -157,7 +157,9 @@ export class HumanPlayer extends Player {
       const attack = this.board.pathFinder.getRangeAttack(
         cell.pathNode,
         ~unit.player.mask,
-        unit.unitConfig.range)
+        unit.unitConfig.range,
+        unit.name
+      )
       this.selectionManager.showHighlight(attack, 'attack')
     } else {
       this.selectionManager.reset()
