@@ -250,9 +250,9 @@ export class TurnManager {
       }
       if (player instanceof ComputerPlayer) {
         await this.showVictory()
-        this.engine.input.pointers.once('down', () => {
-          this.createStartScreen()
-          this.engine.goToScene('start')
+        this.engine.input.pointers.once('down', async () => {
+          await this.createStartScreen()
+          this.engine.goToScene('startScreen')
         })
         return true
       }
@@ -260,10 +260,10 @@ export class TurnManager {
     return false
   }
 
-  createStartScreen() {
+  async createStartScreen() {
     this.engine.removeScene('start')
     const startScreen = new StartScreen()
-    this.engine.addScene('start', startScreen)
+    this.engine.addScene('startScreen', startScreen)
   }
 
   async start() {

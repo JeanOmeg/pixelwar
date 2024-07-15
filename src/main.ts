@@ -29,7 +29,6 @@ game.addScene('start', startScreen)
 const Level1M1Data: LevelData = {
   displayName: 'Gentle Plains',
   name: 'level1-map1',
-  nextLevel: 'start',
   width: 28,
   height: 17,
   maxTurns: 1000,
@@ -43,7 +42,6 @@ game.addScene(level1m1.name, level1m1)
 const Level1m2Data: LevelData = {
   displayName: 'Gentle Plains',
   name: 'level1-map2',
-  nextLevel: 'start',
   width: 28,
   height: 17,
   maxTurns: 1000,

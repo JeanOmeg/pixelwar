@@ -15,7 +15,6 @@ import { Terrain } from '../maps/tarrain-enum'
 export interface LevelData {
   name: string
   displayName: string
-  nextLevel: string
   width: number
   height: number
   maxTurns: number
