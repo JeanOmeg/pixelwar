@@ -252,7 +252,7 @@ export class TurnManager {
         await this.showVictory()
         this.engine.input.pointers.once('down', async () => {
           await this.createStartScreen()
-          this.engine.goToScene('startScreen')
+          this.engine.goToScene('start')
         })
         return true
       }
@@ -263,7 +263,7 @@ export class TurnManager {
   async createStartScreen() {
     this.engine.removeScene('start')
     const startScreen = new StartScreen()
-    this.engine.addScene('startScreen', startScreen)
+    this.engine.addScene('start', startScreen)
   }
 
   async start() {
