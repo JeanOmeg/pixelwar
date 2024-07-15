@@ -10,7 +10,7 @@ export class StartScreen extends ex.Scene {
   p1VsP2Button!: ex.Actor
   cpuVscpuButton!: ex.Actor
 
-  onInitialize(engine: ex.Engine): void {
+  override onInitialize(engine: ex.Engine): void {
     this.engine = engine
 
     const titleFont = new ex.Font({
@@ -186,6 +186,16 @@ export class StartScreen extends ex.Scene {
 
   _subscriptions: ex.Subscription[] = []
   onActivate(): void {
+    if (this.p1VsCpuButton.isKilled()) {
+      this.add(this.p1VsCpuButton)
+    }
+    if (this.p1VsP2Button.isKilled()) {
+      this.add(this.p1VsP2Button)
+    }
+    if (this.cpuVscpuButton.isKilled()) {
+      this.add(this.cpuVscpuButton)
+    }
+    
     Resources.TitleMusic.loop = true
     Resources.TitleMusic.play()
   }
