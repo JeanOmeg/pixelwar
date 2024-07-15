@@ -6,6 +6,7 @@ import { HumanPlayer } from './human-player'
 import { ComputerPlayer } from './computer-player'
 import { Resources } from './resources'
 import { LevelBase } from './levels/level-base'
+import { StartScreen } from './levels/start-screen'
 
 /**
  * Manages player turns, keeps track of which of the N number of players turn it is.
@@ -251,8 +252,9 @@ export class TurnManager {
         await this.showVictory()
         this.engine.input.pointers.once('down', () => {
           setTimeout(() => {
-            this.engine.goToScene(this.level.levelData.nextLevel)
-          })
+            this.engine.addScene('startScreen', new StartScreen());
+            this.engine.goToScene('startScreen')
+          }, 1000)
         })
         return true
       }

@@ -61,15 +61,6 @@ export class LevelBase extends ex.Scene {
 
   override onInitialize(engine: ex.Engine): void {
     this.engine = engine
-    this.input.keyboard.on('press', (evt) => {
-      // DELETEME for debugging
-      if (evt.key === ex.Keys.W) {
-        (this.players[1] as ComputerPlayer).lose()
-      }
-      if (evt.key === ex.Keys.L) {
-        (this.players[0] as HumanPlayer).lose()
-      }
-    })
     if (this.isMobile()) {
       this.setLandscapeAndFullscreen()
     }

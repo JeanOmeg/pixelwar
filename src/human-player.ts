@@ -16,36 +16,7 @@ export class HumanPlayer extends Player {
     super(name, board)
     engine.input.pointers.on('down', this.pointerClick.bind(this))
     engine.input.pointers.on('move', this.pointerMove.bind(this))
-    engine.input.keyboard.on('press', this.keyboardDown.bind(this))
     document.body.oncontextmenu = () => false
-  }
-
-  keyboardDown(event: ex.KeyEvent) {
-    if (!this.active) return
-    this.selectionManager.resetHighlight()
-    const currentCursor = this.selectionManager.currentCursor
-    switch (event.key) {
-      case ex.Keys.ArrowRight:
-      case ex.Keys.D:
-        this.selectionManager.showCursor(currentCursor.x + 1, currentCursor.y)
-        break
-      case ex.Keys.Left:
-      case ex.Keys.A:
-        this.selectionManager.showCursor(currentCursor.x - 1, currentCursor.y)
-        break
-      case ex.Keys.Up:
-      case ex.Keys.W:
-        this.selectionManager.showCursor(currentCursor.x, currentCursor.y - 1)
-        break
-      case ex.Keys.Down:
-      case ex.Keys.D:
-        this.selectionManager.showCursor(currentCursor.x, currentCursor.y + 1)
-        break
-      case ex.Keys.Enter:
-      case ex.Keys.NumpadEnter:
-        const cell = this.board.getCell(currentCursor.x, currentCursor.y)
-        this.maybeSelectUnit(cell)
-    }
   }
 
   async pointerClick(pointer: ex.PointerEvent) {
