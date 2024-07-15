@@ -18,6 +18,7 @@ export interface LevelData {
   width: number
   height: number
   maxTurns: number
+  nextLevel: string
   /**
    * By convention the first player is human
    */

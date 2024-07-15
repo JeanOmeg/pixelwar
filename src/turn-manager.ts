@@ -251,8 +251,7 @@ export class TurnManager {
       if (player instanceof ComputerPlayer) {
         await this.showVictory()
         this.engine.input.pointers.once('down', async () => {
-          await this.createStartScreen()
-          this.engine.goToScene('start')
+          this.engine.goToScene(this.level.levelData.nextLevel)
         })
         return true
       }

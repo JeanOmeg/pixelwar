@@ -9,9 +9,11 @@ export class StartScreen extends ex.Scene {
   p1VsCpuButton!: ex.Actor
   p1VsP2Button!: ex.Actor
   cpuVscpuButton!: ex.Actor
+  nextLevel!: string
 
   override onInitialize(engine: ex.Engine): void {
     this.engine = engine
+    this.nextLevel = this.selectMap()
 
     const titleFont = new ex.Font({
       family: 'notjamslab14',
@@ -87,7 +89,7 @@ export class StartScreen extends ex.Scene {
       Resources.SelectSound.play()
       localStorage.setItem('start_screen', 'p1vscpu')
       await this.p1VsCpuButton.actions.blink(100, 100, 6).toPromise()
-      this.engine.goToScene(this.selectMap())
+      this.engine.goToScene(this.nextLevel)
     })
 
     this.p1VsCpuButton.scale = SCALE
@@ -132,7 +134,7 @@ export class StartScreen extends ex.Scene {
       Resources.SelectSound.play()
       localStorage.setItem('start_screen', 'p1vsp2')
       await this.p1VsP2Button.actions.blink(100, 100, 6).toPromise()
-      this.engine.goToScene(this.selectMap())
+      this.engine.goToScene(this.nextLevel)
     })
 
     this.p1VsP2Button.scale = SCALE
@@ -177,7 +179,7 @@ export class StartScreen extends ex.Scene {
       Resources.SelectSound.play()
       localStorage.setItem('start_screen', 'cpuvscpu')
       await this.cpuVscpuButton.actions.blink(100, 100, 6).toPromise()
-      this.engine.goToScene(this.selectMap())
+      this.engine.goToScene(this.nextLevel)
     })
 
     this.cpuVscpuButton.scale = SCALE
@@ -186,6 +188,7 @@ export class StartScreen extends ex.Scene {
 
   _subscriptions: ex.Subscription[] = []
   onActivate(): void {
+    this.nextLevel = this.selectMap()
     if (this.p1VsCpuButton.isKilled()) {
       this.add(this.p1VsCpuButton)
     }

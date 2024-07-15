@@ -32,6 +32,7 @@ const Level1M1Data: LevelData = {
   width: 28,
   height: 17,
   maxTurns: 1000,
+  nextLevel: 'start',
   players: [ 'Human', 'CPU' ],
   data: mapList[0]
 }
@@ -45,6 +46,7 @@ const Level1m2Data: LevelData = {
   width: 28,
   height: 17,
   maxTurns: 1000,
+  nextLevel: 'start',
   players: [ 'Human', 'CPU' ],
   data: mapList[1]
 }
