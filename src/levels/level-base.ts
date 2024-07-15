@@ -109,7 +109,7 @@ export class LevelBase extends ex.Scene {
     }
   }
 
-  resetAndLoad() {
+  async resetAndLoad() {
     const entities = this.entities
     for (let i = entities.length - 1; i >= 0; i--) {
       this.world.remove(entities[i], false)
@@ -119,7 +119,7 @@ export class LevelBase extends ex.Scene {
 
     this.backgroundColor = ex.Color.fromHex('#0070d4')
     
-    this.board = this.parse(this.levelData)
+    this.board = await this.parse(this.levelData)
 
     this.add(DustParticles)
 
@@ -127,9 +127,9 @@ export class LevelBase extends ex.Scene {
   }
 
   private _subscriptions: ex.Subscription[] = []
-  override onActivate() {
-    this.resetAndLoad()
-    this.turnManager.start()
+  override async onActivate() {
+    await this.resetAndLoad()
+    await this.turnManager.start()
     Resources.LevelMusic2.loop = true
     Resources.LevelMusic2.play()
   }
@@ -140,7 +140,7 @@ export class LevelBase extends ex.Scene {
     this._subscriptions.forEach(s => s.close())
   }
 
-  parse(levelData: LevelData): Board {
+  async parse(levelData: LevelData): Promise<Board> {
     const board = new Board(levelData.height, levelData.width, this)
     this.selectionManager = new SelectionManager(board)
     this.selectionManager.showCursor(0, 0)

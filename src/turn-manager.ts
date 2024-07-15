@@ -273,11 +273,11 @@ export class TurnManager {
       const win = await this.checkWin(this.currentPlayer)
       if (win) return
       await this.currentPlayer.turnEnd()
-      this.nextTurn()
+      await this.nextTurn()
     }
   }
 
-  nextTurn() {
+  async nextTurn() {
     this.maxTurns--
     this.currentPlayerIndex++
     this.currentPlayerIndex = this.currentPlayerIndex % this.players.length
