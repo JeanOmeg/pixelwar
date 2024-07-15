@@ -261,7 +261,7 @@ export class TurnManager {
   }
 
   async createStartScreen() {
-    this.engine.removeScene('start')
+    this.engine.remove('start')
     const startScreen = new StartScreen()
     this.engine.addScene('start', startScreen)
   }

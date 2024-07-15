@@ -10,7 +10,7 @@ export class StartScreen extends ex.Scene {
   p1VsP2Button!: ex.Actor
   cpuVscpuButton!: ex.Actor
 
-  override onInitialize(engine: ex.Engine): void {
+  onInitialize(engine: ex.Engine): void {
     this.engine = engine
 
     const titleFont = new ex.Font({
