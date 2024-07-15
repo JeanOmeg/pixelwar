@@ -32,6 +32,8 @@ import SpearmanASpriteSheetPath from '../res/minis/SpearmanA.png'
 import SpearmanBSpriteSheetPath from '../res/minis/SpearmanB.png'
 import WarriorASpriteSheetPath from '../res/minis/WarriorA.png'
 import WarriorBSpriteSheetPath from '../res/minis/WarriorB.png'
+import ThiefASpriteSheetPath from '../res/minis/ThiefA.png'
+import ThiefBSpriteSheetPath from '../res/minis/ThiefB.png'
 
 export const Resources = {
   // Utils
@@ -67,12 +69,14 @@ export const Resources = {
   SpearmanBSpriteSheet: new ex.ImageSource(SpearmanBSpriteSheetPath),
   WarriorASpriteSheet: new ex.ImageSource(WarriorASpriteSheetPath),
   WarriorBSpriteSheet: new ex.ImageSource(WarriorBSpriteSheetPath),
+  ThiefASpriteSheet: new ex.ImageSource(ThiefASpriteSheetPath),
+  ThiefBSpriteSheet: new ex.ImageSource(ThiefBSpriteSheetPath),
 } as const
 
 export const TileSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.TileSheet,
   grid: {
-    rows: 19,
+    rows: 22,
     columns: 10,
     spriteHeight: 32,
     spriteWidth: 32
@@ -778,6 +782,92 @@ export const WarriorBMove = ex.Animation.fromSpriteSheetCoordinates({
 
 export const WarriorBAttack = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 2, duration: 125 },
+    { x: 1, y: 2, duration: 125 },
+    { x: 2, y: 2, duration: 125 },
+    { x: 3, y: 2, duration: 125 }
+  ]
+})
+
+export const ThiefASpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.ThiefASpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const ThiefAIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 125 },
+    { x: 1, y: 0, duration: 125 },
+    { x: 2, y: 0, duration: 125 },
+    { x: 3, y: 0, duration: 125 }
+  ]
+})
+
+export const ThiefAMove = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 1, duration: 125 },
+    { x: 1, y: 1, duration: 125 },
+    { x: 2, y: 1, duration: 125 },
+    { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const ThiefAAttack = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 2, duration: 125 },
+    { x: 1, y: 2, duration: 125 },
+    { x: 2, y: 2, duration: 125 },
+    { x: 3, y: 2, duration: 125 }
+  ]
+})
+
+export const ThiefBSpriteSheet = ex.SpriteSheet.fromImageSource({
+  image: Resources.ThiefBSpriteSheet,
+  grid: {
+    rows: 4,
+    columns: 4,
+    spriteHeight: 32,
+    spriteWidth: 32
+  }
+})
+
+export const ThiefBIdle = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 0, duration: 125 },
+    { x: 1, y: 0, duration: 125 },
+    { x: 2, y: 0, duration: 125 },
+    { x: 3, y: 0, duration: 125 }
+  ]
+})
+
+export const ThiefBMove = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 1, duration: 125 },
+    { x: 1, y: 1, duration: 125 },
+    { x: 2, y: 1, duration: 125 },
+    { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const ThiefBAttack = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
   frameCoordinates: [
     { x: 0, y: 2, duration: 125 },

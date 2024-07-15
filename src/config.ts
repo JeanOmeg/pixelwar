@@ -1,11 +1,11 @@
 import * as ex from 'excalibur'
 
-import { ArcherAAttack, ArcherAIdle, ArcherAMove, ArcherBAttack, ArcherBIdle, ArcherBMove, BarbarianAAttack, BarbarianAIdle, BarbarianAMove, BarbarianBAttack, BarbarianBIdle, BarbarianBMove, ClericAAttack, ClericAIdle, ClericAMove, ClericBAttack, ClericBIdle, ClericBMove, FighterAAttack, FighterAIdle, FighterAMove, FighterBAttack, FighterBIdle, FighterBMove, MageAAttack, MageAIdle, MageAMove, MageBAttack, MageBIdle, MageBMove, SpearmanAAttack, SpearmanAIdle, SpearmanAMove, SpearmanBAttack, SpearmanBIdle, SpearmanBMove, WarriorAAttack, WarriorAIdle, WarriorAMove, WarriorBAttack, WarriorBIdle, WarriorBMove } from './resources'
+import { ArcherAAttack, ArcherAIdle, ArcherAMove, ArcherBAttack, ArcherBIdle, ArcherBMove, BarbarianAAttack, BarbarianAIdle, BarbarianAMove, BarbarianBAttack, BarbarianBIdle, BarbarianBMove, ClericAAttack, ClericAIdle, ClericAMove, ClericBAttack, ClericBIdle, ClericBMove, FighterAAttack, FighterAIdle, FighterAMove, FighterBAttack, FighterBIdle, FighterBMove, MageAAttack, MageAIdle, MageAMove, MageBAttack, MageBIdle, MageBMove, SpearmanAAttack, SpearmanAIdle, SpearmanAMove, SpearmanBAttack, SpearmanBIdle, SpearmanBMove, ThiefAAttack, ThiefAIdle, ThiefAMove, ThiefBAttack, ThiefBIdle, ThiefBMove, WarriorAAttack, WarriorAIdle, WarriorAMove, WarriorBAttack, WarriorBIdle, WarriorBMove } from './resources'
 export const SCALE = ex.vec(1.5, 1.5)
 export const ENEMY_SPEED = 200
 
-export type UnitType = 'ArcherA' | 'ArcherB' | 'BarbarianA' | 'BarbarianB' | 'ClericA' | 'ClericB' | 'FighterA' | 'FighterB' | 'MageA' | 'MageB' | 'SpearmanA' | 'SpearmanB' | 'WarriorA' | 'WarriorB'
-export type ClassType = 'AA' | 'AB' | 'BA' | 'BB' | 'CA' | 'CB' | 'FA' | 'FB' | 'MA' | 'MB' | 'SA' | 'SB' | 'WA' | 'WB'
+export type UnitType = 'ArcherA' | 'ArcherB' | 'BarbarianA' | 'BarbarianB' | 'ClericA' | 'ClericB' | 'FighterA' | 'FighterB' | 'MageA' | 'MageB' | 'SpearmanA' | 'SpearmanB' | 'WarriorA' | 'WarriorB' | 'ThiefA' | 'ThiefB'
+export type ClassType = 'AA' | 'AB' | 'BA' | 'BB' | 'CA' | 'CB' | 'FA' | 'FB' | 'MA' | 'MB' | 'SA' | 'SB' | 'WA' | 'WB' | 'TA' | 'TB'
 
 export interface UnitConfig {
   graphics: {
@@ -243,6 +243,38 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     movement: 4,
     attack: 4,
     defense: 5,
+    range: 1,
+    primary_color: 'FF0000',
+    secondary_color: '8B0000'
+  },
+
+  // Thiefs
+  ThiefA: {
+    graphics: {
+      offset: ex.vec(14, 14 * SCALE.y),
+      idle: ThiefAIdle,
+      move: ThiefAMove,
+      attack: ThiefAAttack
+    },
+    health: 10,
+    movement: 6,
+    attack: 5,
+    defense: 2,
+    range: 1,
+    primary_color: '0000FF',
+    secondary_color: '00008B'
+  },
+  ThiefB: {
+    graphics: {
+      offset: ex.vec(14, 14 * SCALE.y),
+      idle: ThiefBIdle,
+      move: ThiefBMove,
+      attack: ThiefBAttack
+    },
+    health: 10,
+    movement: 6,
+    attack: 5,
+    defense: 2,
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000'

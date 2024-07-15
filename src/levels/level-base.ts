@@ -42,6 +42,8 @@ export const CharToUnit = {
   SB: 'SpearmanB',
   WA: 'WarriorA',
   WB: 'WarriorB',
+  TA: 'ThiefA',
+  TB: 'ThiefB',
 } as const
 
 export class LevelBase extends ex.Scene {
@@ -115,8 +117,8 @@ export class LevelBase extends ex.Scene {
 
     Resources.LevelMusic2.stop()
 
-    this.add(new Cloud(ex.vec(800, 0)))
-
+    this.backgroundColor = ex.Color.fromHex('#0070d4')
+    
     this.board = this.parse(this.levelData)
 
     this.add(DustParticles)

@@ -4,7 +4,7 @@ import { LevelBase, LevelData } from './levels/level-base'
 import { StartScreen } from './levels/start-screen'
 import './ui-components/audio-menu'
 import { AudioManager } from './audio-manager'
-import { map1 } from './maps/maps'
+import { mapList } from './maps/maps'
 
 const game = new ex.Engine({
   resolution: {
@@ -30,11 +30,11 @@ const Level1Data: LevelData = {
   displayName: 'Gentle Plains',
   name: 'level1',
   nextLevel: 'start',
-  width: 26,
-  height: 15,
+  width: 28,
+  height: 17,
   maxTurns: 1000,
   players: [ 'Human', 'CPU' ],
-  data: map1
+  data: mapList[Math.floor(Math.random() * 2)]
 }
 
 const level1 = new LevelBase(Level1Data, 'level1')
