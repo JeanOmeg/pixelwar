@@ -1,6 +1,6 @@
 import * as ex from 'excalibur'
 import { Board } from '../board'
-import { ClassType, SCALE, UnitType } from '../config'
+import { ClassType, UnitType } from '../config'
 import { Unit } from '../unit'
 import { Player } from '../player'
 import { HumanPlayer } from '../human-player'
@@ -8,7 +8,6 @@ import { SelectionManager } from '../selection-manager'
 import { UIManager } from '../ui-manager'
 import { TurnManager } from '../turn-manager'
 import { ComputerPlayer } from '../computer-player'
-import { Cloud } from '../cloud'
 import { DustParticles } from '../dust-particles'
 import { Resources } from '../resources'
 import { Terrain } from '../maps/tarrain-enum'
@@ -118,11 +117,10 @@ export class LevelBase extends ex.Scene {
   }
 
   private _subscriptions: ex.Subscription[] = []
+
   override async onActivate() {
     await this.resetAndLoad()
     await this.turnManager.start()
-    Resources.LevelMusic2.loop = true
-    Resources.LevelMusic2.play()
   }
 
   override onDeactivate(): void {
@@ -132,6 +130,8 @@ export class LevelBase extends ex.Scene {
   }
 
   async parse(levelData: LevelData): Promise<Board> {
+    Resources.LevelMusic2.loop = true
+    Resources.LevelMusic2.play()
     const board = new Board(levelData.height, levelData.width, this)
     this.selectionManager = new SelectionManager(board)
     this.selectionManager.showCursor(0, 0)

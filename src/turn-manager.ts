@@ -30,7 +30,7 @@ export class TurnManager {
 
   constructor(public engine: ex.Engine, public level: LevelBase, public players: Player[], selectionManager: SelectionManager, public maxTurns: number) {
     if (players.length === 0) throw Error('Players should be non-zero in length')
-    this.currentPlayer = players[ this.currentPlayerIndex ]
+    this.currentPlayer = players[this.currentPlayerIndex]
     this.selectionManager = selectionManager
 
     this.turnText = new ex.Text({
@@ -86,7 +86,7 @@ export class TurnManager {
     })
     this.victory.graphics.opacity = 0
     this.victory.graphics.add('text', victory)
-    this.victory.graphics.show('text')
+    this.victory.graphics.use('text')
     engine.add(this.victory)
 
     const victoryDirections = new ex.Text({
@@ -216,7 +216,7 @@ export class TurnManager {
       ])
     ).toPromise()
   }
-  
+
   async showVictory() {
     const transitionTime = 1200
     await this.victory.actions.runAction(
@@ -251,15 +251,19 @@ export class TurnManager {
       if (player instanceof ComputerPlayer) {
         await this.showVictory()
         this.engine.input.pointers.once('down', () => {
-          setTimeout(() => {
-            this.engine.addScene('startScreen', new StartScreen());
-            this.engine.goToScene('startScreen')
-          }, 1000)
+          this.createStartScreen()
+          this.engine.goToScene('start')
         })
         return true
       }
     }
     return false
+  }
+
+  createStartScreen() {
+    this.engine.removeScene('start')
+    const startScreen = new StartScreen()
+    this.engine.addScene('start', startScreen)
   }
 
   async start() {
@@ -283,7 +287,7 @@ export class TurnManager {
     this.maxTurns--
     this.currentPlayerIndex++
     this.currentPlayerIndex = this.currentPlayerIndex % this.players.length
-    this.currentPlayer = this.players[ this.currentPlayerIndex ]
+    this.currentPlayer = this.players[this.currentPlayerIndex]
     if (this.currentPlayerIndex === 0) {
       this.currentTurn++
     }
