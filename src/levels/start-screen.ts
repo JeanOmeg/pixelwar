@@ -1,7 +1,6 @@
 /// <reference lib="dom" />
 
 import * as ex from 'excalibur'
-import { Cloud } from '../cloud'
 import { Resources } from '../resources'
 import { SCALE } from '../config'
 
@@ -13,8 +12,6 @@ export class StartScreen extends ex.Scene {
 
   override onInitialize(engine: ex.Engine): void {
     this.engine = engine
-
-    this.add(new Cloud(ex.vec(0, 0)))
 
     const titleFont = new ex.Font({
       family: 'notjamslab14',
@@ -85,10 +82,12 @@ export class StartScreen extends ex.Scene {
     }))
 
     this.p1VsCpuButton.on('pointerup', async () => {
+      this.p1VsP2Button.kill()
+      this.cpuVscpuButton.kill()
       Resources.SelectSound.play()
       localStorage.setItem('start_screen', 'p1vscpu')
       await this.p1VsCpuButton.actions.blink(100, 100, 6).toPromise()
-      this.engine.goToScene('level1')
+      this.engine.goToScene(this.selectMap())
     })
 
     this.p1VsCpuButton.scale = SCALE
@@ -128,10 +127,12 @@ export class StartScreen extends ex.Scene {
     }))
 
     this.p1VsP2Button.on('pointerup', async () => {
+      this.p1VsCpuButton.kill()
+      this.cpuVscpuButton.kill()
       Resources.SelectSound.play()
       localStorage.setItem('start_screen', 'p1vsp2')
       await this.p1VsP2Button.actions.blink(100, 100, 6).toPromise()
-      this.engine.goToScene('level1')
+      this.engine.goToScene(this.selectMap())
     })
 
     this.p1VsP2Button.scale = SCALE
@@ -171,53 +172,17 @@ export class StartScreen extends ex.Scene {
     }))
 
     this.cpuVscpuButton.on('pointerup', async () => {
+      this.p1VsCpuButton.kill()
+      this.p1VsP2Button.kill()
       Resources.SelectSound.play()
       localStorage.setItem('start_screen', 'cpuvscpu')
       await this.cpuVscpuButton.actions.blink(100, 100, 6).toPromise()
-      this.engine.goToScene('level1')
+      this.engine.goToScene(this.selectMap())
     })
 
     this.cpuVscpuButton.scale = SCALE
     this.add(this.cpuVscpuButton)
-
-    // if (this.isMobile()) {
-    //   this.setLandscapeAndFullscreen()
-    // }
   }
-
-  isMobile() {
-    const userAgent = navigator.userAgent
-    const mobileRegex = /Android|Tablet|webOS|iPhone/i
-    return mobileRegex.test(userAgent)
-  }
-
-  // setLandscapeAndFullscreen() {
-  //   const docElement = document.documentElement as HTMLElement & {
-  //     mozRequestFullScreen?: () => Promise<void>
-  //     webkitRequestFullscreen?: () => Promise<void>
-  //     msRequestFullscreen?: () => Promise<void>
-  //   }
-  
-  //   if (docElement.requestFullscreen) {
-  //     docElement.requestFullscreen()
-  //   } else if (docElement.mozRequestFullScreen) {
-  //     docElement.mozRequestFullScreen()
-  //   } else if (docElement.webkitRequestFullscreen) {
-  //     docElement.webkitRequestFullscreen()
-  //   } else if (docElement.msRequestFullscreen) {
-  //     docElement.msRequestFullscreen()
-  //   }
-  
-  //   const screenOrientation = screen.orientation as ScreenOrientation & {
-  //     lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>
-  //   }
-  
-  //   if (screenOrientation && screenOrientation.lock) {
-  //     screenOrientation.lock('landscape').catch(function (error) {
-  //       console.error('Erro ao tentar definir a orientação para paisagem:', error)
-  //     })
-  //   }
-  // }
 
   _subscriptions: ex.Subscription[] = []
   onActivate(): void {
@@ -228,5 +193,10 @@ export class StartScreen extends ex.Scene {
   onDeactivate(): void {
     Resources.TitleMusic.stop()
     this._subscriptions.forEach(h => h.close())
+  }
+
+  selectMap(): string {
+    const maps = ['level1-map1', 'level1-map2']
+    return maps[Math.floor(Math.random() * 2)]
   }
 }

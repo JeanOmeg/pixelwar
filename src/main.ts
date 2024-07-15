@@ -26,19 +26,33 @@ AudioManager.init()
 const startScreen = new StartScreen()
 game.addScene('start', startScreen)
 
-const Level1Data: LevelData = {
+const Level1M1Data: LevelData = {
   displayName: 'Gentle Plains',
-  name: 'level1',
+  name: 'level1-map1',
   nextLevel: 'start',
   width: 28,
   height: 17,
   maxTurns: 1000,
   players: [ 'Human', 'CPU' ],
-  data: mapList[Math.floor(Math.random() * 2)]
+  data: mapList[0]
 }
 
-const level1 = new LevelBase(Level1Data, 'level1')
-game.addScene(level1.name, level1)
+const level1m1 = new LevelBase(Level1M1Data, 'level1-map1')
+game.addScene(level1m1.name, level1m1)
+
+const Level1m2Data: LevelData = {
+  displayName: 'Gentle Plains',
+  name: 'level1-map2',
+  nextLevel: 'start',
+  width: 28,
+  height: 17,
+  maxTurns: 1000,
+  players: [ 'Human', 'CPU' ],
+  data: mapList[1]
+}
+
+const level1m2 = new LevelBase(Level1m2Data, 'level1-map2')
+game.addScene(level1m2.name, level1m2)
 
 export const originalCameraPos = game.currentScene.camera.pos.clone()
 export const originalZoom = game.currentScene.camera.zoom
