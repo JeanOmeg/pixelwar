@@ -40,6 +40,8 @@ const Level1M1Data: LevelData = {
 const level1m1 = new LevelBase(Level1M1Data, 'level1-map1')
 game.addScene(level1m1.name, level1m1)
 
+
+
 const Level1m2Data: LevelData = {
   displayName: 'Gentle Plains',
   name: 'level1-map2',
