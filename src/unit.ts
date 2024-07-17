@@ -210,7 +210,6 @@ export class Unit extends ex.Actor {
     await this.actions.runAction(parallel).toPromise()
     this.setAnim(this.unitConfig.graphics.idle.clone())
     
-    
     other.health -= damage
     await ex.Util.delay(350)
 
