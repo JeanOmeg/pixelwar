@@ -14,9 +14,10 @@ const game = new ex.Engine({
   displayMode: ex.DisplayMode.FitScreenAndFill,
   antialiasing: false,
   suppressConsoleBootMessage: true,
+  suppressHiDPIScaling: false,
   backgroundColor: ex.Color.Black,
   configurePerformanceCanvas2DFallback: {
-    allow: true
+    allow: false
   }
 })
 
