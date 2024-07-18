@@ -17,10 +17,8 @@ export abstract class Player {
     units.forEach(u => u.reset())
   }
 
-  hasLost() {
-    const units = this.board.getUnits()
-      .filter(u => u.player === this)
-
+  async hasLost() {
+    const units = this.board.getUnits().filter(u => u.player === this)
     return units.length === 0
   }
 

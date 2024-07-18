@@ -9,7 +9,6 @@ import { Resources } from "./resources"
 
 
 export class HumanPlayer extends Player {
-  public passed = false
   private humanMove = new ex.Future<void>()
 
   constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public uiManager: UIManager, board: Board) {
@@ -32,7 +31,8 @@ export class HumanPlayer extends Player {
           await this.maybeSelectUnit(unit.cell)
         } else {
           await this.maybeAttack(unit, maybeClickedCell)
-          if (!this.hasWon()) {
+          const won = this.hasWon()
+          if (!won) {
             await this.maybeSelectUnit(unit.cell)
           }
         }
@@ -102,7 +102,8 @@ export class HumanPlayer extends Player {
       this.selectionManager.reset()
     }
 
-    if (this.hasWon()) {
+    const won = this.hasWon()
+    if (won) {
       this.humanMove.resolve()
       this.uiManager.dismissAll()
     }
@@ -148,8 +149,8 @@ export class HumanPlayer extends Player {
         attack: () => {
           this.selectionManager.selectUnit(cell.unit!, 'attack')
         },
-        pass: () => {
-          cell.unit?.pass()
+        pass: async () => {
+          await cell.unit?.pass()
           this.selectionManager.reset()
           this.humanMove.resolve()
         }
@@ -171,30 +172,21 @@ export class HumanPlayer extends Player {
     this.active = true
     await this.humanMove.promise
     this.humanMove = new ex.Future()
-
   }
 
-  hasMoves() {
-    const units = this.board.getUnits()
-      .filter(u => u.player === this)
-      .filter(u => u.hasActions())
-    return units.length > 0 && !this.passed && !this.hasWon()
+  async hasMoves() {
+    const units = this.board.getUnits().filter(u => u.player === this).filter(u => u.hasActions())
+    return units.length > 0 && !this.hasWon()
   }
 
   override async makeMove(): Promise<boolean> {
-    while (this.hasMoves()) {
-      await this.waitForHumanMove()
-    }
+    let moves = false
+    do {
+      moves = await this.hasMoves()
+      if (moves) {
+        await this.waitForHumanMove()
+      }
+    } while (moves)
     return true
-  }
-
-  lose() {
-    this.active = false
-    const playerUnits = this.board.getUnits().filter(u => u.player instanceof HumanPlayer)
-    playerUnits.forEach(u => {
-      u.health = 0
-      u.cell?.removeUnit(u)
-    })
-    this.humanMove.resolve()
   }
 }

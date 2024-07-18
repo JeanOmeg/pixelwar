@@ -8,11 +8,6 @@ import { Resources } from './resources'
 import { LevelBase } from './levels/level-base'
 import { StartScreen } from './levels/start-screen'
 
-/**
- * Manages player turns, keeps track of which of the N number of players turn it is.
- * 
- * Requests moves from either human or AI players
- */
 export class TurnManager {
   public currentTurn = 1
   public currentPlayer: Player
@@ -127,6 +122,7 @@ export class TurnManager {
         quality: 4
       }),
     })
+
     const failureText2 = new ex.Text({
       text: `Click to try again!`,
       font: new ex.Font({
@@ -139,6 +135,7 @@ export class TurnManager {
         quality: 4
       }),
     })
+
     const failureGroup = new ex.GraphicsGroup({
       members: [
         new ex.Rectangle({
@@ -155,6 +152,7 @@ export class TurnManager {
       coordPlane: ex.CoordPlane.Screen,
       z: 10
     })
+
     this.failure.graphics.opacity = 0
     this.failure.graphics.use(failureGroup)
     engine.add(this.failure)
@@ -187,12 +185,14 @@ export class TurnManager {
     this.turnText.color = color
     const transitionTime = 500
     const waitTime = 500
+
     await this.turnActor.actions.runAction(
       new ex.ParallelActions([
         new ex.ActionSequence(this.turnActor, ctx => ctx.easeTo(this.centerScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic).delay(waitTime).easeTo(this.bottomScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic)),
         new ex.ActionSequence(this.turnActor, ctx => ctx.fade(1, transitionTime).delay(waitTime).fade(0, transitionTime))
       ])
     ).toPromise()
+
     this.turnActor.pos = this.topScreen
 
     this.turnText.text = `${this.currentPlayer.name} - Phase`
@@ -202,6 +202,7 @@ export class TurnManager {
         new ex.ActionSequence(this.turnActor, ctx => ctx.fade(1, transitionTime).delay(waitTime).fade(0, transitionTime))
       ])
     ).toPromise()
+
     this.turnActor.pos = this.topScreen
   }
 
@@ -239,19 +240,21 @@ export class TurnManager {
   }
 
   async checkWin(player: Player) {
-    if (player.hasLost() || this.maxTurns == 0) {
+    const lost = await player.hasLost()
+    if (lost || this.maxTurns == 0) {
       if (player instanceof HumanPlayer) {
         await this.showGameOver()
-        this.engine.input.pointers.once('down', () => {
+        this.engine.input.pointers.once('down', async () => {
           Resources.LevelMusic2.stop()
-          this.engine.goToScene(this.level.levelData.name)
+          await this.engine.goToScene(this.level.levelData.name)
         })
         return true
       }
+
       if (player instanceof ComputerPlayer) {
         await this.showVictory()
         this.engine.input.pointers.once('down', async () => {
-          this.engine.goToScene(this.level.levelData.nextLevel)
+          await this.engine.goToScene(this.level.levelData.nextLevel)
         })
         return true
       }
@@ -267,7 +270,8 @@ export class TurnManager {
 
   async start() {
     while (this.maxTurns >= 0) {
-      if (await this.checkWin(this.currentPlayer)) return
+      const winFirst = await this.checkWin(this.currentPlayer)
+      if (winFirst) return
       this.selectionManager.selectPlayer(this.currentPlayer)
       await this.showTurnDisplay()
       await this.currentPlayer.turnStart()

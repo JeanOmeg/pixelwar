@@ -1,5 +1,4 @@
 import * as ex from 'excalibur'
-
 import { Player } from "./player"
 import { SelectionManager } from "./selection-manager"
 import { Board } from './board'
@@ -93,7 +92,6 @@ export class ComputerPlayer extends Player {
       attacked = true
     }
     this.selectionManger.reset()
-    await ex.Util.delay(ENEMY_SPEED)
     return attacked
   }
 
@@ -104,20 +102,17 @@ export class ComputerPlayer extends Player {
       let range: PathNodeComponent[] = []
       if (unit.cell) {
         range = this.board.pathFinder.getRange(unit.cell.pathNode, this.mask, unit.unitConfig.movement)
-        await ex.Util.delay(ENEMY_SPEED)
       }
 
       let validCells = this.findValidMoveCells(unit)
 
       const closestEnemy = this.findClosestEnemy(unit)
-      await ex.Util.delay(ENEMY_SPEED)
 
       if (closestEnemy) {
         const attacked = await this.maybeAttack(unit, closestEnemy)
 
         if (!attacked) {
           const closestCell = this.findClosestCell(closestEnemy, validCells)
-          await ex.Util.delay(ENEMY_SPEED)
           this.selectionManger.selectUnit(unit, 'move')
 
           const currentPath = this.selectionManger.findPath(closestCell!, range)
@@ -131,18 +126,9 @@ export class ComputerPlayer extends Player {
         }
         this.selectionManger.reset()
       }
-      unit.pass()
+      await unit.pass()
     }
     await ex.Util.delay(ENEMY_SPEED)
     return true
-  }
-
-  lose() {
-    this.active = false
-    const computerUnits = this.board.getUnits().filter(u => u.player instanceof ComputerPlayer)
-    computerUnits.forEach(u => {
-      u.health = 0
-      u.cell?.removeUnit(u)
-    })
   }
 }

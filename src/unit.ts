@@ -14,6 +14,7 @@ export class Unit extends ex.Actor {
   unitConfig: UnitConfig
   moved = false
   attacked = false
+  passed = false
   anim: ex.Animation
   miniDirection: string = 'right'
   health: number
@@ -122,6 +123,7 @@ export class Unit extends ex.Actor {
   reset() {
     this.moved = false
     this.attacked = false
+    this.passed = false
   }
 
   canAttack() {
@@ -133,7 +135,11 @@ export class Unit extends ex.Actor {
   }
 
   hasActions() {
-    return this.canMove() || this.canAttack()
+    if (this.passed) {
+      return false
+    } else {
+      return this.canMove() || this.canAttack()
+    }
   }
 
   availableActions() {
@@ -147,9 +153,10 @@ export class Unit extends ex.Actor {
     return available
   }
 
-  pass() {
+  async pass() {
     this.moved = true
     this.attacked = true
+    this.passed = true
   }
 
   getPossibleTargets() {
