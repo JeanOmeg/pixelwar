@@ -193,6 +193,8 @@ export class TurnManager {
       ])
     ).toPromise()
 
+    await ex.Util.delay(150)
+
     this.turnActor.pos = this.topScreen
 
     this.turnText.text = `${this.currentPlayer.name} - Phase`
@@ -204,6 +206,7 @@ export class TurnManager {
     ).toPromise()
 
     this.turnActor.pos = this.topScreen
+    await ex.Util.delay(150)
   }
 
   async showGameOver() {
@@ -274,6 +277,7 @@ export class TurnManager {
       if (winFirst) return
       this.selectionManager.selectPlayer(this.currentPlayer)
       await this.showTurnDisplay()
+      await ex.Util.delay(250)
       await this.currentPlayer.turnStart()
       let move = true
       do {
