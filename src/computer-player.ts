@@ -15,7 +15,7 @@ export class ComputerPlayer extends Player {
 
   override async turnStart(): Promise<void> {
     this.active = true
-    let units = await this.board.getUnits()
+    let units = this.board.getUnits()
     units = units.filter(u => u.player === this)
     units.forEach(u => u.reset())
   }
@@ -86,7 +86,6 @@ export class ComputerPlayer extends Player {
       await ex.Util.delay(ENEMY_SPEED)
 
       await unit.attack(closestEnemy)
-      await ex.Util.delay(150)
 
       attacked = true
     }
@@ -95,7 +94,7 @@ export class ComputerPlayer extends Player {
   }
 
   override async makeMove(): Promise<boolean> {
-    let units = await this.board.getUnits()
+    let units = this.board.getUnits()
     await ex.Util.delay(150)
 
     units = units.filter(u => u.player === this)
@@ -108,12 +107,10 @@ export class ComputerPlayer extends Player {
 
       let validCells = this.findValidMoveCells(unit)
 
-      const closestEnemy = this.findClosestEnemy(unit)
+      const closestEnemy = await this.findClosestEnemy(unit)
 
       if (closestEnemy) {
         const attacked = await this.maybeAttack(unit, closestEnemy as unknown as Unit)
-        await ex.Util.delay(150)
-
 
         if (!attacked) {
           const closestCell = this.findClosestCell(closestEnemy as unknown as Unit, validCells)

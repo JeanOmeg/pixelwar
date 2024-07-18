@@ -12,20 +12,16 @@ export abstract class Player {
 
   async turnStart(): Promise<void> {
     this.active = true
-    let units = await this.board.getUnits()
-    units = units.filter(u => u.player === this)
-    units.forEach(u => u.reset())
+    this.board.getUnits().filter(u => u.player === this).forEach(u => u.reset())
   }
 
-  async hasLost() {
-    let units = await this.board.getUnits()
-    units = units.filter(u => u.player === this)
+  hasLost() {
+    const units = this.board.getUnits().filter(u => u.player === this)
     return units.length === 0
   }
 
-  async hasWon() {
-    let units = await this.board.getUnits()
-    units = units.filter(u => u.player !== this)
+  hasWon() {
+    const units = this.board.getUnits().filter(u => u.player !== this)
     return units.length === 0
   }
 

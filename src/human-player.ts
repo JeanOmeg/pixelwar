@@ -31,7 +31,7 @@ export class HumanPlayer extends Player {
           await this.maybeSelectUnit(unit.cell)
         } else {
           await this.maybeAttack(unit, maybeClickedCell)
-          const won = await this.hasWon()
+          const won = this.hasWon()
           if (!won) {
             await this.maybeSelectUnit(unit.cell)
           }
@@ -102,7 +102,7 @@ export class HumanPlayer extends Player {
       this.selectionManager.reset()
     }
 
-    const won = await this.hasWon()
+    const won = this.hasWon()
     if (won) {
       this.humanMove.resolve()
       this.uiManager.dismissAll()
@@ -175,9 +175,9 @@ export class HumanPlayer extends Player {
   }
 
   async hasMoves() {
-    let units = await this.board.getUnits()
+    let units = this.board.getUnits()
     units = units.filter(u => u.player === this).filter(u => u.hasActions())
-    const won = await this.hasWon()
+    const won = this.hasWon()
     return units.length > 0 && !won
   }
 
