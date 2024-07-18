@@ -13,7 +13,7 @@ const game = new ex.Engine({
   },
   displayMode: ex.DisplayMode.FitScreenAndFill,
   pixelArt: true,
-  suppressHiDPIScaling: true,
+  pixelRatio: 1,
   suppressConsoleBootMessage: true,
   backgroundColor: ex.Color.Black,
   configurePerformanceCanvas2DFallback: {
