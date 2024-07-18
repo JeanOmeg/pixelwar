@@ -15,9 +15,9 @@ export class TurnManager {
   public selectionManager: SelectionManager
   private turnActor: ex.Actor
   private turnText: ex.Text
-  private topScreen = ex.vec(400, -2000)
-  private centerScreen = ex.vec(400, 400)
-  private bottomScreen = ex.vec(400, 2000)
+  private topScreen = ex.vec(0, 0)
+  private centerScreen = ex.vec(0, 0)
+  private bottomScreen = ex.vec(0, 0)
   private victory: ex.Actor
   private victoryDirections: ex.Actor
   private failure: ex.Actor
@@ -27,6 +27,12 @@ export class TurnManager {
     if (players.length === 0) throw Error('Players should be non-zero in length')
     this.currentPlayer = players[this.currentPlayerIndex]
     this.selectionManager = selectionManager
+
+    const screenWidth = engine.screen.resolution.width
+
+    this.topScreen = ex.vec(screenWidth / 2.5, -1200)
+    this.centerScreen = ex.vec(screenWidth / 2.5, 400)
+    this.bottomScreen = ex.vec(screenWidth / 2.5, 1200)
 
     this.turnText = new ex.Text({
       text: `Turn ${this.currentTurn}`,
@@ -40,8 +46,6 @@ export class TurnManager {
       }),
     })
 
-    const screenWidth = engine.screen.resolution.width
-
     this.turnActor = new ex.Actor({
       name: 'turn text',
       pos: this.topScreen,
@@ -53,7 +57,7 @@ export class TurnManager {
     this.turnActor.graphics.use('text')
     this.turnActor.addChild(new ex.Actor({
       color: new ex.Color(255, 255, 255, .4),
-      width: screenWidth,
+      width: 800,
       height: 100,
     }))
     engine.add(this.turnActor)
@@ -181,10 +185,10 @@ export class TurnManager {
         break
     }
 
-    this.turnText.text = `Turn ${(this.turn - this.maxTurns) + 1} - Round ${this.currentTurn}`
+    this.turnText.text = `${this.currentPlayer.name} Phase - Turn ${(this.turn - this.maxTurns) + 1} - Round ${this.currentTurn}`
     this.turnText.color = color
-    const transitionTime = 500
-    const waitTime = 500
+    const transitionTime = 1000
+    const waitTime = 1000
 
     await this.turnActor.actions.runAction(
       new ex.ParallelActions([
@@ -193,20 +197,8 @@ export class TurnManager {
       ])
     ).toPromise()
 
-    await ex.Util.delay(150)
-
     this.turnActor.pos = this.topScreen
-
-    this.turnText.text = `${this.currentPlayer.name} - Phase`
-    await this.turnActor.actions.runAction(
-      new ex.ParallelActions([
-        new ex.ActionSequence(this.turnActor, ctx => ctx.easeTo(this.centerScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic).delay(waitTime).easeTo(this.bottomScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic)),
-        new ex.ActionSequence(this.turnActor, ctx => ctx.fade(1, transitionTime).delay(waitTime).fade(0, transitionTime))
-      ])
-    ).toPromise()
-
-    this.turnActor.pos = this.topScreen
-    await ex.Util.delay(150)
+    return true
   }
 
   async showGameOver() {
@@ -277,7 +269,7 @@ export class TurnManager {
       if (winFirst) return
       this.selectionManager.selectPlayer(this.currentPlayer)
       await this.showTurnDisplay()
-      await ex.Util.delay(250)
+      await ex.Util.delay(1000)
       await this.currentPlayer.turnStart()
       let move = true
       do {
