@@ -47,7 +47,8 @@ export class Unit extends ex.Actor {
   }
 
   onPostUpdate(): void {
-    if (!this.hasActions()) {
+    const actions = this.hasActions()
+    if (!actions) {
       this.anim.tint = ex.Color.Gray
     } else {
       this.anim.tint = ex.Color.White

@@ -38,7 +38,7 @@ export class Board {
     ).scale(.5)
   }
 
-  getUnits() {
+  async getUnits() {
     let result: Unit[] = []
     for (let cell of this.cells) {
       if (cell.unit && cell.unit.active) {

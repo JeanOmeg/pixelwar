@@ -15,21 +15,18 @@ export class ComputerPlayer extends Player {
 
   override async turnStart(): Promise<void> {
     this.active = true
-    const units = this.board.getUnits()
-      .filter(u => u.player === this)
+    let units = await this.board.getUnits()
+    units = units.filter(u => u.player === this)
     units.forEach(u => u.reset())
   }
   override async turnEnd(): Promise<void> {
     this.active = false
   }
 
-  findClosestEnemy(unit: Unit): Unit | null {
-    const enemyCells = this.board.getUnits()
-      .filter(u => u.player !== this)
-      .map(u => u.cell)
-      .filter(c => !!c) as Cell[]
-
-    const closestCell = this.findClosestCell(unit, enemyCells)
+  async findClosestEnemy(unit: Unit): Promise<Unit | null> {
+    let enemyCells = await this.board.getUnits()
+    enemyCells = enemyCells.filter(u => u.player !== this).map(u => u.cell).filter(c => !!c) as any
+    const closestCell = this.findClosestCell(unit, enemyCells as unknown as Cell[])
     if (closestCell?.unit) {
       return closestCell.unit
     }
@@ -48,7 +45,7 @@ export class ComputerPlayer extends Player {
   }
 
   findClosestCell(unit: Unit, cells: Cell[]) {
-    let closest = cells[ 0 ]
+    let closest = cells[0]
     if (closest) {
       let distance = Infinity
       for (let cell of cells) {
@@ -85,10 +82,12 @@ export class ComputerPlayer extends Player {
       this.selectionManger.showHighlight(currentRange, 'attack')
       await ex.Util.delay(ENEMY_SPEED)
 
-      this.selectionManger.showHighlight([ closestEnemy.cell!.pathNode ], 'path')
+      this.selectionManger.showHighlight([closestEnemy.cell!.pathNode], 'path')
       await ex.Util.delay(ENEMY_SPEED)
 
       await unit.attack(closestEnemy)
+      await ex.Util.delay(150)
+
       attacked = true
     }
     this.selectionManger.reset()
@@ -96,7 +95,10 @@ export class ComputerPlayer extends Player {
   }
 
   override async makeMove(): Promise<boolean> {
-    const units = this.board.getUnits().filter(u => u.player === this)
+    let units = await this.board.getUnits()
+    await ex.Util.delay(150)
+
+    units = units.filter(u => u.player === this)
 
     for (let unit of units) {
       let range: PathNodeComponent[] = []
@@ -109,10 +111,12 @@ export class ComputerPlayer extends Player {
       const closestEnemy = this.findClosestEnemy(unit)
 
       if (closestEnemy) {
-        const attacked = await this.maybeAttack(unit, closestEnemy)
+        const attacked = await this.maybeAttack(unit, closestEnemy as unknown as Unit)
+        await ex.Util.delay(150)
+
 
         if (!attacked) {
-          const closestCell = this.findClosestCell(closestEnemy, validCells)
+          const closestCell = this.findClosestCell(closestEnemy as unknown as Unit, validCells)
           this.selectionManger.selectUnit(unit, 'move')
 
           const currentPath = this.selectionManger.findPath(closestCell!, range)
@@ -122,7 +126,7 @@ export class ComputerPlayer extends Player {
           await this.selectionManger.selectDestinationAndMove(unit, closestCell!)
           await ex.Util.delay(ENEMY_SPEED)
 
-          await this.maybeAttack(unit, closestEnemy)
+          await this.maybeAttack(unit, closestEnemy as unknown as Unit)
         }
         this.selectionManger.reset()
       }
