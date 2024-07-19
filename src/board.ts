@@ -7,7 +7,6 @@ import { Unit } from './unit'
 export class Board {
   tileWidth: number = 32
   tileHeight: number = 32
-  margin: number = 0
   rows: number
   cols: number
 
@@ -33,8 +32,8 @@ export class Board {
 
   getCenter() {
     return ex.vec(
-      this.cols * ((this.tileWidth + this.margin) * SCALE.x),
-      this.rows * ((this.tileHeight + this.margin) * SCALE.y)
+      this.cols * (this.tileWidth * SCALE.x),
+      this.rows * (this.tileHeight * SCALE.y)
     ).scale(.5)
   }
 
@@ -54,8 +53,8 @@ export class Board {
 
   getCellByWorldPos(pos: ex.Vector): Cell | null {
     return this.getCell(
-      Math.floor((pos.x /*- BOARD_OFFSET.x*/) / ((this.tileWidth + this.margin) * SCALE.x)),
-      Math.floor((pos.y /*- BOARD_OFFSET.y*/) / ((this.tileHeight + this.margin) * SCALE.y))
+      Math.floor(pos.x / (this.tileWidth * SCALE.x)),
+      Math.floor(pos.y  / (this.tileHeight * SCALE.y))
     )
   }
 

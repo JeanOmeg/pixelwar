@@ -28,8 +28,8 @@ export class Cell extends ex.Actor {
     super({
       name: `cell(${x}, ${y})`,
       pos: ex.vec(
-        x * (board.tileWidth + board.margin) * SCALE.x,
-        y * (board.tileHeight + board.margin) * SCALE.y
+        x * (board.tileWidth) * SCALE.x,
+        y * (board.tileHeight) * SCALE.y
       ),
       anchor: ex.Vector.Zero
     })
