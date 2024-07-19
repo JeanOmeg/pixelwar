@@ -7,7 +7,6 @@ import RedHighlightSheetPath from '../res/utils/DamageCursor.png'
 import HeartSheetPath from '../res/utils/HeartSheet.png'
 import ExplosionPath from '../res/explosion.png'
 import ExplosionSoundPath from '../res/explosion.wav'
-import UISheetPath from '../res/UISheet.png'
 import SmokePath from '../res/Smoke.png'
 import HitSoundPath from '../res/hit.wav'
 import MoveSoundPath from '../res/move.wav'
@@ -40,7 +39,6 @@ export const Resources = {
   TileSheet: new ex.ImageSource(TileSpritePath),
   CursorSheet: new ex.ImageSource(CursorPath),
   HeartSheet: new ex.ImageSource(HeartSheetPath),
-  UISheet: new ex.ImageSource(UISheetPath),
   HighlightSheet: new ex.ImageSource(HighlightSheetPath),
   RedHighlightSheet: new ex.ImageSource(RedHighlightSheetPath),
   SmokeSheet: new ex.ImageSource(SmokePath),
