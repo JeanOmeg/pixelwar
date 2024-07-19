@@ -12,6 +12,7 @@ export class StartScreen extends ex.Scene {
   nextLevel!: string
 
   override onInitialize(engine: ex.Engine): void {
+    this.setLandscapeAndFullscreen()
     this.engine = engine
     this.nextLevel = this.selectMap()
 
@@ -211,5 +212,33 @@ export class StartScreen extends ex.Scene {
   selectMap(): string {
     const maps = ['level1-map1', 'level1-map2']
     return maps[Math.floor(Math.random() * 2)]
+  }
+
+  setLandscapeAndFullscreen() {
+    const docElement = document.documentElement as HTMLElement & {
+      mozRequestFullScreen?: () => Promise<void>
+      webkitRequestFullscreen?: () => Promise<void>
+      msRequestFullscreen?: () => Promise<void>
+    }
+
+    if (docElement.requestFullscreen) {
+      docElement.requestFullscreen()
+    } else if (docElement.mozRequestFullScreen) {
+      docElement.mozRequestFullScreen()
+    } else if (docElement.webkitRequestFullscreen) {
+      docElement.webkitRequestFullscreen()
+    } else if (docElement.msRequestFullscreen) {
+      docElement.msRequestFullscreen()
+    }
+
+    const screenOrientation = screen.orientation as ScreenOrientation & {
+      lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>
+    }
+
+    if (screenOrientation && screenOrientation.lock) {
+      screenOrientation.lock('landscape').catch(function (error) {
+        console.error('Erro ao tentar definir a orientação para paisagem:', error)
+      })
+    }
   }
 }
