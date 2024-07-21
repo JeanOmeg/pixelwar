@@ -1,6 +1,6 @@
 import * as ex from 'excalibur'
 // Utils
-import TileSpritePath from '../res/tiles/FullTile.png'
+import TileSpritePath from '../res/tiles/NewFullTile.png'
 import CursorPath from '../res/utils/SelectionCursor.png'
 import HighlightSheetPath from '../res/utils/MoveCursor.png'
 import RedHighlightSheetPath from '../res/utils/DamageCursor.png'
@@ -74,7 +74,7 @@ export const Resources = {
 export const TileSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.TileSheet,
   grid: {
-    rows: 22,
+    rows: 19,
     columns: 10,
     spriteHeight: 32,
     spriteWidth: 32
