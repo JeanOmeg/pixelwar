@@ -32,8 +32,6 @@ export class UIManager {
         this.unitMenu.top = pagePos.y
       }
     })
-
-
   }
 
   isMobile() {
@@ -56,15 +54,9 @@ export class UIManager {
 
   showUnitMenu(unit: Unit, options: MenuOptions): UnitMenu {
     const menu = this.unitMenu
-    const pagePos = this.engine.screen.worldToPageCoordinates(unit.pos)
     
-    if (unit.name.lastIndexOf('A') > 0) {
-      menu.left = pagePos.x + (this.worldDistanceToPage(1) * 18)
-    } else {
-      menu.left = pagePos.x - (this.worldDistanceToPage(1) * 64)
-    }
-    
-    menu.top = pagePos.y
+    menu.left = 25
+    menu.top = 25
     menu.unit = unit
 
     const move = () => {

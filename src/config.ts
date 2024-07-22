@@ -1,6 +1,5 @@
 import * as ex from 'excalibur'
-
-import { ArcherAAttack, ArcherAIdle, ArcherAMove, ArcherBAttack, ArcherBIdle, ArcherBMove, BarbarianAAttack, BarbarianAIdle, BarbarianAMove, BarbarianBAttack, BarbarianBIdle, BarbarianBMove, ClericAAttack, ClericAIdle, ClericAMove, ClericBAttack, ClericBIdle, ClericBMove, FighterAAttack, FighterAIdle, FighterAMove, FighterBAttack, FighterBIdle, FighterBMove, MageAAttack, MageAIdle, MageAMove, MageBAttack, MageBIdle, MageBMove, SpearmanAAttack, SpearmanAIdle, SpearmanAMove, SpearmanBAttack, SpearmanBIdle, SpearmanBMove, ThiefAAttack, ThiefAIdle, ThiefAMove, ThiefBAttack, ThiefBIdle, ThiefBMove, WarriorAAttack, WarriorAIdle, WarriorAMove, WarriorBAttack, WarriorBIdle, WarriorBMove } from './resources'
+import { ArcherAAttack, ArcherAAttackDown, ArcherAAttackUp, ArcherADeath, ArcherADeathDown, ArcherADeathUp, ArcherAIdle, ArcherAIdleDown, ArcherAIdleUp, ArcherAMove, ArcherAMoveDown, ArcherAMoveUp, ArcherBAttack, ArcherBAttackDown, ArcherBAttackUp, ArcherBDeath, ArcherBDeathDown, ArcherBDeathUp, ArcherBIdle, ArcherBIdleDown, ArcherBIdleUp, ArcherBMove, ArcherBMoveDown, ArcherBMoveUp, BarbarianAAttack, BarbarianAAttackDown, BarbarianAAttackUp, BarbarianADeath, BarbarianADeathDown, BarbarianADeathUp, BarbarianAIdle, BarbarianAIdleDown, BarbarianAIdleUp, BarbarianAMove, BarbarianAMoveDown, BarbarianAMoveUp, BarbarianBAttack, BarbarianBAttackDown, BarbarianBAttackUp, BarbarianBDeath, BarbarianBDeathDown, BarbarianBDeathUp, BarbarianBIdle, BarbarianBIdleDown, BarbarianBIdleUp, BarbarianBMove, BarbarianBMoveDown, BarbarianBMoveUp, ClericAAttack, ClericAAttackDown, ClericAAttackUp, ClericADeath, ClericADeathDown, ClericADeathUp, ClericAIdle, ClericAIdleDown, ClericAIdleUp, ClericAMove, ClericAMoveDown, ClericAMoveUp, ClericBAttack, ClericBAttackDown, ClericBAttackUp, ClericBDeath, ClericBDeathDown, ClericBDeathUp, ClericBIdle, ClericBIdleDown, ClericBIdleUp, ClericBMove, ClericBMoveDown, ClericBMoveUp, FighterAAttack, FighterAAttackDown, FighterAAttackUp, FighterADeath, FighterADeathDown, FighterADeathUp, FighterAIdle, FighterAIdleDown, FighterAIdleUp, FighterAMove, FighterAMoveDown, FighterAMoveUp, FighterBAttack, FighterBAttackDown, FighterBAttackUp, FighterBDeath, FighterBDeathDown, FighterBDeathUp, FighterBIdle, FighterBIdleDown, FighterBIdleUp, FighterBMove, FighterBMoveDown, FighterBMoveUp, MageAAttack, MageAAttackDown, MageAAttackUp, MageADeath, MageADeathDown, MageADeathUp, MageAIdle, MageAIdleDown, MageAIdleUp, MageAMove, MageAMoveDown, MageAMoveUp, MageBAttack, MageBAttackDown, MageBAttackUp, MageBDeath, MageBDeathDown, MageBDeathUp, MageBIdle, MageBIdleDown, MageBIdleUp, MageBMove, MageBMoveDown, MageBMoveUp, SpearmanAAttack, SpearmanAAttackDown, SpearmanAAttackUp, SpearmanADeath, SpearmanADeathDown, SpearmanADeathUp, SpearmanAIdle, SpearmanAIdleDown, SpearmanAIdleUp, SpearmanAMove, SpearmanAMoveDown, SpearmanAMoveUp, SpearmanBAttack, SpearmanBAttackDown, SpearmanBAttackUp, SpearmanBDeath, SpearmanBDeathDown, SpearmanBDeathUp, SpearmanBIdle, SpearmanBIdleDown, SpearmanBIdleUp, SpearmanBMove, SpearmanBMoveDown, SpearmanBMoveUp, ThiefAAttack, ThiefAAttackDown, ThiefAAttackUp, ThiefADeath, ThiefADeathDown, ThiefADeathUp, ThiefAIdle, ThiefAIdleDown, ThiefAIdleUp, ThiefAMove, ThiefAMoveDown, ThiefAMoveUp, ThiefBAttack, ThiefBAttackDown, ThiefBAttackUp, ThiefBDeath, ThiefBDeathDown, ThiefBDeathUp, ThiefBIdle, ThiefBIdleDown, ThiefBIdleUp, ThiefBMove, ThiefBMoveDown, ThiefBMoveUp, WarriorAAttack, WarriorAAttackDown, WarriorAAttackUp, WarriorADeath, WarriorADeathDown, WarriorADeathUp, WarriorAIdle, WarriorAIdleDown, WarriorAIdleUp, WarriorAMove, WarriorAMoveDown, WarriorAMoveUp, WarriorBAttack, WarriorBAttackDown, WarriorBAttackUp, WarriorBDeath, WarriorBDeathDown, WarriorBDeathUp, WarriorBIdle, WarriorBIdleDown, WarriorBIdleUp, WarriorBMove, WarriorBMoveDown, WarriorBMoveUp } from './resources'
 export const SCALE = ex.vec(1.5, 1.5)
 export const ENEMY_SPEED = 200
 
@@ -11,8 +10,17 @@ export interface UnitConfig {
   graphics: {
     offset: ex.Vector
     idle: ex.Animation
+    idleUp: ex.Animation
+    idleDown: ex.Animation
     move: ex.Animation
+    moveUp: ex.Animation
+    moveDown: ex.Animation
     attack: ex.Animation
+    attackUp: ex.Animation
+    attackDown: ex.Animation
+    death: ex.Animation
+    deathUp: ex.Animation
+    deathDown: ex.Animation
   }
   primary_color: string
   secondary_color: string
@@ -30,7 +38,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: ArcherAIdle,
       move: ArcherAMove,
-      attack: ArcherAAttack
+      attack: ArcherAAttack,
+      idleUp: ArcherAIdleUp,
+      idleDown: ArcherAIdleDown,
+      moveUp: ArcherAMoveUp,
+      moveDown: ArcherAMoveDown,
+      attackUp: ArcherAAttackUp,
+      attackDown: ArcherAAttackDown,
+      death: ArcherADeath,
+      deathUp: ArcherADeathUp,
+      deathDown: ArcherADeathDown
     },
     health: 10,
     movement: 4,
@@ -40,12 +57,22 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     primary_color: '0000FF',
     secondary_color: '00008B'
   },
+
   ArcherB: {
     graphics: {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: ArcherBIdle,
       move: ArcherBMove,
-      attack: ArcherBAttack
+      attack: ArcherBAttack,
+      idleUp: ArcherBIdleUp,
+      idleDown: ArcherBIdleDown,
+      moveUp: ArcherBMoveUp,
+      moveDown: ArcherBMoveDown,
+      attackUp: ArcherBAttackUp,
+      attackDown: ArcherBAttackDown,
+      death: ArcherBDeath,
+      deathUp: ArcherBDeathUp,
+      deathDown: ArcherBDeathDown
     },
     health: 10,
     movement: 4,
@@ -62,7 +89,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: BarbarianAIdle,
       move: BarbarianAMove,
-      attack: BarbarianAAttack
+      attack: BarbarianAAttack,
+      idleUp: BarbarianAIdleUp,
+      idleDown: BarbarianAIdleDown,
+      moveUp: BarbarianAMoveUp,
+      moveDown: BarbarianAMoveDown,
+      attackUp: BarbarianAAttackUp,
+      attackDown: BarbarianAAttackDown,
+      death: BarbarianADeath,
+      deathUp: BarbarianADeathUp,
+      deathDown: BarbarianADeathDown
     },
     health: 20,
     movement: 4,
@@ -77,7 +113,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: BarbarianBIdle,
       move: BarbarianBMove,
-      attack: BarbarianBAttack
+      attack: BarbarianBAttack,
+      idleUp: BarbarianBIdleUp,
+      idleDown: BarbarianBIdleDown,
+      moveUp: BarbarianBMoveUp,
+      moveDown: BarbarianBMoveDown,
+      attackUp: BarbarianBAttackUp,
+      attackDown: BarbarianBAttackDown,
+      death: BarbarianBDeath,
+      deathUp: BarbarianBDeathUp,
+      deathDown: BarbarianBDeathDown
     },
     health: 20,
     movement: 4,
@@ -94,7 +139,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: ClericAIdle,
       move: ClericAMove,
-      attack: ClericAAttack
+      attack: ClericAAttack,
+      idleUp: ClericAIdleUp,
+      idleDown: ClericAIdleDown,
+      moveUp: ClericAMoveUp,
+      moveDown: ClericAMoveDown,
+      attackUp: ClericAAttackUp,
+      attackDown: ClericAAttackDown,
+      death: ClericADeath,
+      deathUp: ClericADeathUp,
+      deathDown: ClericADeathDown
     },
     health: 20,
     movement: 6,
@@ -109,7 +163,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: ClericBIdle,
       move: ClericBMove,
-      attack: ClericBAttack
+      attack: ClericBAttack,
+      idleUp: ClericBIdleUp,
+      idleDown: ClericBIdleDown,
+      moveUp: ClericBMoveUp,
+      moveDown: ClericBMoveDown,
+      attackUp: ClericBAttackUp,
+      attackDown: ClericBAttackDown,
+      death: ClericBDeath,
+      deathUp: ClericBDeathUp,
+      deathDown: ClericBDeathDown
     },
     health: 20,
     movement: 6,
@@ -126,7 +189,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: FighterAIdle,
       move: FighterAMove,
-      attack: FighterAAttack
+      attack: FighterAAttack,
+      idleUp: FighterAIdleUp,
+      idleDown: FighterAIdleDown,
+      moveUp: FighterAMoveUp,
+      moveDown: FighterAMoveDown,
+      attackUp: FighterAAttackUp,
+      attackDown: FighterAAttackDown,
+      death: FighterADeath,
+      deathUp: FighterADeathUp,
+      deathDown: FighterADeathDown
     },
     health: 15,
     movement: 6,
@@ -141,7 +213,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: FighterBIdle,
       move: FighterBMove,
-      attack: FighterBAttack
+      attack: FighterBAttack,
+      idleUp: FighterBIdleUp,
+      idleDown: FighterBIdleDown,
+      moveUp: FighterBMoveUp,
+      moveDown: FighterBMoveDown,
+      attackUp: FighterBAttackUp,
+      attackDown: FighterBAttackDown,
+      death: FighterBDeath,
+      deathUp: FighterBDeathUp,
+      deathDown: FighterBDeathDown
     },
     health: 15,
     movement: 6,
@@ -158,7 +239,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: MageAIdle,
       move: MageAMove,
-      attack: MageAAttack
+      attack: MageAAttack,
+      idleUp: MageAIdleUp,
+      idleDown: MageAIdleDown,
+      moveUp: MageAMoveUp,
+      moveDown: MageAMoveDown,
+      attackUp: MageAAttackUp,
+      attackDown: MageAAttackDown,
+      death: MageADeath,
+      deathUp: MageADeathUp,
+      deathDown: MageADeathDown
     },
     health: 10,
     movement: 5,
@@ -173,7 +263,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: MageBIdle,
       move: MageBMove,
-      attack: MageBAttack
+      attack: MageBAttack,
+      idleUp: MageBIdleUp,
+      idleDown: MageBIdleDown,
+      moveUp: MageBMoveUp,
+      moveDown: MageBMoveDown,
+      attackUp: MageBAttackUp,
+      attackDown: MageBAttackDown,
+      death: MageBDeath,
+      deathUp: MageBDeathUp,
+      deathDown: MageBDeathDown
     },
     health: 10,
     movement: 5,
@@ -190,7 +289,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: SpearmanAIdle,
       move: SpearmanAMove,
-      attack: SpearmanAAttack
+      attack: SpearmanAAttack,
+      idleUp: SpearmanAIdleUp,
+      idleDown: SpearmanAIdleDown,
+      moveUp: SpearmanAMoveUp,
+      moveDown: SpearmanAMoveDown,
+      attackUp: SpearmanAAttackUp,
+      attackDown: SpearmanAAttackDown,
+      death: SpearmanADeath,
+      deathUp: SpearmanADeathUp,
+      deathDown: SpearmanADeathDown
     },
     health: 10,
     movement: 6,
@@ -205,7 +313,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: SpearmanBIdle,
       move: SpearmanBMove,
-      attack: SpearmanBAttack
+      attack: SpearmanBAttack,
+      idleUp: SpearmanBIdleUp,
+      idleDown: SpearmanBIdleDown,
+      moveUp: SpearmanBMoveUp,
+      moveDown: SpearmanBMoveDown,
+      attackUp: SpearmanBAttackUp,
+      attackDown: SpearmanBAttackDown,
+      death: SpearmanBDeath,
+      deathUp: SpearmanBDeathUp,
+      deathDown: SpearmanBDeathDown
     },
     health: 10,
     movement: 6,
@@ -222,7 +339,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: WarriorAIdle,
       move: WarriorAMove,
-      attack: WarriorAAttack
+      attack: WarriorAAttack,
+      idleUp: WarriorAIdleUp,
+      idleDown: WarriorAIdleDown,
+      moveUp: WarriorAMoveUp,
+      moveDown: WarriorAMoveDown,
+      attackUp: WarriorAAttackUp,
+      attackDown: WarriorAAttackDown,
+      death: WarriorADeath,
+      deathUp: WarriorADeathUp,
+      deathDown: WarriorADeathDown
     },
     health: 25,
     movement: 4,
@@ -237,7 +363,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: WarriorBIdle,
       move: WarriorBMove,
-      attack: WarriorBAttack
+      attack: WarriorBAttack,
+      idleUp: WarriorBIdleUp,
+      idleDown: WarriorBIdleDown,
+      moveUp: WarriorBMoveUp,
+      moveDown: WarriorBMoveDown,
+      attackUp: WarriorBAttackUp,
+      attackDown: WarriorBAttackDown,
+      death: WarriorBDeath,
+      deathUp: WarriorBDeathUp,
+      deathDown: WarriorBDeathDown
     },
     health: 25,
     movement: 4,
@@ -254,7 +389,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: ThiefAIdle,
       move: ThiefAMove,
-      attack: ThiefAAttack
+      attack: ThiefAAttack,
+      idleUp: ThiefAIdleUp,
+      idleDown: ThiefAIdleDown,
+      moveUp: ThiefAMoveUp,
+      moveDown: ThiefAMoveDown,
+      attackUp: ThiefAAttackUp,
+      attackDown: ThiefAAttackDown,
+      death: ThiefADeath,
+      deathUp: ThiefADeathUp,
+      deathDown: ThiefADeathDown
     },
     health: 10,
     movement: 6,
@@ -269,7 +413,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: ThiefBIdle,
       move: ThiefBMove,
-      attack: ThiefBAttack
+      attack: ThiefBAttack,
+      idleUp: ThiefBIdleUp,
+      idleDown: ThiefBIdleDown,
+      moveUp: ThiefBMoveUp,
+      moveDown: ThiefBMoveDown,
+      attackUp: ThiefBAttackUp,
+      attackDown: ThiefBAttackDown,
+      death: ThiefBDeath,
+      deathUp: ThiefBDeathUp,
+      deathDown: ThiefBDeathDown
     },
     health: 10,
     movement: 6,

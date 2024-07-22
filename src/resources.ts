@@ -4,8 +4,6 @@ import TileSpritePath from '../res/tiles/NewFullTile.png'
 import CursorPath from '../res/utils/SelectionCursor.png'
 import HighlightSheetPath from '../res/utils/MoveCursor.png'
 import RedHighlightSheetPath from '../res/utils/DamageCursor.png'
-import HeartSheetPath from '../res/utils/HeartSheet.png'
-import ExplosionPath from '../res/explosion.png'
 import ExplosionSoundPath from '../res/explosion.wav'
 import SmokePath from '../res/Smoke.png'
 import HitSoundPath from '../res/hit.wav'
@@ -38,11 +36,9 @@ export const Resources = {
   // Utils
   TileSheet: new ex.ImageSource(TileSpritePath),
   CursorSheet: new ex.ImageSource(CursorPath),
-  HeartSheet: new ex.ImageSource(HeartSheetPath),
   HighlightSheet: new ex.ImageSource(HighlightSheetPath),
   RedHighlightSheet: new ex.ImageSource(RedHighlightSheetPath),
   SmokeSheet: new ex.ImageSource(SmokePath),
-  ExplosionSheet: new ex.ImageSource(ExplosionPath),
   HitSound: new ex.Sound(HitSoundPath),
   MoveSound: new ex.Sound(MoveSoundPath),
   SelectSound: new ex.Sound(SelectSoundPath),
@@ -143,48 +139,13 @@ export const RedHighlightAnimation = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
-
-export const HeartSpriteSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.HeartSheet,
-  grid: {
-    rows: 1,
-    columns: 36,
-    spriteHeight: 32,
-    spriteWidth: 32
-  }
-})
-
-export const ExplosionSpriteSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.ExplosionSheet,
-  grid: {
-    rows: 2,
-    columns: 5,
-    spriteHeight: 32,
-    spriteWidth: 32
-  }
-})
-
-export const Explosion = ex.Animation.fromSpriteSheetCoordinates({
-  spriteSheet: ExplosionSpriteSheet,
-  frameCoordinates: [
-    { x: 0, y: 0, duration: 100 },
-    { x: 1, y: 0, duration: 100 },
-    { x: 2, y: 0, duration: 100 },
-    { x: 3, y: 0, duration: 100 },
-    { x: 4, y: 0, duration: 100 },
-    { x: 0, y: 1, duration: 100 },
-    { x: 1, y: 1, duration: 100 },
-    { x: 2, y: 1, duration: 100 },
-  ]
-})
-
 export const Smoke = Resources.SmokeSheet.toSprite()
 
 // Archers
 export const ArcherASpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.ArcherASpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -202,6 +163,28 @@ export const ArcherAIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ArcherAIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const ArcherAIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const ArcherAMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: ArcherASpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -210,6 +193,28 @@ export const ArcherAMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const ArcherAMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const ArcherAMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -224,10 +229,65 @@ export const ArcherAAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ArcherAAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const ArcherAAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const ArcherADeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const ArcherADeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const ArcherADeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 export const ArcherBSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.ArcherBSpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -245,6 +305,28 @@ export const ArcherBIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ArcherBIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const ArcherBIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const ArcherBMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: ArcherBSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -253,6 +335,28 @@ export const ArcherBMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const ArcherBMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const ArcherBMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -267,11 +371,66 @@ export const ArcherBAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ArcherBAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const ArcherBAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const ArcherBDeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const ArcherBDeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const ArcherBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ArcherBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 // Barbarians
 export const BarbarianASpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.BarbarianASpriteSheet,
   grid: {
-    rows: 4,
+    rows: 114,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -289,6 +448,28 @@ export const BarbarianAIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const BarbarianAIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const BarbarianAIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const BarbarianAMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: BarbarianASpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -297,6 +478,28 @@ export const BarbarianAMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const BarbarianAMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const BarbarianAMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -311,10 +514,65 @@ export const BarbarianAAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const BarbarianAAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const BarbarianAAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const BarbarianADeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const BarbarianADeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const BarbarianADeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 export const BarbarianBSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.BarbarianBSpriteSheet,
   grid: {
-    rows: 4,
+    rows: 114,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -332,7 +590,51 @@ export const BarbarianBIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const BarbarianBIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const BarbarianBIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const BarbarianBMove = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 1, duration: 125 },
+    { x: 1, y: 1, duration: 125 },
+    { x: 2, y: 1, duration: 125 },
+    { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const BarbarianBMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 1, duration: 125 },
+    { x: 1, y: 1, duration: 125 },
+    { x: 2, y: 1, duration: 125 },
+    { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const BarbarianBMoveDown = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: BarbarianBSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
   frameCoordinates: [
@@ -354,11 +656,66 @@ export const BarbarianBAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const BarbarianBAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const BarbarianBAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const BarbarianBDeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const BarbarianBDeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const BarbarianBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: BarbarianBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 // Clerics
 export const ClericASpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.ClericASpriteSheet,
   grid: {
-    rows: 4,
+    rows: 114,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -376,6 +733,28 @@ export const ClericAIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ClericAIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const ClericAIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const ClericAMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: ClericASpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -384,6 +763,28 @@ export const ClericAMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const ClericAMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const ClericAMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -398,10 +799,65 @@ export const ClericAAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ClericAAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const ClericAAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const ClericADeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const ClericADeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const ClericADeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 export const ClericBSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.ClericBSpriteSheet,
   grid: {
-    rows: 4,
+    rows: 114,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -419,6 +875,28 @@ export const ClericBIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ClericBIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const ClericBIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const ClericBMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: ClericBSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -427,6 +905,28 @@ export const ClericBMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const ClericBMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const ClericBMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -441,11 +941,66 @@ export const ClericBAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ClericBAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const ClericBAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const ClericBDeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const ClericBDeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const ClericBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ClericBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 // Fighters
 export const FighterASpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.FighterASpriteSheet,
   grid: {
-    rows: 4,
+    rows: 114,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -463,6 +1018,28 @@ export const FighterAIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const FighterAIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const FighterAIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const FighterAMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: FighterASpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -471,6 +1048,28 @@ export const FighterAMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const FighterAMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const FighterAMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -485,10 +1084,65 @@ export const FighterAAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const FighterAAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const FighterAAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const FighterADeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const FighterADeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const FighterADeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 export const FighterBSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.FighterBSpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -506,6 +1160,28 @@ export const FighterBIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const FighterBIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const FighterBIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const FighterBMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: FighterBSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -514,6 +1190,28 @@ export const FighterBMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const FighterBMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const FighterBMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -528,11 +1226,66 @@ export const FighterBAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const FighterBAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const FighterBAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const FighterBDeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const FighterBDeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const FighterBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: FighterBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 // Mages
 export const MageASpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.MageASpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -550,6 +1303,28 @@ export const MageAIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const MageAIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const MageAIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const MageAMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: MageASpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -558,6 +1333,28 @@ export const MageAMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const MageAMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const MageAMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -572,10 +1369,65 @@ export const MageAAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const MageAAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const MageAAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const MageADeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const MageADeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const MageADeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 export const MageBSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.MageBSpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -593,6 +1445,28 @@ export const MageBIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const MageBIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const MageBIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const MageBMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: MageBSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -601,6 +1475,28 @@ export const MageBMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const MageBMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const MageBMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -615,11 +1511,66 @@ export const MageBAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const MageBAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const MageBAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const MageBDeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const MageBDeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const MageBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: MageBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 // Spearmans
 export const SpearmanASpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.SpearmanASpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -637,6 +1588,28 @@ export const SpearmanAIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const SpearmanAIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const SpearmanAIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const SpearmanAMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: SpearmanASpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -645,6 +1618,28 @@ export const SpearmanAMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const SpearmanAMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const SpearmanAMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -659,10 +1654,65 @@ export const SpearmanAAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const SpearmanAAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const SpearmanAAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const SpearmanADeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const SpearmanADeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const SpearmanADeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 export const SpearmanBSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.SpearmanBSpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -680,6 +1730,28 @@ export const SpearmanBIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const SpearmanBIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const SpearmanBIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const SpearmanBMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: SpearmanBSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -688,6 +1760,28 @@ export const SpearmanBMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const SpearmanBMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const SpearmanBMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -702,11 +1796,66 @@ export const SpearmanBAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const SpearmanBAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const SpearmanBAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const SpearmanBDeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const SpearmanBDeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const SpearmanBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: SpearmanBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 // Warriors
 export const WarriorASpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.WarriorASpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -724,6 +1873,28 @@ export const WarriorAIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const WarriorAIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const WarriorAIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const WarriorAMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: WarriorASpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -732,6 +1903,28 @@ export const WarriorAMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const WarriorAMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const WarriorAMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -746,10 +1939,65 @@ export const WarriorAAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const WarriorAAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const WarriorAAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const WarriorADeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const WarriorADeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const WarriorADeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 export const WarriorBSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.WarriorBSpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -767,6 +2015,28 @@ export const WarriorBIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const WarriorBIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const WarriorBIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const WarriorBMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: WarriorBSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -775,6 +2045,28 @@ export const WarriorBMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const WarriorBMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const WarriorBMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -789,10 +2081,65 @@ export const WarriorBAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const WarriorBAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const WarriorBAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const WarriorBDeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const WarriorBDeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const WarriorBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: WarriorBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 export const ThiefASpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.ThiefASpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -810,6 +2157,28 @@ export const ThiefAIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ThiefAIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const ThiefAIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const ThiefAMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: ThiefASpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -818,6 +2187,28 @@ export const ThiefAMove = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 1, duration: 125 },
     { x: 2, y: 1, duration: 125 },
     { x: 3, y: 1, duration: 125 }
+  ]
+})
+
+export const ThiefAMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const ThiefAMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
   ]
 })
 
@@ -832,10 +2223,65 @@ export const ThiefAAttack = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ThiefAAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const ThiefAAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const ThiefADeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const ThiefADeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const ThiefADeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefASpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
+  ]
+})
+
 export const ThiefBSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.ThiefBSpriteSheet,
   grid: {
-    rows: 4,
+    rows: 14,
     columns: 4,
     spriteHeight: 32,
     spriteWidth: 32
@@ -853,6 +2299,28 @@ export const ThiefBIdle = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ThiefBIdleUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 10, duration: 125 },
+    { x: 1, y: 10, duration: 125 },
+    { x: 2, y: 10, duration: 125 },
+    { x: 3, y: 10, duration: 125 }
+  ]
+})
+
+export const ThiefBIdleDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 5, duration: 125 },
+    { x: 1, y: 5, duration: 125 },
+    { x: 2, y: 5, duration: 125 },
+    { x: 3, y: 5, duration: 125 }
+  ]
+})
+
 export const ThiefBMove = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: ThiefBSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -864,6 +2332,28 @@ export const ThiefBMove = ex.Animation.fromSpriteSheetCoordinates({
   ]
 })
 
+export const ThiefBMoveUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 11, duration: 125 },
+    { x: 1, y: 11, duration: 125 },
+    { x: 2, y: 11, duration: 125 },
+    { x: 3, y: 11, duration: 125 }
+  ]
+})
+
+export const ThiefBMoveDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 6, duration: 125 },
+    { x: 1, y: 6, duration: 125 },
+    { x: 2, y: 6, duration: 125 },
+    { x: 3, y: 6, duration: 125 }
+  ]
+})
+
 export const ThiefBAttack = ex.Animation.fromSpriteSheetCoordinates({
   spriteSheet: ThiefBSpriteSheet,
   strategy: ex.AnimationStrategy.Loop,
@@ -872,6 +2362,61 @@ export const ThiefBAttack = ex.Animation.fromSpriteSheetCoordinates({
     { x: 1, y: 2, duration: 125 },
     { x: 2, y: 2, duration: 125 },
     { x: 3, y: 2, duration: 125 }
+  ]
+})
+
+export const ThiefBAttackUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 12, duration: 125 },
+    { x: 1, y: 12, duration: 125 },
+    { x: 2, y: 12, duration: 125 },
+    { x: 3, y: 12, duration: 125 }
+  ]
+})
+
+export const ThiefBAttackDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 7, duration: 125 },
+    { x: 1, y: 7, duration: 125 },
+    { x: 2, y: 7, duration: 125 },
+    { x: 3, y: 7, duration: 125 }
+  ]
+})
+
+export const ThiefBDeath = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 3, duration: 125 },
+    { x: 1, y: 3, duration: 125 },
+    { x: 2, y: 3, duration: 125 },
+    { x: 3, y: 3, duration: 125 }
+  ]
+})
+
+export const ThiefBDeathUp = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 13, duration: 125 },
+    { x: 1, y: 13, duration: 125 },
+    { x: 2, y: 13, duration: 125 },
+    { x: 3, y: 13, duration: 125 }
+  ]
+})
+
+export const ThiefBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
+  spriteSheet: ThiefBSpriteSheet,
+  strategy: ex.AnimationStrategy.Loop,
+  frameCoordinates: [
+    { x: 0, y: 8, duration: 125 },
+    { x: 1, y: 8, duration: 125 },
+    { x: 2, y: 8, duration: 125 },
+    { x: 3, y: 8, duration: 125 }
   ]
 })
 

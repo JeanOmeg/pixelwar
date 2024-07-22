@@ -121,13 +121,13 @@ export class Cell extends ex.Actor {
         break
       case Terrain.r4c8:
         this.sprite = TileSpriteSheet.sprites[37]
-        this.pathNode.isAttackable = false
         this.pathNode.isDoor = true
+        this.pathNode.isFast = false
         break
       case Terrain.r4c9:
         this.sprite = TileSpriteSheet.sprites[38]
-        this.pathNode.isAttackable = false
         this.pathNode.isDoor = true
+        this.pathNode.isFast = false
         break
       case Terrain.r4c10:
         this.sprite = TileSpriteSheet.sprites[39]

@@ -7,7 +7,6 @@ import { PathNodeComponent } from "./path-finding/path-node-component"
 import { Player } from "./player"
 import { DustParticles } from "./dust-particles"
 import { DamageManager } from "./damage-manager"
-import { AnimationManager } from "./animation-manager"
 
 export class Unit extends ex.Actor {
   cell: Cell | null = null
@@ -17,9 +16,9 @@ export class Unit extends ex.Actor {
   passed = false
   anim: ex.Animation
   miniDirection: string = 'right'
+  oldPosition!: ex.Vector | null
   health: number
   damageManager!: DamageManager
-  animationManger!: AnimationManager
   constructor(x: number, y: number, unitType: UnitType, board: Board, public player: Player) {
     super({
       name: unitType,
@@ -43,10 +42,9 @@ export class Unit extends ex.Actor {
 
   onInitialize(engine: ex.Engine): void {
     this.damageManager = new DamageManager(engine.currentScene)
-    this.animationManger = new AnimationManager(engine.currentScene)
   }
 
-  onPostUpdate(): void {
+  async onPostUpdate(): Promise<void> {
     const actions = this.hasActions()
     if (!actions) {
       this.anim.tint = ex.Color.Gray
@@ -56,26 +54,35 @@ export class Unit extends ex.Actor {
 
     if (this.health <= 0) {
       this.cell?.removeUnit(this)
-      this.actions.delay(500).callMethod(() => {
-        this.animationManger.playExplosion(this.pos)
-        Resources.ExplosionSound.play()
-      }).callMethod(() => {
-        this.kill()
+      const deathAnim = new ex.ActionSequence(this, (ctx) => {
+        this.setAnim(this.selectAnimationDeath())
+        ctx.easeTo(this.pos, 500, ex.EasingFunctions.EaseInOutCubic)
       })
+      await this.actions.runAction(deathAnim).toPromise()
+      Resources.ExplosionSound.play()
+      ex.Util.delay(600)
+      this.actions.runAction(deathAnim).die()
+      this.kill()
     }
   }
 
   async move(path: PathNodeComponent[]) {
-    let oldPosi = this.cell?.pos.x as number
+    this.oldPosition = null
+    const oldPos = this.cell?.pos as ex.Vector
+
     if (this.cell) {
       this.cell.removeUnit(this)
     }
+
     let currentCell: Cell | null = null
     let pathMinusFirst = path.slice(1, path.length)
     for (let node of pathMinusFirst) {
+      const position: ex.Vector = this.oldPosition ? this.oldPosition : oldPos
       currentCell = node.owner as Cell
 
-      this.defineDirection(oldPosi, currentCell.pos.x)
+      this.defineDirection(position, currentCell.pos)
+
+      this.oldPosition = currentCell.pos
 
       const sound = new ex.ActionSequence(this, (ctx) => {
         ctx.delay(200)
@@ -85,20 +92,21 @@ export class Unit extends ex.Actor {
       })
 
       const move = new ex.ActionSequence(this, (ctx) => {
-        this.setAnim(this.unitConfig.graphics.move.clone())
+        this.setAnim(this.selectAnimationMove())
         ctx.easeTo(currentCell!.pos.sub(this.unitConfig.graphics.offset), 400, ex.EasingFunctions.EaseInOutCubic)
         ctx.callMethod(() => {
           DustParticles.pos = this.pos.add(SCALE.scale(32))
           DustParticles.emitParticles(5)
-        })
-      })
+        });
+      });
 
       const parallel = new ex.ParallelActions([
         sound,
         move
       ])
+
       await this.actions.runAction(parallel).toPromise()
-      this.setAnim(this.unitConfig.graphics.idle.clone())
+      this.setAnim(this.selectAnimationIdle())
     }
     if (currentCell) {
       currentCell.addUnit(this)
@@ -107,17 +115,58 @@ export class Unit extends ex.Actor {
     this.moved = true
   }
 
-  defineDirection(x_first: number, x_last: number) {
-    if (x_first > x_last) {
-      if (this.miniDirection !== 'left') {
-        this.miniDirection = 'left'
-        this.graphics.flipHorizontal = true
-      }
-    } else if (x_first < x_last) {
-      if (this.miniDirection !== 'right') {
-        this.miniDirection = 'right'
-        this.graphics.flipHorizontal = false
-      }
+
+  defineDirection(oldPos: ex.Vector, newPos: ex.Vector) {
+    if (oldPos.y > newPos.y) {
+      this.miniDirection = 'up'
+    } else if (oldPos.y < newPos.y) {
+      this.miniDirection = 'down'
+    } else if (oldPos.x > newPos.x) {
+      this.miniDirection = 'left'
+      this.graphics.flipHorizontal = true
+    } else {
+      this.miniDirection = 'right'
+      this.graphics.flipHorizontal = false
+    }
+  }
+
+  selectAnimationIdle() {
+    if (this.miniDirection == 'up') {
+      return this.unitConfig.graphics.idleUp.clone()
+    } else if (this.miniDirection == 'down') {
+      return this.unitConfig.graphics.idleDown.clone()
+    } else {
+      return this.unitConfig.graphics.idle.clone()
+    }
+  }
+
+  selectAnimationAttack() {
+    if (this.miniDirection == 'up') {
+      return this.unitConfig.graphics.attackUp.clone()
+    } else if (this.miniDirection == 'down') {
+      return this.unitConfig.graphics.attackDown.clone()
+    } else {
+      return this.unitConfig.graphics.attack.clone()
+    }
+  }
+
+  selectAnimationMove() {
+    if (this.miniDirection == 'up') {
+      return this.unitConfig.graphics.moveUp.clone()
+    } else if (this.miniDirection == 'down') {
+      return this.unitConfig.graphics.moveDown.clone()
+    } else {
+      return this.unitConfig.graphics.move.clone()
+    }
+  }
+
+  selectAnimationDeath() {
+    if (this.miniDirection == 'up') {
+      return this.unitConfig.graphics.deathUp.clone()
+    } else if (this.miniDirection == 'down') {
+      return this.unitConfig.graphics.deathDown.clone()
+    } else {
+      return this.unitConfig.graphics.death.clone()
     }
   }
 
@@ -180,10 +229,11 @@ export class Unit extends ex.Actor {
   }
 
   async attack(other: Unit) {
-    this.defineDirection(this.cell?.pos.x as number, other.pos.x)
+    this.defineDirection(this.pos, other.pos)
+
     const atkAnim = new ex.ActionSequence(this, (ctx) => {
-      this.setAnim(this.unitConfig.graphics.attack.clone())
-      ctx.easeTo(this!.pos, 500, ex.EasingFunctions.EaseInOutCubic)
+      this.setAnim(this.selectAnimationAttack())
+      ctx.easeTo(this.pos, 500, ex.EasingFunctions.EaseInOutCubic)
     })
 
     const parallel = new ex.ParallelActions([
@@ -201,23 +251,26 @@ export class Unit extends ex.Actor {
     const atk = this.unitConfig.attack + d20
     const def = other.unitConfig.defense + 10
     let damage
-    
+
     if (d20 === 20) {
       damage = (12 + this.unitConfig.attack) - other.unitConfig.defense
-    } else {
+    } else if (this.miniDirection == other.miniDirection) {
+      damage = (d6 + (this.unitConfig.attack * 2)) - other.unitConfig.defense
+    }else {
       damage = (d6 + this.unitConfig.attack) - other.unitConfig.defense
     }
 
-    if (atk > def) {
+    if (atk > def || this.miniDirection == other.miniDirection) {
       damage = damage > 0 ? damage : 1
     } else {
       damage = 1
     }
 
     Resources.HitSound.play()
+
     await this.actions.runAction(parallel).toPromise()
-    this.setAnim(this.unitConfig.graphics.idle.clone())
-    
+    this.setAnim(this.selectAnimationIdle())
+
     other.health -= damage
     await ex.Util.delay(350)
 
