@@ -27,9 +27,8 @@ export class UIManager {
 
       const menuPos = this.uiToWorldPos.get(this.unitMenu)
       if (menuPos) {
-        const pagePos = this.engine.screen.worldToPageCoordinates(menuPos)
-        this.unitMenu.left = pagePos.x + this.worldDistanceToPage(32)
-        this.unitMenu.top = pagePos.y
+        this.unitMenu.left = 5
+        this.unitMenu.top = 5
       }
     })
   }
@@ -42,7 +41,7 @@ export class UIManager {
 
   worldDistanceToPage(distance: number) {
     const mobile = this.isMobile()
-    const scaleX = mobile ? SCALE.x + 2.5 : SCALE.x + 2
+    const scaleX = mobile ? SCALE.x + 2 : SCALE.x + 1.5
     const pageOrigin = this.engine.screen.worldToPageCoordinates(ex.Vector.Zero)
     const pageDistance = this.engine.screen.worldToPageCoordinates(ex.vec(distance * scaleX, 0)).sub(pageOrigin)
     return pageDistance.x
@@ -55,8 +54,8 @@ export class UIManager {
   showUnitMenu(unit: Unit, options: MenuOptions): UnitMenu {
     const menu = this.unitMenu
     
-    menu.left = 25
-    menu.top = 25
+    menu.left = 5
+    menu.top = 5
     menu.unit = unit
 
     const move = () => {
