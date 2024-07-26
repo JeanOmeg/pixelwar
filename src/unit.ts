@@ -93,10 +93,10 @@ export class Unit extends ex.Actor {
 
       const move = new ex.ActionSequence(this, (ctx) => {
         this.setAnim(this.selectAnimationMove())
-        ctx.easeTo(currentCell!.pos.sub(this.unitConfig.graphics.offset), 400, ex.EasingFunctions.EaseInOutCubic)
+        ctx.easeTo(currentCell!.pos.sub(this.unitConfig.graphics.offset), 200)
         ctx.callMethod(() => {
           DustParticles.pos = this.pos.add(SCALE.scale(32))
-          DustParticles.emitParticles(5)
+          DustParticles.emitParticles(3)
         });
       });
 

@@ -143,7 +143,7 @@ export class HumanPlayer extends Player {
     if (cell?.unit && this.hasPlayerUnitWithActions(cell)) {
       const maybeClickedCell = this.board.getCellByWorldPos(cell.pos)
       if (maybeClickedCell) {
-        cell?.unit.setAnim(cell?.unit.selectAnimationMove())
+        cell.unit.setAnim(cell.unit.selectAnimationMove())
         this.selectionManager.showCursor(maybeClickedCell.x, maybeClickedCell.y)
       }
       Resources.SelectSound.play()
