@@ -7,8 +7,9 @@ import { Unit } from "./unit"
 import { Terrain } from './maps/tarrain-enum'
 
 const RangeHighlightAnimation = HighlightAnimation.clone()
-const PathHighlightAnimation = HighlightAnimation.clone()
+const PathHighlightAnimation = CursorAnimation.clone()
 const AttackHighlightAnimation = RedHighlightAnimation.clone()
+const CursorHighlightAnimation = CursorAnimation.clone()
 
 export class Cell extends ex.Actor {
   decoration: ex.Actor
@@ -42,21 +43,17 @@ export class Cell extends ex.Actor {
     this.terrain = Terrain.r3c1
 
     RangeHighlightAnimation.scale = ex.vec(2, 2)
-    RangeHighlightAnimation.opacity = 0.8
 
     PathHighlightAnimation.scale = ex.vec(2, 2)
-    PathHighlightAnimation.opacity = 0.5
 
     AttackHighlightAnimation.scale = ex.vec(2, 2)
-    AttackHighlightAnimation.opacity = 0.8
 
-    CursorAnimation.scale = ex.vec(2, 2)
-    CursorAnimation.opacity = 0.8
+    CursorHighlightAnimation.scale = ex.vec(2, 2)
 
     this.decoration.graphics.add('range', RangeHighlightAnimation)
     this.decoration.graphics.add('path', PathHighlightAnimation)
     this.decoration.graphics.add('attack', AttackHighlightAnimation)
-    this.decoration.graphics.add('cursor', CursorAnimation)
+    this.decoration.graphics.add('cursor', CursorHighlightAnimation)
 
     this.decoration.graphics.offset = ex.vec(-4, -4)
   }

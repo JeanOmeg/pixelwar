@@ -13,6 +13,7 @@ export abstract class Player {
   async turnStart(): Promise<void> {
     this.active = true
     this.board.getUnits().filter(u => u.player === this).forEach(u => u.reset())
+    this.board.getUnits().forEach(u => u.setAnim(u.selectAnimationIdle()))
   }
 
   hasLost() {

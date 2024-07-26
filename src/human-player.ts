@@ -20,6 +20,7 @@ export class HumanPlayer extends Player {
 
   async pointerClick(pointer: ex.PointerEvent) {
     if (!this.active) return
+    this.board.getUnits().forEach(u => u.setAnim(u.selectAnimationIdle()))
     this.selectionManager.resetHighlight()
     const maybeClickedCell = this.board.getCellByWorldPos(pointer.worldPos)
 
@@ -77,7 +78,7 @@ export class HumanPlayer extends Player {
 
       const destination = this.board.getCellByWorldPos(pointer.worldPos)
       if (destination && this.hasNonPlayerUnit(destination)) {
-        this.selectionManager.showHighlight([ destination.pathNode ], "path")
+        this.selectionManager.showHighlight([destination.pathNode], "path")
       }
     }
   }
@@ -140,6 +141,11 @@ export class HumanPlayer extends Player {
 
   async maybeSelectUnit(cell: Cell | null) {
     if (cell?.unit && this.hasPlayerUnitWithActions(cell)) {
+      const maybeClickedCell = this.board.getCellByWorldPos(cell.pos)
+      if (maybeClickedCell) {
+        cell?.unit.setAnim(cell?.unit.selectAnimationMove())
+        this.selectionManager.showCursor(maybeClickedCell.x, maybeClickedCell.y)
+      }
       Resources.SelectSound.play()
 
       this.uiManager.showUnitMenu(cell.unit, {
@@ -150,6 +156,7 @@ export class HumanPlayer extends Player {
           this.selectionManager.selectUnit(cell.unit!, 'attack')
         },
         pass: async () => {
+          cell.unit?.setAnim(cell.unit?.selectAnimationIdle())
           await cell.unit?.pass()
           this.selectionManager.reset()
           this.humanMove.resolve()

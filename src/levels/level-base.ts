@@ -97,7 +97,7 @@ export class LevelBase extends ex.Scene {
     Resources.LevelMusic2.play()
     const board = new Board(levelData.height, levelData.width, this)
     this.selectionManager = new SelectionManager(board)
-    this.selectionManager.showCursor(0, 0)
+    this.selectionManager.showCursor(2, 8)
     this.uiManager = new UIManager(this.engine)
     let mode = localStorage.getItem('start_screen')
     while (!mode || mode?.length === 0) {
