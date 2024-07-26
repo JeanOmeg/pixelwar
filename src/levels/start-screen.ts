@@ -12,7 +12,10 @@ export class StartScreen extends ex.Scene {
   nextLevel!: string
 
   override onInitialize(engine: ex.Engine): void {
-    this.setLandscapeAndFullscreen()
+    const mobile = this.isMobile()
+    if (mobile) {
+      this.setLandscapeAndFullscreen()
+    }
     this.engine = engine
     this.nextLevel = this.selectMap()
 
@@ -212,6 +215,12 @@ export class StartScreen extends ex.Scene {
   selectMap(): string {
     const maps = ['level1-map1', 'level1-map2']
     return maps[Math.floor(Math.random() * 2)]
+  }
+
+  isMobile() {
+    const userAgent = navigator.userAgent
+    const mobileRegex = /Android|webOS|iPhone/i
+    return mobileRegex.test(userAgent)
   }
 
   setLandscapeAndFullscreen() {

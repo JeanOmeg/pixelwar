@@ -2423,11 +2423,8 @@ export const ThiefBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
 export const loader = new ex.Loader()
 loader.backgroundColor = 'black'
 loader.startButtonFactory = () => {
-  // Create the button
   let myButton = document.createElement('button');
-  myButton.textContent = 'PLAY';
-
-  // Apply the styles directly to the button
+  myButton.textContent = 'PLAY!';
   myButton.style.backgroundColor = 'red';
   myButton.style.color = 'white';
   myButton.style.fontFamily = "'Press Start 2P', cursive";
@@ -2443,12 +2440,10 @@ loader.startButtonFactory = () => {
   myButton.style.display = 'inline-block';
   myButton.style.cursor = 'pointer';
 
-  // Remove the focus outline when the button is focused
   myButton.onfocus = () => {
       myButton.style.outline = 'none';
   };
 
-  // Import the font
   const fontLink = document.createElement('link');
   fontLink.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap';
   fontLink.rel = 'stylesheet';

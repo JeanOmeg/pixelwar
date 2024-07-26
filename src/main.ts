@@ -6,7 +6,7 @@ import './ui-components/audio-menu'
 import { AudioManager } from './audio-manager'
 import { mapList } from './maps/maps'
 
-// NODE18
+// NODE 20
 
 const game = new ex.Engine({
   resolution: {
