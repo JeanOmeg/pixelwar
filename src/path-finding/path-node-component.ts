@@ -11,6 +11,7 @@ export class PathNodeComponent<T = any> extends ex.Component {
   isFast = true
   isAttackable = true
   isDoor = false
+  isWater = false
   /**
    * Is this path node traversable by certain things
    */

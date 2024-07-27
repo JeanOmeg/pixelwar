@@ -91,7 +91,9 @@ export class SelectionManager {
     let range = this.board.pathFinder.getRange(
       unit.cell.pathNode,
       unit.player.mask,
-      unit.unitConfig.movement)
+      unit.unitConfig.movement,
+      unit.name
+    )
     return range
   }
 

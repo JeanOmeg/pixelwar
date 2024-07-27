@@ -8,6 +8,10 @@ export class PathFinder {
     this.query = scene.world.queryManager.createQuery([PathNodeComponent])
   }
 
+  pos_x: string | undefined = undefined
+  pos_y: string | undefined = undefined
+  name_unit: string | undefined = undefined
+
   heuristicWeight = 1
   heuristic: (start: PathNodeComponent, end: PathNodeComponent) => number = (start: PathNodeComponent, end: PathNodeComponent) => {
     // manhattan distance
@@ -27,53 +31,89 @@ export class PathFinder {
   private _getRangeHelperAttack(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number) {
     if (range >= 0) {
       let newRange
-      const unitName = localStorage.getItem('unitName')
-      const startX = localStorage.getItem('x')
-      const startY = localStorage.getItem('y')
-      const x = cell.owner?.name.split(' ')[1].split(')')[0]
-      const y = cell.owner?.name.split(',')[0].split('(')[1]
+      const unitName = this.name_unit
+      const startX = this.pos_x
+      const startY = this.pos_y
+
+      const name = cell.owner?.name as string
+      const x = this.getXOrYByNameCell(name, 'x')
+      const y = this.getXOrYByNameCell(name, 'y')
+
       accum.push(cell)
       cell.connections.filter(node => node.isAttackable && !!(node.walkableMask & mask) && (startY == y || startX == x)).forEach(cell => {
         newRange = cell.isFast ? 1 : 2
         if (!cell.isFast && unitName !== 'Archer' && unitName !== 'Mage' && unitName !== 'Spearman') {
           newRange = 1
         }
-        
+
         this._getRangeHelperAttack(cell, accum, mask, range - newRange)
       })
     }
   }
 
-  getRangeAttack(start: PathNodeComponent, mask: number, range: number, unitName: string): PathNodeComponent[] {
-    let result: PathNodeComponent[] = []
-    const x = start.owner?.name.split(' ')[1].split(')')[0]
-    const y = start.owner?.name.split(',')[0].split('(')[1]
-    localStorage.setItem('unitName', unitName.replace(/[AB]$/, '') as string)
-    localStorage.setItem('x', x as string)
-    localStorage.setItem('y', y as string)
-    this._getRangeHelperAttack(start, result, mask, range)
-    localStorage.removeItem('x')
-    localStorage.removeItem('y')
-    result = result.filter((node, index, nodeArray) => nodeArray.indexOf(node) === index)
-    result = result.filter(node => node.isAttackable && (node.owner?.name.split(' ')[1].split(')')[0] == x || node.owner?.name.split(',')[0].split('(')[1] == y))
-    return result
-  }
-
-  private _getRangeHelper(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number) {
-    if (range >= 0) {
-      let newRange
-      accum.push(cell)
-      cell.connections.filter(node => node.isWalkable && !!(node.walkableMask & mask)).forEach(cell => {
-        newRange = cell.isFast ? 1 : 2
-        this._getRangeHelper(cell, accum, mask, range - newRange)
-      })
+  getXOrYByNameCell(name: string, direction: 'x' | 'y'): string {
+    if (direction === 'x') {
+      return name.split(' ')[1].split(')')[0]
+    } else {
+      return name.split(',')[0].split('(')[1]
     }
   }
 
-  getRange(start: PathNodeComponent, mask: number, range: number): PathNodeComponent[] {
+  getNameUnit(name: string): string {
+    return name.replace(/[AB]$/, '')
+  }
+
+  getRangeAttack(start: PathNodeComponent, mask: number, range: number, unitName: string): PathNodeComponent[] {
     let result: PathNodeComponent[] = []
+    if (start.isDoor) {
+      return result
+    }
+    const name = start.owner?.name as string
+    const x = this.getXOrYByNameCell(name, 'x')
+    const y = this.getXOrYByNameCell(name, 'y')
+
+    this.name_unit = this.getNameUnit(unitName)
+    this.pos_x = x
+    this.pos_y = y
+
+    this._getRangeHelperAttack(start, result, mask, range)
+
+    result = Array.from(new Set(result))
+    result = result.filter(node => node.isAttackable && (this.getXOrYByNameCell(node.owner?.name as string, 'x') === x || this.getXOrYByNameCell(node.owner?.name as string, 'y') === y))
+    result = result.filter(node => {
+      if (this.name_unit !== 'Archer' && this.name_unit !== 'Mage') {
+        return !node.isWater
+      }
+      return true
+    })
+    result = result.filter(node => !node.isDoor)
+
+    this.name_unit = undefined
+    this.pos_x = undefined
+    this.pos_y = undefined
+
+    return result
+  }
+
+  private _getRangeHelper(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number): void {
+    if (range < 0) return
+    const unitName = this.name_unit
+
+    accum.push(cell)
+    cell.connections.filter(node => node.isWalkable && !!(node.walkableMask & mask)).forEach(connection => {
+      const newRange = connection.isFast ? 1 : unitName == 'Thief' && !connection.isDoor ? 1 : 2
+      this._getRangeHelper(connection, accum, mask, range - newRange)
+    })
+  }
+
+  getRange(start: PathNodeComponent, mask: number, range: number, unitName: string): PathNodeComponent[] {
+    let result: PathNodeComponent[] = []
+    
+    this.name_unit = this.getNameUnit(unitName)
     this._getRangeHelper(start, result, mask, range)
-    result = result.filter((node, index, nodeArray) => nodeArray.indexOf(node) === index)
+    this.name_unit = undefined
+
+    result = Array.from(new Set(result))
     result = result.filter(node => node.isWalkable)
     return result
   }

@@ -119,11 +119,13 @@ export class Cell extends ex.Actor {
       case Terrain.r4c8:
         this.sprite = TileSpriteSheet.sprites[37]
         this.pathNode.isDoor = true
+        this.pathNode.isAttackable = false
         this.pathNode.isFast = false
         break
       case Terrain.r4c9:
         this.sprite = TileSpriteSheet.sprites[38]
         this.pathNode.isDoor = true
+        this.pathNode.isAttackable = false
         this.pathNode.isFast = false
         break
       case Terrain.r4c10:
@@ -135,6 +137,7 @@ export class Cell extends ex.Actor {
       case Terrain.r5c1:
         this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(40, 4)]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r5c5:
         this.sprite = TileSpriteSheet.sprites[this.getRandomNumber(44, 3)]
@@ -293,14 +296,17 @@ export class Cell extends ex.Actor {
       case Terrain.r9c8:
         this.sprite = TileSpriteSheet.sprites[[87, 117][this.getRandomNumber(0, 2)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r9c9:
         this.sprite = TileSpriteSheet.sprites[[88, 118][this.getRandomNumber(0, 2)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r9c10:
         this.sprite = TileSpriteSheet.sprites[[89, 119][this.getRandomNumber(0, 2)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       // ROW 10
       case Terrain.r10c1:
@@ -321,14 +327,17 @@ export class Cell extends ex.Actor {
       case Terrain.r10c8:
         this.sprite = TileSpriteSheet.sprites[[97, 127][this.getRandomNumber(0, 2)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r10c9:
         this.sprite = TileSpriteSheet.sprites[[98, 128][this.getRandomNumber(0, 2)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r10c10:
         this.sprite = TileSpriteSheet.sprites[[99, 129][this.getRandomNumber(0, 2)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       // ROW 11
       case Terrain.r11c1:
@@ -349,14 +358,17 @@ export class Cell extends ex.Actor {
       case Terrain.r11c8:
         this.sprite = TileSpriteSheet.sprites[[107, 137][this.getRandomNumber(0, 2)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r11c9:
         this.sprite = TileSpriteSheet.sprites[[108, 138][this.getRandomNumber(0, 2)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r11c10:
         this.sprite = TileSpriteSheet.sprites[[109, 139][this.getRandomNumber(0, 2)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       // ROW 12
       case Terrain.r12c1:
@@ -425,10 +437,12 @@ export class Cell extends ex.Actor {
       case Terrain.r15c8:
         this.sprite = TileSpriteSheet.sprites[[147, 148][Math.floor(Math.random() * 1 * 1)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r15c10:
         this.sprite = TileSpriteSheet.sprites[[149, 159][Math.floor(Math.random() * 1 * 1)]]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       // ROW 16
       case Terrain.r16c1:
@@ -449,10 +463,12 @@ export class Cell extends ex.Actor {
       case Terrain.r16c8:
         this.sprite = TileSpriteSheet.sprites[157]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r16c9:
         this.sprite = TileSpriteSheet.sprites[158]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       // ROW 17
       case Terrain.r17c1:
@@ -495,26 +511,32 @@ export class Cell extends ex.Actor {
       case Terrain.r18c5:
         this.sprite = TileSpriteSheet.sprites[174]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r18c6:
         this.sprite = TileSpriteSheet.sprites[175]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r18c7:
         this.sprite = TileSpriteSheet.sprites[176]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r18c8:
         this.sprite = TileSpriteSheet.sprites[177]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r18c9:
         this.sprite = TileSpriteSheet.sprites[178]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r18c10:
         this.sprite = TileSpriteSheet.sprites[179]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       // ROW 19
       case Terrain.r19c1:
@@ -532,26 +554,32 @@ export class Cell extends ex.Actor {
       case Terrain.r19c5:
         this.sprite = TileSpriteSheet.sprites[184]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r19c6:
         this.sprite = TileSpriteSheet.sprites[185]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r19c7:
         this.sprite = TileSpriteSheet.sprites[186]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r19c8:
         this.sprite = TileSpriteSheet.sprites[187]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r19c9:
         this.sprite = TileSpriteSheet.sprites[188]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
       case Terrain.r19c10:
         this.sprite = TileSpriteSheet.sprites[189]
         this.pathNode.isWalkable = false
+        this.pathNode.isWater = true
         break
     }
 

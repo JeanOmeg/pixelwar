@@ -36,7 +36,7 @@ export class ComputerPlayer extends Player {
   findValidMoveCells(unit: Unit): Cell[] {
     let range: PathNodeComponent[] = []
     if (unit.cell) {
-      range = this.board.pathFinder.getRange(unit.cell.pathNode, this.mask, unit.unitConfig.movement).filter(node => {
+      range = this.board.pathFinder.getRange(unit.cell.pathNode, this.mask, unit.unitConfig.movement, unit.name).filter(node => {
         const cell = node.owner as Cell
         return cell.unit?.player !== this
       })
@@ -102,7 +102,7 @@ export class ComputerPlayer extends Player {
     for (let unit of units) {
       let range: PathNodeComponent[] = []
       if (unit.cell) {
-        range = this.board.pathFinder.getRange(unit.cell.pathNode, this.mask, unit.unitConfig.movement)
+        range = this.board.pathFinder.getRange(unit.cell.pathNode, this.mask, unit.unitConfig.movement, unit.name)
       }
 
       let validCells = this.findValidMoveCells(unit)
