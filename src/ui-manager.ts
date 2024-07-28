@@ -9,6 +9,7 @@ export interface MenuOptions {
   move: () => any
   attack: () => any
   pass: () => any
+  passTurn: () => any
 }
 
 /**
@@ -70,15 +71,21 @@ export class UIManager {
       options.pass()
       clearEvents()
     }
+    const passTurn = () => {
+      options.passTurn()
+      clearEvents()
+    }
 
     menu.addEventListener('move', move)
     menu.addEventListener('attack', attack)
     menu.addEventListener('pass', pass)
+    menu.addEventListener('passTurn', passTurn)
 
     const clearEvents = () => {
       menu.removeEventListener('move', move)
       menu.removeEventListener('attack', attack)
       menu.removeEventListener('pass', pass)
+      menu.removeEventListener('passTurn', passTurn)
     }
 
     menu.clearEvents = clearEvents

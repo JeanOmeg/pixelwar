@@ -160,6 +160,14 @@ export class HumanPlayer extends Player {
           await cell.unit?.pass()
           this.selectionManager.reset()
           this.humanMove.resolve()
+        },
+        passTurn: async () => {
+          let  units = this.board.getUnits()
+          units = units.filter(u => u.player === this)
+          units.forEach(unit => unit.setAnim(unit.selectAnimationIdle()))
+          units.forEach(async unit => await unit.pass())
+          this.selectionManager.reset()
+          this.humanMove.resolve()
         }
       })
     } else {
