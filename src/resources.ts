@@ -32,7 +32,15 @@ import WarriorBSpriteSheetPath from '../res/minis/WarriorB.png'
 import ThiefASpriteSheetPath from '../res/minis/ThiefA.png'
 import ThiefBSpriteSheetPath from '../res/minis/ThiefB.png'
 
+// Maps
+import Map1 from '../res/maps/Map1.png'
+import Map2 from '../res/maps/Map2.png'
+
+
 export const Resources = {
+  //Maps
+  Map1: new ex.ImageSource(Map1),
+  Map2: new ex.ImageSource(Map2),
   // Utils
   TileSheet: new ex.ImageSource(TileSpritePath),
   CursorSheet: new ex.ImageSource(CursorPath),
