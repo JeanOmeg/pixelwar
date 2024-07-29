@@ -270,7 +270,7 @@ export class StartScreen extends ex.Scene {
       await this.map1Button.actions.blink(100, 100, 6).toPromise()
       
       this.engine.goToScene('level1-map1')
-      this.killDiffMap(this.map1Button.name)
+      this.killMaps()
     })
 
     this.map1Button.scale = SCALE
@@ -318,7 +318,7 @@ export class StartScreen extends ex.Scene {
       await this.map2Button.actions.blink(100, 100, 6).toPromise()
       
       this.engine.goToScene('level1-map2')
-      this.killDiffMap(this.map2Button.name)
+      this.killMaps()
     })
 
     this.map2Button.scale = SCALE
@@ -362,7 +362,7 @@ export class StartScreen extends ex.Scene {
       
       const maps = ['level1-map1', 'level1-map2']
       this.engine.goToScene(maps[Math.floor(Math.random() * 2)])
-      this.killDiffMap(this.ramdomMapButton.name)
+      this.killMaps()
     })
 
     this.ramdomMapButton.scale = SCALE
@@ -373,16 +373,10 @@ export class StartScreen extends ex.Scene {
     this.cpuVscpuButton.kill()
   }
 
-  killDiffMap(nameButton: string) {
-    if (nameButton !== this.map1Button.name) {
-      this.map1Button.kill()
-    }
-    if (nameButton !== this.map2Button.name) {
-      this.map2Button.kill()
-    }
-    if (nameButton !== this.ramdomMapButton.name) {
-      this.ramdomMapButton.kill()
-    }
+  killMaps() {
+    this.map1Button.kill()
+    this.map2Button.kill()
+    this.ramdomMapButton.kill()
   }
 
   isMobile() {
