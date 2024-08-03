@@ -205,7 +205,7 @@ export class StartScreen extends ex.Scene {
     if (this.cpuVscpuButton.isKilled()) {
       this.add(this.cpuVscpuButton)
     }
-    
+
     Resources.TitleMusic.loop = true
     Resources.TitleMusic.play()
   }
@@ -233,7 +233,7 @@ export class StartScreen extends ex.Scene {
     const loader = new ex.Loader();
     const mapTexture1 = Resources.Map1
     const mapTexture2 = Resources.Map2
-    
+
     loader.addResource(mapTexture1);
     loader.addResource(mapTexture2);
 
@@ -267,8 +267,11 @@ export class StartScreen extends ex.Scene {
     }))
 
     this.map1Button.on('pointerup', async () => {
+      this.map2Button.kill()
+      this.ramdomMapButton.kill()
+      Resources.SelectSound.play()
       await this.map1Button.actions.blink(100, 100, 6).toPromise()
-      
+
       this.engine.goToScene('level1-map1')
       this.killMaps()
     })
@@ -315,10 +318,13 @@ export class StartScreen extends ex.Scene {
     }))
 
     this.map2Button.on('pointerup', async () => {
+      this.map1Button.kill()
+      this.ramdomMapButton.kill()
+      Resources.SelectSound.play()
       await this.map2Button.actions.blink(100, 100, 6).toPromise()
-      
-      this.engine.goToScene('level1-map2')
+
       this.killMaps()
+      this.engine.goToScene('level1-map2')
     })
 
     this.map2Button.scale = SCALE
@@ -358,16 +364,19 @@ export class StartScreen extends ex.Scene {
     }))
 
     this.ramdomMapButton.on('pointerup', async () => {
+      this.map1Button.kill()
+      this.map2Button.kill()
+      Resources.SelectSound.play()
       await this.ramdomMapButton.actions.blink(100, 100, 6).toPromise()
-      
+
       const maps = ['level1-map1', 'level1-map2']
-      this.engine.goToScene(maps[Math.floor(Math.random() * 2)])
       this.killMaps()
+      this.engine.goToScene(maps[Math.floor(Math.random() * 2)])
     })
 
     this.ramdomMapButton.scale = SCALE
     this.add(this.ramdomMapButton)
-    
+
     this.p1VsCpuButton.kill()
     this.p1VsP2Button.kill()
     this.cpuVscpuButton.kill()

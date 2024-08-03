@@ -69,13 +69,9 @@ export class LevelBase extends ex.Scene {
     }
 
     Resources.LevelMusic2.stop()
-
     this.backgroundColor = ex.Color.fromHex('#0070d4')
-    
     this.board = await this.parse(this.levelData)
-
     this.add(DustParticles)
-
     this.camera.pos = this.board.getCenter()
   }
 

@@ -1193,10 +1193,10 @@ escape-string-regexp@^1.0.5:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==
 
-excalibur@0.30.0-alpha.1109:
-  version "0.30.0-alpha.1109"
-  resolved "https://registry.yarnpkg.com/excalibur/-/excalibur-0.30.0-alpha.1109.tgz#ff9306c345385ee991f9862ff35990510d6b689f"
-  integrity sha512-uxJIi/DJP95fhsJpuqe7P63MtX1pXZiqRpqDdnh6uzE0OEoPgavqynOu7rHtLTR3e2KoYgyAppb9s9VsJrpgDw==
+excalibur@0.30.0-alpha.1140:
+  version "0.30.0-alpha.1140"
+  resolved "https://registry.yarnpkg.com/excalibur/-/excalibur-0.30.0-alpha.1140.tgz#55b9e65553461e3c0ec38ba712551e132604edeb"
+  integrity sha512-l9uQcBhWV/tMLyWPhT//2X3PfecaxppCGeOvJ0zDYCynWVS8dFokF+CJuDxEOn55z/vcahLJqVoZXPlZyr4yYw==
 
 fast-glob@^3.2.11, fast-glob@^3.2.2:
   version "3.3.2"

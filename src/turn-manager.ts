@@ -28,7 +28,7 @@ export class TurnManager {
     this.currentPlayer = players[this.currentPlayerIndex]
     this.selectionManager = selectionManager
 
-    const screenWidth = engine.screen.resolution.width
+    const screenWidth = window.innerWidth
 
     this.topScreen = ex.vec(screenWidth / 2.5, -1200)
     this.centerScreen = ex.vec(screenWidth / 2.5, 400)
@@ -42,7 +42,7 @@ export class TurnManager {
         unit: ex.FontUnit.Px,
         color: ex.Color.White,
         baseAlign: ex.BaseAlign.Top,
-        quality: 4
+        quality: 1
       }),
     })
 
@@ -52,12 +52,13 @@ export class TurnManager {
       coordPlane: ex.CoordPlane.Screen,
       z: 10
     })
+
     this.turnActor.graphics.opacity = 0
     this.turnActor.graphics.add('text', this.turnText)
     this.turnActor.graphics.use('text')
     this.turnActor.addChild(new ex.Actor({
       color: new ex.Color(255, 255, 255, .4),
-      width: 800,
+      width: screenWidth,
       height: 100,
     }))
     engine.add(this.turnActor)
@@ -70,7 +71,7 @@ export class TurnManager {
         unit: ex.FontUnit.Px,
         color: ex.Color.White,
         baseAlign: ex.BaseAlign.Top,
-        quality: 4
+        quality: 1
       }),
     })
 
@@ -83,6 +84,7 @@ export class TurnManager {
       height: 100,
       z: 10
     })
+
     this.victory.graphics.opacity = 0
     this.victory.graphics.add('text', victory)
     this.victory.graphics.use('text')
@@ -96,7 +98,7 @@ export class TurnManager {
         unit: ex.FontUnit.Px,
         color: ex.Color.White,
         baseAlign: ex.BaseAlign.Top,
-        quality: 4
+        quality: 1
       }),
     })
 
@@ -109,6 +111,7 @@ export class TurnManager {
       height: 100,
       z: 10
     })
+
     this.victoryDirections.graphics.opacity = 0
     this.victoryDirections.graphics.add('text', victoryDirections)
     this.victoryDirections.graphics.show('text')
@@ -123,7 +126,7 @@ export class TurnManager {
         color: ex.Color.White,
         textAlign: ex.TextAlign.Center,
         baseAlign: ex.BaseAlign.Top,
-        quality: 4
+        quality: 1
       }),
     })
 
@@ -136,14 +139,16 @@ export class TurnManager {
         color: ex.Color.White,
         textAlign: ex.TextAlign.Center,
         baseAlign: ex.BaseAlign.Top,
-        quality: 4
+        quality: 1
       }),
     })
 
     const failureGroup = new ex.GraphicsGroup({
       members: [
         new ex.Rectangle({
-          width: screenWidth, height: 250, color: new ex.Color(240, 50, 50, .4)
+          width: screenWidth,
+          height: 250,
+          color: new ex.Color(240, 50, 50, .4)
         }),
         { graphic: failureText1, useBounds: false, offset: ex.vec(screenWidth / 2, 0) },
         { graphic: failureText2, useBounds: false, offset: ex.vec(screenWidth / 2, 100) },
