@@ -7,6 +7,7 @@ export type UnitType = 'ArcherA' | 'ArcherB' | 'BarbarianA' | 'BarbarianB' | 'Cl
 export type ClassType = 'AA' | 'AB' | 'BA' | 'BB' | 'CA' | 'CB' | 'FA' | 'FB' | 'MA' | 'MB' | 'SA' | 'SB' | 'WA' | 'WB' | 'TA' | 'TB'
 
 export interface UnitConfig {
+  description?: string
   graphics: {
     offset: ex.Vector
     idle: ex.Animation
@@ -24,16 +25,78 @@ export interface UnitConfig {
   }
   primary_color: string
   secondary_color: string
+  initialHealth: number
   health: number
   attack: number
   defense: number
   movement: number
   range: number
+  skill: {
+    longShot?: {
+      use: boolean
+      maxCount: number
+      count: number
+      description: string
+    }
+    berserker?: {
+      use: boolean
+      count: number
+      maxCount: number
+      attack: number
+      damage: number
+      description: string
+    }
+    heal?: {
+      use: boolean
+      count: number
+      maxCount: number
+      description: string
+    }
+    specialAttack?: {
+      use: boolean
+      count: number
+      maxCount: number
+      attack: number
+      damage: number
+      description: string
+    }
+    fireBall?: {
+      use: boolean
+      count: number
+      maxCount: number
+      attack: number
+      damage: number
+      description: string
+    }
+    multipleAttack?: {
+      use: boolean
+      count: number
+      maxCount: number
+      attack: number
+      damage: number
+      description: string
+    }
+    criticalAttack?: {
+      use: boolean
+      count: number
+      maxCount: number
+      attack: number
+      damage: number
+      description: string
+    }
+    run?: {
+      use: boolean
+      count: number
+      maxCount: number
+      description: string
+    }
+  }
 }
 
 export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Archers
   ArcherA: {
+    description: 'Lorem ipsum lorem havox crux ipsum',
     graphics: {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: ArcherAIdle,
@@ -49,16 +112,26 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: ArcherADeathUp,
       deathDown: ArcherADeathDown
     },
+    primary_color: '0000FF',
+    secondary_color: '00008B',
+    initialHealth: 10,
     health: 10,
     movement: 4,
     attack: 2,
     defense: 2,
     range: 6,
-    primary_color: '0000FF',
-    secondary_color: '00008B'
+    skill: {
+      longShot: {
+        use: false,
+        maxCount: 2,
+        count: 2,
+        description: 'string'
+      }
+    }
   },
 
   ArcherB: {
+    description: 'Lorem ipsum lorem havox crux ipsum',
     graphics: {
       offset: ex.vec(14, 14 * SCALE.y),
       idle: ArcherBIdle,
@@ -80,7 +153,16 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     defense: 2,
     range: 6,
     primary_color: 'FF0000',
-    secondary_color: '8B0000'
+    secondary_color: '8B0000',
+    initialHealth: 0,
+    skill: {
+      longShot: {
+        use: false,
+        maxCount: 2,
+        count: 2,
+        description: 'string'
+      },
+    }
   },
 
   // Barbarians
@@ -100,13 +182,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: BarbarianADeathUp,
       deathDown: BarbarianADeathDown
     },
+    initialHealth: 0,
     health: 20,
     movement: 4,
     attack: 5,
     defense: 4,
     range: 1,
     primary_color: '0000FF',
-    secondary_color: '00008B'
+    secondary_color: '00008B',
+    skill: {
+      berserker: undefined,
+    },
   },
   BarbarianB: {
     graphics: {
@@ -124,15 +210,19 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: BarbarianBDeathUp,
       deathDown: BarbarianBDeathDown
     },
+    initialHealth: 0,
     health: 20,
     movement: 4,
     attack: 6,
     defense: 4,
     range: 1,
     primary_color: 'FF0000',
-    secondary_color: '8B0000'
+    secondary_color: '8B0000',
+    skill: {
+      berserker: undefined,
+    },
   },
-  
+
   // Clerics
   ClericA: {
     graphics: {
@@ -150,13 +240,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: ClericADeathUp,
       deathDown: ClericADeathDown
     },
+    initialHealth: 0,
     health: 20,
     movement: 6,
     attack: 3,
     defense: 4,
     range: 1,
     primary_color: '0000FF',
-    secondary_color: '00008B'
+    secondary_color: '00008B',
+    skill: {
+      heal: undefined,
+    },
   },
   ClericB: {
     graphics: {
@@ -174,15 +268,19 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: ClericBDeathUp,
       deathDown: ClericBDeathDown
     },
+    initialHealth: 0,
     health: 20,
     movement: 6,
     attack: 3,
     defense: 4,
     range: 1,
     primary_color: 'FF0000',
-    secondary_color: '8B0000'
+    secondary_color: '8B0000',
+    skill: {
+      heal: undefined,
+    },
   },
-  
+
   // Fighters
   FighterA: {
     graphics: {
@@ -200,13 +298,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: FighterADeathUp,
       deathDown: FighterADeathDown
     },
+    initialHealth: 0,
     health: 15,
     movement: 6,
     attack: 4,
     defense: 3,
     range: 1,
     primary_color: '0000FF',
-    secondary_color: '00008B'
+    secondary_color: '00008B',
+    skill: {
+      specialAttack: undefined,
+    },
   },
   FighterB: {
     graphics: {
@@ -224,13 +326,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: FighterBDeathUp,
       deathDown: FighterBDeathDown
     },
+    initialHealth: 0,
     health: 15,
     movement: 6,
     attack: 4,
     defense: 3,
     range: 1,
     primary_color: 'FF0000',
-    secondary_color: '8B0000'
+    secondary_color: '8B0000',
+    skill: {
+      specialAttack: undefined,
+    },
   },
 
   // Mages
@@ -250,13 +356,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: MageADeathUp,
       deathDown: MageADeathDown
     },
+    initialHealth: 0,
     health: 10,
     movement: 5,
     attack: 2,
     defense: 2,
     range: 5,
     primary_color: '0000FF',
-    secondary_color: '00008B'
+    secondary_color: '00008B',
+    skill: {
+      fireBall: undefined,
+    },
   },
   MageB: {
     graphics: {
@@ -274,13 +384,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: MageBDeathUp,
       deathDown: MageBDeathDown
     },
+    initialHealth: 0,
     health: 10,
     movement: 5,
     attack: 2,
     defense: 2,
     range: 5,
     primary_color: 'FF0000',
-    secondary_color: '8B0000'
+    secondary_color: '8B0000',
+    skill: {
+      fireBall: undefined,
+    },
   },
 
   // Spearmans
@@ -300,13 +414,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: SpearmanADeathUp,
       deathDown: SpearmanADeathDown
     },
+    initialHealth: 0,
     health: 10,
     movement: 6,
     attack: 4,
     defense: 2,
     range: 2,
     primary_color: '0000FF',
-    secondary_color: '00008B'
+    secondary_color: '00008B',
+    skill: {
+      multipleAttack: undefined
+    },
   },
   SpearmanB: {
     graphics: {
@@ -324,13 +442,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: SpearmanBDeathUp,
       deathDown: SpearmanBDeathDown
     },
+    initialHealth: 0,
     health: 10,
     movement: 6,
     attack: 4,
     defense: 2,
     range: 2,
     primary_color: 'FF0000',
-    secondary_color: '8B0000'
+    secondary_color: '8B0000',
+    skill: {
+      multipleAttack: undefined
+    },
   },
 
   // Warriors
@@ -350,13 +472,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: WarriorADeathUp,
       deathDown: WarriorADeathDown
     },
+    initialHealth: 0,
     health: 25,
     movement: 4,
     attack: 4,
     defense: 5,
     range: 1,
     primary_color: '0000FF',
-    secondary_color: '00008B'
+    secondary_color: '00008B',
+    skill: {
+      criticalAttack: undefined
+    },
   },
   WarriorB: {
     graphics: {
@@ -374,13 +500,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: WarriorBDeathUp,
       deathDown: WarriorBDeathDown
     },
+    initialHealth: 0,
     health: 25,
     movement: 4,
     attack: 4,
     defense: 5,
     range: 1,
     primary_color: 'FF0000',
-    secondary_color: '8B0000'
+    secondary_color: '8B0000',
+    skill: {
+      criticalAttack: undefined
+    },
   },
 
   // Thiefs
@@ -400,13 +530,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: ThiefADeathUp,
       deathDown: ThiefADeathDown
     },
+    initialHealth: 0,
     health: 10,
     movement: 6,
     attack: 5,
     defense: 2,
     range: 1,
     primary_color: '0000FF',
-    secondary_color: '00008B'
+    secondary_color: '00008B',
+    skill: {
+      run: undefined,
+    },
   },
   ThiefB: {
     graphics: {
@@ -424,13 +558,17 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: ThiefBDeathUp,
       deathDown: ThiefBDeathDown
     },
+    initialHealth: 0,
     health: 10,
     movement: 6,
     attack: 5,
     defense: 2,
     range: 1,
     primary_color: 'FF0000',
-    secondary_color: '8B0000'
+    secondary_color: '8B0000',
+    skill: {
+      run: undefined,
+    },
   }
 } as const
 

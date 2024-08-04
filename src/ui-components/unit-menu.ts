@@ -35,7 +35,7 @@ export class UnitMenu extends LitElement {
         position: absolute;
         top: 0;
         left: 0;
-        width: calc(64px * var(--pixel-conversion));
+        width: calc(84px * var(--pixel-conversion));
         display: none;
         opacity: 0;
         flex-direction: column;
@@ -88,10 +88,13 @@ export class UnitMenu extends LitElement {
     }
 
     button {
-        all: unset;
-        padding: calc(2px * var(--pixel-conversion));
-        padding-left: calc(4px * var(--pixel-conversion));
-        cursor: pointer;
+      all: unset;
+      padding: calc(2px * var(--pixel-conversion));
+      padding-left: calc(4px * var(--pixel-conversion));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
     }
 
     button:focus, button:hover, .focus {
@@ -114,7 +117,7 @@ export class UnitMenu extends LitElement {
       mask-repeat: no-repeat;
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
-      margin-right: calc(1px * var(--pixel-conversion));
+      margin-right: calc(2px * var(--pixel-conversion));
     }
 
     .memory--sword {
@@ -129,8 +132,8 @@ export class UnitMenu extends LitElement {
       mask-repeat: no-repeat;
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
-      margin-right: calc(1px * var(--pixel-conversion));
-      margin-left: calc(1px * var(--pixel-conversion));
+      margin-right: calc(2px * var(--pixel-conversion));
+      margin-left: calc(2px * var(--pixel-conversion));
     }
 
     .vaadin--shield {
@@ -145,8 +148,8 @@ export class UnitMenu extends LitElement {
       mask-repeat: no-repeat;
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
-      margin-right: calc(1px * var(--pixel-conversion));
-      margin-left: calc(1px * var(--pixel-conversion));
+      margin-right: calc(2px * var(--pixel-conversion));
+      margin-left: calc(2px * var(--pixel-conversion));
     }
 
     .memory--bow-arrow {
@@ -161,8 +164,8 @@ export class UnitMenu extends LitElement {
       mask-repeat: no-repeat;
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
-      margin-right: calc(1px * var(--pixel-conversion));
-      margin-left: calc(1px * var(--pixel-conversion));
+      margin-right: calc(2px * var(--pixel-conversion));
+      margin-left: calc(2px * var(--pixel-conversion));
     }
 
     .mdi--shoe-print {
@@ -177,8 +180,34 @@ export class UnitMenu extends LitElement {
       mask-repeat: no-repeat;
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
-      margin-right: calc(1px * var(--pixel-conversion));
-      margin-left: calc(1px * var(--pixel-conversion));
+      margin-right: calc(2px * var(--pixel-conversion));
+      margin-left: calc(2px * var(--pixel-conversion));
+    }
+
+    .tooltip {
+      padding-top: calc(2px * var(--pixel-conversion));
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      font-size: calc(7px * var(--pixel-conversion));
+      border: black calc(1px * var(--pixel-conversion)) solid;
+      visibility: hidden;
+      width: calc(100px * var(--pixel-conversion));
+      color: white;
+      text-align: center;
+      padding: calc(3px * var(--pixel-conversion));
+      position: absolute;
+      z-index: 1;
+      left: calc(20px * var(--pixel-conversion));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
     }
   `
 
@@ -242,31 +271,89 @@ export class UnitMenu extends LitElement {
 
   override render() {
     const dismissOverlayHtml = this._show ? html`<div class="overlay" @click=${this.hide}></div>` : nothing
+    const unitName = html`<div class="title-bar" style="background-color: #${this.unit?.unitConfig.primary_color}">${this.unit?.name.replace(/[AB]$/, '')}</div>`
+    
+    const buttonMove = html`
+      <button ?disabled=${!this.unit?.canMove()} style=${styleMap({ color: !this.unit?.canMove() ? '#D3D3D3' : 'black', cursor: !this.unit?.canMove() ? 'default' : 'pointer'})} @click="${this.sendEvent('move')}">
+        <div>
+          Move
+        </div>
+        <div class="tooltip">( ? )
+          <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Move the selected unit</span>
+        </div>
+      </button>
+    `
+    const buttonAttack = html`
+      <button ?disabled=${!this.unit?.canAttack()} style=${styleMap({ color: !this.unit?.canAttack() ? '#D3D3D3' : 'black', cursor: !this.unit?.canAttack() ? 'default' : 'pointer'})} @click="${this.sendEvent('move')}">
+        <div>
+          Attack
+        </div>
+        <div class="tooltip">( ? )
+          <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Attack the selected enemy unit</span>
+        </div>
+      </button>
+    `
+    const done = html`
+      <button @click="${this.sendEvent('pass')}">
+        <div>
+          Done
+        </div>
+        <div class="tooltip">( ? )
+          <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Pass unit turn</span>
+        </div>
+      </button>
+    `
+    const passTurn = html`
+      <button @click="${this.sendEvent('passTurn')}" style="color: #${this.unit?.unitConfig.primary_color};">
+        <div>
+          Pass Turn
+        </div>
+        <div class="tooltip">( ? )
+          <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Pass player turn</span>
+        </div>
+      </button>
+    `
+    const sheet = html`
+      <div class="tooltip">
+        <span class="memory--heart"></span>${this.unit?.health}
+        <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Health Points are used to know how much damage the unit can take before being eliminated</span>
+      </div>
+      <div class="tooltip">
+        <span class="memory--sword"></span>${this.unit?.unitConfig.attack}
+        <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Attack Points are used in attack and damage tests</span>
+      </div>
+      <div class="tooltip">
+        <span class="vaadin--shield"></span>${this.unit?.unitConfig.defense}
+        <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Defense Points are used in defense tests and damage absorption</span>
+      </div>
+      <div class="tooltip">
+        <span class="memory--bow-arrow"></span>${this.unit?.unitConfig.range}
+        <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Range Points are used to know how many cells the unit's attack reaches</span>
+      </div>
+      <div class="tooltip">
+        <span class="mdi--shoe-print"></span>${this.unit?.unitConfig.movement}
+        <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Move Points are used to know how many cells the unit can move</span>
+      </div>
+    `
+    const separator = html`
+      <div style=${styleMap({ backgroundColor: 'black', height: 'calc(1px * var(--pixel-conversion))'})}></div>
+    `
 
     return html`
-        ${dismissOverlayHtml}
-        <div class=${classMap({
-      menu: true,
-      show: this._show
-    })} style=${styleMap({
-      left: `${this.left}px`,
-      top: `${this.top}px`
-    })}>
-        <div class="title-bar" style="background-color: #${this.unit?.unitConfig.primary_color}">${this.unit?.name.replace(/[AB]$/, '')}</div>
+      ${dismissOverlayHtml}
+      <div class=${classMap({menu: true, show: this._show})} style=${styleMap({left: `${this.left}px`, top: `${this.top}px`})}>
+        ${unitName}
         <div class="options">
-            <div class="sheet" style="background-color: #${this.unit?.unitConfig.secondary_color}">
-              <span class="memory--heart"></span>${this.unit?.health}
-              <span class="memory--sword"></span>${this.unit?.unitConfig.attack}
-              <span class="vaadin--shield"></span>${this.unit?.unitConfig.defense}
-              <span class="memory--bow-arrow"></span>${this.unit?.unitConfig.range}
-              <span class="mdi--shoe-print"></span>${this.unit?.unitConfig.movement}
-            </div>
-            <button style=${styleMap({ display: this.unit?.canMove() ? 'block' : 'none' })} @click="${this.sendEvent('move')}">Move</button>
-            <button style=${styleMap({ display: this.unit?.canAttack() ? 'block' : 'none' })} @click="${this.sendEvent('attack')}">Attack</button>
-            <button @click="${this.sendEvent('pass')}">Done</button>
-            <button @click="${this.sendEvent('passTurn')}" style="color: red;">Pass Turn</button>
+          <div class="sheet" style="background-color: #${this.unit?.unitConfig.secondary_color}">
+            ${sheet}
+          </div>
+          ${buttonMove}
+          ${buttonAttack}
+          ${separator}
+          ${done}
+          ${passTurn}
         </div>
-    </div>
+      </div>
     `
   }
 }
