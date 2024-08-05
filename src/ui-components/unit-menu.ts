@@ -278,7 +278,7 @@ export class UnitMenu extends LitElement {
         <div>
           Move
         </div>
-        <div class="tooltip">( ? )
+        <div class="tooltip">{?}
           <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Move the selected unit</span>
         </div>
       </button>
@@ -288,7 +288,7 @@ export class UnitMenu extends LitElement {
         <div>
           Attack
         </div>
-        <div class="tooltip">( ? )
+        <div class="tooltip">{?}
           <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Attack the selected enemy unit</span>
         </div>
       </button>
@@ -298,7 +298,7 @@ export class UnitMenu extends LitElement {
         <div>
           Done
         </div>
-        <div class="tooltip">( ? )
+        <div class="tooltip">{?}
           <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Pass unit turn</span>
         </div>
       </button>
@@ -308,7 +308,7 @@ export class UnitMenu extends LitElement {
         <div>
           Pass Turn
         </div>
-        <div class="tooltip">( ? )
+        <div class="tooltip">{?}
           <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Pass player turn</span>
         </div>
       </button>
