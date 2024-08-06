@@ -279,7 +279,7 @@ export class UnitMenu extends LitElement {
       </button>
     `
     const buttonAttack = html`
-      <button ?disabled=${!this.unit?.canAttack()} style=${styleMap({ color: !this.unit?.canAttack() ? '#D3D3D3' : 'black', cursor: !this.unit?.canAttack() ? 'default' : 'pointer'})} @click="${this.sendEvent('move')}">
+      <button ?disabled=${!this.unit?.canAttack()} style=${styleMap({ color: !this.unit?.canAttack() ? '#D3D3D3' : 'black', cursor: !this.unit?.canAttack() ? 'default' : 'pointer'})} @click="${this.sendEvent('attack')}">
         <div>
           Attack
         </div>
