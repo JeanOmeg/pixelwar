@@ -12,22 +12,18 @@ export class UnitMenu extends LitElement {
     @keyframes fadeIn {
         from {
             opacity: 0;
-            transform: translateY(50%);
         }
         to {
             opacity: 1;
-            transform: translateY(0%);
         }
     }
 
     @keyframes fadeOut {
         from {
             opacity: 1;
-            transform: translateY(0%);
         }
         to {
             opacity: 0;
-            transform: translateY(50%);
         }
     }
 
@@ -35,7 +31,7 @@ export class UnitMenu extends LitElement {
         position: absolute;
         top: 0;
         left: 0;
-        width: calc(84px * var(--pixel-conversion));
+        width: calc(74px * var(--pixel-conversion));
         display: none;
         opacity: 0;
         flex-direction: column;
@@ -89,8 +85,7 @@ export class UnitMenu extends LitElement {
 
     button {
       all: unset;
-      padding: calc(2px * var(--pixel-conversion));
-      padding-left: calc(4px * var(--pixel-conversion));
+      padding-left: calc(2px * var(--pixel-conversion));
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -200,7 +195,7 @@ export class UnitMenu extends LitElement {
       padding: calc(3px * var(--pixel-conversion));
       position: absolute;
       z-index: 1;
-      left: calc(20px * var(--pixel-conversion));
+      left: calc(15px * var(--pixel-conversion));
       opacity: 0;
       transition: opacity 0.3s;
     }

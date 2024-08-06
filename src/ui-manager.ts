@@ -21,16 +21,12 @@ export class UIManager {
   unitMenu: UnitMenu
   constructor(private engine: ex.Engine) {
     this.unitMenu = new UnitMenu()
+    this.unitMenu.left = 3
+    this.unitMenu.top = 3
     document.body.appendChild(this.unitMenu)
     document.documentElement.style.setProperty('--pixel-conversion', this.worldDistanceToPage(1).toString())
     window.addEventListener('resize', () => {
       document.documentElement.style.setProperty('--pixel-conversion', this.worldDistanceToPage(1).toString())
-
-      const menuPos = this.uiToWorldPos.get(this.unitMenu)
-      if (menuPos) {
-        this.unitMenu.left = 5
-        this.unitMenu.top = 5
-      }
     })
   }
 
@@ -55,8 +51,6 @@ export class UIManager {
   showUnitMenu(unit: Unit, options: MenuOptions): UnitMenu {
     const menu = this.unitMenu
     
-    menu.left = 5
-    menu.top = 5
     menu.unit = unit
 
     const move = () => {
@@ -95,9 +89,5 @@ export class UIManager {
     this.uiToWorldPos.set(menu, unit.pos)
 
     return menu
-  }
-
-  showNextMission(pos: ex.Vector) {
-
   }
 }
