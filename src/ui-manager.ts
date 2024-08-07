@@ -21,8 +21,7 @@ export class UIManager {
   unitMenu: UnitMenu
   constructor(private engine: ex.Engine) {
     this.unitMenu = new UnitMenu()
-    this.unitMenu.left = 3
-    this.unitMenu.top = 3
+    this.unitMenu.top = 3 * this.worldDistanceToPage(1)
     document.body.appendChild(this.unitMenu)
     document.documentElement.style.setProperty('--pixel-conversion', this.worldDistanceToPage(1).toString())
     window.addEventListener('resize', () => {
@@ -50,7 +49,6 @@ export class UIManager {
 
   showUnitMenu(unit: Unit, options: MenuOptions): UnitMenu {
     const menu = this.unitMenu
-    
     menu.unit = unit
 
     const move = () => {
@@ -85,6 +83,18 @@ export class UIManager {
     menu.clearEvents = clearEvents
     menu.show()
     menu.focus()
+
+    let left = null
+    switch (unit.player.name) {
+      case 'Human':
+        left = this.engine.screen.viewport.width - (80 * this.worldDistanceToPage(1))
+        break
+      case 'Human A':
+        left = this.engine.screen.viewport.width - (80 * this.worldDistanceToPage(1))
+        break
+    }
+
+    menu.left = left ?? 4 * this.worldDistanceToPage(1)
 
     this.uiToWorldPos.set(menu, unit.pos)
 

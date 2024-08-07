@@ -28,11 +28,12 @@ export class TurnManager {
     this.currentPlayer = players[this.currentPlayerIndex]
     this.selectionManager = selectionManager
 
-    const screenWidth = window.innerWidth
+    const screenWidth = engine.screen.contentArea.width
+    const screenHeight = engine.screen.contentArea.height
 
-    this.topScreen = ex.vec(screenWidth / 2.5, -1200)
-    this.centerScreen = ex.vec(screenWidth / 2.5, 400)
-    this.bottomScreen = ex.vec(screenWidth / 2.5, 1200)
+    this.topScreen = ex.vec(screenWidth / 2, -(screenHeight + 200))
+    this.centerScreen = ex.vec(screenWidth / 2, screenHeight / 2)
+    this.bottomScreen = ex.vec(screenWidth / 2, screenHeight + 200)
 
     this.turnText = new ex.Text({
       text: `Turn ${this.currentTurn}`,
@@ -207,7 +208,7 @@ export class TurnManager {
   }
 
   async showGameOver() {
-    const transitionTime = 1200
+    const transitionTime = 1000
     await this.failure.actions.runAction(
       new ex.ParallelActions([
         new ex.ActionSequence(this.failure, ctx =>
@@ -219,7 +220,7 @@ export class TurnManager {
   }
 
   async showVictory() {
-    const transitionTime = 1200
+    const transitionTime = 1000
     await this.victory.actions.runAction(
       new ex.ParallelActions([
         new ex.ActionSequence(this.victory, ctx =>
