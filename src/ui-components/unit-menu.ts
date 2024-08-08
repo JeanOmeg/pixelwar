@@ -195,7 +195,6 @@ export class UnitMenu extends LitElement {
       padding: calc(3px * var(--pixel-conversion));
       position: absolute;
       z-index: 1;
-      left: calc(15px * var(--pixel-conversion));
       opacity: 0;
       transition: opacity 0.3s;
     }
@@ -208,6 +207,12 @@ export class UnitMenu extends LitElement {
 
   @property({ type: Number })
   left: number = 0
+
+  @property({ type: Number })
+  leftTooltip: number = 0
+
+  @property({ type: Number })
+  rightTooltip: number = 0
 
   @property({ type: Number })
   top: number = 0
@@ -264,6 +269,10 @@ export class UnitMenu extends LitElement {
     }
   }
 
+  tooltipDirection(min = 0) {
+    return `${this.leftTooltip > 0 ? 'left:' : 'right:'} ${this.leftTooltip > 0 ? this.leftTooltip : this.rightTooltip - min}px; background-color: #${this.unit?.unitConfig.primary_color};`
+  }
+
   override render() {
     const dismissOverlayHtml = this._show ? html`<div class="overlay" @click=${this.hide}></div>` : nothing
     const unitName = html`<div class="title-bar" style="background-color: #${this.unit?.unitConfig.primary_color}">${this.unit?.name.replace(/[AB]$/, '')}</div>`
@@ -274,7 +283,7 @@ export class UnitMenu extends LitElement {
           Move
         </div>
         <div class="tooltip">{?}
-          <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Move the selected unit</span>
+          <span class="tooltiptext" style="${this.tooltipDirection()}">Move the selected unit</span>
         </div>
       </button>
     `
@@ -284,7 +293,7 @@ export class UnitMenu extends LitElement {
           Attack
         </div>
         <div class="tooltip">{?}
-          <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Attack the selected enemy unit</span>
+          <span class="tooltiptext" style="${this.tooltipDirection()}">Attack the selected enemy unit</span>
         </div>
       </button>
     `
@@ -294,7 +303,7 @@ export class UnitMenu extends LitElement {
           Done
         </div>
         <div class="tooltip">{?}
-          <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Pass unit turn</span>
+          <span class="tooltiptext" style="${this.tooltipDirection()}">Pass unit turn</span>
         </div>
       </button>
     `
@@ -304,30 +313,30 @@ export class UnitMenu extends LitElement {
           Pass Turn
         </div>
         <div class="tooltip">{?}
-          <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Pass player turn</span>
+          <span class="tooltiptext" style="${this.tooltipDirection()}">Pass player turn</span>
         </div>
       </button>
     `
     const sheet = html`
       <div class="tooltip">
         <span class="memory--heart"></span>${this.unit?.health}
-        <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Health Points are used to know how much damage the unit can take before being eliminated</span>
+        <span class="tooltiptext" style="${this.tooltipDirection(62 * this.pixelConversion)}">Health Points are used to know how much damage the unit can take before being eliminated</span>
       </div>
       <div class="tooltip">
         <span class="memory--sword"></span>${this.unit?.unitConfig.attack}
-        <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Attack Points are used in attack and damage tests</span>
+        <span class="tooltiptext" style="${this.tooltipDirection(62 * this.pixelConversion)}">Attack Points are used in attack and damage tests</span>
       </div>
       <div class="tooltip">
         <span class="vaadin--shield"></span>${this.unit?.unitConfig.defense}
-        <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Defense Points are used in defense tests and damage absorption</span>
+        <span class="tooltiptext" style="${this.tooltipDirection(62 * this.pixelConversion)}">Defense Points are used in defense tests and damage absorption</span>
       </div>
       <div class="tooltip">
         <span class="memory--bow-arrow"></span>${this.unit?.unitConfig.range}
-        <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Range Points are used to know how many cells the unit's attack reaches</span>
+        <span class="tooltiptext" style="${this.tooltipDirection(62 * this.pixelConversion)}">Range Points are used to know how many cells the unit's attack reaches</span>
       </div>
       <div class="tooltip">
         <span class="mdi--shoe-print"></span>${this.unit?.unitConfig.movement}
-        <span class="tooltiptext" style="background-color: #${this.unit?.unitConfig.primary_color}">Move Points are used to know how many cells the unit can move</span>
+        <span class="tooltiptext" style="${this.tooltipDirection(62 * this.pixelConversion)}">Move Points are used to know how many cells the unit can move</span>
       </div>
     `
     const separator = html`

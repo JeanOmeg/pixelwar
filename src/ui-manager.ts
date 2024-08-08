@@ -84,17 +84,22 @@ export class UIManager {
     menu.show()
     menu.focus()
 
-    let left = null
-    switch (unit.player.name) {
-      case 'Human':
-        left = this.engine.screen.viewport.width - (80 * this.worldDistanceToPage(1))
-        break
-      case 'Human A':
-        left = this.engine.screen.viewport.width - (80 * this.worldDistanceToPage(1))
-        break
+    let leftMenu = null
+    let rightTooltip = null
+    let leftTooltip = null
+
+    if (unit.player.name === 'Human' ||unit.player.name === 'Human A' ) {
+      leftMenu = this.engine.screen.viewport.width - (80 * this.worldDistanceToPage(1))
+      rightTooltip = 78 * this.worldDistanceToPage(1)
+    } else {
+      leftMenu = 4 * this.worldDistanceToPage(1)
+      leftTooltip = 15 * this.worldDistanceToPage(1)
     }
 
-    menu.left = left ?? 4 * this.worldDistanceToPage(1)
+    menu.left = leftMenu
+    menu.rightTooltip = rightTooltip ?? 0
+    menu.leftTooltip = leftTooltip ?? 0
+    menu.pixelConversion = this.worldDistanceToPage(1)
 
     this.uiToWorldPos.set(menu, unit.pos)
 
