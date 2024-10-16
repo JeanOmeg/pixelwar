@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "parcel serve index.html",
+    "dev": "parcel serve index.html",
     "build": "parcel build ./index.html --dist-dir ./docs --public-url ./"
   },
   "author": "Jean Fernandes",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "excalibur": "0.30.0-alpha.1140",
+    "excalibur": "0.30.0-alpha.1221",
     "lit": "3.1.2"
   },
   "devDependencies": {
