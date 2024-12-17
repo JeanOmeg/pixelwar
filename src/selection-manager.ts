@@ -1,10 +1,8 @@
-import * as ex from 'excalibur'
-import { Unit } from "./unit"
-import { Board } from "./board"
+import { Unit } from './unit'
+import { Board } from './board'
 import { Cell } from './cell'
 import { PathNodeComponent } from './path-finding/path-node-component'
 import { Player } from './player'
-
 
 /**
  * Manages current unit selection
@@ -18,7 +16,9 @@ export class SelectionManager {
   currentPath: PathNodeComponent[] = []
   currentCursor: { x: number, y: number } = { x: 0, y: 0 }
 
-  constructor(private board: Board) { }
+  constructor(private board: Board) {
+    this.board = board
+  }
 
   reset() {
     this.resetHighlight()

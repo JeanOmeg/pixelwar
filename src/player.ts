@@ -1,4 +1,4 @@
-import { Board } from "./board"
+import { Board } from './board'
 
 export abstract class Player {
   private static _STARTING_BIT = 0b1 | 0
@@ -7,6 +7,8 @@ export abstract class Player {
   public readonly mask: number
   public active: boolean = false
   constructor(public name: string, public board: Board) {
+    this.name = name
+    this.board = board
     this.mask = Player._CURRENT_GROUP = (Player._CURRENT_GROUP << 1) | 0
   }
 

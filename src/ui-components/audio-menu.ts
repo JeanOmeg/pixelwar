@@ -1,6 +1,6 @@
-import { LitElement, css, html } from "lit"
-import { customElement, property } from "lit/decorators"
-import { AudioManager } from "../audio-manager"
+import { LitElement, css, html } from 'lit'
+import { customElement, property } from 'lit/decorators'
+import { AudioManager } from '../audio-manager'
 
 @customElement('audio-menu')
 export class AudioMenu extends LitElement {
@@ -35,7 +35,7 @@ export class AudioMenu extends LitElement {
   `
 
   @property()
-  soundOn = true;
+    soundOn = true
 
   toggleSound() {
     this.soundOn = !this.soundOn

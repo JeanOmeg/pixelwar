@@ -1,11 +1,9 @@
 /// <reference lib="dom" />
-
 import * as ex from 'excalibur'
 import { Resources } from '../resources'
 import { SCALE } from '../config'
 
 export class StartScreen extends ex.Scene {
-
   title!: ex.Actor
   p1VsCpuButton!: ex.Actor
   p1VsP2Button!: ex.Actor
@@ -230,17 +228,17 @@ export class StartScreen extends ex.Scene {
       font: this.buttonFont,
     })
 
-    const loader = new ex.Loader();
+    const loader = new ex.Loader()
     const mapTexture1 = Resources.Map1
     const mapTexture2 = Resources.Map2
 
-    loader.addResource(mapTexture1);
-    loader.addResource(mapTexture2);
+    loader.addResource(mapTexture1)
+    loader.addResource(mapTexture2)
 
-    const mapSprite1 = mapTexture1.toSprite();
-    mapSprite1.scale = ex.vec(0.05, 0.05);
-    const mapSprite2 = mapTexture2.toSprite();
-    mapSprite2.scale = ex.vec(0.05, 0.05);
+    const mapSprite1 = mapTexture1.toSprite()
+    mapSprite1.scale = ex.vec(0.05, 0.05)
+    const mapSprite2 = mapTexture2.toSprite()
+    mapSprite2.scale = ex.vec(0.05, 0.05)
 
     this.map1Button.graphics.use(new ex.GraphicsGroup({
       members: [
@@ -412,11 +410,13 @@ export class StartScreen extends ex.Scene {
     }
 
     const screenOrientation = screen.orientation as ScreenOrientation & {
-      lock?: (orientation: "portrait" | "portrait-primary" | "portrait-secondary" | "landscape" | "landscape-primary" | "landscape-secondary") => Promise<void>
+      // eslint-disable-next-line no-unused-vars
+      lock?: (orientation: 'portrait' | 'portrait-primary' | 'portrait-secondary' | 'landscape' | 'landscape-primary' | 'landscape-secondary') => Promise<void>
     }
 
     if (screenOrientation && screenOrientation.lock) {
       screenOrientation.lock('landscape').catch(function (error) {
+        // eslint-disable-next-line no-console
         console.error('Erro ao tentar definir a orientação para paisagem:', error)
       })
     }

@@ -1,6 +1,6 @@
 import * as ex from 'excalibur'
-import { Player } from "./player"
-import { SelectionManager } from "./selection-manager"
+import { Player } from './player'
+import { SelectionManager } from './selection-manager'
 import { Board } from './board'
 import { ENEMY_SPEED } from './config'
 import { PathNodeComponent } from './path-finding/path-node-component'
@@ -11,6 +11,7 @@ export class ComputerPlayer extends Player {
   public active: boolean = false
   constructor(name: string, private selectionManger: SelectionManager, board: Board) {
     super(name, board)
+    this.selectionManger = selectionManger
   }
 
   override async turnStart(): Promise<void> {
@@ -25,6 +26,7 @@ export class ComputerPlayer extends Player {
 
   async findClosestEnemy(unit: Unit): Promise<Unit | null> {
     let enemyCells = await this.board.getUnits()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     enemyCells = enemyCells.filter(u => u.player !== this).map(u => u.cell).filter(c => !!c) as any
     const closestCell = this.findClosestCell(unit, enemyCells as unknown as Cell[])
     if (closestCell?.unit) {
@@ -60,8 +62,9 @@ export class ComputerPlayer extends Player {
     return null
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   findAttackableTargets(unit: Unit): PathNodeComponent<any>[] {
-    this.selectionManger.selectUnit(unit, "attack")
+    this.selectionManger.selectUnit(unit, 'attack')
     const attackRange = this.selectionManger.findAttackRange(unit)
     return attackRange.filter(node => {
       if (node.owner) {

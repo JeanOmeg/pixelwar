@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export enum Terrain {
   // Row 1
   r1c1 = '001',

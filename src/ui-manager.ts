@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as ex from 'excalibur'
-
 import './ui-components/unit-menu'
-import { UnitMenu } from "./ui-components/unit-menu"
-import { Unit } from "./unit"
+import { UnitMenu } from './ui-components/unit-menu'
+import { Unit } from './unit'
 import { SCALE } from './config'
 
 export interface MenuOptions {
@@ -20,6 +20,7 @@ export class UIManager {
 
   unitMenu: UnitMenu
   constructor(private engine: ex.Engine) {
+    this.engine = engine
     this.unitMenu = new UnitMenu()
     this.unitMenu.top = 3 * this.worldDistanceToPage(1)
     document.body.appendChild(this.unitMenu)

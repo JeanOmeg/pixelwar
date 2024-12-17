@@ -2431,33 +2431,33 @@ export const ThiefBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
 export const loader = new ex.Loader()
 loader.backgroundColor = 'black'
 loader.startButtonFactory = () => {
-  let myButton = document.createElement('button');
-  myButton.textContent = 'PLAY!';
-  myButton.style.backgroundColor = 'red';
-  myButton.style.color = 'white';
-  myButton.style.fontFamily = "'Press Start 2P', cursive";
-  myButton.style.fontSize = '60px';
-  myButton.style.textDecoration = 'none';
-  myButton.style.border = 'none';
-  myButton.style.paddingTop = '20px';
-  myButton.style.paddingLeft = '20px';
-  myButton.style.paddingBottom = '10px';
-  myButton.style.paddingRight = '10px';
-  myButton.style.textAlign = 'center';
-  myButton.style.textDecoration = 'none';
-  myButton.style.display = 'inline-block';
-  myButton.style.cursor = 'pointer';
+  let myButton = document.createElement('button')
+  myButton.textContent = 'PLAY!'
+  myButton.style.backgroundColor = 'red'
+  myButton.style.color = 'white'
+  myButton.style.fontFamily = '\'Press Start 2P\', cursive'
+  myButton.style.fontSize = '60px'
+  myButton.style.textDecoration = 'none'
+  myButton.style.border = 'none'
+  myButton.style.paddingTop = '20px'
+  myButton.style.paddingLeft = '20px'
+  myButton.style.paddingBottom = '10px'
+  myButton.style.paddingRight = '10px'
+  myButton.style.textAlign = 'center'
+  myButton.style.textDecoration = 'none'
+  myButton.style.display = 'inline-block'
+  myButton.style.cursor = 'pointer'
 
   myButton.onfocus = () => {
-      myButton.style.outline = 'none';
-  };
+    myButton.style.outline = 'none'
+  }
 
-  const fontLink = document.createElement('link');
-  fontLink.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap';
-  fontLink.rel = 'stylesheet';
-  document.head.appendChild(fontLink);
+  const fontLink = document.createElement('link')
+  fontLink.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'
+  fontLink.rel = 'stylesheet'
+  document.head.appendChild(fontLink)
 
-  return myButton;
+  return myButton
 }
 loader.logoWidth = 256
 loader.logoHeight = 54

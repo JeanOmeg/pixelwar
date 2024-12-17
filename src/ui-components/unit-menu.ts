@@ -1,5 +1,3 @@
-import * as ex from 'excalibur'
-
 import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, query, state } from 'lit/decorators'
 import { styleMap } from 'lit/directives/style-map'
@@ -206,36 +204,37 @@ export class UnitMenu extends LitElement {
   `
 
   @property({ type: Number })
-  left: number = 0
+    left: number = 0
 
   @property({ type: Number })
-  leftTooltip: number = 0
+    leftTooltip: number = 0
 
   @property({ type: Number })
-  rightTooltip: number = 0
+    rightTooltip: number = 0
 
   @property({ type: Number })
-  top: number = 0
+    top: number = 0
 
   @property({ type: Number })
-  fontSize: number = 0
+    fontSize: number = 0
 
   @property({ type: Number })
-  width: number = 0
+    width: number = 0
 
   @property({ attribute: false })
-  unit: Unit | null = null
+    unit: Unit | null = null
 
   @property({ type: Number })
-  pixelConversion: number = 1
+    pixelConversion: number = 1
 
   @state()
   private _show: boolean = false
 
   @query('.menu')
-  menuHtml?: HTMLDivElement
+    menuHtml?: HTMLDivElement
 
-  clearEvents: () => any = () => { };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  clearEvents: () => any = () => { }
 
   override firstUpdated(): void {
     this.menuHtml?.addEventListener('animationend', evt => {

@@ -1,5 +1,5 @@
 import * as ex from 'excalibur'
-import { PathNodeComponent } from "./path-node-component"
+import { PathNodeComponent } from './path-node-component'
 
 export class PathFinder {
   query: ex.Query<typeof PathNodeComponent>
@@ -13,6 +13,7 @@ export class PathFinder {
   name_unit: string | undefined = undefined
 
   heuristicWeight = 1
+  // eslint-disable-next-line no-unused-vars
   heuristic: (start: PathNodeComponent, end: PathNodeComponent) => number = (start: PathNodeComponent, end: PathNodeComponent) => {
     // manhattan distance
     return Math.abs(start.pos.x - end.pos.x) + Math.abs(start.pos.y - end.pos.y)

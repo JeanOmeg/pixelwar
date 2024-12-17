@@ -1,12 +1,12 @@
-import * as ex from "excalibur"
-import { Board } from "./board"
-import { Resources } from "./resources"
-import { SCALE, UNIT_CONFIG, UnitConfig, UnitType } from "./config"
-import { Cell } from "./cell"
-import { PathNodeComponent } from "./path-finding/path-node-component"
-import { Player } from "./player"
-import { DustParticles } from "./dust-particles"
-import { DamageManager } from "./damage-manager"
+import * as ex from 'excalibur'
+import { Board } from './board'
+import { Resources } from './resources'
+import { SCALE, UNIT_CONFIG, UnitConfig, UnitType } from './config'
+import { Cell } from './cell'
+import { PathNodeComponent } from './path-finding/path-node-component'
+import { Player } from './player'
+import { DustParticles } from './dust-particles'
+import { DamageManager } from './damage-manager'
 
 export class Unit extends ex.Actor {
   cell: Cell | null = null
@@ -32,6 +32,7 @@ export class Unit extends ex.Actor {
     this.anim = this.unitConfig.graphics.idle.clone()
     this.anim.scale = SCALE
     this.graphics.use(this.anim)
+    this.player = player
 
     const cell = board.getCell(x, y)
     if (cell) {
@@ -97,8 +98,8 @@ export class Unit extends ex.Actor {
         ctx.callMethod(() => {
           DustParticles.pos = this.pos.add(SCALE.scale(32))
           DustParticles.emitParticles(3)
-        });
-      });
+        })
+      })
 
       const parallel = new ex.ParallelActions([
         sound,

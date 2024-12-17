@@ -1,11 +1,11 @@
-import * as ex from "excalibur"
-import { Board } from "./board"
-import { Player } from "./player"
-import { SelectionManager } from "./selection-manager"
-import { UIManager } from "./ui-manager"
-import { Cell } from "./cell"
-import { Unit } from "./unit"
-import { Resources } from "./resources"
+import * as ex from 'excalibur'
+import { Board } from './board'
+import { Player } from './player'
+import { SelectionManager } from './selection-manager'
+import { UIManager } from './ui-manager'
+import { Cell } from './cell'
+import { Unit } from './unit'
+import { Resources } from './resources'
 
 
 export class HumanPlayer extends Player {
@@ -13,6 +13,9 @@ export class HumanPlayer extends Player {
 
   constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public uiManager: UIManager, board: Board) {
     super(name, board)
+    this.engine = engine
+    this.selectionManager = selectionManager
+    this.uiManager = uiManager
     engine.input.pointers.on('down', this.pointerClick.bind(this))
     engine.input.pointers.on('move', this.pointerMove.bind(this))
     document.body.oncontextmenu = () => false
@@ -78,7 +81,7 @@ export class HumanPlayer extends Player {
 
       const destination = this.board.getCellByWorldPos(pointer.worldPos)
       if (destination && this.hasNonPlayerUnit(destination)) {
-        this.selectionManager.showHighlight([destination.pathNode], "path")
+        this.selectionManager.showHighlight([destination.pathNode], 'path')
       }
     }
   }

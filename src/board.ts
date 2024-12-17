@@ -1,5 +1,5 @@
 import * as ex from 'excalibur'
-import { Cell } from "./cell"
+import { Cell } from './cell'
 import { SCALE } from './config'
 import { PathFinder } from './path-finding/path-finding-system'
 import { Unit } from './unit'

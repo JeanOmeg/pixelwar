@@ -1,5 +1,6 @@
-import * as ex from "excalibur"
+import * as ex from 'excalibur'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class PathNodeComponent<T = any> extends ex.Component {
   static type = 'path-node' as const
   readonly type = 'path-node' as const

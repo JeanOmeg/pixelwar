@@ -1,6 +1,6 @@
 import * as ex from 'excalibur'
-import { Player } from "./player"
-import { SelectionManager } from "./selection-manager"
+import { Player } from './player'
+import { SelectionManager } from './selection-manager'
 import { SCALE } from './config'
 import { HumanPlayer } from './human-player'
 import { ComputerPlayer } from './computer-player'
@@ -27,6 +27,8 @@ export class TurnManager {
     if (players.length === 0) throw Error('Players should be non-zero in length')
     this.currentPlayer = players[this.currentPlayerIndex]
     this.selectionManager = selectionManager
+    this.level = level
+    this.maxTurns = maxTurns
 
     const screenWidth = engine.screen.contentArea.width
     const screenHeight = engine.screen.contentArea.height
@@ -65,7 +67,7 @@ export class TurnManager {
     engine.add(this.turnActor)
 
     const victory = new ex.Text({
-      text: `Victory!`,
+      text: 'Victory!',
       font: new ex.Font({
         family: 'notjamslab14',
         size: 32 * SCALE.x,
@@ -92,7 +94,7 @@ export class TurnManager {
     engine.add(this.victory)
 
     const victoryDirections = new ex.Text({
-      text: `Click to proceed!`,
+      text: 'Click to proceed!',
       font: new ex.Font({
         family: 'notjamslab14',
         size: 32 * SCALE.x,
@@ -119,7 +121,7 @@ export class TurnManager {
     engine.add(this.victoryDirections)
 
     const failureText1 = new ex.Text({
-      text: `Failure!`,
+      text: 'Failure!',
       font: new ex.Font({
         family: 'notjamslab14',
         size: 32 * SCALE.x,
@@ -132,7 +134,7 @@ export class TurnManager {
     })
 
     const failureText2 = new ex.Text({
-      text: `Click to try again!`,
+      text: 'Click to try again!',
       font: new ex.Font({
         family: 'notjamslab14',
         size: 32 * SCALE.x,
@@ -171,24 +173,24 @@ export class TurnManager {
   async showTurnDisplay() {
     let color
     switch (this.currentPlayer.name) {
-      case 'Human':
-        color = ex.Color.Blue
-        break
-      case 'Human A':
-        color = ex.Color.Blue
-        break
-      case 'CPU A':
-        color = ex.Color.Blue
-        break
-      case 'CPU':
-        color = ex.Color.Red
-        break
-      case 'CPU B':
-        color = ex.Color.Red
-        break
-      case 'Human B':
-        color = ex.Color.Red
-        break
+    case 'Human':
+      color = ex.Color.Blue
+      break
+    case 'Human A':
+      color = ex.Color.Blue
+      break
+    case 'CPU A':
+      color = ex.Color.Blue
+      break
+    case 'CPU':
+      color = ex.Color.Red
+      break
+    case 'CPU B':
+      color = ex.Color.Red
+      break
+    case 'Human B':
+      color = ex.Color.Red
+      break
     }
 
     this.turnText.text = `${this.currentPlayer.name} Phase - Turn ${(this.turn - this.maxTurns) + 1} - Round ${this.currentTurn}`

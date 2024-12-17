@@ -56,6 +56,8 @@ export class LevelBase extends ex.Scene {
   levelName!: ex.Actor
   constructor(public levelData: LevelData, public name: string) {
     super()
+    this.levelData = levelData
+    this.name = name
   }
 
   override onInitialize(engine: ex.Engine): void {

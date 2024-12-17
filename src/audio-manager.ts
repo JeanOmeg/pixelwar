@@ -1,7 +1,5 @@
 import * as ex from 'excalibur'
-
-import { Resources } from "./resources"
-
+import { Resources } from './resources'
 
 export class AudioManager {
   static levels = new Map<ex.Sound, number>([

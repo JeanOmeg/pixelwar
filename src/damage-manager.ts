@@ -38,7 +38,9 @@ export class Damage extends ex.Actor {
 
 export class DamageManager {
 
-  constructor(public scene: ex.Scene) { }
+  constructor(public scene: ex.Scene) { 
+    this.scene = scene
+  }
 
   async spawnDamageNumber(pos: ex.Vector, damage: number, d20: number) {
     const damageNumber = new Damage(pos, damage, d20)
