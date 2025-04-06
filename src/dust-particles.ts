@@ -5,8 +5,8 @@ export const DustParticles = new ex.ParticleEmitter({
   emitterType: ex.EmitterType.Circle,
   radius: 16,
   particle: {
-    minVel: 0,
-    maxVel: 20,
+    minSpeed: 1,
+    maxSpeed: 3,
     minAngle: 0,
     maxAngle: 6.2,
     opacity: 1,

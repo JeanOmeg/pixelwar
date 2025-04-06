@@ -44,7 +44,11 @@ export class DamageManager {
 
   async spawnDamageNumber(pos: ex.Vector, damage: number, d20: number) {
     const damageNumber = new Damage(pos, damage, d20)
-    damageNumber.actions.easeBy(ex.vec(0, -50), 500, ex.EasingFunctions.EaseOutCubic).die()
+    damageNumber.actions.moveBy({
+      offset: ex.vec(0, -50 * SCALE.y),
+      duration: 500,
+      easing: ex.EasingFunctions.EaseOutCubic
+    }).die()
     this.scene.add(damageNumber)
   }
 } 

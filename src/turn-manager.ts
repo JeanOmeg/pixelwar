@@ -117,7 +117,7 @@ export class TurnManager {
 
     this.victoryDirections.graphics.opacity = 0
     this.victoryDirections.graphics.add('text', victoryDirections)
-    this.victoryDirections.graphics.show('text')
+    this.victoryDirections.graphics.use('text')
     engine.add(this.victoryDirections)
 
     const failureText1 = new ex.Text({
@@ -200,7 +200,15 @@ export class TurnManager {
 
     await this.turnActor.actions.runAction(
       new ex.ParallelActions([
-        new ex.ActionSequence(this.turnActor, ctx => ctx.easeTo(this.centerScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic).delay(waitTime).easeTo(this.bottomScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic)),
+        new ex.ActionSequence(this.turnActor, ctx => ctx.moveTo({
+          pos: this.centerScreen,
+          duration: transitionTime,
+          easing: ex.EasingFunctions.EaseInOutCubic
+        }).delay(waitTime).moveTo({
+          pos: this.bottomScreen,
+          duration: transitionTime,
+          easing: ex.EasingFunctions.EaseInOutCubic
+        })),
         new ex.ActionSequence(this.turnActor, ctx => ctx.fade(1, transitionTime).delay(waitTime).fade(0, transitionTime))
       ])
     ).toPromise()
@@ -214,7 +222,7 @@ export class TurnManager {
     await this.failure.actions.runAction(
       new ex.ParallelActions([
         new ex.ActionSequence(this.failure, ctx =>
-          ctx.easeTo(this.centerScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic)),
+          ctx.moveTo({ pos: this.centerScreen, duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic})),
         new ex.ActionSequence(this.failure, ctx =>
           ctx.fade(1, transitionTime))
       ])
@@ -226,7 +234,7 @@ export class TurnManager {
     await this.victory.actions.runAction(
       new ex.ParallelActions([
         new ex.ActionSequence(this.victory, ctx =>
-          ctx.easeTo(this.centerScreen, transitionTime, ex.EasingFunctions.EaseInOutCubic)),
+          ctx.moveTo({pos: this.centerScreen, duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic})),
         new ex.ActionSequence(this.victory, ctx =>
           ctx.fade(1, transitionTime))
       ])
@@ -235,7 +243,7 @@ export class TurnManager {
     await this.victoryDirections.actions.runAction(
       new ex.ParallelActions([
         new ex.ActionSequence(this.victoryDirections, ctx =>
-          ctx.easeTo(this.centerScreen.add(ex.vec(0, 150)), transitionTime, ex.EasingFunctions.EaseInOutCubic)),
+          ctx.moveTo({pos: this.centerScreen.add(ex.vec(0, 150)), duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic})),
         new ex.ActionSequence(this.victoryDirections, ctx =>
           ctx.fade(1, transitionTime))
       ])
@@ -249,7 +257,9 @@ export class TurnManager {
         await this.showGameOver()
         this.engine.input.pointers.once('down', async () => {
           Resources.LevelMusic2.stop()
-          await this.engine.goToScene(this.level.levelData.name)
+          setTimeout(async () => {
+            await this.engine.goToScene(this.level.levelData.name)
+          }, 2000)
         })
         return true
       }

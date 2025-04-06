@@ -43,8 +43,15 @@ export class StartScreen extends ex.Scene {
     this.title.scale = ex.vec(2, 2)
     this.title.graphics.use(titleText)
     this.title.actions.repeatForever(ctx => {
-      ctx.easeBy(ex.vec(0, -30 * SCALE.y), 1000, ex.EasingFunctions.EaseInOutQuad)
-        .easeBy(ex.vec(0, 30 * SCALE.y), 1000, ex.EasingFunctions.EaseInOutQuad)
+      ctx.moveBy({
+        offset: ex.vec(0, -30 * SCALE.y),
+        duration: 1000,
+        easing: ex.EasingFunctions.EaseInOutQuad
+      }).moveBy({
+        offset: ex.vec(0, 30 * SCALE.y),
+        duration: 1000,
+        easing: ex.EasingFunctions.EaseInOutQuad
+      })
     })
 
     this.add(this.title)

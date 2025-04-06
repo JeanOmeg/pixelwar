@@ -57,7 +57,7 @@ export class Unit extends ex.Actor {
       this.cell?.removeUnit(this)
       const deathAnim = new ex.ActionSequence(this, (ctx) => {
         this.setAnim(this.selectAnimationDeath())
-        ctx.easeTo(this.pos, 500, ex.EasingFunctions.EaseInOutCubic)
+        ctx.moveTo({pos: this.pos, duration: 500, easing: ex.EasingFunctions.EaseInOutCubic})
       })
       await this.actions.runAction(deathAnim).toPromise()
       Resources.ExplosionSound.play()
@@ -94,7 +94,7 @@ export class Unit extends ex.Actor {
 
       const move = new ex.ActionSequence(this, (ctx) => {
         this.setAnim(this.selectAnimationMove())
-        ctx.easeTo(currentCell!.pos.sub(this.unitConfig.graphics.offset), 200)
+        ctx.moveTo({pos: currentCell!.pos.sub(this.unitConfig.graphics.offset), duration: 200})
         ctx.callMethod(() => {
           DustParticles.pos = this.pos.add(SCALE.scale(32))
           DustParticles.emitParticles(3)
@@ -234,7 +234,7 @@ export class Unit extends ex.Actor {
 
     const atkAnim = new ex.ActionSequence(this, (ctx) => {
       this.setAnim(this.selectAnimationAttack())
-      ctx.easeTo(this.pos, 500, ex.EasingFunctions.EaseInOutCubic)
+      ctx.moveTo({pos: this.pos, duration: 500, easing: ex.EasingFunctions.EaseInOutCubic})
     })
 
     const parallel = new ex.ParallelActions([
