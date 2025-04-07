@@ -4,7 +4,7 @@ import { SelectionManager } from './selection-manager'
 import { SCALE } from './config'
 import { HumanPlayer } from './human-player'
 import { Resources } from './resources'
-import { LevelBase } from './levels/level-base'
+import { LevelBase } from './level/level-base'
 
 export class TurnManager {
   public currentTurn = 1

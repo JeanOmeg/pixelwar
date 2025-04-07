@@ -13,10 +13,14 @@ export class PathFinder {
   name_unit: string | undefined = undefined
 
   heuristicWeight = 1
-  // eslint-disable-next-line no-unused-vars
-  heuristic: (start: PathNodeComponent, end: PathNodeComponent) => number = (start: PathNodeComponent, end: PathNodeComponent) => {
+  heuristic(start: PathNodeComponent, end: PathNodeComponent): number {
+    const startX = start.pos.x
+    const startY = start.pos.y
+    const endX = end.pos.x
+    const endY = end.pos.y
+
     // manhattan distance
-    return Math.abs(start.pos.x - end.pos.x) + Math.abs(start.pos.y - end.pos.y)
+    return Math.abs(startX - endX) + Math.abs(startY - endY)
   }
 
   private _buildPath(currentNode: PathNodeComponent) {
@@ -80,7 +84,7 @@ export class PathFinder {
     this._getRangeHelperAttack(start, result, mask, range)
 
     result = Array.from(new Set(result))
-    result = result.filter(node => node.isAttackable && (this.getXOrYByNameCell(node.owner?.name as string, 'x') === x || this.getXOrYByNameCell(node.owner?.name as string, 'y') === y))
+    result = result.filter(node => node.isAttackable && (this.getXOrYByNameCell(node.owner?.name ?? '', 'x') === x || this.getXOrYByNameCell(node.owner?.name as string, 'y') === y))
     result = result.filter(node => {
       if (this.name_unit !== 'Archer' && this.name_unit !== 'Mage') {
         return !node.isWater
