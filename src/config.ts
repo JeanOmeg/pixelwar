@@ -25,7 +25,6 @@ export interface UnitConfig {
   }
   primary_color: string
   secondary_color: string
-  initialHealth: number
   health: number
   attack: number
   defense: number
@@ -114,7 +113,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     },
     primary_color: '0000FF',
     secondary_color: '00008B',
-    initialHealth: 10,
     health: 10,
     movement: 4,
     attack: 2,
@@ -154,7 +152,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 6,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    initialHealth: 0,
     skill: {
       longShot: {
         use: false,
@@ -182,7 +179,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: BarbarianADeathUp,
       deathDown: BarbarianADeathDown
     },
-    initialHealth: 0,
     health: 20,
     movement: 4,
     attack: 5,
@@ -210,7 +206,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: BarbarianBDeathUp,
       deathDown: BarbarianBDeathDown
     },
-    initialHealth: 0,
     health: 20,
     movement: 4,
     attack: 6,
@@ -240,7 +235,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: ClericADeathUp,
       deathDown: ClericADeathDown
     },
-    initialHealth: 0,
     health: 20,
     movement: 6,
     attack: 3,
@@ -268,7 +262,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: ClericBDeathUp,
       deathDown: ClericBDeathDown
     },
-    initialHealth: 0,
     health: 20,
     movement: 6,
     attack: 3,
@@ -298,7 +291,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: FighterADeathUp,
       deathDown: FighterADeathDown
     },
-    initialHealth: 0,
     health: 15,
     movement: 6,
     attack: 4,
@@ -326,7 +318,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: FighterBDeathUp,
       deathDown: FighterBDeathDown
     },
-    initialHealth: 0,
     health: 15,
     movement: 6,
     attack: 4,
@@ -356,7 +347,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: MageADeathUp,
       deathDown: MageADeathDown
     },
-    initialHealth: 0,
     health: 10,
     movement: 5,
     attack: 2,
@@ -384,7 +374,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: MageBDeathUp,
       deathDown: MageBDeathDown
     },
-    initialHealth: 0,
     health: 10,
     movement: 5,
     attack: 2,
@@ -414,7 +403,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: SpearmanADeathUp,
       deathDown: SpearmanADeathDown
     },
-    initialHealth: 0,
     health: 10,
     movement: 6,
     attack: 4,
@@ -442,7 +430,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: SpearmanBDeathUp,
       deathDown: SpearmanBDeathDown
     },
-    initialHealth: 0,
     health: 10,
     movement: 6,
     attack: 4,
@@ -472,7 +459,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: WarriorADeathUp,
       deathDown: WarriorADeathDown
     },
-    initialHealth: 0,
     health: 25,
     movement: 4,
     attack: 4,
@@ -500,7 +486,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: WarriorBDeathUp,
       deathDown: WarriorBDeathDown
     },
-    initialHealth: 0,
     health: 25,
     movement: 4,
     attack: 4,
@@ -530,7 +515,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: ThiefADeathUp,
       deathDown: ThiefADeathDown
     },
-    initialHealth: 0,
     health: 10,
     movement: 6,
     attack: 5,
@@ -558,7 +542,6 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
       deathUp: ThiefBDeathUp,
       deathDown: ThiefBDeathDown
     },
-    initialHealth: 0,
     health: 10,
     movement: 6,
     attack: 5,

@@ -1,10 +1,10 @@
 import * as ex from 'excalibur'
 import { loader } from './resources'
-import { LevelBase, LevelData } from './level/level-base'
-import { StartScreen } from './level/start-screen/start-screen'
+import { LevelBase, LevelData } from './levels/level-base'
 import './ui-components/audio-menu'
 import { AudioManager } from './audio-manager'
 import { mapList } from './maps/maps'
+import { StartScreen } from './levels/start-screen'
 
 const game = new ex.Engine({
   resolution: {
