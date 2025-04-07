@@ -28,7 +28,8 @@ const baseConfig = {
     'eqeqeq': 'off',
     'no-mixed-spaces-and-tabs': 'off',
     '@typescript-eslint/prefer-namespace-keyword': 'off',
-    '@typescript-eslint/no-namespace': 'off'
+    '@typescript-eslint/no-namespace': 'off',
+    "object-curly-spacing": ["error", "always"]
   }
 }
 

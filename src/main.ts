@@ -1,7 +1,7 @@
 import * as ex from 'excalibur'
 import { loader } from './resources'
 import { LevelBase, LevelData } from './levels/level-base'
-import { StartScreen } from './levels/start-screen'
+import { StartScreen } from './levels/start-screen/start-screen'
 import './ui-components/audio-menu'
 import { AudioManager } from './audio-manager'
 import { mapList } from './maps/maps'

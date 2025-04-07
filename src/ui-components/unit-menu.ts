@@ -277,7 +277,7 @@ export class UnitMenu extends LitElement {
     const unitName = html`<div class="title-bar" style="background-color: #${this.unit?.unitConfig.primary_color}">${this.unit?.name.replace(/[AB]$/, '')}</div>`
     
     const buttonMove = html`
-      <button ?disabled=${!this.unit?.canMove()} style=${styleMap({ color: !this.unit?.canMove() ? '#D3D3D3' : 'black', cursor: !this.unit?.canMove() ? 'default' : 'pointer'})} @click="${this.sendEvent('move')}">
+      <button ?disabled=${!this.unit?.canMove()} style=${styleMap({ color: !this.unit?.canMove() ? '#D3D3D3' : 'black', cursor: !this.unit?.canMove() ? 'default' : 'pointer' })} @click="${this.sendEvent('move')}">
         <div>
           Move
         </div>
@@ -287,7 +287,7 @@ export class UnitMenu extends LitElement {
       </button>
     `
     const buttonAttack = html`
-      <button ?disabled=${!this.unit?.canAttack()} style=${styleMap({ color: !this.unit?.canAttack() ? '#D3D3D3' : 'black', cursor: !this.unit?.canAttack() ? 'default' : 'pointer'})} @click="${this.sendEvent('attack')}">
+      <button ?disabled=${!this.unit?.canAttack()} style=${styleMap({ color: !this.unit?.canAttack() ? '#D3D3D3' : 'black', cursor: !this.unit?.canAttack() ? 'default' : 'pointer' })} @click="${this.sendEvent('attack')}">
         <div>
           Attack
         </div>
@@ -339,12 +339,12 @@ export class UnitMenu extends LitElement {
       </div>
     `
     const separator = html`
-      <div style=${styleMap({ backgroundColor: 'black', height: 'calc(1px * var(--pixel-conversion))'})}></div>
+      <div style=${styleMap({ backgroundColor: 'black', height: 'calc(1px * var(--pixel-conversion))' })}></div>
     `
 
     return html`
       ${dismissOverlayHtml}
-      <div class=${classMap({menu: true, show: this._show})} style=${styleMap({left: `${this.left}px`, top: `${this.top}px`})}>
+      <div class=${classMap({ menu: true, show: this._show })} style=${styleMap({ left: `${this.left}px`, top: `${this.top}px` })}>
         ${unitName}
         <div class="options">
           <div class="sheet" style="background-color: #${this.unit?.unitConfig.secondary_color}">

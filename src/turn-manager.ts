@@ -3,10 +3,8 @@ import { Player } from './player'
 import { SelectionManager } from './selection-manager'
 import { SCALE } from './config'
 import { HumanPlayer } from './human-player'
-import { ComputerPlayer } from './computer-player'
 import { Resources } from './resources'
 import { LevelBase } from './levels/level-base'
-import { StartScreen } from './levels/start-screen'
 
 export class TurnManager {
   public currentTurn = 1
@@ -222,7 +220,7 @@ export class TurnManager {
     await this.failure.actions.runAction(
       new ex.ParallelActions([
         new ex.ActionSequence(this.failure, ctx =>
-          ctx.moveTo({ pos: this.centerScreen, duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic})),
+          ctx.moveTo({ pos: this.centerScreen, duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic })),
         new ex.ActionSequence(this.failure, ctx =>
           ctx.fade(1, transitionTime))
       ])
@@ -234,7 +232,7 @@ export class TurnManager {
     await this.victory.actions.runAction(
       new ex.ParallelActions([
         new ex.ActionSequence(this.victory, ctx =>
-          ctx.moveTo({pos: this.centerScreen, duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic})),
+          ctx.moveTo({ pos: this.centerScreen, duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic })),
         new ex.ActionSequence(this.victory, ctx =>
           ctx.fade(1, transitionTime))
       ])
@@ -243,7 +241,7 @@ export class TurnManager {
     await this.victoryDirections.actions.runAction(
       new ex.ParallelActions([
         new ex.ActionSequence(this.victoryDirections, ctx =>
-          ctx.moveTo({pos: this.centerScreen.add(ex.vec(0, 150)), duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic})),
+          ctx.moveTo({ pos: this.centerScreen.add(ex.vec(0, 150)), duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic })),
         new ex.ActionSequence(this.victoryDirections, ctx =>
           ctx.fade(1, transitionTime))
       ])
@@ -257,28 +255,25 @@ export class TurnManager {
         await this.showGameOver()
         this.engine.input.pointers.once('down', async () => {
           Resources.LevelMusic2.stop()
-          setTimeout(async () => {
-            await this.engine.goToScene(this.level.levelData.name)
-          }, 2000)
+          await this.engine.goToScene('start', {
+            destinationIn: new ex.FadeInOut({ duration: 2000, direction: 'in' }),
+            sourceOut: new ex.FadeInOut({ duration: 1000, direction: 'out' })
+          })
         })
         return true
-      }
-
-      if (player instanceof ComputerPlayer) {
+      } else {
         await this.showVictory()
         this.engine.input.pointers.once('down', async () => {
-          await this.engine.goToScene(this.level.levelData.nextLevel)
+          Resources.LevelMusic2.stop()
+          await this.engine.goToScene('start', {
+            destinationIn: new ex.FadeInOut({ duration: 2000, direction: 'in' }),
+            sourceOut: new ex.FadeInOut({ duration: 1000, direction: 'out' })
+          })
         })
         return true
       }
     }
     return false
-  }
-
-  async createStartScreen() {
-    this.engine.remove('start')
-    const startScreen = new StartScreen()
-    this.engine.addScene('start', startScreen)
   }
 
   async start() {
