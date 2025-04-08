@@ -5,7 +5,11 @@ const baseConfig = {
   languageOptions: {
     parser: parser,
     ecmaVersion: 'latest',
-    sourceType: 'module'
+    sourceType: 'module',
+    parserOptions: {
+      projectService: true,
+      tsconfigRootDir: __dirname,
+    },
   },
   plugins: {
     '@typescript-eslint': eslintPluginTypeScript
@@ -14,22 +18,29 @@ const baseConfig = {
     '.vscode/**/*',
     'docs/**/*',
     'node_modules/**/*',
-    'res/**/*'
+    'res/**/*',
+    'dist/**/*'
   ],
   rules: {
-    'no-unused-vars': 'error',
+    // JavaScript
+    'eqeqeq': 'error',
     'no-console': 'warn',
-    '@typescript-eslint/no-unused-vars': 'warn',
+    'no-unused-vars': 'error',
+    'no-empty-function': 'warn',
+    'no-mixed-spaces-and-tabs': 'error',
+    'no-multiple-empty-lines': ['error', { max: 1 }],
+    'indent': ['error', 2],
+    'quotes': ['error', 'single'],
+    'semi': ['error', 'never'],
+    'object-curly-spacing': ['error', 'always'],
+
+    // TypeScript
+    '@typescript-eslint/prefer-namespace-keyword': 'error',
     '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    indent: ['error', 2],
-    quotes: ['error', 'single'],
-    semi: ['error', 'never'],
-    'eqeqeq': 'off',
-    'no-mixed-spaces-and-tabs': 'off',
-    '@typescript-eslint/prefer-namespace-keyword': 'off',
-    '@typescript-eslint/no-namespace': 'off',
-    "object-curly-spacing": ["error", "always"]
+    '@typescript-eslint/no-inferrable-types': 'warn',
+    '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+    '@typescript-eslint/prefer-optional-chain': 'error',
+    '@typescript-eslint/no-non-null-assertion': 'warn',
   }
 }
 

@@ -14,7 +14,7 @@ export class AudioManager {
   ])
 
   static init() {
-    for (let resource of Object.values(Resources)) {
+    for (const resource of Object.values(Resources)) {
       if (resource instanceof ex.Sound) {
         resource.volume = AudioManager.levels.get(resource) ?? 1.0
       }
@@ -22,7 +22,7 @@ export class AudioManager {
   }
 
   static toggleMute(shouldMute: boolean) {
-    for (let resource of Object.values(Resources)) {
+    for (const resource of Object.values(Resources)) {
       if (resource instanceof ex.Sound) {
         resource.volume = shouldMute ? 0 : (AudioManager.levels.get(resource) ?? 1.0)
       }

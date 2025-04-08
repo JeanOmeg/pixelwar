@@ -15,7 +15,7 @@ export class Unit extends ex.Actor {
   attacked = false
   passed = false
   anim: ex.Animation
-  miniDirection: string = 'right'
+  miniDirection = 'right'
   oldPosition!: ex.Vector | null
   health: number
   damageManager!: DamageManager
@@ -76,8 +76,8 @@ export class Unit extends ex.Actor {
     }
 
     let currentCell: Cell | null = null
-    let pathMinusFirst = path.slice(1, path.length)
-    for (let node of pathMinusFirst) {
+    const pathMinusFirst = path.slice(1, path.length)
+    for (const node of pathMinusFirst) {
       const position: ex.Vector = this.oldPosition ? this.oldPosition : oldPos
       currentCell = node.owner as Cell
 
@@ -94,7 +94,7 @@ export class Unit extends ex.Actor {
 
       const move = new ex.ActionSequence(this, (ctx) => {
         this.setAnim(this.selectAnimationMove())
-        ctx.moveTo({ pos: currentCell!.pos.sub(this.unitConfig.graphics.offset), duration: 200 })
+        ctx.moveTo({ pos: (currentCell ?? {} as Cell).pos.sub(this.unitConfig.graphics.offset), duration: 200 })
         ctx.callMethod(() => {
           DustParticles.pos = this.pos.add(SCALE.scale(32))
           DustParticles.emitParticles(3)
@@ -116,7 +116,6 @@ export class Unit extends ex.Actor {
     this.moved = true
   }
 
-
   defineDirection(oldPos: ex.Vector, newPos: ex.Vector) {
     if (oldPos.y > newPos.y) {
       this.miniDirection = 'up'
@@ -132,9 +131,9 @@ export class Unit extends ex.Actor {
   }
 
   selectAnimationIdle() {
-    if (this.miniDirection == 'up') {
+    if (this.miniDirection === 'up') {
       return this.unitConfig.graphics.idleUp.clone()
-    } else if (this.miniDirection == 'down') {
+    } else if (this.miniDirection === 'down') {
       return this.unitConfig.graphics.idleDown.clone()
     } else {
       return this.unitConfig.graphics.idle.clone()
@@ -142,9 +141,9 @@ export class Unit extends ex.Actor {
   }
 
   selectAnimationAttack() {
-    if (this.miniDirection == 'up') {
+    if (this.miniDirection === 'up') {
       return this.unitConfig.graphics.attackUp.clone()
-    } else if (this.miniDirection == 'down') {
+    } else if (this.miniDirection === 'down') {
       return this.unitConfig.graphics.attackDown.clone()
     } else {
       return this.unitConfig.graphics.attack.clone()
@@ -152,9 +151,9 @@ export class Unit extends ex.Actor {
   }
 
   selectAnimationMove() {
-    if (this.miniDirection == 'up') {
+    if (this.miniDirection === 'up') {
       return this.unitConfig.graphics.moveUp.clone()
-    } else if (this.miniDirection == 'down') {
+    } else if (this.miniDirection === 'down') {
       return this.unitConfig.graphics.moveDown.clone()
     } else {
       return this.unitConfig.graphics.move.clone()
@@ -162,9 +161,9 @@ export class Unit extends ex.Actor {
   }
 
   selectAnimationDeath() {
-    if (this.miniDirection == 'up') {
+    if (this.miniDirection === 'up') {
       return this.unitConfig.graphics.deathUp.clone()
-    } else if (this.miniDirection == 'down') {
+    } else if (this.miniDirection === 'down') {
       return this.unitConfig.graphics.deathDown.clone()
     } else {
       return this.unitConfig.graphics.death.clone()
@@ -194,7 +193,7 @@ export class Unit extends ex.Actor {
   }
 
   availableActions() {
-    let available: ('move' | 'attack')[] = []
+    const available: ('move' | 'attack')[] = []
     if (this.canMove()) {
       available.push('move')
     }
@@ -255,13 +254,13 @@ export class Unit extends ex.Actor {
 
     if (d20 === 20) {
       damage = (12 + this.unitConfig.attack) - other.unitConfig.defense
-    } else if (this.miniDirection == other.miniDirection) {
+    } else if (this.miniDirection === other.miniDirection) {
       damage = (d6 + (this.unitConfig.attack * 2)) - other.unitConfig.defense
     }else {
       damage = (d6 + this.unitConfig.attack) - other.unitConfig.defense
     }
 
-    if (atk > def || this.miniDirection == other.miniDirection) {
+    if (atk > def || this.miniDirection === other.miniDirection) {
       damage = damage > 0 ? damage : 1
     } else {
       damage = 1

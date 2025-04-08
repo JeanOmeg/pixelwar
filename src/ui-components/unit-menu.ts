@@ -204,37 +204,38 @@ export class UnitMenu extends LitElement {
   `
 
   @property({ type: Number })
-    left: number = 0
+    left = 0
 
   @property({ type: Number })
-    leftTooltip: number = 0
+    leftTooltip = 0
 
   @property({ type: Number })
-    rightTooltip: number = 0
+    rightTooltip = 0
 
   @property({ type: Number })
-    top: number = 0
+    top = 0
 
   @property({ type: Number })
-    fontSize: number = 0
+    fontSize = 0
 
   @property({ type: Number })
-    width: number = 0
+    width = 0
 
   @property({ attribute: false })
     unit: Unit | null = null
 
   @property({ type: Number })
-    pixelConversion: number = 1
+    pixelConversion = 1
 
   @state()
-  private _show: boolean = false
+  private _show = false
 
   @query('.menu')
     menuHtml?: HTMLDivElement
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  clearEvents: () => any = () => { }
+  clearEvents: () => unknown = () => { 
+    //
+  }
 
   override firstUpdated(): void {
     this.menuHtml?.addEventListener('animationend', evt => {
@@ -254,7 +255,7 @@ export class UnitMenu extends LitElement {
     }
   }
 
-  private _debounce: number = 0
+  private _debounce = 0
   show() {
     this._show = true
     this._debounce = Date.now()

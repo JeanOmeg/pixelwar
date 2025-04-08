@@ -5,8 +5,8 @@ import { PathFinder } from './path-finding/path-finding-system'
 import { Unit } from './unit'
 
 export class Board {
-  tileWidth: number = 32
-  tileHeight: number = 32
+  tileWidth = 32
+  tileHeight = 32
   rows: number
   cols: number
 
@@ -23,7 +23,7 @@ export class Board {
       scene.add(cell)
     };
 
-    for (let cell of this.cells) {
+    for (const cell of this.cells) {
       cell.pathNode.connections = cell.getNeighbors().map(c => c.pathNode)
     }
 
@@ -38,9 +38,9 @@ export class Board {
   }
 
   getUnits() {
-    let result: Unit[] = []
-    for (let cell of this.cells) {
-      if (cell.unit && cell.unit.active) {
+    const result: Unit[] = []
+    for (const cell of this.cells) {
+      if (cell.unit?.isActive) {
         result.push(cell.unit)
       }
     }

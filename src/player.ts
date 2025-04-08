@@ -5,7 +5,7 @@ export abstract class Player {
   private static _CURRENT_GROUP = Player._STARTING_BIT
 
   public readonly mask: number
-  public active: boolean = false
+  public active = false
   constructor(public name: string, public board: Board) {
     this.name = name
     this.board = board

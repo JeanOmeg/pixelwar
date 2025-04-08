@@ -45,7 +45,7 @@ export class PathFinder {
       const y = this.getXOrYByNameCell(name, 'y')
 
       accum.push(cell)
-      cell.connections.filter(node => node.isAttackable && !!(node.walkableMask & mask) && (startY == y || startX == x)).forEach(cell => {
+      cell.connections.filter(node => node.isAttackable && !!(node.walkableMask & mask) && (startY === y || startX === x)).forEach(cell => {
         newRange = cell.isFast ? 1 : 2
         if (!cell.isFast && unitName !== 'Archer' && unitName !== 'Mage' && unitName !== 'Spearman') {
           newRange = 1
@@ -106,7 +106,7 @@ export class PathFinder {
 
     accum.push(cell)
     cell.connections.filter(node => node.isWalkable && !!(node.walkableMask & mask)).forEach(connection => {
-      const newRange = connection.isFast ? 1 : unitName == 'Thief' && !connection.isDoor ? 1 : 2
+      const newRange = connection.isFast ? 1 : unitName === 'Thief' && !connection.isDoor ? 1 : 2
       this._getRangeHelper(connection, accum, mask, range - newRange)
     })
   }
@@ -171,7 +171,7 @@ export class PathFinder {
         neighbors = neighbors.filter(node => range.indexOf(node) > -1)
       }
 
-      let currentDirection = current.direction
+      const currentDirection = current.direction
 
       neighbors.forEach((node) => {
         if (openNodes.indexOf(node) === -1) {

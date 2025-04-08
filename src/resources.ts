@@ -36,7 +36,6 @@ import ThiefBSpriteSheetPath from '../res/minis/ThiefB.png'
 import Map1 from '../res/maps/Map1.png'
 import Map2 from '../res/maps/Map2.png'
 
-
 export const Resources = {
   //Maps
   Map1: new ex.ImageSource(Map1),
@@ -2431,7 +2430,7 @@ export const ThiefBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
 export const loader = new ex.Loader()
 loader.backgroundColor = 'black'
 loader.startButtonFactory = () => {
-  let myButton = document.createElement('button')
+  const myButton = document.createElement('button')
   myButton.textContent = 'PLAY!'
   myButton.style.backgroundColor = 'red'
   myButton.style.color = 'white'
@@ -2463,6 +2462,6 @@ loader.logoWidth = 256
 loader.logoHeight = 54
 loader.logo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAwCAYAAAD+f6R/AAAAAXNSR0IArs4c6QAAAkRJREFUeJzt3NtyhCAMgGHs9P1fmd7UjrNTDzmQBPy/621EYAMYt60BAAAAAAAAAAAAAAAAmN4m+XDvvbs3YNvc2iCNtZqn43PXT9pxHtn/Fdu0gq/sBvRf1WKtbFQ/Vex75sS19AQAIE+ZBCDZvrKtA3yUSQCt1dxCAiv7zm7Apz0J3K3y7AIAu1I7AACxVKtoxFb9uMJHl7f+i+PVBkksaVxp7BHlwKuYHiVc73Kgtb/O/v7zs5brjCx9q44A+0Xvbko7GaCnSZx3sSzj7K1im2a21BHAq+ZriTOyxr5y0pzh/iTts9xL1HVaWywBAJApVwVYkefK9rRKgnNRq7OFZhegmRPsAIAXIwFMaoYzM2Jp5kRKApA20mu7y2vEOvSZXdW5N/QZgOcK9bT84xkrqtTkUaMe7arPrs6g0ns4ixVZ9rOMx9M3WKuU0DkCKEVk84orxpURDzsrWfH19FcngBkHDPCct5QBlY4rlHVAKq52qG3bts1j3pRJAFmrseezBSCSx3fm1UeAI0tnkjwwKxIARKqWs6CT/l+B/xoyoOxh+UmmlkcpTHs9r356otquR3IPGfMgcmwkhj4DyF4peu/d0gbNl8vjXf3oftP0U/azk+y5dcc6945xWht3vxwBgBcrUwVYmbRk4/HGGc55ldBWQAIIkr1lriLqFden7bD8LmWFseQIEMxr5ebXgPlW2IWRAIAXEyWArBqw13UtcTzvfVQfzjw2eyyPONJrRlRseH8CAAAAAAAAAAAAAAAAwDA/212gaw4Jm7oAAAAASUVORK5CYII='
 
-for (let res of Object.values(Resources)) {
+for (const res of Object.values(Resources)) {
   loader.addResource(res)
 }

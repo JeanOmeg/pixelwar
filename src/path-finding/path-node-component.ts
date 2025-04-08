@@ -16,7 +16,7 @@ export class PathNodeComponent<T = any> extends ex.Component {
   /**
    * Is this path node traversable by certain things
    */
-  walkableMask: number = -1 // 32-bit mask
+  walkableMask = -1 // 32-bit mask
   constructor(pos: ex.Vector) {
     super()
     this.pos = pos

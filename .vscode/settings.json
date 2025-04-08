@@ -1,0 +1,24 @@
+{
+    // AJUSTE PARA O NODE DO VSCODE TRABALHAR COM MAIS MEMORIA
+    "eslint.execArgv": [
+        "--max_old_space_size=4096"
+    ],
+    "terminal.integrated.env.windows": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+    },
+    "typescript.tsserver.maxTsServerMemory": 4096,
+    "files.exclude": {
+        "node_modules/**": true,
+        ".parcel-cache/**": true,
+        "dist/**": true,
+    }
+}
+// SETAR MANUALMENTE O NODE DA MAQUINA PARA USAR ATÉ 4GB DE RAM
+// COM O TERMINAL LIMPO (SEM ESTAR RODANDO ALGUM PROCESSO)
+// WINDOWS - POWERSHELL:
+// [System.Environment]::SetEnvironmentVariable("NODE_OPTIONS", "--max-old-space-size=4096", "User")
+// WINDOWS - GITBASH
+// export NODE_OPTIONS="--max-old-space-size=4096"
+// VERIFICAR SE A MEMORIA FOI LIBERADA
+// node -e 'console.log(v8.getHeapStatistics().heap_size_limit/(1024*1024))'
+// O OUTPUT DEVE SER 4144 OU EQUIVALENTE

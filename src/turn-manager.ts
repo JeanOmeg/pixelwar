@@ -250,7 +250,7 @@ export class TurnManager {
 
   async checkWin(player: Player) {
     const lost = player.hasLost()
-    if (lost || this.maxTurns == 0) {
+    if (lost || this.maxTurns === 0) {
       if (player instanceof HumanPlayer) {
         await this.showGameOver()
         this.engine.input.pointers.once('down', async () => {

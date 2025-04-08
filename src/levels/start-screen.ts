@@ -15,7 +15,7 @@ export class StartScreen extends ex.Scene {
   map2Button!: ex.Actor
   ramdomMapButton!: ex.Actor
   fadeOverlay!: ex.Actor
-  isTransitioning: boolean = false
+  isTransitioning = false
 
   override onInitialize(engine: ex.Engine): void {
     this.isMobile()
@@ -85,8 +85,6 @@ export class StartScreen extends ex.Scene {
       color: ex.Color.Red,
       coordPlane: ex.CoordPlane.Screen
     })
-
-    
 
     this.cpuVscpuButton.graphics.use(new ex.GraphicsGroup({
       members: [

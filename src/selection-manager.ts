@@ -68,7 +68,7 @@ export class SelectionManager {
   async selectDestinationAndAttack(unit: Unit, destination: Cell) {
     if (unit.player !== this.currentPlayer) return
     const range = this.findAttackRange(unit)
-    if (range.length > 1 && range.find(enemy => enemy.owner?.name == destination.name)) {
+    if (range.length > 1 && range.find(enemy => enemy.owner?.name === destination.name)) {
       await unit.attack(destination.unit as Unit)
     }
     this.reset()
@@ -77,7 +77,7 @@ export class SelectionManager {
   findAttackRange(unit: Unit): PathNodeComponent[] {
     if (!this.currentUnitSelection) return []
     if (!unit.cell) return []
-    let range = this.board.pathFinder.getRangeAttack(
+    const range = this.board.pathFinder.getRangeAttack(
       unit.cell.pathNode,
       ~unit.player.mask,
       this.currentUnitSelection.unitConfig.range,
@@ -88,7 +88,7 @@ export class SelectionManager {
 
   findMovementRange(unit: Unit): PathNodeComponent[] {
     if (!unit.cell) return []
-    let range = this.board.pathFinder.getRange(
+    const range = this.board.pathFinder.getRange(
       unit.cell.pathNode,
       unit.player.mask,
       unit.unitConfig.movement,
@@ -117,7 +117,7 @@ export class SelectionManager {
     const start = this.currentUnitSelection.cell?.pathNode
 
     if (destination && !destination.unit && currentRange.includes(destination.pathNode)) {
-      const path = this.board.pathFinder.findPath(start!, destination?.pathNode!, this.currentUnitSelection.player.mask, currentRange)
+      const path = this.board.pathFinder.findPath(start ?? [] as unknown as PathNodeComponent, destination?.pathNode ?? [] as unknown as PathNodeComponent, this.currentUnitSelection.player.mask, currentRange)
       return path
     }
     return []

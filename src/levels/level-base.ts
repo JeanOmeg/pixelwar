@@ -102,12 +102,12 @@ export class LevelBase extends ex.Scene {
       mode = localStorage.getItem('start_screen')
     }
 
-    if (mode == 'p1vscpu') {
+    if (mode === 'p1vscpu') {
       this.players = [
         new HumanPlayer(levelData.players[0], this.engine, this.selectionManager, this.uiManager, board),
         new ComputerPlayer(levelData.players[1], this.selectionManager, board)
       ]
-    } else if (mode == 'p1vsp2') {
+    } else if (mode === 'p1vsp2') {
       this.players = [
         new HumanPlayer(`${levelData.players[0]} A`, this.engine, this.selectionManager, this.uiManager, board),
         new HumanPlayer(`${levelData.players[0]} B`, this.engine, this.selectionManager, this.uiManager, board),
@@ -131,7 +131,7 @@ export class LevelBase extends ex.Scene {
           const playerIndex = (+data.charAt(5)) - 1
 
           unit = new Unit(x, y, unitType, board, this.players[playerIndex])
-          if (playerIndex == 0) {
+          if (playerIndex === 0) {
             unit.graphics.flipHorizontal = false
           } else {
             unit.graphics.flipHorizontal = true

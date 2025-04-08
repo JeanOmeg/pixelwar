@@ -10,7 +10,7 @@ export namespace ActorStartScreen {
       coordPlane: ex.CoordPlane.Screen,
       scale: SCALE
     })
-
+    
     title.graphics.use(titleText)
     title.actions.repeatForever(ctx => {
       ctx.moveBy({

@@ -7,7 +7,6 @@ import { Cell } from './cell'
 import { Unit } from './unit'
 import { Resources } from './resources'
 
-
 export class HumanPlayer extends Player {
   private humanMove = new ex.Future<void>()
 
@@ -153,10 +152,10 @@ export class HumanPlayer extends Player {
 
       this.uiManager.showUnitMenu(cell.unit, {
         move: () => {
-          this.selectionManager.selectUnit(cell.unit!, 'move')
+          this.selectionManager.selectUnit(cell.unit ?? {} as Unit, 'move')
         },
         attack: () => {
-          this.selectionManager.selectUnit(cell.unit!, 'attack')
+          this.selectionManager.selectUnit(cell.unit ?? {} as Unit, 'attack')
         },
         pass: async () => {
           cell.unit?.setAnim(cell.unit?.selectAnimationIdle())
@@ -179,7 +178,7 @@ export class HumanPlayer extends Player {
   }
 
   hasNonPlayerUnit(maybeClickedCell: Cell) {
-    return maybeClickedCell && maybeClickedCell.unit && maybeClickedCell.unit.player !== this
+    return maybeClickedCell?.unit && maybeClickedCell.unit.player !== this
   }
 
   hasPlayerUnitWithActions(maybeClickedCell: Cell) {
