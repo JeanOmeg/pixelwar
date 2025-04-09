@@ -102,12 +102,12 @@ export class LevelBase extends ex.Scene {
       mode = localStorage.getItem('start_screen')
     }
 
-    if (mode === 'p1vscpu') {
+    if (mode === 'p1VsCpuButton') {
       this.players = [
         new HumanPlayer(levelData.players[0], this.engine, this.selectionManager, this.uiManager, board),
         new ComputerPlayer(levelData.players[1], this.selectionManager, board)
       ]
-    } else if (mode === 'p1vsp2') {
+    } else if (mode === 'p1VsP2Button') {
       this.players = [
         new HumanPlayer(`${levelData.players[0]} A`, this.engine, this.selectionManager, this.uiManager, board),
         new HumanPlayer(`${levelData.players[0]} B`, this.engine, this.selectionManager, this.uiManager, board),

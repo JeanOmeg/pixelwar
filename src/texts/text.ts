@@ -16,7 +16,7 @@ export const p1VsP2Text = new ex.Text({
   font: FontNotjamslab14.buttonFont,
 })
 
-export const cpuVscputext = new ex.Text({
+export const cpuVsCpuText = new ex.Text({
   text: 'CPU vs CPU',
   font: FontNotjamslab14.buttonFont,
 })

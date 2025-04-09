@@ -1,9 +1,41 @@
 import * as ex from 'excalibur'
 import { SCALE } from '../config'
-import { titleText, p1VsCpuText } from '../texts/text'
+import { titleText, p1VsCpuText, p1VsP2Text, cpuVsCpuText } from '../texts/text'
 
 export namespace ActorStartScreen {
-  export function createTitle() {
+  function createButtonActor(
+    name: string, 
+    position: ex.Vector, 
+    color: ex.Color, 
+    text: ex.Text, 
+    width = 200, 
+    height = 45
+  ): ex.Actor {
+    const button = new ex.Actor({
+      name,
+      pos: position,
+      width: width * SCALE.x,
+      height: height * SCALE.y,
+      color,
+      coordPlane: ex.CoordPlane.Screen
+      
+    })
+  
+    button.graphics.use(
+      new ex.GraphicsGroup({
+        members: [
+          { graphic: new ex.Rectangle({ width: button.width, height: button.height, color: button.color, lineWidth: 4 }), offset: ex.vec(0, 0) },
+          { graphic: text, offset: ex.vec(button.width / 2 - text.width / 2, button.height / 2 - text.height / 2) }
+        ]
+      })
+    )
+  
+    button.scale = SCALE
+  
+    return button
+  }
+  
+  export function createTitleActor() {
     const title = new ex.Actor({
       name: 'title',
       pos: ex.vec(650, 200),
@@ -27,31 +59,7 @@ export namespace ActorStartScreen {
     return title
   }
 
-  export function createP1VsCpuButton() {
-    const p1VsCpuButton = new ex.Actor({
-      name: 'p1VsCpuButton',
-      pos: ex.vec(650, 400),
-      width: 200 * SCALE.x,
-      height: 45 * SCALE.y,
-      color: ex.Color.Red,
-      coordPlane: ex.CoordPlane.Screen
-    })
-
-    p1VsCpuButton.graphics.use(
-      new ex.GraphicsGroup({
-        members: [
-          { graphic: new ex.Rectangle({ width: p1VsCpuButton.width, height: p1VsCpuButton.height, color: p1VsCpuButton.color, lineWidth: 4 }), offset: ex.vec(0, 0) },
-          { graphic: p1VsCpuText, offset: ex.vec(p1VsCpuButton.width / 2 - p1VsCpuText.width / 2, p1VsCpuButton.height / 2 - p1VsCpuText.height / 2) }
-        ]
-      })
-    )
-
-    p1VsCpuButton.scale = SCALE
-
-    return p1VsCpuButton
-  }
-
-  export function createFadeOverlay(engine: ex.Engine): ex.Actor {
+  export function createFadeOverlayActor(engine: ex.Engine): ex.Actor {
     return new ex.Actor({
       pos: ex.vec(0, 0),
       anchor: ex.Vector.Zero,
@@ -61,5 +69,17 @@ export namespace ActorStartScreen {
       opacity: 0,
       z: 1000
     })
+  }
+
+  export function createP1VsCpuButtonActor() {
+    return createButtonActor('p1VsCpuButton', ex.vec(650, 400), ex.Color.Red, p1VsCpuText)
+  }
+
+  export function createP1VsP2ButtonActor() {
+    return createButtonActor('p1VsP2Button', ex.vec(650, 520), ex.Color.Blue, p1VsP2Text)
+  }
+
+  export function createCpuVsCpuButtonActor() {
+    return createButtonActor('cpuVsCpuButton', ex.vec(650, 640), ex.Color.Red, cpuVsCpuText)
   }
 }
