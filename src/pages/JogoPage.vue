@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts" setup>
-import { setupGame } from '../game/src/main'
+import { setupGame } from '../game/main'
 import { onMounted, ref } from 'vue'
 
 const gameContainer = ref<HTMLDivElement>()
