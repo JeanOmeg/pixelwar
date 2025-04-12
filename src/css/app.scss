@@ -1,1 +1,18 @@
 // app global css in SCSS form
+@font-face {
+    font-family: "notjamslab14";
+    src: url("./src/game/res/font//NotJamSlab14.ttf");
+}
+
+html {
+    font-family: "notjamslab14";
+}
+
+.credits {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 16px;
+    color: white;
+    margin: 8px;
+}

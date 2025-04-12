@@ -14,7 +14,20 @@ export default defineConfigWithVueTs(
      *
      * ESLint requires "ignores" key to be the only one in this object
      */
-    // ignores: []
+    ignores: [
+      "node_modules",
+      "dist",
+      "public",
+      "src-cordova",
+      "src-pwa",
+      "src-capacitor",
+      "src-bex",
+      "src-ssr",
+      "tests",
+      "playwright",
+      ".quasar",
+      'quasar.config.ts'
+    ]
   },
 
   pluginQuasar.configs.recommended(),
@@ -66,6 +79,7 @@ export default defineConfigWithVueTs(
     // add your custom rules here
     rules: {
       'prefer-promise-reject-errors': 'off',
+      '@typescript-eslint/no-namespace': 'off',
 
       // allow debugger during development only
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'

@@ -1,3 +1,89 @@
 {
-  "extends": "./.quasar/tsconfig.json"
+  "extends": "./.quasar/tsconfig.json",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "ts-lit-plugin"
+      }
+    ],
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "useDefineForClassFields": true,
+    "paths": {
+      "src": [
+        "./src"
+      ],
+      "src/*": [
+        "./src/*"
+      ],
+      "app": [
+        "./"
+      ],
+      "app/*": [
+        "./*"
+      ],
+      "components": [
+        "./src/components"
+      ],
+      "components/*": [
+        "./src/components/*"
+      ],
+      "layouts": [
+        "./src/layouts"
+      ],
+      "layouts/*": [
+        "./src/layouts/*"
+      ],
+      "pages": [
+        "./src/pages"
+      ],
+      "pages/*": [
+        "./src/pages/*"
+      ],
+      "assets": [
+        "./src/assets"
+      ],
+      "assets/*": [
+        "./src/assets/*"
+      ],
+      "boot": [
+        "./src/boot"
+      ],
+      "boot/*": [
+        "./src/boot/*"
+      ],
+      "stores": [
+        "./src/stores"
+      ],
+      "stores/*": [
+        "./src/stores/*"
+      ],
+      "#q-app": [
+        "./node_modules/@quasar/app-vite/types/index.d.ts"
+      ],
+      "#q-app/wrappers": [
+        "./node_modules/@quasar/app-vite/types/app-wrappers.d.ts"
+      ],
+      "#q-app/bex/background": [
+        "./node_modules/@quasar/app-vite/types/bex/entrypoints/background.d.ts"
+      ],
+      "#q-app/bex/content": [
+        "./node_modules/@quasar/app-vite/types/bex/entrypoints/content.d.ts"
+      ],
+      "#q-app/bex/private/bex-bridge": [
+        "./node_modules/@quasar/app-vite/types/bex/bex-bridge.d.ts"
+      ],
+      "game": [
+        "./src/game"
+      ],
+      "game/*": [
+        "./src/game/*"
+      ],
+    }
+  },
+  "exclude": [
+    "./src/game/res"
+  ],
 }

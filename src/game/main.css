@@ -1,0 +1,17 @@
+@font-face {
+    font-family: "notjamslab14";
+    src: url("./res/font//NotJamSlab14.ttf");
+}
+
+html {
+    font-family: "notjamslab14";
+}
+
+.credits {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 16px;
+    color: white;
+    margin: 8px;
+}

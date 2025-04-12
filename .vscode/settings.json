@@ -1,16 +1,28 @@
 {
-  "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs": true,
-  "editor.formatOnSave": true,
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-  "editor.codeActionsOnSave": [
-    "source.fixAll.eslint"
-  ],
   "eslint.validate": [
-    "javascript",
-    "javascriptreact",
     "typescript",
     "vue"
   ],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+   // AJUSTE PARA O NODE DO VSCODE TRABALHAR COM MAIS MEMORIA
+   "eslint.execArgv": [
+    "--max_old_space_size=4096"
+],
+"terminal.integrated.env.windows": {
+    "NODE_OPTIONS": "--max-old-space-size=4096"
+},
+"typescript.tsserver.maxTsServerMemory": 4096,
+"files.exclude": {
+    "node_modules/**": true
+},
+"[jsonc]": {
+  "editor.defaultFormatter": "vscode.json-language-features"
+},
+"[typescript]": {
+  "editor.defaultFormatter": "vscode.typescript-language-features"
+},
+"[javascript]": {
+  "editor.defaultFormatter": "vscode.typescript-language-features"
+}
 }
