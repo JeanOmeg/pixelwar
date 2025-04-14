@@ -123,14 +123,12 @@ export class LevelBase extends ex.Scene {
 
     this.turnManager = new TurnManager(this.engine, this, this.players, this.selectionManager, this.levelData.maxTurns)
 
-    const tiledMap = levelData.tiled
+    // const tiledMap = void levelData.tiled.load().then(() => {
+    //   console.log(tiledMap)
+    // })
     // Agora processamos os dados do mapa e unidades
-    const mapLayer = tiledMap.getTileLayers().find(layer => layer.name === 'map')
-    const unitLayer = tiledMap.getTileLayers().find(layer => layer.name === 'unit')
 
-    console.log(mapLayer)
-    console.log(unitLayer)
-
+    debugger
     for (let y = 0; y < levelData.height; y++) {
       for (let x = 0; x < levelData.width; x++) {
         const data = levelData.data[x + y * levelData.width]

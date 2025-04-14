@@ -10,7 +10,7 @@
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
-    "useDefineForClassFields": true,
+    "useDefineForClassFields": false,
     "paths": {
       "src": [
         "./src"
@@ -85,6 +85,7 @@
   },
   "exclude": [
     "./src/assets/game/**",
-    "./node_modules"
+    "./node_modules",
+    "quasar.config.ts"
   ],
 }

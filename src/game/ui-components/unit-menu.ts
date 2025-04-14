@@ -204,34 +204,34 @@ export class UnitMenu extends LitElement {
   `
 
   @property({ type: Number })
-    left = 0
+  accessor left = 0
 
   @property({ type: Number })
-    leftTooltip = 0
+  accessor leftTooltip = 0
 
   @property({ type: Number })
-    rightTooltip = 0
+  accessor rightTooltip = 0
 
   @property({ type: Number })
-    top = 0
+  accessor top = 0
 
   @property({ type: Number })
-    fontSize = 0
+  accessor fontSize = 0
 
   @property({ type: Number })
-    width = 0
+  accessor width = 0
 
   @property({ attribute: false })
-    unit: Unit | null = null
+  accessor unit: Unit | null = null
 
   @property({ type: Number })
-    pixelConversion = 1
+  accessor pixelConversion = 1
 
   @state()
-  private _show = false
+  private accessor _show = false
 
   @query('.menu')
-    menuHtml?: HTMLDivElement
+  accessor menuHtml!: HTMLDivElement
 
   clearEvents: () => unknown = () => {
     //

@@ -2,6 +2,7 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
 
 import { defineConfig } from '#q-app/wrappers';
+import { tiledPlugin } from './vite-plugin.tiled';
 
 export default defineConfig((/* ctx */) => {
   return {
@@ -40,16 +41,17 @@ export default defineConfig((/* ctx */) => {
             useFlatConfig: true
           }
         }, { server: false }],
-        ['tiled-tileset-plugin', {
-          resolveId: {
-            order: 'pre',
-            handler(sourceId, importer, options) {
-              if (!sourceId.endsWith(".tsx")) return;
-              return { id: 'tileset:' + sourceId, external: 'relative' }
-            }
+        [tiledPlugin, { server: false}]
+      ],
+      extendViteConf (viteConf, { isServer, isClient }) {
+        return {
+          build: {
+            chunkSizeWarningLimit: 750,
+            assetsInlineLimit: 0, // excalibur cannot handle inlined xml in prod mode
+            ourcemap: true
           }
-        }, { server: false }]
-      ]
+        }
+      }
     },
 
     devServer: {

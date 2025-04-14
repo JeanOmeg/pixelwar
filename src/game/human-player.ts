@@ -21,6 +21,7 @@ export class HumanPlayer extends Player {
   }
 
   async pointerClick(pointer: ex.PointerEvent) {
+    debugger
     if (!this.active) return
     this.board.getUnits().forEach(u => u.setAnim(u.selectAnimationIdle()))
     this.selectionManager.resetHighlight()

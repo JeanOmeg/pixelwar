@@ -3,11 +3,15 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "NewFullTile.tsx",
+    "activeFile": "NewFullTile.json",
     "expandedProjectPaths": [
         "."
     ],
     "fileStates": {
+        "NewFullTile.json": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
         "NewFullTile.tsx": {
             "scaleInDock": 1.5,
             "scaleInEditor": 1
@@ -34,6 +38,22 @@
             "viewCenter": {
                 "x": 405,
                 "y": 142
+            }
+        },
+        "map_1.js": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 460.66666666666663,
+                "y": 324.6666666666667
+            }
+        },
+        "map_1.json": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 479.33333333333326,
+                "y": 326
             }
         },
         "map_1.tmx": {
@@ -63,21 +83,24 @@
     },
     "last.imagePath": "C:/Users/Jean Fernandes/Desktop/workspace/pixelwar/res/tiles",
     "map.height": 17,
-    "map.lastUsedFormat": "tmx",
+    "map.lastUsedFormat": "json",
     "map.width": 28,
     "openFiles": [
-        "NewFullTile.tsx"
+        "NewFullTile.json"
     ],
     "project": "pixelwar.tiled-project",
     "property.type": "string",
     "recentFiles": [
+        "NewFullTile.json",
+        "map_1.json",
+        "map_1.js",
+        "NewFullTile.tsx",
         "map_3.tmx",
         "map_2.tmx",
         "map_1.tmx",
-        "NewFullTile.tsx",
         "map3.js",
         "map2.js",
         "map1.js"
     ],
-    "tileset.lastUsedFormat": "tsx"
+    "tileset.lastUsedFormat": "json"
 }

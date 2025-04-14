@@ -38,18 +38,16 @@ import ThiefBSpriteSheetPath from '../assets/game/minis/ThiefB.png'
 // maps
 import Map1Path from '../assets/game/maps/Map1.png'
 import Map2Path from '../assets/game/maps/Map2.png'
-import mapLevel1Path from '../assets/game/tiledMap/map_1.tmx'
-import mapLevel2Path from '../assets/game/tiledMap/map_2.tmx'
 
 export const Resources = {
   //Maps
   Map1: new ex.ImageSource(Map1Path),
   Map2: new ex.ImageSource(Map2Path),
-  MapLevel1: new TiledResource(mapLevel1Path, {
+  MapLevel1: new TiledResource('../assets/game/tiledMap/map_1.tmx', {
     strict: false
  }),
-  MapLevel2: new TiledResource(mapLevel2Path, {
-    strict: false
+  MapLevel2: new TiledResource('../assets/game/tiledMap/map_2.tmx', {
+    strict: false,
  }),
   // Utils
   TileSheet: new ex.ImageSource(TileSpritePath),
