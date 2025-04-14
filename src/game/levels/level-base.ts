@@ -11,6 +11,7 @@ import { ComputerPlayer } from '../computer-player'
 import { DustParticles } from '../dust-particles'
 import { Resources } from '../resources'
 import type { Terrain } from '../maps/tarrain-enum'
+import type { TiledResource } from '@excaliburjs/plugin-tiled'
 
 export interface LevelData {
   name: string
@@ -24,6 +25,7 @@ export interface LevelData {
    */
   players: string[]
   data: string[]
+  tiled: TiledResource
 }
 
 export const CharToUnit = {
@@ -120,6 +122,14 @@ export class LevelBase extends ex.Scene {
     }
 
     this.turnManager = new TurnManager(this.engine, this, this.players, this.selectionManager, this.levelData.maxTurns)
+
+    const tiledMap = levelData.tiled
+    // Agora processamos os dados do mapa e unidades
+    const mapLayer = tiledMap.getTileLayers().find(layer => layer.name === 'map')
+    const unitLayer = tiledMap.getTileLayers().find(layer => layer.name === 'unit')
+
+    console.log(mapLayer)
+    console.log(unitLayer)
 
     for (let y = 0; y < levelData.height; y++) {
       for (let x = 0; x < levelData.width; x++) {

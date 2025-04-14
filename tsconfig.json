@@ -84,7 +84,7 @@
     }
   },
   "exclude": [
-    "./src/assets/game",
+    "./src/assets/game/**",
     "./node_modules"
   ],
 }

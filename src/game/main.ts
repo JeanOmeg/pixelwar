@@ -1,11 +1,10 @@
 import * as ex from 'excalibur'
-import { loader } from './resources'
-import type { LevelData } from './levels/level-base';
+import { loader, Resources } from './resources'
 import { LevelBase } from './levels/level-base'
 import './ui-components/audio-menu'
 import { AudioManager } from './audio-manager'
-import { mapList } from './maps/maps'
 import { StartScreen } from './levels/start-screen'
+import { mapList } from './maps/maps'
 
 export async function setupGame(container: HTMLElement) {
   const game = new ex.Engine({
@@ -32,32 +31,30 @@ export async function setupGame(container: HTMLElement) {
   const startScreen = new StartScreen()
   game.addScene('start', startScreen)
 
-  const Level1M1Data: LevelData = {
+  const level1m1 = new LevelBase({
     displayName: 'Gentle Plains',
     name: 'level1-map1',
     width: 28,
     height: 17,
     maxTurns: 1000,
     nextLevel: 'start',
-    players: [ 'Human', 'CPU' ],
-    data: mapList[0]!
-  }
-
-  const level1m1 = new LevelBase(Level1M1Data, 'level1-map1')
+    players: ['Human', 'CPU'],
+    data: mapList[0]!,
+    tiled: Resources.MapLevel1
+  }, 'level1-map1')
   game.addScene(level1m1.name, level1m1)
 
-  const Level1m2Data: LevelData = {
+  const level1m2 = new LevelBase({
     displayName: 'Gentle Plains',
     name: 'level1-map2',
     width: 28,
     height: 17,
     maxTurns: 1000,
     nextLevel: 'start',
-    players: [ 'Human', 'CPU' ],
-    data: mapList[1]!
-  }
-
-  const level1m2 = new LevelBase(Level1m2Data, 'level1-map2')
+    players: ['Human', 'CPU'],
+    data: mapList[1]!,
+    tiled: Resources.MapLevel2
+  }, 'level1-map2')
   game.addScene(level1m2.name, level1m2)
 
   await game.start(loader).then(async () => {

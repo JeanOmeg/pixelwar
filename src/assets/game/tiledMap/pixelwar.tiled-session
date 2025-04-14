@@ -3,20 +3,20 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map3.js",
+    "activeFile": "NewFullTile.tsx",
     "expandedProjectPaths": [
         "."
     ],
     "fileStates": {
         "NewFullTile.tsx": {
-            "scaleInDock": 1.75,
+            "scaleInDock": 1.5,
             "scaleInEditor": 1
         },
         "map1.js": {
             "scale": 1.0268382352941174,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 429.4736842105264,
+                "x": 576.0401002506267,
                 "y": 271.70784103114937
             }
         },
@@ -24,29 +24,56 @@
             "scale": 1.0268382352941174,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 157.76584317937704,
+                "x": 487.90547798066603,
                 "y": 271.7078410311493
             }
         },
         "map3.js": {
-            "scale": 1.557720588235294,
+            "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 448.0906301628512,
-                "y": 272.1925890960585
+                "x": 405,
+                "y": 142
+            }
+        },
+        "map_1.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 460.66666666666663,
+                "y": 324.6666666666667
+            }
+        },
+        "map_2.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 397.33333333333337,
+                "y": 290.6666666666667
+            }
+        },
+        "map_3.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 646.6666666666665,
+                "y": 225.33333333333337
             }
         }
     },
     "last.imagePath": "C:/Users/Jean Fernandes/Desktop/workspace/pixelwar/res/tiles",
     "map.height": 17,
-    "map.lastUsedFormat": "js",
+    "map.lastUsedFormat": "tmx",
     "map.width": 28,
     "openFiles": [
-        "NewFullTile.tsx",
-        "map3.js"
+        "NewFullTile.tsx"
     ],
     "project": "pixelwar.tiled-project",
+    "property.type": "string",
     "recentFiles": [
+        "map_3.tmx",
+        "map_2.tmx",
+        "map_1.tmx",
         "NewFullTile.tsx",
         "map3.js",
         "map2.js",

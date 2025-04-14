@@ -1,4 +1,6 @@
 import * as ex from 'excalibur'
+import { TiledResource } from '@excaliburjs/plugin-tiled'
+
 // Utils
 import TileSpritePath from '../assets/game/tiles/NewFullTile.png'
 import CursorPath from '../assets/game/utils/SelectionCursor.png'
@@ -14,6 +16,7 @@ import LevelMusic1Path from '../assets/game/Battle_of_Hastings.mp3'
 import LevelMusic2Path from '../assets/game/Battle_of_Hastings.mp3'
 import TitleScreenMusic from '../assets/game/Path_of_the_Warrior.mp3'
 import CloudSheetPath from '../assets/game/utils/StarsScreen.png'
+
 // Minis
 import ArcherASpriteSheetPath from '../assets/game/minis/ArcherA.png'
 import ArcherBSpriteSheetPath from '../assets/game/minis/ArcherB.png'
@@ -32,14 +35,22 @@ import WarriorBSpriteSheetPath from '../assets/game/minis/WarriorB.png'
 import ThiefASpriteSheetPath from '../assets/game/minis/ThiefA.png'
 import ThiefBSpriteSheetPath from '../assets/game/minis/ThiefB.png'
 
-// Maps
-import Map1 from '../assets/game/maps/Map1.png'
-import Map2 from '../assets/game/maps/Map2.png'
+// maps
+import Map1Path from '../assets/game/maps/Map1.png'
+import Map2Path from '../assets/game/maps/Map2.png'
+import mapLevel1Path from '../assets/game/tiledMap/map_1.tmx'
+import mapLevel2Path from '../assets/game/tiledMap/map_2.tmx'
 
 export const Resources = {
   //Maps
-  Map1: new ex.ImageSource(Map1),
-  Map2: new ex.ImageSource(Map2),
+  Map1: new ex.ImageSource(Map1Path),
+  Map2: new ex.ImageSource(Map2Path),
+  MapLevel1: new TiledResource(mapLevel1Path, {
+    strict: false
+ }),
+  MapLevel2: new TiledResource(mapLevel2Path, {
+    strict: false
+ }),
   // Utils
   TileSheet: new ex.ImageSource(TileSpritePath),
   CursorSheet: new ex.ImageSource(CursorPath),

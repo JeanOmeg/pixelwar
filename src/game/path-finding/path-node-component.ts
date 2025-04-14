@@ -6,12 +6,24 @@ export class PathNodeComponent<T = any> extends ex.Component {
   readonly type = 'path-node'
   pos = ex.vec(0, 0)
   /**
-   * Is this path node traversable by anything at all?
+   * False, não atravessa
    */
   isWalkable = true
+  /**
+   * False, terreno lento
+   */
   isFast = true
+  /**
+   * False, não pode atacar
+   */
   isAttackable = true
+  /**
+   * True, não pode atacar, terreno lento
+   */
   isDoor = false
+  /**
+   * True, não atravessa, mas ataque a distancia pode atacar
+   */
   isWater = false
   /**
    * Is this path node traversable by certain things
