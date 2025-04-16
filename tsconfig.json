@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "ts-lit-plugin"
+      }
+    ],
+    "target": "ES2020",
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "sourceRoot": "./src",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true
+  }
+}

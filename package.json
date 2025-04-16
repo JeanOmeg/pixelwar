@@ -1,0 +1,23 @@
+{
+  "name": "pixel-war",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "parcel serve index.html",
+    "build": "parcel build ./index.html --dist-dir ./docs --public-url ./"
+  },
+  "author": "Jean Fernandes",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "excalibur": "^0.30.3",
+    "lit": "^3.1.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
+    "eslint": "^9.17.0",
+    "parcel": "2.11.0",
+    "ts-lit-plugin": "^2.0.1",
+    "typescript": "^5.3.3"
+  }
+}
