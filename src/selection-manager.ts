@@ -46,10 +46,8 @@ export class SelectionManager {
     this.currentSelectionMode = type
     if (type === 'move') {
       this.currentRange = this.findMovementRange(this.currentUnitSelection)
-      this.showHighlight(this.currentRange, 'range')
-    } else {
+    } else if (type === 'attack') {
       this.currentRange = this.findAttackRange(this.currentUnitSelection)
-      this.showHighlight(this.currentRange, 'attack')
     }
   }
 
