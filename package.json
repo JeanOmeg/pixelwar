@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "dev": "parcel serve index.html",
-    "build": "parcel build ./index.html --dist-dir ./docs --public-url ./"
+    "build": "parcel build ./index.html --dist-dir ./docs --public-url ./",
+    "tree": "node show-tree.js"
   },
   "author": "Jean Fernandes",
   "license": "BSD-2-Clause",

@@ -10,6 +10,7 @@
     "module": "commonjs",
     "sourceMap": true,
     "sourceRoot": "./src",
+    "outDir": "docs",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

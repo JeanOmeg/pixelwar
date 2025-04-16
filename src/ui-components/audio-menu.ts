@@ -29,12 +29,13 @@ export class AudioMenu extends LitElement {
         white-space: nowrap;
         word-wrap: normal;
         direction: ltr;
+        font-feature-settings: 'liga';
         -moz-font-feature-settings: 'liga';
         -moz-osx-font-smoothing: grayscale;
     }
   `
 
-  @property()
+  @property({ type: Boolean })
     soundOn = true
 
   toggleSound() {
