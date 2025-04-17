@@ -37,7 +37,7 @@ export class ComputerPlayer extends Player {
 
   findValidMoveCells(unit: Unit): Cell[] {
     if (!unit.cell) return []
-    const range = this.board.pathFinder.getRange(unit.cell.pathNode, unit.player.mask, unit.unitConfig.movement, unit.name)
+    const range = this.board.pathFinder.getRange(unit.cell.pathNode, this.mask, unit.unitConfig.movement, unit.name)
     return range
       .filter(node => (node.owner as Cell).unit?.player !== this)
       .map(node => node.owner as Cell)
@@ -122,41 +122,48 @@ export class ComputerPlayer extends Player {
   async decideActionForUnit(unit: Unit): Promise<void> {
     const executedTypes = new Set<string>()
 
-    const generateAndEvaluateActions = (): ActionPlan[] => {
+    const generateAndEvaluateActions = async (): Promise<ActionPlan[]> => {
       const actions: ActionPlan[] = []
       const attackTargets = this.findAttackableTargets(unit)
       const validCells = this.findValidMoveCells(unit)
 
-      if (attackTargets.length > 0) {
-        const unitPos = unit.cell?.pos ?? ex.vec(0, 0)
-        const enemyCells = attackTargets
-          .map(node => node.owner as Cell)
-          .filter(cell => {
-            if (!cell.unit) return false
-            const pos = cell.pos
-            return pos.x === unitPos.x || pos.y === unitPos.y // só linha ou coluna
-          })
-
-        const closest = this.findClosestCell(unit, enemyCells)
-        if (closest?.unit) {
-          actions.push({ type: 'attack', score: 0, target: closest.unit })
+      if (!unit.attacked) {
+        if (attackTargets.length > 0) {
+          const unitPos = unit.cell?.pos ?? ex.vec(0, 0)
+          const enemyCells = attackTargets
+            .map(node => node.owner as Cell)
+            .filter(cell => {
+              if (!cell.unit) return false
+              const pos = cell.pos
+              return pos.x === unitPos.x || pos.y === unitPos.y // só linha ou coluna
+            })
+  
+          const closest = this.findClosestCell(unit, enemyCells)
+          if (closest?.unit) {
+            actions.push({ type: 'attack', score: 0, target: closest.unit })
+          }
         }
       }
 
-      for (const cell of validCells) {
-        const range = this.board.pathFinder.getRange((unit.cell ?? {} as Cell).pathNode, unit.player.mask, unit.unitConfig.movement, unit.name)
-        const path = this.selectionManger.findPath(cell, range)
-        if (path.length > 0) {
-          actions.push({ type: 'move', score: 0, destination: cell, path })
-        }
-      }
-
-      if (this.shouldFlee(unit)) {
+      if (!unit.moved) {
         for (const cell of validCells) {
-          const range = this.board.pathFinder.getRange((unit.cell ?? {} as Cell).pathNode, unit.player.mask, unit.unitConfig.movement, unit.name)
-          const path = this.selectionManger.findPath(cell, range)
+          const range = this.board.pathFinder.getRange((unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement, unit.name)
+          const path = this.selectionManger.findPath(cell, range, unit.name)
           if (path.length > 0) {
-            actions.push({ type: 'flee', score: 0, destination: cell, path })
+            this.selectionManger.showHighlight(path, 'range')
+            actions.push({ type: 'move', score: 0, destination: cell, path })
+          }
+        }
+
+        await ex.Util.delay(ENEMY_SPEED)
+  
+        if (this.shouldFlee(unit)) {
+          for (const cell of validCells) {
+            const range = this.board.pathFinder.getRange((unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement, unit.name)
+            const path = this.selectionManger.findPath(cell, range, unit.name)
+            if (path.length > 0) {
+              actions.push({ type: 'flee', score: 0, destination: cell, path })
+            }
           }
         }
       }
@@ -181,7 +188,7 @@ export class ComputerPlayer extends Player {
       case 'flee':
         if (!unit.moved && action.destination && action.path) {
           this.selectionManger.showHighlight(action.path, 'path')
-          await ex.Util.delay(ENEMY_SPEED)
+          await ex.Util.delay(ENEMY_SPEED + ENEMY_SPEED)
           await this.selectionManger.selectDestinationAndMove(unit, action.destination)
           return true
         }
@@ -193,7 +200,7 @@ export class ComputerPlayer extends Player {
     }
 
     for (let i = 0; i < 2; i++) {
-      const actions = generateAndEvaluateActions().filter(a => !executedTypes.has(a.type))
+      const actions = (await generateAndEvaluateActions()).filter(a => !executedTypes.has(a.type))
       if (actions.length === 0 || actions.every(a => a.score <= 0)) {
         break
       }
@@ -213,7 +220,7 @@ export class ComputerPlayer extends Player {
   override async makeMove(): Promise<boolean> {
     const units = this.board.getUnits().filter(u => u.player === this)
     await ex.Util.delay(150)
-    units.sort((a, b) => a.health - b.health)
+    units.sort((a, b) => b.health - a.health)
 
     for (const unit of units) {
       await this.decideActionForUnit(unit)

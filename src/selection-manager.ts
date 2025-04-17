@@ -55,7 +55,7 @@ export class SelectionManager {
     if (unit.player !== this.currentPlayer) return
     const range = this.findMovementRange(unit)
     if (this.currentPath.length === 0) {
-      this.currentPath = this.findPath(destination, range)
+      this.currentPath = this.findPath(destination, range, unit.name)
     }
     if (this.currentPath.length > 1) {
       await unit.move(this.currentPath)
@@ -110,12 +110,12 @@ export class SelectionManager {
     })
   }
 
-  findPath(destination: Cell, currentRange: PathNodeComponent[]): PathNodeComponent[] {
+  findPath(destination: Cell, currentRange: PathNodeComponent[], unitName: string): PathNodeComponent[] {
     if (!this.currentUnitSelection) return []
     const start = this.currentUnitSelection.cell?.pathNode
 
     if (destination && !destination.unit && currentRange.includes(destination.pathNode)) {
-      const path = this.board.pathFinder.findPath(start!, destination?.pathNode!, this.currentUnitSelection.player.mask, currentRange)
+      const path = this.board.pathFinder.findPath(start!, destination?.pathNode!, this.currentUnitSelection.player.mask, currentRange, unitName)
       return path
     }
     return []

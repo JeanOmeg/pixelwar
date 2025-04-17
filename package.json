@@ -19,6 +19,7 @@
     "eslint": "^9.17.0",
     "parcel": "2.11.0",
     "ts-lit-plugin": "^2.0.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "typescript-lit-html-plugin": "^0.9.0"
   }
 }

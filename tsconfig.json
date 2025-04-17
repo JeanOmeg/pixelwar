@@ -3,6 +3,9 @@
     "plugins": [
       {
         "name": "ts-lit-plugin"
+      },
+      {
+        "name": "typescript-lit-html-plugin"
       }
     ],
     "target": "ES2020",

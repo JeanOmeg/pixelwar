@@ -72,7 +72,7 @@ export class HumanPlayer extends Player {
 
       const destination = this.board.getCellByWorldPos(pointer.worldPos)
       if (destination) {
-        const currentPath = this.selectionManager.findPath(destination, currentRange)
+        const currentPath = this.selectionManager.findPath(destination, currentRange, this.selectionManager.currentUnitSelection.name)
         this.selectionManager.showHighlight(currentPath, 'path')
       }
     } else {

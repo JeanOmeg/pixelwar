@@ -12,7 +12,7 @@ export class PathFinder {
   pos_y: string | undefined = undefined
   name_unit: string | undefined = undefined
 
-  heuristicWeight = 1
+  heuristicWeight = 0.8
   heuristic(start: PathNodeComponent, end: PathNodeComponent): number {
     const startX = start.pos.x
     const startY = start.pos.y
@@ -131,7 +131,7 @@ export class PathFinder {
    * @param range 
    * @returns 
    */
-  findPath(start: PathNodeComponent, end: PathNodeComponent, mask: number, range?: PathNodeComponent[]): PathNodeComponent[] {
+  findPath(start: PathNodeComponent, end: PathNodeComponent, mask: number, range: PathNodeComponent[], unitName?: string): PathNodeComponent[] {
     const nodes = this.query.getEntities().map(n => n.get(PathNodeComponent)) as PathNodeComponent[]
     nodes.forEach(node => {
       node.gScore = 0
@@ -176,7 +176,8 @@ export class PathFinder {
       neighbors.forEach((node) => {
         if (openNodes.indexOf(node) === -1) {
           node.previousNode = current
-          node.gScore = node.weight + current.gScore
+          const movementCost = node.isFast ? 1 : unitName == 'Thief' && !node.isDoor ? 1 : 50
+          node.gScore = movementCost + current.gScore
           node.hScore = node.gScore + this.heuristic(node, end) * this.heuristicWeight
 
           const newDirection = node.pos.sub(current.pos).normalize()
