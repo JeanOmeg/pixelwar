@@ -14,7 +14,8 @@ const baseConfig = {
     '.vscode/**/*',
     'docs/**/*',
     'node_modules/**/*',
-    'res/**/*'
+    'res/**/*',
+    'dist/**/*'
   ],
   rules: {
     'no-unused-vars': 'error',

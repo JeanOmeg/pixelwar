@@ -10,6 +10,7 @@
   "author": "Jean Fernandes",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "@excaliburjs/plugin-tiled": "0.30.2",
     "excalibur": "^0.30.3",
     "lit": "^3.1.2"
   },
