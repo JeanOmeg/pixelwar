@@ -70,9 +70,8 @@ export class ComputerPlayer extends Player {
     const match = possibleTargets.find(enemy => enemy.owner?.name === target.cell?.name)
     if (!match) return false
 
-    this.selectionManger.showHighlight(possibleTargets, 'attack')
-    await ex.Util.delay(ENEMY_SPEED)
-    this.selectionManger.showHighlight([(target.cell ?? {} as Cell).pathNode], 'path')
+    this.selectionManger.showHighlight([(target.cell ?? {} as Cell).pathNode], 'attack')
+    await ex.Util.delay(ENEMY_SPEED * 2)
     await unit.attack(target)
     this.selectionManger.reset()
     return true
@@ -150,7 +149,6 @@ export class ComputerPlayer extends Player {
           const range = this.board.pathFinder.getRange((unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement, unit.name)
           const path = this.selectionManger.findPath(cell, range, unit.name)
           if (path.length > 0) {
-            this.selectionManger.showHighlight(path, 'range')
             actions.push({ type: 'move', score: 0, destination: cell, path })
           }
         }

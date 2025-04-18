@@ -1,6 +1,8 @@
 import * as ex from 'excalibur'
-// Utils
-import TileSpritePath from '../res/tiles/NewFullTile.png'
+import { TiledResource } from '@excaliburjs/plugin-tiled'
+
+// Paths
+import TilesetPath from '../res/tiles/NewFullTile.png'
 import CursorPath from '../res/utils/SelectionCursor.png'
 import HighlightSheetPath from '../res/utils/MoveCursor.png'
 import RedHighlightSheetPath from '../res/utils/DamageCursor.png'
@@ -13,8 +15,6 @@ import TargetSelectPath from '../res/targetselect.wav'
 import LevelMusic1Path from '../res/Battle_of_Hastings.mp3'
 import LevelMusic2Path from '../res/Battle_of_Hastings.mp3'
 import TitleScreenMusic from '../res/Path_of_the_Warrior.mp3'
-import CloudSheetPath from '../res/utils/StarsScreen.png'
-// Minis
 import ArcherASpriteSheetPath from '../res/minis/ArcherA.png'
 import ArcherBSpriteSheetPath from '../res/minis/ArcherB.png'
 import BarbarianASpriteSheetPath from '../res/minis/BarbarianA.png'
@@ -31,18 +31,25 @@ import WarriorASpriteSheetPath from '../res/minis/WarriorA.png'
 import WarriorBSpriteSheetPath from '../res/minis/WarriorB.png'
 import ThiefASpriteSheetPath from '../res/minis/ThiefA.png'
 import ThiefBSpriteSheetPath from '../res/minis/ThiefB.png'
-
-// Maps
-import Map1 from '../res/maps/Map1.png'
-import Map2 from '../res/maps/Map2.png'
+import Map1Path from '../res/maps/Map1.png'
+import Map2Path from '../res/maps/Map2.png'
+import Map1TmxPath from '../res/tiledMap/map_1.tmx'
+import TilesetTsxPath from '../res/tiledMap/NewFullTile.tsx'
 
 
 export const Resources = {
   //Maps
-  Map1: new ex.ImageSource(Map1),
-  Map2: new ex.ImageSource(Map2),
+  Map1: new ex.ImageSource(Map1Path),
+  Map2: new ex.ImageSource(Map2Path),
   // Utils
-  TileSheet: new ex.ImageSource(TileSpritePath),
+  TileSet: new ex.ImageSource(TilesetPath),
+  TiledMap1:  new TiledResource(Map1TmxPath, {
+    pathMap: [
+      { path: 'map_1.tmx', output: Map1TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
   CursorSheet: new ex.ImageSource(CursorPath),
   HighlightSheet: new ex.ImageSource(HighlightSheetPath),
   RedHighlightSheet: new ex.ImageSource(RedHighlightSheetPath),
@@ -55,7 +62,6 @@ export const Resources = {
   LevelMusic2: new ex.Sound(LevelMusic2Path),
   ExplosionSound: new ex.Sound(ExplosionSoundPath),
   TitleMusic: new ex.Sound(TitleScreenMusic),
-  CloudSheet: new ex.ImageSource(CloudSheetPath),
   // Minis
   ArcherASpriteSheet: new ex.ImageSource(ArcherASpriteSheetPath),
   ArcherBSpriteSheet: new ex.ImageSource(ArcherBSpriteSheetPath),
@@ -74,16 +80,6 @@ export const Resources = {
   ThiefASpriteSheet: new ex.ImageSource(ThiefASpriteSheetPath),
   ThiefBSpriteSheet: new ex.ImageSource(ThiefBSpriteSheetPath),
 } as const
-
-export const TileSpriteSheet = ex.SpriteSheet.fromImageSource({
-  image: Resources.TileSheet,
-  grid: {
-    rows: 19,
-    columns: 10,
-    spriteHeight: 32,
-    spriteWidth: 32
-  }
-})
 
 export const CursorSpriteSheet = ex.SpriteSheet.fromImageSource({
   image: Resources.CursorSheet,

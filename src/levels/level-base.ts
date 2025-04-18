@@ -1,6 +1,6 @@
 import * as ex from 'excalibur'
 import { Board } from '../board'
-import { ClassType, UnitType } from '../config'
+import { SCALE, UnitType } from '../config'
 import { Unit } from '../unit'
 import { Player } from '../player'
 import { HumanPlayer } from '../human-player'
@@ -10,7 +10,7 @@ import { TurnManager } from '../turn-manager'
 import { ComputerPlayer } from '../computer-player'
 import { DustParticles } from '../dust-particles'
 import { Resources } from '../resources'
-import { Terrain } from '../maps/tarrain-enum'
+import { Layer, Tile, TiledResource } from '@excaliburjs/plugin-tiled'
 
 export interface LevelData {
   name: string
@@ -24,26 +24,12 @@ export interface LevelData {
    */
   players: string[]
   data: string[]
+  tiledMap: TiledResource
 }
 
-export const CharToUnit = {
-  AA: 'ArcherA',
-  AB: 'ArcherB',
-  BA: 'BarbarianA',
-  BB: 'BarbarianB',
-  CA: 'ClericA',
-  CB: 'ClericB',
-  FA: 'FighterA',
-  FB: 'FighterB',
-  MA: 'MageA',
-  MB: 'MageB',
-  SA: 'SpearmanA',
-  SB: 'SpearmanB',
-  WA: 'WarriorA',
-  WB: 'WarriorB',
-  TA: 'ThiefA',
-  TB: 'ThiefB',
-} as const
+interface mapGidList extends Layer {
+  data: number[]
+}
 
 export class LevelBase extends ex.Scene {
 
@@ -91,16 +77,20 @@ export class LevelBase extends ex.Scene {
   }
 
   async parse(levelData: LevelData): Promise<Board> {
+    const MapGidList = (levelData.tiledMap.getLayersByName('map')[0] as mapGidList).data
+    const tileset = levelData.tiledMap.getTilesetForTileGid(MapGidList[0])
+    const objectUniList = levelData.tiledMap.getObjectLayers('units')[0].objects
+    
     Resources.LevelMusic2.loop = true
     Resources.LevelMusic2.play()
-    const board = new Board(levelData.height, levelData.width, this)
+
+    const board = new Board(levelData.tiledMap.map.height, levelData.tiledMap.map.width, this)
     this.selectionManager = new SelectionManager(board)
-    this.selectionManager.showCursor(2, 8)
     this.uiManager = new UIManager(this.engine)
-    let mode = localStorage.getItem('start_screen')
-    while (!mode || mode?.length === 0) {
-      mode = localStorage.getItem('start_screen')
-    }
+
+    this.selectionManager.showCursor(4, 8)
+
+    const mode = localStorage.getItem('start_screen')
 
     if (mode == 'p1vscpu') {
       this.players = [
@@ -120,29 +110,41 @@ export class LevelBase extends ex.Scene {
     }
 
     this.turnManager = new TurnManager(this.engine, this, this.players, this.selectionManager, this.levelData.maxTurns)
-
-    for (let y = 0; y < levelData.height; y++) {
-      for (let x = 0; x < levelData.width; x++) {
-        const data = levelData.data[x + y * levelData.width]
-        const terrain = `${data.charAt(0)}${data.charAt(1)}${data.charAt(2)}` as Terrain
-        let unit: Unit | null = null
-        if (data.length === 6) {
-          const unitType: UnitType = CharToUnit[`${data.charAt(3)}${data.charAt(4)}` as ClassType]
-          const playerIndex = (+data.charAt(5)) - 1
-
-          unit = new Unit(x, y, unitType, board, this.players[playerIndex])
-          if (playerIndex == 0) {
-            unit.graphics.flipHorizontal = false
-          } else {
-            unit.graphics.flipHorizontal = true
-          }
-          this.add(unit)
-        }
+    
+    
+    for (let y = 0; y < levelData.tiledMap.map.height; y++) {
+      for (let x = 0; x < levelData.tiledMap.map.width; x++) {
+        const Gid = MapGidList[x + y * levelData.tiledMap.map.width]
+        const tile = tileset.getTileByGid(Gid) as Tile
+        const spriteTile = tileset.getSpriteForGid(Gid)
+        
         const cell = board.getCell(x, y)
         if (cell) {
-          cell.terrain = terrain
-          if (unit) {
-            cell.addUnit(unit)
+          cell.pathNode.isWalkable = (tile.properties.get('iswalkable') ?? false) as boolean
+          cell.pathNode.isAttackable = (tile.properties.get('isattackable') ?? false) as boolean
+          cell.pathNode.isFast = (tile.properties.get('isfast') ?? false) as boolean
+          cell.pathNode.isDoor = (tile.properties.get('isdoor') ?? false) as boolean
+          cell.pathNode.isWater = (tile.properties.get('iswater') ?? false) as boolean
+          cell.sprite = spriteTile
+          cell.sprite.scale = SCALE
+          cell.graphics.use(cell.sprite.clone())
+
+          for (const object of objectUniList) {
+            const objectPos = { x: object.x * SCALE.x, y: object.y * SCALE.y } as ex.Vector
+            const objectCell = board.getCellByWorldPos(objectPos)
+            if (cell.name == objectCell?.name) {
+              const unitType = object.name as UnitType
+              const playerIndex = Number(object.class)
+  
+              const unit = new Unit(x, y, unitType, board, this.players[playerIndex])
+              if (playerIndex == 0) {
+                unit.graphics.flipHorizontal = false
+              } else {
+                unit.graphics.flipHorizontal = true
+              }
+              this.add(unit)
+              cell.addUnit(unit)
+            }
           }
         }
       }

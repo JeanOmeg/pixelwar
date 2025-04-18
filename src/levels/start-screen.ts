@@ -86,8 +86,6 @@ export class StartScreen extends ex.Scene {
       coordPlane: ex.CoordPlane.Screen
     })
 
-    
-
     this.cpuVscpuButton.graphics.use(new ex.GraphicsGroup({
       members: [
         {

@@ -17,6 +17,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.18.1",
     "@typescript-eslint/parser": "^8.18.1",
+    "buffer": "^5.5.0||^6.0.0",
     "eslint": "^9.17.0",
     "parcel": "2.11.0",
     "ts-lit-plugin": "^2.0.1",
