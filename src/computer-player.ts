@@ -62,7 +62,7 @@ export class ComputerPlayer extends Player {
     return attackRange.filter(node => {
       const cell = node.owner as Cell
       return cell.unit && cell.unit.player !== this
-    })
+    }).sort((a, b) => ((a.owner as Cell).unit as Unit).health - ((b.owner as Cell).unit as Unit).health)
   }
 
   async maybeAttack(unit: Unit, target: Unit) {
@@ -79,33 +79,27 @@ export class ComputerPlayer extends Player {
 
   evaluateAttack(unit: Unit, target: Unit): number {
     const damagePotential = unit.unitConfig.attack - target.unitConfig.defense
-    const estimated = damagePotential > 0 ? damagePotential : 1
-    if (target.health <= estimated) return 1000 // prioridade máxima
+    const estimated = damagePotential > 0 ? damagePotential + 6 : 6
+    if (target.health <= estimated) return 1000
     return (estimated * 3) + (target.unitConfig.health - target.health)
   }
 
-  evaluateMove(unit: Unit, destination: Cell): number {
-    const enemies = this.board.getUnits().filter(enemy => enemy.player !== this && enemy.cell)
-    const closest = this.findClosestCell(destination.unit ?? unit, enemies.map(e => e.cell) as Cell[])
-    if (!closest) return 0
-    const dist = destination.pos.squareDistance(closest.pos)
-    return 100 / (dist + 1)
-  }
-
-  evaluateFlee(unit: Unit, destination: Cell): number {
+  evaluateMove(unit: Unit, destination: Cell, flee = false): number {
     const enemies = this.board.getUnits().filter(enemy => enemy.player !== this && enemy.cell)
     const closest = this.findClosestCell(destination.unit ?? unit, enemies.map(e => e.cell) as Cell[])
     if (!closest) return 0
     const dist = destination.pos.squareDistance(closest.pos)
     const healthRatio = unit.health / unit.unitConfig.health
-    return healthRatio < 0.4 ? dist * 1.5 : -100
+
+    if (flee) return healthRatio < 0.2 ? dist * 1.5 : -100
+    return 100 / (dist + 1)
   }
 
   evaluateAction(unit: Unit, action: ActionPlan): number {
     switch (action.type) {
     case 'attack': return action.target ? this.evaluateAttack(unit, action.target) : 0
     case 'move': return action.destination ? this.evaluateMove(unit, action.destination) : 0
-    case 'flee': return action.destination ? this.evaluateFlee(unit, action.destination) : 0
+    case 'flee': return action.destination ? this.evaluateMove(unit, action.destination, true) : 0
     case 'wait': return -10
     }
   }
@@ -113,7 +107,7 @@ export class ComputerPlayer extends Player {
   shouldFlee(unit: Unit): boolean {
     const ownUnits = this.board.getUnits().filter(u => u.player === this)
     const enemyUnits = this.board.getUnits().filter(u => u.player !== this)
-    const isLowHealth = unit.health < unit.unitConfig.health * 0.4
+    const isLowHealth = unit.health < unit.unitConfig.health * 0.2
     const isOutnumbered = (ownUnits.length + 1) < enemyUnits.length
     return isLowHealth && isOutnumbered
   }
@@ -197,7 +191,7 @@ export class ComputerPlayer extends Player {
       return false
     }
 
-    for (let i = 0; i < 2; i++) {
+    while(!unit.attacked || !unit.moved) {
       const actions = (await generateAndEvaluateActions()).filter(a => !executedTypes.has(a.type))
       if (actions.length === 0 || actions.every(a => a.score <= 0)) {
         break
@@ -218,7 +212,7 @@ export class ComputerPlayer extends Player {
   override async makeMove(): Promise<boolean> {
     const units = this.board.getUnits().filter(u => u.player === this)
     await ex.Util.delay(150)
-    units.sort((a, b) => b.health - a.health)
+    units.sort((a, b) => a.health - b.health)
 
     for (const unit of units) {
       await this.decideActionForUnit(unit)

@@ -3,7 +3,6 @@ import { loader, Resources } from './resources'
 import { LevelBase, LevelData } from './levels/level-base'
 import './ui-components/audio-menu'
 import { AudioManager } from './audio-manager'
-import { mapList } from './maps/maps'
 import { StartScreen } from './levels/start-screen'
 
 const game = new ex.Engine({
@@ -33,14 +32,9 @@ export const originalZoom = game.currentScene.camera.zoom
 
 function addMaps () {
   const Level1M1Data: LevelData = {
-    displayName: 'Gentle Plains',
     name: 'level1-map1',
-    width: Resources.TiledMap1.map.width,
-    height: Resources.TiledMap1.map.height,
-    maxTurns: 1000,
-    nextLevel: 'start',
+    maxTurns: 100,
     players: [ 'Human', 'CPU' ],
-    data: mapList[0],
     tiledMap: Resources.TiledMap1
   }
 
@@ -48,14 +42,9 @@ function addMaps () {
   game.addScene(level1m1.name, level1m1)
 
   const Level1m2Data: LevelData = {
-    displayName: 'Gentle Plains',
     name: 'level1-map2',
-    width: Resources.TiledMap1.map.width,
-    height: Resources.TiledMap1.map.height,
-    maxTurns: 1000,
-    nextLevel: 'start',
+    maxTurns: 100,
     players: [ 'Human', 'CPU' ],
-    data: mapList[1],
     tiledMap: Resources.TiledMap1
   }
 

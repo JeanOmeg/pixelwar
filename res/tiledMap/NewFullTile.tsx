@@ -43,7 +43,7 @@
  </tile>
  <tile id="4">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -53,7 +53,7 @@
  </tile>
  <tile id="5">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -63,7 +63,7 @@
  </tile>
  <tile id="6">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -73,7 +73,7 @@
  </tile>
  <tile id="7">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -83,7 +83,7 @@
  </tile>
  <tile id="8">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -93,7 +93,7 @@
  </tile>
  <tile id="9">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -143,7 +143,7 @@
  </tile>
  <tile id="14">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -153,7 +153,7 @@
  </tile>
  <tile id="15">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -163,7 +163,7 @@
  </tile>
  <tile id="16">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -173,7 +173,7 @@
  </tile>
  <tile id="17">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -183,7 +183,7 @@
  </tile>
  <tile id="18">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -193,7 +193,7 @@
  </tile>
  <tile id="19">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -243,7 +243,7 @@
  </tile>
  <tile id="24">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -253,7 +253,7 @@
  </tile>
  <tile id="25">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -263,7 +263,7 @@
  </tile>
  <tile id="26">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -273,7 +273,7 @@
  </tile>
  <tile id="27">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -283,7 +283,7 @@
  </tile>
  <tile id="28">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -293,7 +293,7 @@
  </tile>
  <tile id="29">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -343,7 +343,7 @@
  </tile>
  <tile id="34">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -353,7 +353,7 @@
  </tile>
  <tile id="35">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -363,7 +363,7 @@
  </tile>
  <tile id="36">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -373,7 +373,7 @@
  </tile>
  <tile id="37">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="true"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
@@ -383,7 +383,7 @@
  </tile>
  <tile id="38">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="true"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
@@ -393,7 +393,7 @@
  </tile>
  <tile id="39">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -403,7 +403,7 @@
  </tile>
  <tile id="40">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -413,7 +413,7 @@
  </tile>
  <tile id="41">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -423,7 +423,7 @@
  </tile>
  <tile id="42">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -433,7 +433,7 @@
  </tile>
  <tile id="43">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -443,7 +443,7 @@
  </tile>
  <tile id="44">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -453,7 +453,7 @@
  </tile>
  <tile id="45">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -463,7 +463,7 @@
  </tile>
  <tile id="46">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -473,7 +473,7 @@
  </tile>
  <tile id="47">
   <properties>
-   <property name="isAttackable" type="bool" value="true"/>
+   <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -873,7 +873,7 @@
  </tile>
  <tile id="87">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -883,7 +883,7 @@
  </tile>
  <tile id="88">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -893,7 +893,7 @@
  </tile>
  <tile id="89">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -973,7 +973,7 @@
  </tile>
  <tile id="97">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -993,7 +993,7 @@
  </tile>
  <tile id="99">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1073,7 +1073,7 @@
  </tile>
  <tile id="107">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1083,7 +1083,7 @@
  </tile>
  <tile id="108">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1093,7 +1093,7 @@
  </tile>
  <tile id="109">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1173,7 +1173,7 @@
  </tile>
  <tile id="117">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1183,7 +1183,7 @@
  </tile>
  <tile id="118">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1193,7 +1193,7 @@
  </tile>
  <tile id="119">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1273,7 +1273,7 @@
  </tile>
  <tile id="127">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1293,7 +1293,7 @@
  </tile>
  <tile id="129">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1373,7 +1373,7 @@
  </tile>
  <tile id="137">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1383,7 +1383,7 @@
  </tile>
  <tile id="138">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1393,7 +1393,7 @@
  </tile>
  <tile id="139">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1473,7 +1473,7 @@
  </tile>
  <tile id="147">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1483,7 +1483,7 @@
  </tile>
  <tile id="148">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1493,7 +1493,7 @@
  </tile>
  <tile id="149">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1573,7 +1573,7 @@
  </tile>
  <tile id="157">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1583,7 +1583,7 @@
  </tile>
  <tile id="158">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1593,7 +1593,7 @@
  </tile>
  <tile id="159">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1703,7 +1703,7 @@
  </tile>
  <tile id="170">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1713,7 +1713,7 @@
  </tile>
  <tile id="171">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1723,7 +1723,7 @@
  </tile>
  <tile id="172">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1733,7 +1733,7 @@
  </tile>
  <tile id="173">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1743,7 +1743,7 @@
  </tile>
  <tile id="174">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1753,7 +1753,7 @@
  </tile>
  <tile id="175">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1763,7 +1763,7 @@
  </tile>
  <tile id="176">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1773,7 +1773,7 @@
  </tile>
  <tile id="177">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1783,7 +1783,7 @@
  </tile>
  <tile id="178">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1793,7 +1793,7 @@
  </tile>
  <tile id="179">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1803,7 +1803,7 @@
  </tile>
  <tile id="180">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1813,7 +1813,7 @@
  </tile>
  <tile id="181">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1823,7 +1823,7 @@
  </tile>
  <tile id="182">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1833,7 +1833,7 @@
  </tile>
  <tile id="183">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1843,7 +1843,7 @@
  </tile>
  <tile id="184">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1853,7 +1853,7 @@
  </tile>
  <tile id="185">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1863,7 +1863,7 @@
  </tile>
  <tile id="186">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1873,7 +1873,7 @@
  </tile>
  <tile id="187">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1883,7 +1883,7 @@
  </tile>
  <tile id="188">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
@@ -1893,7 +1893,7 @@
  </tile>
  <tile id="189">
   <properties>
-   <property name="isAttackable" type="bool" value="false"/>
+   <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>

@@ -14,16 +14,8 @@ import { Layer, Tile, TiledResource } from '@excaliburjs/plugin-tiled'
 
 export interface LevelData {
   name: string
-  displayName: string
-  width: number
-  height: number
   maxTurns: number
-  nextLevel: string
-  /**
-   * By convention the first player is human
-   */
   players: string[]
-  data: string[]
   tiledMap: TiledResource
 }
 
@@ -79,7 +71,7 @@ export class LevelBase extends ex.Scene {
   async parse(levelData: LevelData): Promise<Board> {
     const MapGidList = (levelData.tiledMap.getLayersByName('map')[0] as mapGidList).data
     const tileset = levelData.tiledMap.getTilesetForTileGid(MapGidList[0])
-    const objectUniList = levelData.tiledMap.getObjectLayers('units')[0].objects
+    const objectUniList = levelData.tiledMap.getObjectLayers('unit')[0].objects
     
     Resources.LevelMusic2.loop = true
     Resources.LevelMusic2.play()
