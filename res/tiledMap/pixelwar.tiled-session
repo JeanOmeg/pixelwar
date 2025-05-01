@@ -1,5 +1,9 @@
 {
-    "activeFile": "NewFullTile.tsx",
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "map_2.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -34,24 +38,37 @@
         },
         "map_1.tmx": {
             "scale": 1.0267,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 805.0063309632806,
-                "y": 319.47014707314696
+                "x": 418.817570858089,
+                "y": 320.4441414239797
+            }
+        },
+        "map_2.tmx": {
+            "scale": 1.0560267857142855,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 447.9053054322554,
+                "y": 271.77340942718246
             }
         }
     },
+    "map.height": 17,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 28,
     "openFiles": [
-        "map_1.tmx",
-        "NewFullTile.tsx"
+        "NewFullTile.tsx",
+        "map_2.tmx",
+        "map_1.tmx"
     ],
     "project": "pixelwar.tiled-project",
     "property.type": "int",
     "recentFiles": [
-        "map_1.tmx",
         "NewFullTile.tsx",
-        "map1.js",
+        "map_1.tmx",
+        "map_2.tmx",
         "map2.js",
-        "map3.js"
+        "map3.js",
+        "map1.js"
     ]
 }

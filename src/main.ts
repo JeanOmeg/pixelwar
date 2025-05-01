@@ -45,7 +45,7 @@ function addMaps () {
     name: 'level1-map2',
     maxTurns: 100,
     players: [ 'Human', 'CPU' ],
-    tiledMap: Resources.TiledMap1
+    tiledMap: Resources.TiledMap2
   }
 
   const level1m2 = new LevelBase(Level1m2Data, 'level1-map2')

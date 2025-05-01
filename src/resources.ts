@@ -34,6 +34,7 @@ import ThiefBSpriteSheetPath from '../res/minis/ThiefB.png'
 import Map1Path from '../res/maps/Map1.png'
 import Map2Path from '../res/maps/Map2.png'
 import Map1TmxPath from '../res/tiledMap/map_1.tmx'
+import Map2TmxPath from '../res/tiledMap/map_2.tmx'
 import TilesetTsxPath from '../res/tiledMap/NewFullTile.tsx'
 
 
@@ -46,6 +47,13 @@ export const Resources = {
   TiledMap1:  new TiledResource(Map1TmxPath, {
     pathMap: [
       { path: 'map_1.tmx', output: Map1TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap2:  new TiledResource(Map2TmxPath, {
+    pathMap: [
+      { path: 'map_2.tmx', output: Map2TmxPath },
       { path: 'NewFullTile.png', output: TilesetPath },
       { path: 'NewFullTile.tsx', output: TilesetTsxPath }
     ]
