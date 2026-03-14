@@ -5,6 +5,7 @@ import { Resources } from '../resources'
 
 type TStartMode = 'p1vscpu' | 'p1vsp2' | 'cpuvscpu'
 type TStep = 'mode' | 'map' | null
+type TScreen = | 'portrait' | 'portrait-primary' | 'portrait-secondary' | 'landscape' | 'landscape-primary' | 'landscape-secondary'
 
 @customElement('start-screen-ui')
 export class StartScreenUi extends LitElement {
@@ -199,7 +200,7 @@ export class StartScreenUi extends LitElement {
         </button>
 
         <button
-          class="blue ${this.blinkingButton === 'p1vsp2' ? 'blink' : ''}"
+          class="red ${this.blinkingButton === 'p1vsp2' ? 'blink' : ''}"
           ?disabled=${this.isTransitioning}
           @click=${() => this.selectMode('p1vsp2')}
         >
@@ -207,7 +208,7 @@ export class StartScreenUi extends LitElement {
         </button>
 
         <button
-          class="red ${this.blinkingButton === 'cpuvscpu' ? 'blink' : ''}"
+          class="blue ${this.blinkingButton === 'cpuvscpu' ? 'blink' : ''}"
           ?disabled=${this.isTransitioning}
           @click=${() => this.selectMode('cpuvscpu')}
         >
@@ -346,16 +347,8 @@ export class StartScreenUi extends LitElement {
     }
 
     const screenOrientation = screen.orientation as ScreenOrientation & {
-      lock?: (
-        // eslint-disable-next-line no-unused-vars
-        orientation:
-          | 'portrait'
-          | 'portrait-primary'
-          | 'portrait-secondary'
-          | 'landscape'
-          | 'landscape-primary'
-          | 'landscape-secondary'
-      ) => Promise<void>
+      // eslint-disable-next-line no-unused-vars
+      lock?: (orientation: TScreen) => Promise<void>
     }
 
     if (screenOrientation?.lock) {
