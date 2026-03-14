@@ -1,7 +1,8 @@
-import { LitElement, css, html } from 'lit'
+import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import * as ex from 'excalibur'
 import { Resources } from '../resources'
+import notjamslab14Url from '../../res/font/NotJamSlab14.ttf'
 
 type TStartMode = 'p1vscpu' | 'p1vsp2' | 'cpuvscpu'
 type TStep = 'mode' | 'map' | null
@@ -28,13 +29,21 @@ export class StartScreenUi extends LitElement {
   private blinkingButton: string | null = null
 
   static styles = css`
+    @font-face {
+      font-family: 'notjamslab14';
+      src: url(${unsafeCSS(notjamslab14Url)}) format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    
     :host {
       position: fixed;
       inset: 0;
-      z-index: 9999;
+      z-index: 999;
       display: block;
       overflow: hidden;
       user-select: none;
+      font-family: 'notjamslab14', sans-serif;
     }
 
     .wrapper {
@@ -56,8 +65,8 @@ export class StartScreenUi extends LitElement {
     }
 
     .title {
-      font-size: 56px;
-      font-weight: bold;
+      font-family: 'notjamslab14', sans-serif;
+      font-size: 150px;
       color: white;
       text-shadow: 3px 3px 0 black;
       margin-bottom: 12px;
@@ -71,13 +80,13 @@ export class StartScreenUi extends LitElement {
     }
 
     button {
-      min-width: 260px;
+      min-width: 500px;
       min-height: 56px;
       padding: 10px 18px;
       border: 4px solid white;
       color: white;
-      font-size: 20px;
-      font-weight: bold;
+      font-family: 'notjamslab14', sans-serif;
+      font-size: 70px;
       background: blue;
       cursor: pointer;
       image-rendering: pixelated;
@@ -111,12 +120,11 @@ export class StartScreenUi extends LitElement {
     }
 
     .map-thumb {
-      width: 52px;
-      height: 34px;
+      width: 100px;
+      height: 75px;
       object-fit: cover;
       border: 2px solid white;
       background: black;
-      image-rendering: pixelated;
       flex-shrink: 0;
     }
 
@@ -149,12 +157,12 @@ export class StartScreenUi extends LitElement {
 
     @media (max-width: 768px) {
       .title {
-        font-size: 38px;
+        font-size: 70px;
       }
 
       button {
         min-width: 220px;
-        font-size: 18px;
+        font-size: 70px;
       }
     }
   `

@@ -77,7 +77,7 @@ export class LevelBase extends ex.Scene {
     Resources.LevelMusic2.play()
 
     const board = new Board(levelData.tiledMap.map.height, levelData.tiledMap.map.width, this)
-    this.selectionManager = new SelectionManager(board)
+    this.selectionManager = new SelectionManager(board, this.engine)
     this.uiManager = new UIManager(this.engine)
 
     this.selectionManager.showCursor(4, 8)

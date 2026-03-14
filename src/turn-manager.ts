@@ -250,29 +250,22 @@ export class TurnManager {
 
   async checkWin(player: Player) {
     const lost = player.hasLost()
+
     if (lost || this.maxTurns == 0) {
       if (player instanceof HumanPlayer) {
         await this.showGameOver()
-        this.engine.input.pointers.once('down', async () => {
-          Resources.LevelMusic2.stop()
-          await this.engine.goToScene('start', {
-            destinationIn: new ex.FadeInOut({ duration: 2000, direction: 'in' }),
-            sourceOut: new ex.FadeInOut({ duration: 1000, direction: 'out' })
-          })
-        })
-        return true
       } else {
         await this.showVictory()
-        this.engine.input.pointers.once('down', async () => {
-          Resources.LevelMusic2.stop()
-          await this.engine.goToScene('start', {
-            destinationIn: new ex.FadeInOut({ duration: 2000, direction: 'in' }),
-            sourceOut: new ex.FadeInOut({ duration: 1000, direction: 'out' })
-          })
-        })
-        return true
       }
+
+      this.engine.input.pointers.once('down', async () => {
+        Resources.LevelMusic2.stop()
+        await this.returnToMainMenu(this.engine)
+      })
+
+      return true
     }
+
     return false
   }
 
@@ -303,5 +296,28 @@ export class TurnManager {
     if (this.currentPlayerIndex === 0) {
       this.currentTurn++
     }
+  }
+
+  showStartScreenUi(engine: ex.Engine) {
+    const current = document.querySelector('start-screen-ui')
+    if (current) {
+      current.remove()
+    }
+
+    const startScreen = document.createElement('start-screen-ui') as HTMLElement & {
+    engine: ex.Engine
+  }
+
+    startScreen.engine = engine
+    document.body.appendChild(startScreen)
+  }
+
+  async returnToMainMenu(engine: ex.Engine) {
+    await engine.goToScene('menu-shell', {
+      destinationIn: new ex.FadeInOut({ duration: 500, direction: 'in' }),
+      sourceOut: new ex.FadeInOut({ duration: 1000, direction: 'out' })
+    })
+
+    this.showStartScreenUi(engine)
   }
 }

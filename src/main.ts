@@ -27,6 +27,9 @@ const game = new ex.Engine({
 AudioManager.init()
 
 function addMaps() {
+  const menuShell = new ex.Scene()
+  game.addScene('menu-shell', menuShell)
+  
   const level1M1Data: LevelData = {
     name: 'level1-map1',
     maxTurns: 100,

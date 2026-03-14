@@ -15,6 +15,7 @@ export class Cell extends ex.Actor {
   sprite!: ex.Sprite
   pathNode: PathNodeComponent
   unit: Unit | null = null
+  hasCursor = false
 
   /**
    * Individual cells on the board
@@ -76,8 +77,10 @@ export class Cell extends ex.Actor {
     this.decoration.graphics.hide()
 
     if (show) {
+      this.hasCursor = show
       this.decoration.graphics.use(type)
     } else {
+      this.hasCursor = false
       this.decoration.graphics.hide()
     }
   }
@@ -87,6 +90,7 @@ export class Cell extends ex.Actor {
       this.decoration.graphics.use('cursor')
     } else {
       this.decoration.graphics.hide()
+      this.hasCursor = false
     }
   }
 

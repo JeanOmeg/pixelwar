@@ -10,6 +10,7 @@ export class AudioMenu extends LitElement {
         left: 0;
         bottom: 0;
         margin: 16px;
+        z-index: 9999;
     }
     button {
         all: unset;

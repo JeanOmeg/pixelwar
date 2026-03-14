@@ -3,6 +3,7 @@ import { Board } from './board'
 import { Cell } from './cell'
 import { PathNodeComponent } from './path-finding/path-node-component'
 import { Player } from './player'
+import * as ex from 'excalibur'
 
 /**
  * Manages current unit selection
@@ -16,8 +17,9 @@ export class SelectionManager {
   currentPath: PathNodeComponent[] = []
   currentCursor: { x: number, y: number } = { x: 0, y: 0 }
 
-  constructor(private board: Board) {
+  constructor(private board: Board, private engine: ex.Engine) {
     this.board = board
+    this.engine = engine
   }
 
   reset() {
@@ -29,6 +31,12 @@ export class SelectionManager {
 
   showCursor(x: number, y: number) {
     const cell = this.board.getCell(x, y)
+    if (cell?.unit || cell?.hasCursor) {
+      this.engine.canvas.style.cursor = 'pointer'
+    } else {
+      this.engine.canvas.style.cursor = 'default'
+    }
+
     if (cell) {
       this.board.cells.forEach(c => c.toggleCursor(false))
       cell.toggleCursor(true)
