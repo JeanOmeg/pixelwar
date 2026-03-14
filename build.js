@@ -7,6 +7,7 @@ function run(cmd) {
 console.log('✅ Limpando arquivos')
 run('rm -rf ./parcel-cache')
 run('rm -rf ./docs')
+run('rm -rf ./dist')
 
 console.log('✅ Criando build')
 run('parcel build ./index.html --dist-dir ./docs --public-url ./')
