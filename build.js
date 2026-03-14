@@ -16,7 +16,7 @@ function removeDir(path) {
 
 function hasStagedChanges() {
   try {
-    execSync('git diff --cached --quiet')
+    execSync('git diff --cached --quiet', { stdio: 'ignore' })
     return false
   } catch {
     return true
