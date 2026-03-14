@@ -2,14 +2,9 @@
   "name": "pixel-war",
   "version": "1.0.0",
   "description": "",
-  "packageManager": "yarn@1.22.22",
-  "engines": {
-    "node": "20.19.x",
-    "yarn": "1.22.x"
-  },
   "scripts": {
     "dev": "parcel serve index.html",
-    "build:parcel": "parcel build ./index.html --dist-dir ./docs --public-url ./ --no-cache --no-scope-hoist",
+    "build:parcel": "parcel build ./index.html --dist-dir ./docs --public-url ./",
     "build": "node build.js",
     "tree": "node show-tree.js"
   },
