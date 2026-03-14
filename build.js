@@ -14,20 +14,29 @@ function removeDir(path) {
   }
 }
 
+function hasStagedChanges() {
+  try {
+    execSync('git diff --cached --quiet')
+    return false
+  } catch {
+    return true
+  }
+}
+
 console.log('🗑️ Limpando arquivos')
 removeDir('.parcel-cache')
 removeDir('docs')
 removeDir('dist')
 
 console.log('🤖 Criando build')
-run('yarn parcel build ./index.html --dist-dir ./docs --public-url ./ --no-cache --no-scope-hoist')
+run('C:\\Users\\Jean\\Documents\\workspace\\pixelwar\\node_modules\\.bin\\parcel build ./index.html --dist-dir ./docs --public-url ./ --no-cache --no-scope-hoist')
 
 console.log('➕ Adicionando os arquivos')
 run('git add .')
 
-try {
+if (hasStagedChanges()) {
   console.log('✅ Commit')
   run('git commit -m "- Build deploy"')
-} catch (error) {
-  console.log('❌ Nada para commitar ou commit falhou')
+} else {
+  console.log('ℹ️ Nada para commitar')
 }
