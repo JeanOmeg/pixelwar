@@ -1,16 +1,26 @@
 const { execSync } = require('child_process')
+const fs = require('fs')
 
 function run(cmd) {
   execSync(cmd, { stdio: 'inherit' })
 }
 
+function removeDir(path) {
+  if (fs.existsSync(path)) {
+    fs.rmSync(path, { recursive: true, force: true })
+    console.log(`🗑️ Removido: ${path}`)
+  } else {
+    console.log(`ℹ️ Não existe: ${path}`)
+  }
+}
+
 console.log('🗑️ Limpando arquivos')
-run('rm -rf ./parcel-cache')
-run('rm -rf ./docs')
-run('rm -rf ./dist')
+removeDir('.parcel-cache')
+removeDir('docs')
+removeDir('dist')
 
 console.log('🤖 Criando build')
-run('parcel build ./index.html --dist-dir ./docs --public-url ./')
+run('yarn parcel build ./index.html --dist-dir ./docs --public-url ./ --no-cache --no-scope-hoist')
 
 console.log('➕ Adicionando os arquivos')
 run('git add .')
