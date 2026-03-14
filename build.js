@@ -15,5 +15,9 @@ run('parcel build ./index.html --dist-dir ./docs --public-url ./')
 console.log('✅ Adicionando os arquivos')
 run('git add .')
 
-console.log('✅ Commit')
-run('git commit -m "- Build deploy"')
+try {
+  console.log('✅ Commit')
+  run('git commit -m "- Build deploy"')
+} catch (error) {
+  console.log('ℹ️ Nada para commitar ou commit falhou')
+}
