@@ -4,6 +4,10 @@ function run(cmd) {
   execSync(cmd, { stdio: 'inherit' })
 }
 
+console.log('✅ Limpando arquivos')
+run('rm -rf ./parcel-cache')
+run('rm -rf ./docs')
+
 console.log('✅ Criando build')
 run('parcel build ./index.html --dist-dir ./docs --public-url ./')
 
