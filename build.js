@@ -29,7 +29,7 @@ removeDir('docs')
 removeDir('dist')
 
 console.log('🤖 Criando build')
-run('C:\\Users\\Jean\\Documents\\workspace\\pixelwar\\node_modules\\.bin\\parcel build ./index.html --dist-dir ./docs --public-url ./ --no-cache --no-scope-hoist')
+run('yarn build:parcel')
 
 console.log('➕ Adicionando os arquivos')
 run('git add .')
