@@ -1,6 +1,6 @@
 import * as ex from 'excalibur'
 import { ArcherAAttack, ArcherAAttackDown, ArcherAAttackUp, ArcherADeath, ArcherADeathDown, ArcherADeathUp, ArcherAIdle, ArcherAIdleDown, ArcherAIdleUp, ArcherAMove, ArcherAMoveDown, ArcherAMoveUp, ArcherBAttack, ArcherBAttackDown, ArcherBAttackUp, ArcherBDeath, ArcherBDeathDown, ArcherBDeathUp, ArcherBIdle, ArcherBIdleDown, ArcherBIdleUp, ArcherBMove, ArcherBMoveDown, ArcherBMoveUp, BarbarianAAttack, BarbarianAAttackDown, BarbarianAAttackUp, BarbarianADeath, BarbarianADeathDown, BarbarianADeathUp, BarbarianAIdle, BarbarianAIdleDown, BarbarianAIdleUp, BarbarianAMove, BarbarianAMoveDown, BarbarianAMoveUp, BarbarianBAttack, BarbarianBAttackDown, BarbarianBAttackUp, BarbarianBDeath, BarbarianBDeathDown, BarbarianBDeathUp, BarbarianBIdle, BarbarianBIdleDown, BarbarianBIdleUp, BarbarianBMove, BarbarianBMoveDown, BarbarianBMoveUp, ClericAAttack, ClericAAttackDown, ClericAAttackUp, ClericADeath, ClericADeathDown, ClericADeathUp, ClericAIdle, ClericAIdleDown, ClericAIdleUp, ClericAMove, ClericAMoveDown, ClericAMoveUp, ClericBAttack, ClericBAttackDown, ClericBAttackUp, ClericBDeath, ClericBDeathDown, ClericBDeathUp, ClericBIdle, ClericBIdleDown, ClericBIdleUp, ClericBMove, ClericBMoveDown, ClericBMoveUp, FighterAAttack, FighterAAttackDown, FighterAAttackUp, FighterADeath, FighterADeathDown, FighterADeathUp, FighterAIdle, FighterAIdleDown, FighterAIdleUp, FighterAMove, FighterAMoveDown, FighterAMoveUp, FighterBAttack, FighterBAttackDown, FighterBAttackUp, FighterBDeath, FighterBDeathDown, FighterBDeathUp, FighterBIdle, FighterBIdleDown, FighterBIdleUp, FighterBMove, FighterBMoveDown, FighterBMoveUp, MageAAttack, MageAAttackDown, MageAAttackUp, MageADeath, MageADeathDown, MageADeathUp, MageAIdle, MageAIdleDown, MageAIdleUp, MageAMove, MageAMoveDown, MageAMoveUp, MageBAttack, MageBAttackDown, MageBAttackUp, MageBDeath, MageBDeathDown, MageBDeathUp, MageBIdle, MageBIdleDown, MageBIdleUp, MageBMove, MageBMoveDown, MageBMoveUp, SpearmanAAttack, SpearmanAAttackDown, SpearmanAAttackUp, SpearmanADeath, SpearmanADeathDown, SpearmanADeathUp, SpearmanAIdle, SpearmanAIdleDown, SpearmanAIdleUp, SpearmanAMove, SpearmanAMoveDown, SpearmanAMoveUp, SpearmanBAttack, SpearmanBAttackDown, SpearmanBAttackUp, SpearmanBDeath, SpearmanBDeathDown, SpearmanBDeathUp, SpearmanBIdle, SpearmanBIdleDown, SpearmanBIdleUp, SpearmanBMove, SpearmanBMoveDown, SpearmanBMoveUp, ThiefAAttack, ThiefAAttackDown, ThiefAAttackUp, ThiefADeath, ThiefADeathDown, ThiefADeathUp, ThiefAIdle, ThiefAIdleDown, ThiefAIdleUp, ThiefAMove, ThiefAMoveDown, ThiefAMoveUp, ThiefBAttack, ThiefBAttackDown, ThiefBAttackUp, ThiefBDeath, ThiefBDeathDown, ThiefBDeathUp, ThiefBIdle, ThiefBIdleDown, ThiefBIdleUp, ThiefBMove, ThiefBMoveDown, ThiefBMoveUp, WarriorAAttack, WarriorAAttackDown, WarriorAAttackUp, WarriorADeath, WarriorADeathDown, WarriorADeathUp, WarriorAIdle, WarriorAIdleDown, WarriorAIdleUp, WarriorAMove, WarriorAMoveDown, WarriorAMoveUp, WarriorBAttack, WarriorBAttackDown, WarriorBAttackUp, WarriorBDeath, WarriorBDeathDown, WarriorBDeathUp, WarriorBIdle, WarriorBIdleDown, WarriorBIdleUp, WarriorBMove, WarriorBMoveDown, WarriorBMoveUp } from './resources'
-export const SCALE = ex.vec(1.5, 1.5)
+export const SCALE = ex.vec(2, 2)
 export const ENEMY_SPEED = 200
 
 export type UnitType = 'ArcherA' | 'ArcherB' | 'BarbarianA' | 'BarbarianB' | 'ClericA' | 'ClericB' | 'FighterA' | 'FighterB' | 'MageA' | 'MageB' | 'SpearmanA' | 'SpearmanB' | 'WarriorA' | 'WarriorB' | 'ThiefA' | 'ThiefB'
@@ -97,7 +97,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   ArcherA: {
     description: 'Lorem ipsum lorem havox crux ipsum',
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: ArcherAIdle,
       move: ArcherAMove,
       attack: ArcherAAttack,
@@ -131,7 +131,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   ArcherB: {
     description: 'Lorem ipsum lorem havox crux ipsum',
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: ArcherBIdle,
       move: ArcherBMove,
       attack: ArcherBAttack,
@@ -165,7 +165,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Barbarians
   BarbarianA: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: BarbarianAIdle,
       move: BarbarianAMove,
       attack: BarbarianAAttack,
@@ -192,7 +192,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   BarbarianB: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: BarbarianBIdle,
       move: BarbarianBMove,
       attack: BarbarianBAttack,
@@ -221,7 +221,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Clerics
   ClericA: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: ClericAIdle,
       move: ClericAMove,
       attack: ClericAAttack,
@@ -248,7 +248,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   ClericB: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: ClericBIdle,
       move: ClericBMove,
       attack: ClericBAttack,
@@ -277,7 +277,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Fighters
   FighterA: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: FighterAIdle,
       move: FighterAMove,
       attack: FighterAAttack,
@@ -304,7 +304,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   FighterB: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: FighterBIdle,
       move: FighterBMove,
       attack: FighterBAttack,
@@ -333,7 +333,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Mages
   MageA: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: MageAIdle,
       move: MageAMove,
       attack: MageAAttack,
@@ -360,7 +360,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   MageB: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: MageBIdle,
       move: MageBMove,
       attack: MageBAttack,
@@ -389,7 +389,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Spearmans
   SpearmanA: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: SpearmanAIdle,
       move: SpearmanAMove,
       attack: SpearmanAAttack,
@@ -416,7 +416,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   SpearmanB: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: SpearmanBIdle,
       move: SpearmanBMove,
       attack: SpearmanBAttack,
@@ -445,7 +445,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Warriors
   WarriorA: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: WarriorAIdle,
       move: WarriorAMove,
       attack: WarriorAAttack,
@@ -472,7 +472,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   WarriorB: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: WarriorBIdle,
       move: WarriorBMove,
       attack: WarriorBAttack,
@@ -501,7 +501,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   // Thiefs
   ThiefA: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: ThiefAIdle,
       move: ThiefAMove,
       attack: ThiefAAttack,
@@ -528,7 +528,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
   },
   ThiefB: {
     graphics: {
-      offset: ex.vec(14, 14 * SCALE.y),
+      offset: ex.vec(30, 20 * SCALE.y),
       idle: ThiefBIdle,
       move: ThiefBMove,
       attack: ThiefBAttack,

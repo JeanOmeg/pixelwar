@@ -38,13 +38,13 @@ export class Cell extends ex.Actor {
     this.pathNode = new PathNodeComponent(this.pos)
     this.addComponent(this.pathNode)
 
-    RangeHighlightAnimation.scale = ex.vec(2, 2)
+    RangeHighlightAnimation.scale = ex.vec(2.7, 2.7)
 
-    PathHighlightAnimation.scale = ex.vec(2, 2)
+    PathHighlightAnimation.scale = ex.vec(2.7, 2.7)
 
-    AttackHighlightAnimation.scale = ex.vec(2, 2)
+    AttackHighlightAnimation.scale = ex.vec(2.7, 2.7)
 
-    CursorHighlightAnimation.scale = ex.vec(2, 2)
+    CursorHighlightAnimation.scale = ex.vec(2.7, 2.7)
 
     this.decoration.graphics.add('range', RangeHighlightAnimation)
     this.decoration.graphics.add('path', PathHighlightAnimation)

@@ -37,7 +37,6 @@ import Map1TmxPath from '../res/tiledMap/map_1.tmx'
 import Map2TmxPath from '../res/tiledMap/map_2.tmx'
 import TilesetTsxPath from '../res/tiledMap/NewFullTile.tsx'
 
-
 export const Resources = {
   //Maps
   Map1: new ex.ImageSource(Map1Path),
