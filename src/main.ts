@@ -14,6 +14,7 @@ const game = new ex.Engine({
   antialiasing: false,
   pixelRatio: 1,
   suppressConsoleBootMessage: true,
+  suppressHiDPIScaling: true,
   backgroundColor: ex.Color.Black
 })
 
