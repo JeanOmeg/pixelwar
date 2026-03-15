@@ -14,14 +14,7 @@ const game = new ex.Engine({
   antialiasing: false,
   pixelRatio: 1,
   suppressConsoleBootMessage: true,
-  backgroundColor: ex.Color.Black,
-  configurePerformanceCanvas2DFallback: {
-    allow: true,
-    threshold: {
-      numberOfFrames: 30,
-      fps: 30
-    }
-  }
+  backgroundColor: ex.Color.Black
 })
 
 AudioManager.init()
