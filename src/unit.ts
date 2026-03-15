@@ -234,45 +234,42 @@ export class Unit extends ex.Actor {
 
     const atkAnim = new ex.ActionSequence(this, (ctx) => {
       this.setAnim(this.selectAnimationAttack())
-      ctx.moveTo({ pos: this.pos, duration: 500, easing: ex.EasingFunctions.EaseInOutCubic })
+      ctx.moveTo({
+        pos: this.pos,
+        duration: 500,
+        easing: ex.EasingFunctions.EaseInOutCubic
+      })
     })
 
-    const parallel = new ex.ParallelActions([
-      atkAnim
-    ])
-
-    const fD20 = Math.floor(Math.random() * 20) + 1
-    const lD20 = Math.floor(Math.random() * 20) + 1
-    const fD6 = Math.floor(Math.random() * 6) + 1
-    const lD6 = Math.floor(Math.random() * 6) + 1
-
-    const d20 = fD20 > lD20 ? fD20 : lD20
-    const d6 = fD6 > lD6 ? fD6 : lD6
+    const d20 = this.rollWithAdvantage(20)
+    const d6 = this.rollWithAdvantage(6)
 
     const atk = this.unitConfig.attack + d20
     const def = other.unitConfig.defense + 10
-    let damage
 
-    if (d20 === 20) {
+    const isCritical = d20 === 20
+    const isBackAttack = this.miniDirection === other.miniDirection
+    const didHit = atk > def || isBackAttack
+
+    let damage: number
+
+    if (isCritical) {
       damage = (12 + this.unitConfig.attack) - other.unitConfig.defense
-    } else if (this.miniDirection == other.miniDirection) {
+    } else if (isBackAttack) {
       damage = (d6 + (this.unitConfig.attack * 2)) - other.unitConfig.defense
-    }else {
+    } else {
       damage = (d6 + this.unitConfig.attack) - other.unitConfig.defense
     }
 
-    if (atk > def || this.miniDirection == other.miniDirection) {
-      damage = damage > 0 ? damage : 1
-    } else {
-      damage = 1
-    }
+    damage = didHit ? Math.max(damage, 1) : 1
 
     Resources.HitSound.play()
 
-    await this.actions.runAction(parallel).toPromise()
+    await this.actions.runAction(atkAnim).toPromise()
     this.setAnim(this.selectAnimationIdle())
 
     other.health -= damage
+
     await ex.Util.delay(350)
 
     await this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, d20)
@@ -282,5 +279,11 @@ export class Unit extends ex.Actor {
     }
 
     this.attacked = true
+  }
+
+  private rollWithAdvantage(sides: number): number {
+    const first = Math.floor(Math.random() * sides) + 1
+    const last = Math.floor(Math.random() * sides) + 1
+    return first > last ? first : last
   }
 }
