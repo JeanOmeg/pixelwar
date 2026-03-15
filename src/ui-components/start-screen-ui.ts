@@ -6,7 +6,6 @@ import notjamslab14Url from '../../res/font/NotJamSlab14.ttf'
 
 type TStartMode = 'p1vscpu' | 'p1vsp2' | 'cpuvscpu'
 type TStep = 'mode' | 'map' | null
-type TScreen = | 'portrait' | 'portrait-primary' | 'portrait-secondary' | 'landscape' | 'landscape-primary' | 'landscape-secondary'
 
 @customElement('start-screen-ui')
 export class StartScreenUi extends LitElement {
@@ -169,7 +168,6 @@ export class StartScreenUi extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback()
-    this.isMobile()
 
     Resources.TitleMusic.loop = true
     Resources.TitleMusic.play()
@@ -326,44 +324,5 @@ export class StartScreenUi extends LitElement {
 
     this.showFade = false
     this.isTransitioning = false
-  }
-
-  private isMobile() {
-    const userAgent = navigator.userAgent
-    const mobileRegex = /Android|webOS|iPhone/i
-
-    if (mobileRegex.test(userAgent)) {
-      this.setLandscapeAndFullscreen()
-    }
-  }
-
-  private setLandscapeAndFullscreen() {
-    const docElement = document.documentElement as HTMLElement & {
-      mozRequestFullScreen?: () => Promise<void>
-      webkitRequestFullscreen?: () => Promise<void>
-      msRequestFullscreen?: () => Promise<void>
-    }
-
-    if (docElement.requestFullscreen) {
-      void docElement.requestFullscreen()
-    } else if (docElement.mozRequestFullScreen) {
-      void docElement.mozRequestFullScreen()
-    } else if (docElement.webkitRequestFullscreen) {
-      void docElement.webkitRequestFullscreen()
-    } else if (docElement.msRequestFullscreen) {
-      void docElement.msRequestFullscreen()
-    }
-
-    const screenOrientation = screen.orientation as ScreenOrientation & {
-      // eslint-disable-next-line no-unused-vars
-      lock?: (orientation: TScreen) => Promise<void>
-    }
-
-    if (screenOrientation?.lock) {
-      void screenOrientation.lock('landscape').catch(error => {
-        // eslint-disable-next-line no-console
-        console.error('Erro ao tentar definir a orientação para paisagem:', error)
-      })
-    }
   }
 }

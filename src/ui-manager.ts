@@ -30,15 +30,8 @@ export class UIManager {
     })
   }
 
-  isMobile() {
-    const userAgent = navigator.userAgent
-    const mobileRegex = /Android|webOS|iPhone/i
-    return mobileRegex.test(userAgent)
-  }
-
   worldDistanceToPage(distance: number) {
-    const mobile = this.isMobile()
-    const scaleX = mobile ? SCALE.x + 2 : SCALE.x + 1.5
+    const scaleX = SCALE.x + 1.5
     const pageOrigin = this.engine.screen.worldToPageCoordinates(ex.Vector.Zero)
     const pageDistance = this.engine.screen.worldToPageCoordinates(ex.vec(distance * scaleX, 0)).sub(pageOrigin)
     return pageDistance.x
