@@ -184,7 +184,7 @@ export class StartScreenUi extends LitElement {
     return html`
       <div class="wrapper">
         <div class="panel">
-          <div class="title">Pixel War</div>
+          <div class="title">PixelWar</div>
 
           ${this.step === 'mode'
     ? this.renderModeButtons()

@@ -1,7 +1,7 @@
 import * as ex from 'excalibur'
 import { Board } from './board'
 import { Resources } from './resources'
-import { SCALE, UNIT_CONFIG, UnitConfig, UnitType } from './config'
+import { SCALE, SCALE_UNIT, UNIT_CONFIG, UnitConfig, UnitType } from './config'
 import { Cell } from './cell'
 import { PathNodeComponent } from './path-finding/path-node-component'
 import { Player } from './player'
@@ -30,7 +30,7 @@ export class Unit extends ex.Actor {
     this.health = this.unitConfig.health
 
     this.anim = this.unitConfig.graphics.idle.clone()
-    this.anim.scale = SCALE
+    this.anim.scale = SCALE_UNIT
     this.graphics.use(this.anim)
     this.player = player
 
@@ -225,7 +225,7 @@ export class Unit extends ex.Actor {
 
   setAnim(animation: ex.Animation) {
     this.anim = animation
-    this.anim.scale = SCALE
+    this.anim.scale = SCALE_UNIT
     this.graphics.use(this.anim)
   }
 

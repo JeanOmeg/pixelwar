@@ -1,7 +1,7 @@
 import * as ex from 'excalibur'
 import { Board } from './board'
 import { CursorAnimation, HighlightAnimation, RedHighlightAnimation } from './resources'
-import { SCALE } from './config'
+import { SCALE, SCALE_CURSOR } from './config'
 import { PathNodeComponent } from './path-finding/path-node-component'
 import { Unit } from './unit'
 
@@ -39,13 +39,13 @@ export class Cell extends ex.Actor {
     this.pathNode = new PathNodeComponent(this.pos)
     this.addComponent(this.pathNode)
 
-    RangeHighlightAnimation.scale = ex.vec(2.7, 2.7)
+    RangeHighlightAnimation.scale = SCALE_CURSOR
 
-    PathHighlightAnimation.scale = ex.vec(2.7, 2.7)
+    PathHighlightAnimation.scale = SCALE_CURSOR
 
-    AttackHighlightAnimation.scale = ex.vec(2.7, 2.7)
+    AttackHighlightAnimation.scale = SCALE_CURSOR
 
-    CursorHighlightAnimation.scale = ex.vec(2.7, 2.7)
+    CursorHighlightAnimation.scale = SCALE_CURSOR
 
     this.decoration.graphics.add('range', RangeHighlightAnimation)
     this.decoration.graphics.add('path', PathHighlightAnimation)
