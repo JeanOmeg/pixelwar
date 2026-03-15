@@ -40,6 +40,7 @@ export class LevelBase extends ex.Scene {
 
   override onInitialize(engine: ex.Engine): void {
     this.engine = engine
+    document.querySelector('start-screen-ui')?.remove()
   }
   
   async resetAndLoad() {
