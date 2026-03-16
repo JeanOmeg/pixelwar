@@ -184,3 +184,13 @@ unit-menu .tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
 }
+
+.skills-list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(2px * var(--pixel-conversion));
+}
+
+.skill-button {
+  margin-left: calc(8px * var(--pixel-conversion));
+}

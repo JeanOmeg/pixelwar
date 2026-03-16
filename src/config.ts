@@ -35,66 +35,11 @@ export interface UnitConfig {
   defense: number
   movement: number
   range: number
-  skill: {
-    longShot?: {
-      use: boolean
-      maxCount: number
-      count: number
-      description: string
-    }
-    berserker?: {
-      use: boolean
-      count: number
-      maxCount: number
-      attack: number
-      damage: number
-      description: string
-    }
-    heal?: {
-      use: boolean
-      count: number
-      maxCount: number
-      description: string
-    }
-    specialAttack?: {
-      use: boolean
-      count: number
-      maxCount: number
-      attack: number
-      damage: number
-      description: string
-    }
-    fireBall?: {
-      use: boolean
-      count: number
-      maxCount: number
-      attack: number
-      damage: number
-      description: string
-    }
-    multipleAttack?: {
-      use: boolean
-      count: number
-      maxCount: number
-      attack: number
-      damage: number
-      description: string
-    }
-    criticalAttack?: {
-      use: boolean
-      count: number
-      maxCount: number
-      attack: number
-      damage: number
-      description: string
-    }
-    run?: {
-      use: boolean
-      count: number
-      maxCount: number
-      description: string
-    }
-  }
+  skill: [{
+    name: string
+    description: string
+    event: string
+  }] | null
 }
 
 export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
@@ -123,14 +68,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     attack: 2,
     defense: 2,
     range: 6,
-    skill: {
-      longShot: {
-        use: false,
-        maxCount: 2,
-        count: 2,
-        description: 'string'
-      }
-    }
+    skill: [{
+      name: 'Run',
+      description: 'Move up to twice the unit movement',
+      event: 'skill-run'
+    }]
   },
 
   ArcherB: {
@@ -157,14 +99,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 6,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: {
-      longShot: {
-        use: false,
-        maxCount: 2,
-        count: 2,
-        description: 'string'
-      },
-    }
+    skill: null
   },
 
   // Barbarians
@@ -191,9 +126,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: {
-      berserker: undefined,
-    },
+    skill: null
   },
   BarbarianB: {
     graphics: {
@@ -218,9 +151,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: {
-      berserker: undefined,
-    },
+    skill: null
   },
 
   // Clerics
@@ -247,9 +178,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: {
-      heal: undefined,
-    },
+    skill: null
   },
   ClericB: {
     graphics: {
@@ -274,9 +203,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: {
-      heal: undefined,
-    },
+    skill: null
   },
 
   // Fighters
@@ -303,9 +230,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: {
-      specialAttack: undefined,
-    },
+    skill: null
   },
   FighterB: {
     graphics: {
@@ -330,9 +255,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: {
-      specialAttack: undefined,
-    },
+    skill: null
   },
 
   // Mages
@@ -359,9 +282,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 5,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: {
-      fireBall: undefined,
-    },
+    skill: null
   },
   MageB: {
     graphics: {
@@ -386,9 +307,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 5,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: {
-      fireBall: undefined,
-    },
+    skill: null
   },
 
   // Spearmans
@@ -415,9 +334,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 2,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: {
-      multipleAttack: undefined
-    },
+    skill: null
   },
   SpearmanB: {
     graphics: {
@@ -442,9 +359,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 2,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: {
-      multipleAttack: undefined
-    },
+    skill: null
   },
 
   // Warriors
@@ -471,9 +386,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: {
-      criticalAttack: undefined
-    },
+    skill: null
   },
   WarriorB: {
     graphics: {
@@ -498,9 +411,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: {
-      criticalAttack: undefined
-    },
+    skill: null
   },
 
   // Thiefs
@@ -527,9 +438,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: {
-      run: undefined,
-    },
+    skill: null
   },
   ThiefB: {
     graphics: {
@@ -554,9 +463,7 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: {
-      run: undefined,
-    },
+    skill: null
   }
 } as const
 

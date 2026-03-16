@@ -5,6 +5,8 @@ import { classMap } from 'lit/directives/class-map.js'
 import type { UnitMenu } from './unit-menu'
 
 export function renderUnitMenu(self: UnitMenu) {
+  const unitSkills = self.unit?.unitConfig.skill ?? []
+  const hasSkills = unitSkills.length > 0
   const dismissOverlayHtml = self._show
     ? html`<div class="overlay" @click=${self.hide}></div>`
     : nothing
@@ -80,6 +82,38 @@ export function renderUnitMenu(self: UnitMenu) {
             <span class="tooltiptext" style="${self.tooltipDirection()}">Attack the selected enemy unit</span>
           </div>
         </button>
+
+        <button
+          ?disabled=${!hasSkills}
+          style=${styleMap({
+            color: hasSkills ? 'black' : '#D3D3D3',
+            cursor: hasSkills ? 'pointer' : 'default',
+          })}
+          @click=${self.toggleSkills}
+        >
+          <div>Skills</div>
+          <div class="tooltip">{?}
+            <span class="tooltiptext" style="${self.tooltipDirection()}">Show unit skills</span>
+          </div>
+        </button>
+
+        ${self.showSkillsList && hasSkills ? html`
+          <div class="skills-list">
+            ${self.unit?.unitConfig?.skill?.map(skill => html`
+              <button
+                class="skill-button"
+                @click=${self.sendEvent(skill.event)}
+              >
+                <div>${skill.name}</div>
+                <div class="tooltip">{?}
+                  <span class="tooltiptext" style="${self.tooltipDirection()}">
+                    ${skill.description}
+                  </span>
+                </div>
+              </button>
+            `)}
+          </div>
+        ` : nothing}
 
         <div style=${styleMap({ backgroundColor: 'black', height: 'calc(1px * var(--pixel-conversion))' })}></div>
 

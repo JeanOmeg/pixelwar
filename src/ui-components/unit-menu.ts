@@ -33,6 +33,9 @@ export class UnitMenu extends LitElement {
   @property({ type: Number })
     pixelConversion: number = 1
 
+  @property({ type: Boolean })
+    showSkillsList: boolean = false
+
   @state()
     _show: boolean = false
 
@@ -64,18 +67,26 @@ export class UnitMenu extends LitElement {
   show() {
     this._show = true
     this._debounce = Date.now()
+    this.showSkillsList = false
   }
 
   hide() {
     const now = Date.now()
     if (now - this._debounce > 250) {
       this.menuHtml?.classList.add('hide')
+      this.showSkillsList = false
       this.clearEvents()
     }
   }
 
   tooltipDirection(min = 0) {
     return `${this.leftTooltip > 0 ? 'left:' : 'right:'} ${this.leftTooltip > 0 ? this.leftTooltip : this.rightTooltip - min}px; background-color: #${this.unit?.unitConfig.primary_color};`
+  }
+
+  toggleSkills = () => {
+    if (!this.unit?.unitConfig.skill?.length) return
+    this.showSkillsList = !this.showSkillsList
+    this.requestUpdate()
   }
 
   override render() {
