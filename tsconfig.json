@@ -1,11 +1,11 @@
 {
   "exclude": [
-    "res/**/*",
+    "src/assets/**/*",
     "node_modules/**/*",
     "dist/**/*",
     "docs/**/*",
     ".parcel-cache/**/*",
-    "res"
+    "src/assets"
   ],
   "compilerOptions": {
     "plugins": [

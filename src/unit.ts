@@ -55,10 +55,12 @@ export class Unit extends ex.Actor {
 
     if (this.health <= 0) {
       this.cell?.removeUnit(this)
+
       const deathAnim = new ex.ActionSequence(this, (ctx) => {
         this.setAnim(this.selectAnimationDeath())
         ctx.moveTo({ pos: this.pos, duration: 500, easing: ex.EasingFunctions.EaseInOutCubic })
       })
+      
       await this.actions.runAction(deathAnim).toPromise()
       Resources.ExplosionSound.play()
       ex.Util.delay(600)

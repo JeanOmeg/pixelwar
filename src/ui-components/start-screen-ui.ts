@@ -2,7 +2,7 @@ import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import * as ex from 'excalibur'
 import { Resources } from '../resources'
-import notjamslab14Url from '../../res/font/NotJamSlab14.ttf'
+import notjamslab14Url from '../assets/font/NotJamSlab14.ttf'
 
 type TStartMode = 'p1vscpu' | 'p1vsp2' | 'cpuvscpu'
 type TStep = 'mode' | 'map' | null
