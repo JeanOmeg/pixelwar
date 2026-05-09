@@ -75,13 +75,8 @@ export class Cell extends ex.Actor {
 
   toggleHighlight(show: boolean, type: 'range' | 'path' | 'attack') {
     this.decoration.graphics.hide()
-
     if (show) {
-      this.hasCursor = show
       this.decoration.graphics.use(type)
-    } else {
-      this.hasCursor = false
-      this.decoration.graphics.hide()
     }
   }
 

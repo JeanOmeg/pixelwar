@@ -14,11 +14,28 @@ export class Unit extends ex.Actor {
   moved = false
   attacked = false
   passed = false
+  isRunning = false
+  forcesCritical = false
+  usedSkill = false
   anim: ex.Animation
   miniDirection: string = 'right'
   oldPosition!: ex.Vector | null
   health: number
+  mp: number = 0
   damageManager!: DamageManager
+
+  get effectiveMovement(): number {
+    return this.isRunning ? this.unitConfig.movement * 2 : this.unitConfig.movement
+  }
+
+  canUseSkill(event: string): boolean {
+    if (this.usedSkill) return false
+    switch (event) {
+    case 'skill-run': return !this.moved && !this.attacked && this.mp >= 2
+    case 'skill-special-attack': return !this.attacked && this.mp >= 4
+    default: return false
+    }
+  }
   constructor(x: number, y: number, unitType: UnitType, board: Board, public player: Player) {
     super({
       name: unitType,
@@ -28,6 +45,7 @@ export class Unit extends ex.Actor {
     this.unitConfig = { ...UNIT_CONFIG[unitType] }
 
     this.health = this.unitConfig.health
+    this.mp = this.unitConfig.mp
 
     this.anim = this.unitConfig.graphics.idle.clone()
     this.anim.scale = SCALE_UNIT
@@ -177,6 +195,9 @@ export class Unit extends ex.Actor {
     this.moved = false
     this.attacked = false
     this.passed = false
+    this.isRunning = false
+    this.forcesCritical = false
+    this.usedSkill = false
   }
 
   canAttack() {
@@ -249,9 +270,9 @@ export class Unit extends ex.Actor {
     const atk = this.unitConfig.attack + d20
     const def = other.unitConfig.defense + 10
 
-    const isCritical = d20 === 20
+    const isCritical = d20 === 20 || this.forcesCritical
     const isBackAttack = this.miniDirection === other.miniDirection
-    const didHit = atk > def || isBackAttack
+    const didHit = atk > def || isBackAttack || isCritical
 
     let damage: number
 
@@ -274,13 +295,14 @@ export class Unit extends ex.Actor {
 
     await ex.Util.delay(350)
 
-    await this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, d20)
+    await this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, isCritical ? 20 : d20)
 
     if (other.health > 0) {
       other.actions.blink(100, 100, 4)
     }
 
     this.attacked = true
+    this.forcesCritical = false
   }
 
   private rollWithAdvantage(sides: number): number {

@@ -85,6 +85,8 @@ export class LevelBase extends ex.Scene {
 
     const mode = localStorage.getItem('start_screen')
 
+    Player.resetMasks()
+
     if (mode == 'p1vscpu') {
       this.players = [
         new HumanPlayer(levelData.players[0], this.engine, this.selectionManager, this.uiManager, board),
@@ -136,7 +138,6 @@ export class LevelBase extends ex.Scene {
                 unit.graphics.flipHorizontal = true
               }
               this.add(unit)
-              cell.addUnit(unit)
             }
           }
         }

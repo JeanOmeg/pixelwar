@@ -45,6 +45,10 @@ export class PathFinder {
       const y = this.getXOrYByNameCell(name, 'y')
 
       accum.push(cell)
+
+      const isStartCell = x === startX && y === startY
+      if (!isStartCell && cell.walkableMask !== -1) return
+
       cell.connections.filter(node => node.isAttackable && !!(node.walkableMask & mask) && (startY == y || startX == x)).forEach(cell => {
         newRange = cell.isFast ? 1 : 2
         if (!cell.isFast && unitName !== 'Archer' && unitName !== 'Mage' && unitName !== 'Spearman') {
@@ -100,14 +104,17 @@ export class PathFinder {
     return result
   }
 
-  private _getRangeHelper(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number): void {
+  private _getRangeHelper(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number, bestRange = new Map<PathNodeComponent, number>()): void {
     if (range < 0) return
-    const unitName = this.name_unit
+    const prev = bestRange.get(cell)
+    if (prev !== undefined && prev >= range) return
+    bestRange.set(cell, range)
 
+    const unitName = this.name_unit
     accum.push(cell)
     cell.connections.filter(node => node.isWalkable && !!(node.walkableMask & mask)).forEach(connection => {
       const newRange = connection.isFast ? 1 : unitName == 'Thief' && !connection.isDoor ? 1 : 2
-      this._getRangeHelper(connection, accum, mask, range - newRange)
+      this._getRangeHelper(connection, accum, mask, range - newRange, bestRange)
     })
   }
 

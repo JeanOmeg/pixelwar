@@ -91,8 +91,19 @@ export class HumanPlayer extends Player {
       this.active = false
       Resources.TargetSelectSound.play()
       await this.selectionManager.selectDestinationAndMove(unit, destination)
+      if (unit.isRunning) {
+        unit.isRunning = false
+        if (!unit.moved) {
+          unit.mp += 2
+          unit.usedSkill = false
+        }
+      }
       this.humanMove.resolve()
     } else {
+      if (unit.isRunning) {
+        unit.isRunning = false
+        unit.mp += 2
+      }
       this.selectionManager.reset()
     }
   }
@@ -101,8 +112,18 @@ export class HumanPlayer extends Player {
     if (destination && attacker.canAttack() && this.hasNonPlayerUnit(destination)) {
       this.active = false
       await this.selectionManager.selectDestinationAndAttack(attacker, destination)
+      if (attacker.forcesCritical) {
+        attacker.forcesCritical = false
+        attacker.mp += 4
+        attacker.usedSkill = false
+      }
       this.humanMove.resolve()
     } else {
+      if (attacker.forcesCritical) {
+        attacker.forcesCritical = false
+        attacker.mp += 4
+        attacker.usedSkill = false
+      }
       this.selectionManager.reset()
     }
 
@@ -158,6 +179,20 @@ export class HumanPlayer extends Player {
         attack: () => {
           this.selectionManager.selectUnit(cell.unit!, 'attack')
         },
+        run: () => {
+          const unit = cell.unit!
+          unit.mp -= 2
+          unit.isRunning = true
+          unit.usedSkill = true
+          this.selectionManager.selectUnit(unit, 'move')
+        },
+        specialAttack: () => {
+          const unit = cell.unit!
+          unit.mp -= 4
+          unit.forcesCritical = true
+          unit.usedSkill = true
+          this.selectionManager.selectUnit(unit, 'attack')
+        },
         pass: async () => {
           cell.unit?.setAnim(cell.unit?.selectAnimationIdle())
           await cell.unit?.pass()
@@ -168,7 +203,7 @@ export class HumanPlayer extends Player {
           let  units = this.board.getUnits()
           units = units.filter(u => u.player === this)
           units.forEach(unit => unit.setAnim(unit.selectAnimationIdle()))
-          units.forEach(async unit => await unit.pass())
+          for (const unit of units) await unit.pass()
           this.selectionManager.reset()
           this.humanMove.resolve()
         }

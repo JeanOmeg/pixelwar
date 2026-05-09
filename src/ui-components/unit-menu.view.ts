@@ -25,8 +25,9 @@ export function renderUnitMenu(self: UnitMenu) {
         <div class="sheet" style="background-color: #${self.unit?.unitConfig.secondary_color}">
           <div class="tooltip">
             <span class="memory--heart"></span>${self.unit?.health}
+            <span class="mdi--water"></span>${self.unit?.mp}
             <span class="tooltiptext" style="${self.tooltipDirection(62 * self.pixelConversion)}">
-              Health Points are used to know how much damage the unit can take before being eliminated
+              HP / Mana Points
             </span>
           </div>
           <div class="tooltip">
@@ -99,19 +100,23 @@ export function renderUnitMenu(self: UnitMenu) {
 
         ${self.showSkillsList && hasSkills ? html`
           <div class="skills-list">
-            ${self.unit?.unitConfig?.skill?.map(skill => html`
+            ${self.unit?.unitConfig?.skill?.map(skill => {
+              const canUse = self.unit?.canUseSkill(skill.event) ?? false
+              return html`
               <button
                 class="skill-button"
+                ?disabled=${!canUse}
+                style=${styleMap({ color: canUse ? 'black' : '#D3D3D3', cursor: canUse ? 'pointer' : 'default' })}
                 @click=${self.sendEvent(skill.event)}
               >
-                <div>${skill.name}</div>
+                <div>${skill.name} (${skill.cost} MP)</div>
                 <div class="tooltip">{?}
                   <span class="tooltiptext" style="${self.tooltipDirection()}">
                     ${skill.description}
                   </span>
                 </div>
-              </button>
-            `)}
+              </button>`
+            })}
           </div>
         ` : nothing}
 

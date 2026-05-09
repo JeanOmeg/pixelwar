@@ -169,27 +169,7 @@ export class TurnManager {
   }
 
   async showTurnDisplay() {
-    let color
-    switch (this.currentPlayer.name) {
-    case 'Human':
-      color = ex.Color.Blue
-      break
-    case 'Human A':
-      color = ex.Color.Blue
-      break
-    case 'CPU A':
-      color = ex.Color.Blue
-      break
-    case 'CPU':
-      color = ex.Color.Red
-      break
-    case 'CPU B':
-      color = ex.Color.Red
-      break
-    case 'Human B':
-      color = ex.Color.Red
-      break
-    }
+    const color = this.currentPlayerIndex % 2 === 0 ? ex.Color.Blue : ex.Color.Red
 
     this.turnText.text = `${this.currentPlayer.name} Phase - Turn ${(this.turn - this.maxTurns) + 1} - Round ${this.currentTurn}`
     this.turnText.color = color

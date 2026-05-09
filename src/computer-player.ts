@@ -8,7 +8,7 @@ import type { Cell } from './cell'
 import type { Unit } from './unit'
 
 interface ActionPlan {
-  type: 'attack' | 'move' | 'flee' | 'wait'
+  type: 'attack' | 'move' | 'flee' | 'wait' | 'moveAndAttack' | 'skillRun' | 'skillSpecialAttack'
   score: number
   target?: Unit
   destination?: Cell
@@ -84,20 +84,58 @@ export class ComputerPlayer extends Player {
     return (estimated * 3) + (target.unitConfig.health - target.health)
   }
 
+  evaluateCriticalAttack(unit: Unit, target: Unit): number {
+    const critDamage = Math.max((12 + unit.unitConfig.attack) - target.unitConfig.defense, 1)
+    const damagePotential = unit.unitConfig.attack - target.unitConfig.defense
+    const estimatedNormal = damagePotential > 0 ? damagePotential + 6 : 6
+    const critKills = target.health <= critDamage
+    const normalKills = target.health <= estimatedNormal
+    if (critKills && !normalKills) return 1200  // unique kill — worth the 4 MP
+    if (critKills && normalKills) return -1      // normal attack already kills, save MP
+    return -1                                    // no kill either way, not worth 4 MP
+  }
+
+  findAttackableFromCell(fromCell: Cell, unit: Unit): Unit[] {
+    const range = this.board.pathFinder.getRangeAttack(
+      fromCell.pathNode,
+      ~this.mask,
+      unit.unitConfig.range,
+      unit.name
+    )
+    return range
+      .map(node => (node.owner as Cell).unit)
+      .filter((u): u is Unit => !!u && u.player !== this)
+      .sort((a, b) => this.evaluateAttack(unit, b) - this.evaluateAttack(unit, a))
+  }
+
   evaluateMove(unit: Unit, destination: Cell, flee = false): number {
     const enemies = this.board.getUnits().filter(enemy => enemy.player !== this && enemy.cell)
     const closest = this.findClosestCell(destination.unit ?? unit, enemies.map(e => e.cell) as Cell[])
     if (!closest) return 0
     const dist = destination.pos.squareDistance(closest.pos)
-    const healthRatio = unit.health / unit.unitConfig.health
 
-    if (flee) return healthRatio < 0.2 ? dist * 1.5 : -100
-    return 100 / (dist + 1)
+    if (flee) return dist * 1.5
+
+    const canAttackFromHere = this.findAttackableFromCell(destination, unit).length > 0
+    return 100 / (dist + 1) + (canAttackFromHere ? 200 : 0)
   }
 
   evaluateAction(unit: Unit, action: ActionPlan): number {
     switch (action.type) {
-    case 'attack': return action.target ? this.evaluateAttack(unit, action.target) : 0
+    case 'attack': {
+      if (!action.target) return 0
+      const rangeBonus = unit.unitConfig.range > 1 ? 60 : 0
+      return this.evaluateAttack(unit, action.target) + rangeBonus
+    }
+    case 'skillSpecialAttack':
+      return action.target ? this.evaluateCriticalAttack(unit, action.target) : 0
+    case 'skillRun':
+      return action.destination ? this.evaluateMove(unit, action.destination) - 15 : 0
+    case 'moveAndAttack': {
+      const attackScore = action.target ? this.evaluateAttack(unit, action.target) : 0
+      const moveScore = action.destination ? this.evaluateMove(unit, action.destination) : 0
+      return attackScore + moveScore * 0.2
+    }
     case 'move': return action.destination ? this.evaluateMove(unit, action.destination) : 0
     case 'flee': return action.destination ? this.evaluateMove(unit, action.destination, true) : 0
     case 'wait': return -10
@@ -108,7 +146,7 @@ export class ComputerPlayer extends Player {
     const ownUnits = this.board.getUnits().filter(u => u.player === this)
     const enemyUnits = this.board.getUnits().filter(u => u.player !== this)
     const isLowHealth = unit.health < unit.unitConfig.health * 0.2
-    const isOutnumbered = (ownUnits.length + 1) < enemyUnits.length
+    const isOutnumbered = ownUnits.length < enemyUnits.length
     return isLowHealth && isOutnumbered
   }
 
@@ -120,42 +158,60 @@ export class ComputerPlayer extends Player {
       const attackTargets = this.findAttackableTargets(unit)
       const validCells = this.findValidMoveCells(unit)
 
-      if (!unit.attacked) {
-        if (attackTargets.length > 0) {
-          const unitPos = unit.cell?.pos ?? ex.vec(0, 0)
-          const enemyCells = attackTargets
-            .map(node => node.owner as Cell)
-            .filter(cell => {
-              if (!cell.unit) return false
-              const pos = cell.pos
-              return pos.x === unitPos.x || pos.y === unitPos.y // só linha ou coluna
-            })
-  
-          const closest = this.findClosestCell(unit, enemyCells)
-          if (closest?.unit) {
-            actions.push({ type: 'attack', score: 0, target: closest.unit })
-          }
+      if (!unit.attacked && attackTargets.length > 0) {
+        const targets = attackTargets.map(node => (node.owner as Cell).unit!).filter(Boolean)
+        const bestTarget = targets.reduce((best, t) =>
+          this.evaluateAttack(unit, t) > this.evaluateAttack(unit, best) ? t : best
+        )
+        actions.push({ type: 'attack', score: 0, target: bestTarget })
+
+        if (unit.canUseSkill('skill-special-attack')) {
+          const specialTarget = targets.reduce((best, t) =>
+            this.evaluateCriticalAttack(unit, t) > this.evaluateCriticalAttack(unit, best) ? t : best
+          )
+          actions.push({ type: 'skillSpecialAttack', score: 0, target: specialTarget })
         }
       }
 
       if (!unit.moved) {
-        for (const cell of validCells) {
-          const range = this.board.pathFinder.getRange((unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement, unit.name)
-          const path = this.selectionManger.findPath(cell, range, unit.name)
-          if (path.length > 0) {
-            actions.push({ type: 'move', score: 0, destination: cell, path })
+        await ex.Util.delay(ENEMY_SPEED)
+
+        if (unit.canUseSkill('skill-run')) {
+          const normalRange = this.board.pathFinder.getRange(
+            (unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement, unit.name
+          )
+          const normalNames = new Set(normalRange.map(n => n.owner?.name))
+          const doubleRange = this.board.pathFinder.getRange(
+            (unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement * 2, unit.name
+          )
+          const runCells = doubleRange
+            .filter(n => !normalNames.has(n.owner?.name) && (n.owner as Cell).unit?.player !== this)
+            .map(n => n.owner as Cell)
+
+          for (const cell of runCells) {
+            const path = this.selectionManger.findPath(cell, doubleRange, unit.name)
+            if (path.length === 0) continue
+            actions.push({ type: 'skillRun', score: 0, destination: cell, path })
           }
         }
 
-        await ex.Util.delay(ENEMY_SPEED)
-  
-        if (this.shouldFlee(unit)) {
-          for (const cell of validCells) {
-            const range = this.board.pathFinder.getRange((unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement, unit.name)
-            const path = this.selectionManger.findPath(cell, range, unit.name)
-            if (path.length > 0) {
-              actions.push({ type: 'flee', score: 0, destination: cell, path })
+        const flee = this.shouldFlee(unit)
+        for (const cell of validCells) {
+          const range = this.board.pathFinder.getRange((unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement, unit.name)
+          const path = this.selectionManger.findPath(cell, range, unit.name)
+          if (path.length === 0) continue
+
+          if (flee) {
+            actions.push({ type: 'flee', score: 0, destination: cell, path })
+          } else if (!unit.attacked) {
+            const targetsFromDest = this.findAttackableFromCell(cell, unit)
+            if (targetsFromDest.length > 0) {
+              actions.push({ type: 'moveAndAttack', score: 0, destination: cell, path, target: targetsFromDest[0] })
+            } else {
+              actions.push({ type: 'move', score: 0, destination: cell, path })
             }
+          } else {
+            actions.push({ type: 'move', score: 0, destination: cell, path })
           }
         }
       }
@@ -174,6 +230,41 @@ export class ComputerPlayer extends Player {
       case 'attack':
         if (!unit.attacked && action.target) {
           return await this.maybeAttack(unit, action.target)
+        }
+        break
+      case 'skillSpecialAttack':
+        if (unit.canUseSkill('skill-special-attack') && action.target) {
+          unit.mp -= 4
+          unit.forcesCritical = true
+          unit.usedSkill = true
+          return await this.maybeAttack(unit, action.target)
+        }
+        break
+      case 'skillRun':
+        if (unit.canUseSkill('skill-run') && action.destination && action.path) {
+          unit.mp -= 2
+          unit.isRunning = true
+          unit.usedSkill = true
+          this.selectionManger.showHighlight(action.path, 'path')
+          await ex.Util.delay(ENEMY_SPEED + ENEMY_SPEED)
+          await this.selectionManger.selectDestinationAndMove(unit, action.destination)
+          unit.isRunning = false
+          if (!unit.moved) {
+            unit.mp += 2
+            unit.usedSkill = false
+          }
+          return true
+        }
+        break
+      case 'moveAndAttack':
+        if (!unit.moved && action.destination && action.path) {
+          this.selectionManger.showHighlight(action.path, 'path')
+          await ex.Util.delay(ENEMY_SPEED + ENEMY_SPEED)
+          await this.selectionManger.selectDestinationAndMove(unit, action.destination)
+          if (!unit.attacked && action.target) {
+            await this.maybeAttack(unit, action.target)
+          }
+          return true
         }
         break
       case 'move':

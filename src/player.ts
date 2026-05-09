@@ -4,6 +4,10 @@ export abstract class Player {
   private static _STARTING_BIT = 0b1 | 0
   private static _CURRENT_GROUP = Player._STARTING_BIT
 
+  static resetMasks() {
+    Player._CURRENT_GROUP = Player._STARTING_BIT
+  }
+
   public readonly mask: number
   public active: boolean = false
   constructor(public name: string, public board: Board) {

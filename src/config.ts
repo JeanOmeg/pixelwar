@@ -35,11 +35,8 @@ export interface UnitConfig {
   defense: number
   movement: number
   range: number
-  skill: [{
-    name: string
-    description: string
-    event: string
-  }] | null
+  mp: number
+  skill: { name: string; description: string; event: string; cost: number }[] | null
 }
 
 export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
@@ -68,11 +65,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     attack: 2,
     defense: 2,
     range: 6,
-    skill: [{
-      name: 'Run',
-      description: 'Move up to twice the unit movement',
-      event: 'skill-run'
-    }]
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
 
   ArcherB: {
@@ -99,7 +96,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 6,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
 
   // Barbarians
@@ -126,7 +127,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
   BarbarianB: {
     graphics: {
@@ -151,7 +156,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
 
   // Clerics
@@ -178,7 +187,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
   ClericB: {
     graphics: {
@@ -203,7 +216,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
 
   // Fighters
@@ -230,7 +247,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
   FighterB: {
     graphics: {
@@ -255,7 +276,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
 
   // Mages
@@ -282,7 +307,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 5,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
   MageB: {
     graphics: {
@@ -307,7 +336,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 5,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
 
   // Spearmans
@@ -334,7 +367,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 2,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
   SpearmanB: {
     graphics: {
@@ -359,7 +396,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 2,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
 
   // Warriors
@@ -386,7 +427,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
   WarriorB: {
     graphics: {
@@ -411,7 +456,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
 
   // Thiefs
@@ -438,7 +487,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: '0000FF',
     secondary_color: '00008B',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   },
   ThiefB: {
     graphics: {
@@ -463,7 +516,11 @@ export const UNIT_CONFIG: Record<UnitType, UnitConfig> = {
     range: 1,
     primary_color: 'FF0000',
     secondary_color: '8B0000',
-    skill: null
+    mp: 4,
+    skill: [
+      { name: 'Run', description: 'Move double distance. Ends turn.', event: 'skill-run', cost: 2 },
+      { name: 'Special', description: 'Next attack is always critical.', event: 'skill-special-attack', cost: 4 }
+    ]
   }
 } as const
 

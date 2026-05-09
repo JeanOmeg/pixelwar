@@ -10,6 +10,8 @@ export interface MenuOptions {
   attack: () => any
   pass: () => any
   passTurn: () => any
+  run: () => any
+  specialAttack: () => any
 }
 
 /**
@@ -45,33 +47,27 @@ export class UIManager {
     const menu = this.unitMenu
     menu.unit = unit
 
-    const move = () => {
-      options.move()
-      clearEvents()
-    }
-    const attack = () => {
-      options.attack()
-      clearEvents()
-    }
-    const pass = () => {
-      options.pass()
-      clearEvents()
-    }
-    const passTurn = () => {
-      options.passTurn()
-      clearEvents()
-    }
+    const move = () => { options.move(); clearEvents() }
+    const attack = () => { options.attack(); clearEvents() }
+    const pass = () => { options.pass(); clearEvents() }
+    const passTurn = () => { options.passTurn(); clearEvents() }
+    const run = () => { options.run(); clearEvents() }
+    const specialAttack = () => { options.specialAttack(); clearEvents() }
 
     menu.addEventListener('move', move)
     menu.addEventListener('attack', attack)
     menu.addEventListener('pass', pass)
     menu.addEventListener('passTurn', passTurn)
+    menu.addEventListener('skill-run', run)
+    menu.addEventListener('skill-special-attack', specialAttack)
 
     const clearEvents = () => {
       menu.removeEventListener('move', move)
       menu.removeEventListener('attack', attack)
       menu.removeEventListener('pass', pass)
       menu.removeEventListener('passTurn', passTurn)
+      menu.removeEventListener('skill-run', run)
+      menu.removeEventListener('skill-special-attack', specialAttack)
     }
 
     menu.clearEvents = clearEvents
@@ -83,7 +79,7 @@ export class UIManager {
     let leftTooltip = null
 
     if (unit.player.name === 'Human' ||unit.player.name === 'Human A' ) {
-      leftMenu = this.engine.screen.viewport.width - (80 * this.worldDistanceToPage(1))
+      leftMenu = this.engine.screen.viewport.width - (94 * this.worldDistanceToPage(1))
       rightTooltip = 78 * this.worldDistanceToPage(1)
     } else {
       leftMenu = 4 * this.worldDistanceToPage(1)
