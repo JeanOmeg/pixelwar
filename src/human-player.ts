@@ -7,6 +7,8 @@ import { Cell } from './cell'
 import { Unit } from './unit'
 import { Resources } from './resources'
 import { SKILLS, SkillId } from './skills'
+import type { CameraController } from './camera-controller'
+import { SCALE } from './config'
 
 type Button = 'left' | 'right' | 'middle'
 
@@ -24,8 +26,9 @@ export class HumanPlayer extends Player {
   /** Unit whose range is shown by clicking it (no right/middle button on touch) */
   private inspected: { unit: Unit, mode: 'range' | 'attack' } | null = null
   private onKeyDown = (event: KeyboardEvent) => this.handleKey(event)
+  private stopTaps: () => void
 
-  constructor(name: string, engine: ex.Engine, private selectionManager: SelectionManager, public ui: GameUI, board: Board) {
+  constructor(name: string, engine: ex.Engine, private selectionManager: SelectionManager, public ui: GameUI, board: Board, private camera: CameraController) {
     super(name, board)
     this.selectionManager = selectionManager
     this.ui = ui
@@ -33,6 +36,8 @@ export class HumanPlayer extends Player {
       engine.input.pointers.on('down', this.pointerClick.bind(this)),
       engine.input.pointers.on('move', this.pointerMove.bind(this))
     )
+    // touch acts on release (CameraController): the first finger of a pinch or a drag isn't a tap
+    this.stopTaps = camera.onTap(world => void this.act(this.board.getCellByWorldPos(world), 'left', true))
     window.addEventListener('keydown', this.onKeyDown)
     document.body.oncontextmenu = () => false
   }
@@ -41,15 +46,17 @@ export class HumanPlayer extends Player {
     super.dispose()
     this.subscriptions.forEach(s => s.close())
     this.subscriptions = []
+    this.stopTaps()
     window.removeEventListener('keydown', this.onKeyDown)
   }
 
   pointerClick(pointer: ex.PointerEvent) {
-    const touch = pointer.pointerType === ex.PointerType.Touch
-    const button: Button | null = touch || pointer.button === ex.PointerButton.Left ? 'left'
+    // touch: see the tap listener in the constructor
+    if (pointer.pointerType === ex.PointerType.Touch) return
+    const button: Button | null = pointer.button === ex.PointerButton.Left ? 'left'
       : pointer.button === ex.PointerButton.Right ? 'right'
         : pointer.button === ex.PointerButton.Middle ? 'middle' : null
-    if (button) void this.act(this.board.getCellByWorldPos(pointer.worldPos), button, touch)
+    if (button) void this.act(this.board.getCellByWorldPos(pointer.worldPos), button)
   }
 
   /** Click, tap or Enter on `cell` */
@@ -95,7 +102,8 @@ export class HumanPlayer extends Player {
   }
 
   pointerMove(pointer: ex.PointerEvent) {
-    if (!this.active) return
+    // a finger has no hover: moving it pans or pinches the map
+    if (!this.active || pointer.pointerType === ex.PointerType.Touch) return
     this.hover(this.board.getCellByWorldPos(pointer.worldPos))
   }
 
@@ -139,6 +147,9 @@ export class HumanPlayer extends Player {
 
   private moveCursor(cell: Cell | null) {
     if (!cell) return
+    // zoomed in: pan so the cursor (and one tile around it) stays on screen
+    const tile = ex.vec(this.board.tileWidth * SCALE.x, this.board.tileHeight * SCALE.y)
+    this.camera.ensureVisible(cell.pos, tile, tile.x)
     this.hover(cell)
     this.ui.setHovered(cell)
   }

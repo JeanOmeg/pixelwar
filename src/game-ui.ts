@@ -13,6 +13,7 @@ import { PhaseBanner } from './ui-components/phase-banner'
 import { GameOver, GameOverChoice } from './ui-components/game-over'
 import { PauseMenu } from './ui-components/pause-menu'
 import { Resources } from './resources'
+import type { CameraController } from './camera-controller'
 import { isTouchDevice, readableBoost } from './device'
 import { SKILLS, SkillId } from './skills'
 import { DIFFICULTIES, Difficulty } from './ai/weights'
@@ -80,6 +81,7 @@ export class GameUI {
   private bannerActive = false
   private matchOver = false
   private subscriptions: ex.Subscription[] = []
+  private cameraListeners: (() => void)[] = []
   private interval: number
   private scale = 0
   /** UI_SCALE, enlarged on small screens so the text stays readable */
@@ -88,7 +90,7 @@ export class GameUI {
   private touch = isTouchDevice()
   private onKeyDown = (event: KeyboardEvent) => this.handleKey(event)
 
-  constructor(engine: ex.Engine, board: Board, selection: SelectionManager) {
+  constructor(engine: ex.Engine, board: Board, selection: SelectionManager, private camera: CameraController) {
     this.engine = engine
     this.board = board
     this.selection = selection
@@ -110,13 +112,23 @@ export class GameUI {
     this.menu.addEventListener('select', event => this.onMenuSelect((event as CustomEvent<string>).detail))
     this.menu.addEventListener('close', () => this.dismissAll())
 
-    // on touch screens there is no hover: the tapped cell acts as the hovered one
     const track = (event: ex.PointerEvent) => {
-      this.touch = event.pointerType === ex.PointerType.Touch
+      // fingers are tracked by the camera's taps: a drag or a pinch doesn't pick a cell
+      if (event.pointerType === ex.PointerType.Touch) return
+      this.touch = false
       this.hovered = this.board.getCellByWorldPos(event.worldPos)
       this.refresh()
     }
     this.subscriptions.push(engine.input.pointers.on('move', track), engine.input.pointers.on('down', track))
+    // on touch screens there is no hover: the tapped cell acts as the hovered one
+    this.cameraListeners.push(
+      camera.onTap(world => {
+        this.touch = true
+        this.hovered = this.board.getCellByWorldPos(world)
+        this.refresh()
+      }),
+      camera.onChange(() => this.followCamera())
+    )
     window.addEventListener('keydown', this.onKeyDown)
     this.interval = window.setInterval(() => this.refresh(), REFRESH_MS)
     this.refresh()
@@ -170,7 +182,22 @@ export class GameUI {
 
   /** A dialog or banner is up: the board shouldn't react to keys */
   isBlockingInput(): boolean {
-    return this.menu.open || this.pauseMenu.open || this.bannerActive || this.matchOver
+    return this.menu.open || this.isModalOpen()
+  }
+
+  /** Pause menu, phase banner or game over: the map shouldn't zoom or pan */
+  isModalOpen(): boolean {
+    return this.pauseMenu.open || this.bannerActive || this.matchOver
+  }
+
+  /**
+   * The camera moved or zoomed: the unit menu (the only UI that zooms with the
+   * map) takes the new zoom and stays next to its unit
+   */
+  private followCamera() {
+    this.menu.style.setProperty('--zoom', this.camera.zoom.toFixed(4))
+    if (this.menu.open && this.menuUnit) this.menu.anchor = this.cellPageRect(this.menuUnit.cell)
+    this.refresh()
   }
 
   showGameOver(result: GameResultView): Promise<GameOverChoice> {
@@ -286,6 +313,8 @@ export class GameUI {
     window.removeEventListener('keydown', this.onKeyDown)
     this.subscriptions.forEach(s => s.close())
     this.subscriptions = []
+    this.cameraListeners.forEach(stop => stop())
+    this.cameraListeners = []
     this.banner.stop()
     this.root.remove()
   }
@@ -494,9 +523,10 @@ export class GameUI {
 
   /** Page pixels per world pixel; drives every size in the UI through `--s` */
   private updateScale() {
+    // screen space, not world: the map zoom (camera) must not scale the UI
     const screen = this.engine.screen
-    const origin = screen.worldToPageCoordinates(ex.Vector.Zero)
-    const scale = (screen.worldToPageCoordinates(ex.vec(1000, 0)).x - origin.x) / 1000
+    const origin = screen.screenToPageCoordinates(ex.Vector.Zero)
+    const scale = (screen.screenToPageCoordinates(ex.vec(1000, 0)).x - origin.x) / 1000
     if (Number.isFinite(scale) && scale > 0 && Math.abs(scale - this.scale) > 0.0001) {
       this.scale = scale
       this.uiScale = UI_SCALE * readableBoost(scale * UI_SCALE)
@@ -520,10 +550,10 @@ export class GameUI {
 
   private cellPageRect(cell: Cell | null) {
     if (!cell) return { left: 0, right: 0, top: 0, bottom: 0 }
-    const screen = this.engine.screen
-    const topLeft = screen.worldToPageCoordinates(cell.pos)
+    // from the camera as it is now: the engine's transform lags a frame behind a zoom/pan
+    const topLeft = this.camera.worldToPage(cell.pos)
     const size = ex.vec(this.board.tileWidth * SCALE.x, this.board.tileHeight * SCALE.y)
-    const bottomRight = screen.worldToPageCoordinates(cell.pos.add(size))
+    const bottomRight = this.camera.worldToPage(cell.pos.add(size))
     return { left: topLeft.x, right: bottomRight.x, top: topLeft.y, bottom: bottomRight.y }
   }
 }

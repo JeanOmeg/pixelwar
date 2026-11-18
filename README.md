@@ -61,6 +61,7 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, 
 | Pausar | Botão **⏸** no topo da tela (ou **P**, ou **Esc** sem nada para cancelar). No menu de pausa: **Resume** continua, **Main menu** (pede confirmação) encerra a partida e volta ao menu principal |
 | Desfazer movimento | **Undo move** no menu, enquanto a unidade não atacou (devolve o MP do Run) |
 | Velocidade | Botão **x1/x2/x3** no topo: acelera animações e o turno da CPU (fica salvo) |
+| Zoom | **Roda do mouse** aproxima/afasta o mapa na direção do cursor, aos poucos, de 1× (visão padrão, mínimo) a 2×. Só o mapa, as unidades e o menu da unidade aumentam; com zoom, o cursor do teclado arrasta a câmera junto |
 | Esconder a interface | Botão de **olho** acima do botão de som (ou **H**): esconde/mostra as barras do topo (times, pausa, velocidade, End turn), a dica e o card da unidade, para ver o mapa inteiro. O menu da unidade continua aparecendo |
 
 ### Teclado
@@ -87,6 +88,7 @@ O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece 
 | Mover / Atacar | O primeiro toque no destino (ou no inimigo) mostra o caminho (ou a prévia do combate); **toque de novo no mesmo lugar** para confirmar |
 | Cancelar | Toque fora das células destacadas, ou fora do menu para fechá-lo |
 | Ver alcance | Toque num inimigo: movimento; toque de novo: ataque |
+| Zoom | **Pinça** com dois dedos (até 2×; arrastar com dois dedos também move o mapa). Com zoom, **arraste com um dedo** para mover o mapa. O toque só vale ao soltar o dedo sem arrastar |
 | Pular o anúncio de fase | Toque na tela |
 
 ### Interface

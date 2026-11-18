@@ -9,6 +9,7 @@ import { GameUI } from '../game-ui'
 import { TurnManager } from '../turn-manager'
 import { ComputerPlayer } from '../computer-player'
 import { DustParticles } from '../dust-particles'
+import { CameraController } from '../camera-controller'
 import { Resources } from '../resources'
 import { Tile } from '@excaliburjs/plugin-tiled'
 import { MapDefinition, getMapInfo, sceneNameOf, spawnsWithArmies } from '../maps'
@@ -31,6 +32,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
   engine!: ex.Engine
   players!: Player[]
   turnManager!: TurnManager
+  cameraController!: CameraController
 
   constructor(map: MapDefinition) {
     super()
@@ -56,6 +58,11 @@ export class LevelBase extends ex.Scene<MatchSettings> {
     this.camera.pos = this.board.getCenter()
   }
 
+  /** Map size in world pixels */
+  private mapSize(): ex.Vector {
+    return this.board.getCenter().scale(2)
+  }
+
   override async onActivate(context: ex.SceneActivationContext<MatchSettings>) {
     if (context.data) this.settings = context.data
     await this.resetAndLoad()
@@ -68,6 +75,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
     Resources.LevelMusic2.stop()
     this.ui?.destroy()
     this.players?.forEach(p => p.dispose())
+    this.cameraController?.dispose()
   }
 
   /** Starts the same map and mode again from scratch */
@@ -77,7 +85,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
   }
 
   private createPlayers(mode: GameMode, board: Board): Player[] {
-    const human = (name: string) => new HumanPlayer(name, this.engine, this.selectionManager, this.ui, board)
+    const human = (name: string) => new HumanPlayer(name, this.engine, this.selectionManager, this.ui, board, this.cameraController)
     const cpu = (name: string) => new ComputerPlayer(name, this.selectionManager, board, this.settings.difficulty ?? 'normal')
     switch (mode) {
     case 'p1vsp2': return [human('Human A'), human('Human B')]
@@ -94,8 +102,13 @@ export class LevelBase extends ex.Scene<MatchSettings> {
     Resources.LevelMusic2.play()
 
     const board = new Board(info.height, info.width, this)
+    this.board = board
+    this.camera.pos = board.getCenter()
+    this.cameraController = new CameraController(this.engine, this.camera, () => this.mapSize())
     this.selectionManager = new SelectionManager(board, this.engine)
-    this.ui = new GameUI(this.engine, board, this.selectionManager)
+    this.ui = new GameUI(this.engine, board, this.selectionManager, this.cameraController)
+    // zoom stays available with the unit menu open, not under the pause/game over dialogs
+    this.cameraController.enabled = () => !this.ui.isModalOpen()
 
 
     Player.resetMasks()

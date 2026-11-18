@@ -24,8 +24,15 @@ export class UnitMenu extends LitElement {
     :host { position: absolute; inset: 0; pointer-events: none; }
     .overlay { position: absolute; inset: 0; pointer-events: auto; }
     .menu {
+      /* the only in-game UI that follows the map zoom (--zoom, set by GameUI) */
+      --u: calc(var(--s, 1) * var(--ui-scale, 1) * var(--zoom, 1) * 1px);
+      --t: calc(var(--u) * var(--text-scale, 1));
       position: absolute;
       width: calc(210 * var(--u));
+      max-width: calc(100vw - 16px);
+      max-height: calc(100vh - 16px);
+      overflow-y: auto;
+      box-sizing: border-box;
       pointer-events: auto;
       animation: pop 120ms steps(3);
     }
