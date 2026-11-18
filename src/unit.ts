@@ -74,7 +74,9 @@ export class Unit extends ex.Actor {
   /** Pinning Shot: can't move on its next turn */
   pinned = false
   anim: ex.Animation
-  miniDirection: Facing = 'right'
+  private facing: Facing = 'right'
+  /** The board is drawn mirrored (Board.mirrored): left/right sprites swap */
+  private mirrored = false
   oldPosition!: ex.Vector | null
   health: number
   mp: number = 0
@@ -115,6 +117,7 @@ export class Unit extends ex.Actor {
     this.anim.scale = SCALE_UNIT
     this.graphics.use(this.anim)
     this.player = player
+    this.mirrored = board.mirrored
 
     const cell = board.getCell(x, y)
     if (cell) {
@@ -170,7 +173,6 @@ export class Unit extends ex.Actor {
   async move(path: PathNodeComponent[]) {
     if (this.pendingSkill?.kind === 'move' && path.length > 1) this.announceSkill(this.pendingSkill)
     this.oldPosition = null
-    const oldPos = this.cell?.pos as ex.Vector
 
     if (this.cell) {
       this.previousMove = { cell: this.cell, facing: this.miniDirection, flip: this.graphics.flipHorizontal, ran: this.isRunning }
@@ -178,12 +180,10 @@ export class Unit extends ex.Actor {
     }
 
     let currentCell: Cell | null = null
-    let pathMinusFirst = path.slice(1, path.length)
-    for (let node of pathMinusFirst) {
-      const position: ex.Vector = this.oldPosition ? this.oldPosition : oldPos
-      currentCell = node.owner as Cell
+    for (let i = 1; i < path.length; i++) {
+      currentCell = path[i].owner as Cell
 
-      this.defineDirection(position, currentCell.pos)
+      this.defineDirection(path[i - 1], path[i])
 
       this.oldPosition = currentCell.pos
 
@@ -241,10 +241,22 @@ export class Unit extends ex.Actor {
     this.previousMove = null
   }
 
-  defineDirection(oldPos: ex.Vector, newPos: ex.Vector) {
-    this.miniDirection = facingBetween(oldPos, newPos)
-    if (this.miniDirection === 'left') this.graphics.flipHorizontal = true
-    if (this.miniDirection === 'right') this.graphics.flipHorizontal = false
+  /**
+   * Facing on the board (cell coordinates: back attacks depend on it). Facing
+   * left or right also turns the sprite, the other way on a mirrored board.
+   */
+  get miniDirection(): Facing {
+    return this.facing
+  }
+
+  set miniDirection(facing: Facing) {
+    this.facing = facing
+    if (facing === 'left' || facing === 'right') this.graphics.flipHorizontal = (facing === 'left') !== this.mirrored
+  }
+
+  /** Faces from cell `from` towards cell `to` (cell coordinates, never world positions) */
+  defineDirection(from: { x: number, y: number }, to: { x: number, y: number }) {
+    this.miniDirection = facingBetween(from, to)
   }
 
   private animationFor(kind: 'idle' | 'move' | 'attack' | 'death') {
@@ -536,7 +548,7 @@ export class Unit extends ex.Actor {
 
   /** Animated attack; `rolls` can fix the dice (online play) */
   async attack(other: Unit, rolls: StrikeRolls = rollStrike) {
-    this.defineDirection(this.pos, other.pos)
+    if (this.cell && other.cell) this.defineDirection(this.cell, other.cell)
     if (this.pendingSkill?.kind === 'attack') {
       this.announceSkill(this.pendingSkill)
       await gameDelay(350)
@@ -548,7 +560,7 @@ export class Unit extends ex.Actor {
         const striker = event.attacker
         if (event.counter) {
           await gameDelay(250)
-          striker.defineDirection(striker.pos, event.defender.pos)
+          if (striker.cell && event.defender.cell) striker.defineDirection(striker.cell, event.defender.cell)
         }
         await striker.playStrike(event)
         if (event.counter) striker.setAnim(striker.selectAnimationIdle())

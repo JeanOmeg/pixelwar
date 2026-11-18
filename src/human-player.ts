@@ -138,7 +138,9 @@ export class HumanPlayer extends Player {
     }
     if (step && !event.ctrlKey && !event.metaKey) {
       event.preventDefault()
-      this.moveCursor(this.board.getCell(x + step[0], y + step[1]))
+      // arrows follow the screen: on a mirrored board, left is +x
+      const dx = this.board.mirrored ? -step[0] : step[0]
+      this.moveCursor(this.board.getCell(x + dx, y + step[1]))
     } else if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       void this.act(this.board.getCell(x, y), 'left')

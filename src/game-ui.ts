@@ -21,6 +21,8 @@ import { cycleSpeed, getSpeed } from './speed'
 import { rangeNote } from './unit-classes'
 import { ForecastView, GameResultView, HudView, MenuItem, OnlineHudView, Team, UnitView } from './ui-components/view-models'
 import { GameNotice, NoticeView } from './ui-components/game-notice'
+import { inputMode, onInputModeChange, padLabel, type GamepadMatch } from './gamepad/gamepad-input'
+import type { PadAnalog, PadButton } from './gamepad/controller'
 
 export interface MenuOptions {
   move: () => void
@@ -48,7 +50,7 @@ const FLOATING_TEXT_TILES = 1.5
  * Created per match by LevelBase and removed with `destroy()` when the scene
  * is deactivated. Reads the game state on pointer move and on a short timer.
  */
-export class GameUI {
+export class GameUI implements GamepadMatch {
   /** Called when the current human player clicks End Turn */
   onEndTurn: () => void = () => {}
   /** Called on Esc when no menu is open (cancel the current selection) */
@@ -97,6 +99,7 @@ export class GameUI {
   /** last input came from a finger: hints talk about taps instead of clicks */
   private touch = isTouchDevice()
   private onKeyDown = (event: KeyboardEvent) => this.handleKey(event)
+  private stopInputMode: () => void
 
   constructor(engine: ex.Engine, board: Board, selection: SelectionManager, private camera: CameraController) {
     this.engine = engine
@@ -140,6 +143,11 @@ export class GameUI {
       camera.onChange(() => this.followCamera())
     )
     window.addEventListener('keydown', this.onKeyDown)
+    // controller: hints show its buttons, and the card stops following taps
+    this.stopInputMode = onInputModeChange(() => {
+      if (inputMode() === 'gamepad') this.touch = false
+      this.refresh()
+    })
     this.interval = window.setInterval(() => this.refresh(), REFRESH_MS)
     this.refresh()
   }
@@ -196,7 +204,15 @@ export class GameUI {
 
   /** A dialog or banner is up: the board shouldn't react to keys */
   isBlockingInput(): boolean {
-    return this.menu.open || this.notice.open || this.isModalOpen()
+    return this.menu.open || this.notice.open || this.hud.emotesOpen || this.isModalOpen()
+  }
+
+  /** Controller (gamepad-input.ts): right stick pans, triggers zoom towards the cursor */
+  padCamera(analog: PadAnalog, elapsedMs: number) {
+    const cell = this.hovered
+    const tile = ex.vec(this.board.tileWidth * SCALE.x, this.board.tileHeight * SCALE.y)
+    const focus = cell ? cell.pos.add(tile.scale(0.5)) : null
+    this.camera.padControl(analog.panX, analog.panY, analog.zoomIn - analog.zoomOut, focus, elapsedMs)
   }
 
   /** Online: a message over the match (see GameNotice); resolves with the button picked */
@@ -354,6 +370,7 @@ export class GameUI {
     window.clearInterval(this.interval)
     if (this.pauseMenu.open) this.pauseMenu.resume()
     this.notice.close()
+    this.stopInputMode()
     window.removeEventListener('keydown', this.onKeyDown)
     this.subscriptions.forEach(s => s.close())
     this.subscriptions = []
@@ -379,9 +396,14 @@ export class GameUI {
 
   private handleKey(event: KeyboardEvent) {
     const key = event.key.toLowerCase()
+    // P (controller: Start) also closes the pause menu it opened
+    if (key === 'p' && this.pauseMenu.open) { this.pauseMenu.resume(); return }
+    // Enter (controller: A) skips the phase banner, like a click
+    if (key === 'enter' && this.bannerActive) { this.banner.stop(); return }
     if (!this.pauseMenu.open && !this.matchOver && !this.menu.open && !event.ctrlKey && !event.metaKey) {
       if (key === 'e' && this.hud.view?.canEndTurn) { this.hud.requestEndTurn(); return }
       if (/^[1-6]$/.test(key) && this.hud.view?.online?.canEmote) { this.hud.sendEmote(Number(key) - 1); return }
+      if (key === 't' && this.hud.view?.online?.canEmote) { this.hud.toggleEmotes(); this.refresh(); return }
       if (key === 'p') { void this.pause(); return }
       if (key === 'h') { this.toggleOverlays(); return }
     }
@@ -390,6 +412,8 @@ export class GameUI {
       this.pauseMenu.resume()
     } else if (this.matchOver || this.notice.open) {
       return
+    } else if (this.hud.emotesOpen) {
+      this.hud.toggleEmotes()
     } else if (this.menu.open) {
       this.dismissAll()
     } else if (this.bannerActive) {
@@ -453,8 +477,10 @@ export class GameUI {
     const current = this.currentPlayer
     if (!current || this.players.length < 2) return null
     const units = this.board.getLivingUnits()
+    // the team drawn on the left of the board goes on the left of the bar
+    const leftToRight = this.board.mirrored ? [...this.players].reverse() : this.players
     return {
-      teams: this.players.map(player => {
+      teams: leftToRight.map(player => {
         const own = units.filter(u => u.player === player)
         const total = this.totals.get(player) ?? { units: own.length, hp: 0 }
         return {
@@ -505,6 +531,7 @@ export class GameUI {
     if (!current.isLocal) {
       return current.isHuman ? `Waiting for ${this.controllerLabel(current)}...` : `${this.teamLabel(current)} (${this.controllerLabel(current)}) is thinking...`
     }
+    if (inputMode() === 'gamepad') return this.padHintText()
     if (this.touch) return this.touchHintText()
     if (this.menu.open) return 'Choose an action · [Esc] close'
     if (this.selection.currentUnitSelection) {
@@ -515,6 +542,21 @@ export class GameUI {
       }
     }
     return '[Left click] select unit · [Right click] move range · [Middle click] attack range · [Tab] next unit'
+  }
+
+  /** Controller hints: {button} shows as that button of the controller in use */
+  private padHintText(): string {
+    const b = (button: PadButton) => `{${padLabel(button)}}`
+    if (this.hud.emotesOpen) return `${b('a')} send · ${b('b')} close`
+    if (this.menu.open) return `${b('a')} choose · ${b('b')} close`
+    if (this.selection.currentUnitSelection) {
+      switch (this.selection.currentSelectionMode) {
+      case 'move': return `${b('a')} move here · ${b('b')} cancel`
+      case 'attack': return `${b('a')} attack · ${b('b')} cancel`
+      case 'heal': return `${b('a')} heal · ${b('b')} cancel`
+      }
+    }
+    return `${b('a')} select · ${b('y')} move range · ${b('x')} attack range · ${b('lb')}${b('rb')} units · ${b('select')} end turn · ${b('start')} pause`
   }
 
   private touchHintText(): string {
@@ -545,7 +587,7 @@ export class GameUI {
     this.card.forecast = forecast
     this.card.unit = unit ? this.unitView(unit) : null
 
-    // under the bar of the unit's own team (Blue left, Red right);
+    // under the bar of the unit's own team (Blue left, Red right; swapped on a mirrored board);
     // the forecast goes under the attacker's team
     const owner = forecast ? this.selection.currentUnitSelection : unit
     if (this.touch && this.hovered) {
@@ -554,7 +596,7 @@ export class GameUI {
       const cell = this.cellPageRect(this.hovered)
       this.card.side = (cell.left + cell.right) / 2 < window.innerWidth / 2 ? 'right' : 'left'
     } else if (owner) {
-      this.card.side = this.teamOf(owner.player) === 'blue' ? 'left' : 'right'
+      this.card.side = (this.teamOf(owner.player) === 'blue') !== this.board.mirrored ? 'left' : 'right'
     }
 
     // the card sits over a corner of the map: if it would cover the unit under

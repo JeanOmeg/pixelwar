@@ -15,7 +15,12 @@ export class Board {
   pathFinder: PathFinder
   scene: ex.Scene
 
-  constructor(rows: number, cols: number, scene: ex.Scene) {
+  /**
+   * @param mirrored draws column x at cols - 1 - x (online: the red player
+   * also plays from the left). Only the picture changes: cells, rules and
+   * messages keep the real coordinates.
+   */
+  constructor(rows: number, cols: number, scene: ex.Scene, public readonly mirrored = false) {
     this.rows = rows
     this.cols = cols
     this.scene = scene
@@ -60,9 +65,14 @@ export class Board {
 
   getCellByWorldPos(pos: ex.Vector): Cell | null {
     return this.getCell(
-      Math.floor(pos.x / (this.tileWidth * SCALE.x)),
+      this.screenColumn(Math.floor(pos.x / (this.tileWidth * SCALE.x))),
       Math.floor(pos.y  / (this.tileHeight * SCALE.y))
     )
+  }
+
+  /** Column where cell column `x` is drawn (and back: the mirror is its own inverse) */
+  screenColumn(x: number): number {
+    return this.mirrored ? this.cols - 1 - x : x
   }
 
   getCell(x: number, y: number): Cell | null {

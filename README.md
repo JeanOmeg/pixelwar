@@ -93,8 +93,29 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, 
 | **E** | Encerra o turno (pede confirmação se ainda houver unidades com ações) |
 | **P** | Pausa |
 | **H** | Esconde/mostra a interface (barras, dica e card) |
+| **T** | Abre/fecha as mensagens rápidas (online) |
 | **Esc** | Fecha o menu, cancela, pula o anúncio de fase ou pausa |
 | Menu da unidade | **↑/↓** escolhem, **→/←** abrem/fecham as skills, **Enter** confirma |
+
+### Controle (gamepad)
+
+Funciona com controles de Xbox, PlayStation, Switch Pro e a maioria dos controles USB/Bluetooth, no computador e no celular/tablet. Basta apertar qualquer botão: as dicas passam a mostrar os botões do controle em uso (A/B/X/Y, ✕/◯/▢/△ ou os do Nintendo). Dá para jogar do menu ao fim da partida sem mouse; nos menus o direcional anda entre os botões (contorno dourado).
+
+| Botão (Xbox / PlayStation) | Na partida | Nos menus |
+|---|---|---|
+| **D-pad** / **analógico esquerdo** | Move o cursor (segurar repete) | Anda entre os botões |
+| **A** / ✕ | Seleciona e age | Aperta o botão |
+| **B** / ◯ | Cancela, fecha o menu | Volta |
+| **Y** / △ e **X** / ▢ | Alcance de movimento / de ataque | — |
+| **LB**/**RB** (L1/R1) | Unidade anterior/próxima que pode agir | — |
+| **LT**/**RT** (L2/R2) | Zoom (na direção do cursor) | — |
+| **Analógico direito** | Move a câmera | Rola listas e páginas |
+| **Start** (Options) | Pausa / continua | Confirma (inicia a partida, confirma o exército) |
+| **View**/**Select** (Share) | Encerra o turno (com a mesma confirmação) | — |
+| **Clique do analógico esquerdo** | Esconde/mostra a interface | — |
+| **Clique do analógico direito** | Mensagens rápidas (online) | — |
+
+Limite do navegador: a tela cheia e o primeiro som ainda precisam de um toque ou clique (o PLAY! da tela de carregamento). Nome e código de sala no online são digitados pelo teclado do computador ou do celular.
 
 ### Celular e tablet
 

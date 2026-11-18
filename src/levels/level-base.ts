@@ -107,7 +107,9 @@ export class LevelBase extends ex.Scene<MatchSettings> {
     Resources.LevelMusic2.loop = true
     Resources.LevelMusic2.play()
 
-    const board = new Board(info.height, info.width, this)
+    // online, the red player sees the map mirrored: both players play from the left
+    const mirrored = this.settings.mode === 'online' && activeSession()?.seat === 1
+    const board = new Board(info.height, info.width, this, mirrored)
     this.board = board
     this.camera.pos = board.getCenter()
     this.cameraController = new CameraController(this.engine, this.camera, () => this.mapSize())
@@ -154,6 +156,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
         cell.pathNode.isWater = (tile.properties.get('iswater') ?? false) as boolean
         cell.sprite = tileset.getSpriteForGid(gid).clone()
         cell.sprite.scale = SCALE
+        cell.sprite.flipHorizontal = board.mirrored
         cell.graphics.use(cell.sprite)
       }
     }
@@ -165,7 +168,6 @@ export class LevelBase extends ex.Scene<MatchSettings> {
       const unit = new Unit(spawn.x, spawn.y, spawn.unitType, board, this.players[spawn.team])
       // team A starts facing right, team B facing left (towards each other)
       unit.miniDirection = spawn.team == 0 ? 'right' : 'left'
-      unit.graphics.flipHorizontal = spawn.team != 0
       this.add(unit)
     }
 

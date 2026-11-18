@@ -117,7 +117,18 @@ export function renderHowToPlay() {
           <li><b>Pause</b> button (top center, or <b>P</b>): resume or leave the match for the main menu.</li>
           <li><b>x1/x2/x3</b> button: game speed.</li>
           <li><b>Eye</b> button (bottom left, or <b>H</b>): hide or show the top bars, the hint and the unit card to see the whole map. The unit menu always shows.</li>
-          <li>Keyboard: <b>arrows</b> move the cursor, <b>Enter</b> acts, <b>Tab</b> jumps to the next unit, <b>R</b>/<b>F</b> show move/attack range, <b>E</b> ends the turn.</li>
+          <li>Keyboard: <b>arrows</b> move the cursor, <b>Enter</b> acts, <b>Tab</b> jumps to the next unit, <b>R</b>/<b>F</b> show move/attack range, <b>E</b> ends the turn, <b>T</b> opens the online quick messages.</li>
+        </ul>
+      </section>
+      <section>
+        <h3>Controller</h3>
+        <ul>
+          <li>Xbox, PlayStation, Switch Pro and most USB/Bluetooth controllers work. Press any button to start using it; the hints then show its buttons.</li>
+          <li><b>D-pad</b> or <b>left stick</b>: move the cursor (in menus: move between buttons). <b>A</b> (✕): select and act. <b>B</b> (◯): cancel or go back.</li>
+          <li><b>Y</b> (△) / <b>X</b> (▢): movement / attack range. <b>LB</b>/<b>RB</b> (L1/R1): previous/next unit that can act.</li>
+          <li><b>LT</b>/<b>RT</b> (L2/R2): zoom. <b>Right stick</b>: move the camera (in menus: scroll).</li>
+          <li><b>Start</b> (Options): pause. <b>View</b>/<b>Select</b> (Share): end turn. <b>Left stick click</b>: hide the interface. <b>Right stick click</b>: online quick messages.</li>
+          <li>Fullscreen and the first sound still need one tap or click (a browser rule).</li>
         </ul>
       </section>
       <section>

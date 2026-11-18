@@ -5,6 +5,10 @@ import { MIN_ZOOM, anchorAxis, clampAxis, clampZoom, wheelZoom } from './camera-
 const TAP_SLOP = 12
 /** Time (ms) for the wheel zoom to cover ~63% of the way to its target */
 const WHEEL_SMOOTHING_MS = 70
+/** Controller triggers: zoom grows ×e^1.2 (~3.3×) per second held fully */
+const PAD_ZOOM_PER_SECOND = 1.2
+/** Controller right stick: screen pixels panned per second, fully tilted */
+const PAD_PAN_PER_SECOND = 900
 
 interface Anchor {
   /** world point kept under the focus */
@@ -93,6 +97,25 @@ export class CameraController {
     if (min.y < pos.y - half.y) pos.y = min.y + half.y
     else if (max.y > pos.y + half.y) pos.y = max.y - half.y
     this.apply(zoom, pos)
+  }
+
+  /**
+   * Controller, every frame: the right stick pans (`panX`/`panY`, -1..1) and
+   * the triggers zoom (`zoom` > 0 in, < 0 out) towards `focus` (the cursor).
+   */
+  padControl(panX: number, panY: number, zoom: number, focus: ex.Vector | null, elapsedMs: number) {
+    if (!this.enabled() || this.touches.size > 0) return
+    this.wheelAnchor = null
+    const seconds = elapsedMs / 1000
+    const current = this.camera.zoom
+    const next = clampZoom(current * Math.exp(zoom * PAD_ZOOM_PER_SECOND * seconds))
+    let pos = this.camera.pos
+    if (next !== current) {
+      const world = focus ?? pos
+      pos = this.positionFor({ world, offset: world.sub(pos).scale(current) }, next)
+    }
+    this.targetZoom = next
+    this.apply(next, pos.add(ex.vec(panX, panY).scale(PAD_PAN_PER_SECOND * seconds / next)))
   }
 
   dispose() {

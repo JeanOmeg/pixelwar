@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import * as ex from 'excalibur'
 import { describe, expect, test } from 'vitest'
 import { FOREST_DEFENSE, PLAIN_ATTACK } from '../src/combat'
 import { GUARD_DEF, HEAL_HP, SKILLS, skillsOf } from '../src/skills'
@@ -119,5 +120,31 @@ describe('forest and counterattacks', () => {
     expect(halberdier.canCounter(spearman, PLAIN_ATTACK)).toBe(false)
     halberdier.startSkill('skill-brace')
     expect(halberdier.canCounter(spearman, PLAIN_ATTACK)).toBe(true)
+  })
+})
+
+describe('mirrored board (online, red player)', () => {
+  test('cells are drawn mirrored, and a click finds the real cell', () => {
+    const board = makeBoard(['....'], true)
+    const tile = board.getCell(1, 0)!.pos.x
+    expect(board.getCell(0, 0)!.pos.x).toBe(tile * 3 / 2)
+    expect(board.getCell(3, 0)!.pos.x).toBe(0)
+    expect(board.getCellByWorldPos(board.getCell(0, 0)!.pos.add(ex.vec(1, 1)))).toBe(board.getCell(0, 0))
+    expect(board.getCellByWorldPos(board.getCell(2, 0)!.pos.add(ex.vec(1, 1)))).toBe(board.getCell(2, 0))
+  })
+
+  test('facing stays in board coordinates; only the sprite turns the other way', () => {
+    for (const mirrored of [false, true]) {
+      const board = makeBoard(['...'], mirrored)
+      const [a, b] = makePlayers(board)
+      const fighter = place(board, 'FighterA', 0, 0, a)
+      const target = place(board, 'FighterB', 1, 0, b)
+      fighter.defineDirection(fighter.cell!, target.cell!)
+      expect(fighter.miniDirection).toBe('right')
+      // facing right on the board looks to the left of the screen when mirrored
+      expect(fighter.graphics.flipHorizontal).toBe(mirrored)
+      target.miniDirection = 'left'
+      expect(target.graphics.flipHorizontal).toBe(!mirrored)
+    }
   })
 })

@@ -10,8 +10,8 @@ import type { UnitType } from '../src/unit-types'
  *   #  wall / tree            ~  water (attack passes over it)
  *   D  door
  */
-export function makeBoard(rows: string[]): Board {
-  const board = new Board(rows.length, rows[0].length, new ex.Scene())
+export function makeBoard(rows: string[], mirrored = false): Board {
+  const board = new Board(rows.length, rows[0].length, new ex.Scene(), mirrored)
   rows.forEach((row, y) => [...row].forEach((tile, x) => {
     const node = board.getCell(x, y)!.pathNode
     node.isWalkable = tile === '.' || tile === 'f' || tile === 'D'

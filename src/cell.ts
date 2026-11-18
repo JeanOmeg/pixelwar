@@ -34,7 +34,7 @@ export class Cell extends ex.Actor {
     super({
       name: `cell(${x}, ${y})`,
       pos: ex.vec(
-        x * (board.tileWidth) * SCALE.x,
+        board.screenColumn(x) * (board.tileWidth) * SCALE.x,
         y * (board.tileHeight) * SCALE.y
       ),
       anchor: ex.Vector.Zero

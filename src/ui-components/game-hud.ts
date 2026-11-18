@@ -153,8 +153,14 @@ export class GameHud extends LitElement {
   @state()
   private confirming = false
 
+  /** The emote list is open (read by GameUI: the board ignores keys meanwhile) */
   @state()
-  private emotesOpen = false
+    emotesOpen = false
+
+  /** T (controller: R3): opens or closes the emote list */
+  toggleEmotes() {
+    this.emotesOpen = this.view?.online?.canEmote ? !this.emotesOpen : false
+  }
 
   private confirmTimer = 0
 
@@ -271,6 +277,9 @@ export class GameHud extends LitElement {
 }
 
 /** One-line contextual help at the bottom of the screen */
+/** PlayStation face buttons keep their colors in the hints */
+const PS_SYMBOLS: Record<string, string> = { '✕': 'ps-cross', '◯': 'ps-circle', '▢': 'ps-square', '△': 'ps-triangle' }
+
 @customElement('game-hint')
 export class GameHint extends LitElement {
   static styles = [theme, css`
@@ -290,16 +299,43 @@ export class GameHint extends LitElement {
       text-shadow: calc(2 * var(--u)) calc(2 * var(--u)) 0 #000;
     }
     b { font-weight: normal; color: var(--gold); }
+    /* a controller button: round for one symbol (A, ✕), a pill for names (LB, View) */
+    .pad {
+      display: inline-block;
+      min-width: 1.35em;
+      padding: 0.15em 0.35em;
+      margin: 0 0.1em;
+      box-sizing: border-box;
+      border-radius: 0.8em;
+      background: #e9ecf5;
+      color: #14172a;
+      text-align: center;
+      text-shadow: none;
+      box-shadow: calc(2 * var(--u)) calc(2 * var(--u)) 0 #000;
+    }
+    .pad.ps-cross { color: #3d6fe0; }
+    .pad.ps-circle { color: #d8343f; }
+    .pad.ps-square { color: #c4489c; }
+    .pad.ps-triangle { color: #1b9d78; }
   `]
 
-  /** Segments separated by '·'; text inside [brackets] is highlighted */
+  /**
+   * Segments separated by '·'; text inside [brackets] is highlighted and
+   * {A} shows as a controller button
+   */
   @property()
     text = ''
 
   override render() {
     if (!this.text) return nothing
-    const parts = this.text.split(/(\[[^\]]+\])/).map(part =>
-      part.startsWith('[') ? html`<b>${part.slice(1, -1)}</b>` : part)
+    const parts = this.text.split(/(\[[^\]]+\]|\{[^}]+\})/).map(part => {
+      if (part.startsWith('[')) return html`<b>${part.slice(1, -1)}</b>`
+      if (part.startsWith('{')) {
+        const label = part.slice(1, -1)
+        return html`<span class="pad ${PS_SYMBOLS[label] ?? ''}">${label}</span>`
+      }
+      return part
+    })
     return html`<div>${parts}</div>`
   }
 }

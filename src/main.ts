@@ -7,6 +7,7 @@ import './ui-components/start-screen-ui'
 import { AudioManager } from './audio-manager'
 import { isTouchDevice, refitScreen, setupTouchDevice } from './device'
 import { attachSpeedToEngine } from './speed'
+import { startGamepadInput } from './gamepad/gamepad-input'
 
 const game = new ex.Engine({
   resolution: { width: 1920, height: 1080 },
@@ -28,6 +29,9 @@ AudioManager.init()
 attachSpeedToEngine(game)
 
 setupTouchDevice()
+
+// controllers: the match on screen gets the camera (zoom/pan); everything else goes through keys and focus
+startGamepadInput(() => game.currentScene instanceof LevelBase ? game.currentScene.ui ?? null : null)
 
 /** One scene per entry in MAPS (maps.ts), plus an empty scene behind the menus */
 function addMaps() {
