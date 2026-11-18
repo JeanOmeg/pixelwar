@@ -45,10 +45,20 @@ export function canFullscreen(): boolean {
 
 /** Opened from the home screen icon (installed app): already without browser bars */
 export function isStandalone(): boolean {
+  return startedStandalone
+}
+
+/**
+ * Measured once, when the page loads: `(display-mode: fullscreen)` also
+ * matches while the page is in fullscreen through our own button, and the
+ * fullscreen button vanished on the next redraw (back to the menu).
+ */
+const startedStandalone = (() => {
+  if (typeof window === 'undefined') return false
   const media = (query: string) => window.matchMedia?.(query).matches ?? false
   return (navigator as Navigator & { standalone?: boolean }).standalone === true ||
     media('(display-mode: fullscreen)') || media('(display-mode: standalone)')
-}
+})()
 
 /**
  * iPhone: no fullscreen API for pages. The closest is adding the game to the

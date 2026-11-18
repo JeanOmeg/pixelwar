@@ -72,6 +72,8 @@ export interface MatchEndInfo {
 export class OnlineSession {
   status: SessionStatus = 'connecting'
   rejectReason: RejectReason | null = null
+  /** `leave()` was called: nothing may save this room for a reconnection again */
+  private left = false
   room: RoomState | null = null
   /** Shown once on the lobby (e.g. both seats were taken: watching instead) */
   notice: string | null = null
@@ -223,6 +225,10 @@ export class OnlineSession {
 
   /** Leaves the room for good: in the lobby the seat frees, in a match it's a forfeit */
   leave() {
+    // the room update that answers our `leave` arrives before the connection
+    // closes and still lists our seat (as disconnected): it must not save the
+    // session again, or the menu would reconnect us to the match we left
+    this.left = true
     if (this.ownsRoom && this.room?.phase === 'lobby') this.broadcast({ t: 'close' })
     else this.broadcast({ t: 'leave' })
     writeSaved(null)
@@ -361,7 +367,7 @@ export class OnlineSession {
   }
 
   private onRoom(room: RoomState, from: string) {
-    if (!room || typeof room !== 'object' || room.code !== this.code) return
+    if (this.left || !room || typeof room !== 'object' || room.code !== this.code) return
     // only a player's browser speaks for the room (spectators never do)
     const fromSeat = seatOfPeer(room, from) !== null || (this.room && seatOfPeer(this.room, from) !== null)
     if (!fromSeat) return
@@ -449,6 +455,7 @@ export class OnlineSession {
   }
 
   private save() {
+    if (this.left) return
     writeSaved({ code: this.code, name: this.name, token: this.token, intent: this.seat !== null ? 'play' : 'watch', owner: this.ownsRoom, at: Date.now() })
   }
 
