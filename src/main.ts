@@ -5,7 +5,7 @@ import { MAPS } from './maps'
 import './ui-components/audio-menu'
 import './ui-components/start-screen-ui'
 import { AudioManager } from './audio-manager'
-import { isTouchDevice, setupTouchDevice } from './device'
+import { isTouchDevice, refitScreen, setupTouchDevice } from './device'
 import { attachSpeedToEngine } from './speed'
 
 const game = new ex.Engine({
@@ -52,6 +52,10 @@ function mountStartScreen() {
 addMaps()
 
 game.start(loader).then(() => {
+  // Excalibur's loader saves the canvas size when loading starts and restores
+  // it after PLAY!: a phone opened upright and turned on the loader screen kept
+  // the portrait size (a tiny board in the match). Fit the current window again.
+  refitScreen()
   // Excalibur's loader leaves a keyup(Enter) listener that calls its play
   // button getter, which rebuilds the "PLAY!" button after the loader is gone.
   // From now on that getter builds an invisible button instead.

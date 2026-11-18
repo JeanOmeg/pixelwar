@@ -84,14 +84,18 @@ export function toggleFullscreen() {
  * final size, so the board was left small until the next resize. Re-sends a
  * `resize` a few times after every screen change so the canvas fits again.
  */
+let refitting = false
+
+/** Makes Excalibur size the canvas again for the current window (a synthetic `resize`) */
+export function refitScreen() {
+  refitting = true
+  try { window.dispatchEvent(new Event('resize')) } finally { refitting = false }
+}
+
 function keepScreenFitted() {
   const REFIT_DELAYS_MS = [100, 300, 700, 1200]
   let timers: number[] = []
-  let refitting = false
-  const refit = () => {
-    refitting = true
-    try { window.dispatchEvent(new Event('resize')) } finally { refitting = false }
-  }
+  const refit = refitScreen
   const schedule = () => {
     if (refitting) return
     timers.forEach(timer => window.clearTimeout(timer))
