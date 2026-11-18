@@ -5,8 +5,8 @@ import { canFullscreen, isFullscreen, toggleFullscreen } from '../device'
 
 /**
  * Corner buttons: sound on/off and fullscreen (entering fullscreen also turns
- * a phone to landscape). The fullscreen button is hidden where the browser
- * can't do it (iPhone Safari).
+ * a phone to landscape). The fullscreen button appears only after PLAY! (from
+ * the main menu on) and never where the browser can't do it (iPhone Safari).
  */
 @customElement('audio-menu')
 export class AudioMenu extends LitElement {
@@ -49,6 +49,10 @@ export class AudioMenu extends LitElement {
   @property({ type: Boolean })
     soundOn = !AudioManager.muted
 
+  /** The fullscreen button only shows once the player is past the loader (main.ts) */
+  @property({ type: Boolean, attribute: 'fullscreen-ready' })
+    fullscreenReady = false
+
   @state()
   private fullscreen = isFullscreen()
 
@@ -76,7 +80,7 @@ export class AudioMenu extends LitElement {
     // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:volume_off:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=speaker
     return html`
       <button @click=${this.toggleSound} class="material-symbols-outlined" title="Sound">${this.soundOn ? 'volume_up' : 'volume_off'}</button>
-      ${canFullscreen() ? html`
+      ${this.fullscreenReady && canFullscreen() ? html`
         <button @click=${() => toggleFullscreen()} class="material-symbols-outlined" title="Fullscreen">${this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</button>
       ` : nothing}
     `

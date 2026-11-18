@@ -62,6 +62,8 @@ game.start(loader).then(() => {
     return hiddenButton
   }
   mountStartScreen()
+  // the fullscreen button is offered from the main menu on (never on the loader)
+  document.querySelector('audio-menu')?.setAttribute('fullscreen-ready', '')
   // the loader starts on pointerup: the click that follows a tap would land on
   // the start screen button under the finger, so ignore input for a moment
   const startScreen = document.querySelector<HTMLElement>('start-screen-ui')
