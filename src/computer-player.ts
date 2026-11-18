@@ -35,14 +35,6 @@ export class ComputerPlayer extends Player {
     this.active = false
   }
 
-  findValidMoveCells(unit: Unit): Cell[] {
-    if (!unit.cell) return []
-    const range = this.board.pathFinder.getRange(unit.cell.pathNode, this.mask, unit.unitConfig.movement, unit.name)
-    return range
-      .filter(node => (node.owner as Cell).unit?.player !== this)
-      .map(node => node.owner as Cell)
-  }
-
   findClosestCell(unit: Unit, cells: Cell[]) {
     let closest = null
     let distance = Infinity
@@ -57,7 +49,6 @@ export class ComputerPlayer extends Player {
   }
 
   findAttackableTargets(unit: Unit): PathNodeComponent[] {
-    this.selectionManger.selectUnit(unit, 'attack')
     const attackRange = this.selectionManger.findAttackRange(unit)
     return attackRange.filter(node => {
       const cell = node.owner as Cell
@@ -100,7 +91,8 @@ export class ComputerPlayer extends Player {
       fromCell.pathNode,
       ~this.mask,
       unit.unitConfig.range,
-      unit.name
+      unit.name,
+      unit.cell?.pathNode // the unit will have left its current cell
     )
     return range
       .map(node => (node.owner as Cell).unit)
@@ -156,7 +148,6 @@ export class ComputerPlayer extends Player {
     const generateAndEvaluateActions = async (): Promise<ActionPlan[]> => {
       const actions: ActionPlan[] = []
       const attackTargets = this.findAttackableTargets(unit)
-      const validCells = this.findValidMoveCells(unit)
 
       if (!unit.attacked && attackTargets.length > 0) {
         const targets = attackTargets.map(node => (node.owner as Cell).unit!).filter(Boolean)
@@ -173,33 +164,28 @@ export class ComputerPlayer extends Player {
         }
       }
 
-      if (!unit.moved) {
+      if (!unit.moved && unit.cell) {
         await ex.Util.delay(ENEMY_SPEED)
 
-        if (unit.canUseSkill('skill-run')) {
-          const normalRange = this.board.pathFinder.getRange(
-            (unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement, unit.name
-          )
-          const normalNames = new Set(normalRange.map(n => n.owner?.name))
-          const doubleRange = this.board.pathFinder.getRange(
-            (unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement * 2, unit.name
-          )
-          const runCells = doubleRange
-            .filter(n => !normalNames.has(n.owner?.name) && (n.owner as Cell).unit?.player !== this)
-            .map(n => n.owner as Cell)
+        const start = unit.cell.pathNode
+        const pathFinder = this.board.pathFinder
+        const moveMap = pathFinder.getMovementMap(start, this.mask, unit.unitConfig.movement, unit.name)
 
-          for (const cell of runCells) {
-            const path = this.selectionManger.findPath(cell, doubleRange, unit.name)
-            if (path.length === 0) continue
-            actions.push({ type: 'skillRun', score: 0, destination: cell, path })
+        if (unit.canUseSkill('skill-run')) {
+          const runMap = pathFinder.getMovementMap(start, this.mask, unit.unitConfig.movement * 2, unit.name)
+          for (const node of runMap.range) {
+            if (moveMap.canStopAt(node)) continue
+            const path = runMap.pathTo(node)
+            if (path.length < 2) continue
+            actions.push({ type: 'skillRun', score: 0, destination: node.owner as Cell, path })
           }
         }
 
         const flee = this.shouldFlee(unit)
-        for (const cell of validCells) {
-          const range = this.board.pathFinder.getRange((unit.cell ?? {} as Cell).pathNode, this.mask, unit.unitConfig.movement, unit.name)
-          const path = this.selectionManger.findPath(cell, range, unit.name)
-          if (path.length === 0) continue
+        for (const node of moveMap.range) {
+          const path = moveMap.pathTo(node)
+          if (path.length < 2) continue
+          const cell = node.owner as Cell
 
           if (flee) {
             actions.push({ type: 'flee', score: 0, destination: cell, path })
@@ -247,7 +233,7 @@ export class ComputerPlayer extends Player {
           unit.usedSkill = true
           this.selectionManger.showHighlight(action.path, 'path')
           await ex.Util.delay(ENEMY_SPEED + ENEMY_SPEED)
-          await this.selectionManger.selectDestinationAndMove(unit, action.destination)
+          await this.selectionManger.selectDestinationAndMove(unit, action.destination, action.path)
           unit.isRunning = false
           if (!unit.moved) {
             unit.mp += 2
@@ -260,7 +246,7 @@ export class ComputerPlayer extends Player {
         if (!unit.moved && action.destination && action.path) {
           this.selectionManger.showHighlight(action.path, 'path')
           await ex.Util.delay(ENEMY_SPEED + ENEMY_SPEED)
-          await this.selectionManger.selectDestinationAndMove(unit, action.destination)
+          await this.selectionManger.selectDestinationAndMove(unit, action.destination, action.path)
           if (!unit.attacked && action.target) {
             await this.maybeAttack(unit, action.target)
           }
@@ -272,7 +258,7 @@ export class ComputerPlayer extends Player {
         if (!unit.moved && action.destination && action.path) {
           this.selectionManger.showHighlight(action.path, 'path')
           await ex.Util.delay(ENEMY_SPEED + ENEMY_SPEED)
-          await this.selectionManger.selectDestinationAndMove(unit, action.destination)
+          await this.selectionManger.selectDestinationAndMove(unit, action.destination, action.path)
           return true
         }
         break

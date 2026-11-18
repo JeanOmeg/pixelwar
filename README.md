@@ -1,4 +1,4 @@
-# PixelWar
+# PixelFantasyWar
 
 Jogo de batalhas táticas por turnos inspirado em Fire Emblem e Final Fantasy Tactics. Desenvolvido com TypeScript e [Excalibur.js](https://excaliburjs.com/).
 
@@ -10,7 +10,7 @@ Jogo de batalhas táticas por turnos inspirado em Fire Emblem e Final Fantasy Ta
 
 ### Objetivo
 
-Elimine todas as unidades inimigas antes que eliminiem as suas. O jogo também termina se o limite de turnos for atingido.
+Elimine todas as unidades inimigas antes que eliminem as suas. Se o limite de 100 fases (50 rodadas) for atingido, a partida termina empatada.
 
 ### Modos de jogo
 
@@ -19,6 +19,25 @@ Elimine todas as unidades inimigas antes que eliminiem as suas. O jogo também t
 | **Player vs CPU** | Você controla o time azul, a IA controla o time vermelho |
 | **Player vs Player** | Dois jogadores se alternam no mesmo computador |
 | **CPU vs CPU** | Assista dois times controlados pela IA se enfrentarem |
+
+### Menu inicial
+
+**Play** → escolha o modo → escolha o mapa (ou **Random map**) → **Start**. O seletor mostra uma prévia de cada mapa com as posições iniciais das unidades, o tamanho, quantas unidades cada time tem e o limite de rodadas. Use ↑/↓ e Enter, ou o mouse. O jogo lembra o último modo e mapa escolhidos.
+
+O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, com atributos e habilidades especiais) e **Credits**.
+
+### Mapas
+
+| Mapa | Descrição |
+|---|---|
+| **Twin Keeps** | Duas fortalezas frente a frente, campo aberto no meio com bosques, lagos e pontes |
+| **River Isles** | Exércitos em ilhas ligadas por pontes estreitas; o prado central é o ponto-chave |
+| **Greenwood** | Campo aberto com bosques e pedras como cobertura e um laguinho com ponte no centro |
+| **Split River** | Um rio corta o mapa ao meio; só três pontes estreitas, mas arqueiros e magos atiram por cima da água |
+| **Crater Lake** | Um grande lago central com uma ponte longa e passagens rochosas ao norte e ao sul |
+| **Old Fortress** | Uma fortaleza abandonada no meio do campo; as portas são a única entrada e o pátio com pilares é o prêmio |
+| **Riverside Village** | Uma vila cortada por um rio, com casas, jardins e praças de pedra nas duas pontes |
+| **Ruined Temple** | Muros quebrados e pilares em volta de um altar; torres de vigia protegem os arqueiros de cada lado |
 
 ---
 
@@ -30,10 +49,19 @@ Elimine todas as unidades inimigas antes que eliminiem as suas. O jogo também t
 | Mover | Selecione **Move** no menu e clique na célula de destino |
 | Atacar | Selecione **Attack** no menu e clique na unidade inimiga |
 | Usar skill | Selecione **Skills** no menu e escolha a habilidade |
-| Passar unidade | Selecione **Done** no menu |
-| Passar turno | Selecione **Pass Turn** para encerrar o turno de todos |
+| Encerrar a unidade | Selecione **Wait** no menu |
+| Encerrar o turno | Botão **End turn** no topo da tela (pede confirmação se ainda houver unidades com ações) |
+| Cancelar | **Esc** fecha o menu ou sai do modo mover/atacar (o MP de uma skill não usada é devolvido) |
 | Ver alcance de movimento | Clique com o **botão direito** sobre qualquer unidade |
 | Ver alcance de ataque | Clique com o **botão do meio** sobre qualquer unidade |
+| Pular o anúncio de fase | Clique na tela ou aperte **Esc** |
+
+### Interface
+
+- **Topo:** os dois times (unidades vivas e HP total), a rodada, de quem é a vez e o botão **End turn**.
+- **Card da unidade:** passe o mouse sobre qualquer unidade para ver HP, MP, atributos, para onde ela está virada e o estado no turno.
+- **Prévia de combate:** no modo de ataque, passe o mouse sobre um inimigo ao alcance para ver a chance de acerto, a faixa de dano, a chance de matar e se o ataque é pelas costas.
+- **Rodapé:** dica do que fazer no momento.
 
 ---
 
@@ -53,24 +81,36 @@ Cada ataque envolve três rolagens:
 | **Ataque pelas costas** | Atacante e defensor estão virados na mesma direção. Dano: **D6 + ATK×2 - DEF** |
 | **Sempre acerta** | Golpe crítico e ataque pelas costas acertam independente do teste |
 
-> Ataques de longa distância (Arqueiros, Magos, Lanceiros) só acertam alvos na **mesma linha ou coluna** e são bloqueados pela primeira unidade no caminho.
+> Todo ataque é em **linha reta** (mesma linha ou coluna) e para na primeira unidade do caminho; aliados bloqueiam a linha de tiro. Paredes, árvores e portas também bloqueiam. Uma unidade parada em uma porta não pode atacar.
+>
+> O alcance é medido em pontos: cada tile custa 1 ponto. Para **Arqueiros, Magos e Lanceiros**, tiles de terreno lento (incluindo água) custam 2 pontos. Por exemplo, o Arqueiro (alcance 6) atinge 6 tiles em terreno rápido, mas só 3 em terreno lento.
 
 ---
 
 ## Unidades
 
-| Unidade | HP | ATK | DEF | Alcance | Movimento |
-|---|---|---|---|---|---|
-| **Archer** | 10 | 2 | 2 | 6 | 4 |
-| **Mage** | 10 | 2 | 2 | 5 | 5 |
-| **Spearman** | 10 | 4 | 2 | 2 | 6 |
-| **Thief** | 10 | 5 | 2 | 1 | 6 |
-| **Fighter** | 15 | 4 | 3 | 1 | 6 |
-| **Cleric** | 20 | 3 | 4 | 1 | 6 |
-| **Barbarian** | 20 | 5–6 | 4 | 1 | 4 |
-| **Warrior** | 25 | 4 | 5 | 1 | 4 |
+| Unidade | HP | ATK | DEF | Alcance | Movimento | Custo |
+|---|---|---|---|---|---|---|
+| **Archer** | 10 | 2 | 2 | 6 | 4 | 9 |
+| **Mage** | 10 | 2 | 2 | 5 | 5 | 9 |
+| **Spearman** | 10 | 4 | 2 | 2 | 6 | 8 |
+| **Thief** | 10 | 5 | 2 | 1 | 6 | 9 |
+| **Fighter** | 15 | 4 | 3 | 1 | 6 | 12 |
+| **Cleric** | 20 | 3 | 4 | 1 | 6 | 16 |
+| **Barbarian** | 20 | 5 | 4 | 1 | 4 | 16 |
+| **Warrior** | 25 | 4 | 5 | 1 | 4 | 21 |
+| **Paladin** | 18 | 4 | 4 | 1 | 5 | 15 |
+| **Berserker** | 16 | 7 | 2 | 1 | 5 | 14 |
+| **Assassin** | 8 | 6 | 1 | 1 | 7 | 8 |
+| **Ranger** | 10 | 3 | 2 | 5 | 5 | 12 |
+| **Necromancer** | 8 | 4 | 2 | 4 | 4 | 8 |
+| **Halberdier** | 14 | 4 | 3 | 2 | 4 | 11 |
 
-> O **Thief** atravessa portas e terrenos especiais com custo reduzido de movimento. **Arqueiros** e **Magos** podem atacar sobre água.
+> **Thief**, **Assassin** e **Ranger** pagam só 1 ponto de movimento em terreno lento (portas continuam custando 2). **Archer**, **Mage**, **Ranger** e **Necromancer** podem mirar em tiles de água. O **Halberdier** tem alcance 2 em qualquer terreno.
+
+### Montando o exército
+
+Antes de cada partida você escolhe a classe de cada uma das 8 posições iniciais do seu time, gastando até **100 pontos** (custo na tabela acima). O botão **Classic army** volta para o exército desenhado no mapa, que custa exatamente 100. No modo Player vs Player, cada jogador monta o seu; a CPU usa o exército do mapa.
 
 ---
 
@@ -91,10 +131,13 @@ Cada unidade possui **4 PM (Pontos de Magia)** e pode usar **uma skill por turno
 
 | Tipo | Efeito |
 |---|---|
-| **Terreno rápido** | Custa 1 ponto de movimento (em vez de 2) |
-| **Água** | Intransponível para a maioria das unidades. Arqueiros e Magos podem atacar sobre ela. |
-| **Porta** | Bloqueia passagem para a maioria das unidades, exceto o Thief |
-| **Árvores / Obstáculos** | Bloqueiam movimento e linha de visão de ataques |
+| **Terreno rápido** | Custa 1 ponto de movimento |
+| **Terreno lento** | Custa 2 pontos de movimento (1 para o Thief) |
+| **Água** | Ninguém atravessa andando. Ataques passam por cima dela. |
+| **Porta** | Todos passam, com custo 2. Bloqueia a linha de ataque, e quem está sobre ela não pode atacar nem ser atacado. |
+| **Árvores / Paredes** | Bloqueiam movimento e linha de ataque |
+
+> O movimento é só nas 4 direções (sem diagonal). As unidades passam por cima de aliados, mas não param sobre eles; inimigos bloqueiam a passagem. O caminho escolhido é sempre o mais barato e, entre os de mesmo custo, o com menos curvas.
 
 ---
 

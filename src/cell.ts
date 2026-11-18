@@ -36,7 +36,7 @@ export class Cell extends ex.Actor {
     this.decoration = new ex.Actor({ anchor: ex.vec(0, 0) })
     this.addChild(this.decoration)
 
-    this.pathNode = new PathNodeComponent(this.pos)
+    this.pathNode = new PathNodeComponent(this.pos, x, y)
     this.addComponent(this.pathNode)
 
     RangeHighlightAnimation.scale = SCALE_CURSOR

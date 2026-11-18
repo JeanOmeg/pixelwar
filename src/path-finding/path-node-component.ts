@@ -1,10 +1,8 @@
 import * as ex from 'excalibur'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class PathNodeComponent<T = any> extends ex.Component {
+export class PathNodeComponent extends ex.Component {
   static type = 'path-node' as const
   readonly type = 'path-node' as const
-  pos = ex.vec(0, 0)
   /**
    * Is this path node traversable by anything at all?
    */
@@ -14,21 +12,26 @@ export class PathNodeComponent<T = any> extends ex.Component {
   isDoor = false
   isWater = false
   /**
-   * Is this path node traversable by certain things
+   * Who can pass through this node: -1 when empty, otherwise the mask of the
+   * player whose unit is standing here (32-bit mask)
    */
-  walkableMask: number = -1 // 32-bit mask
-  constructor(pos: ex.Vector) {
+  walkableMask: number = -1
+
+  connections: PathNodeComponent[] = []
+
+  pos: ex.Vector
+  /** Grid coordinates */
+  x: number
+  y: number
+
+  constructor(pos: ex.Vector, x: number, y: number) {
     super()
     this.pos = pos
+    this.x = x
+    this.y = y
   }
 
-  gScore = Infinity
-  hScore = Infinity
-  weight = 1
-  data?: T
-  direction: ex.Vector = ex.Vector.Zero
-
-  connections: PathNodeComponent<T>[] = []
-
-  previousNode: PathNodeComponent<T> | null = null
+  get isOccupied(): boolean {
+    return this.walkableMask !== -1
+  }
 }

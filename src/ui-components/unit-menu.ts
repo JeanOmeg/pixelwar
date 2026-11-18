@@ -1,95 +1,126 @@
-import { LitElement } from 'lit'
-import { customElement, property, query, state } from 'lit/decorators'
-import { Unit } from '../unit'
-import { renderUnitMenu } from './unit-menu.view'
+import { LitElement, TemplateResult, css, html, nothing } from 'lit'
+import { customElement, property, query, state } from 'lit/decorators.js'
+import { theme } from './theme'
+import { MenuItem, Team } from './view-models'
+
+export interface AnchorRect {
+  left: number
+  right: number
+  top: number
+  bottom: number
+}
+
+/**
+ * Action menu shown next to the selected unit. Flips to the other side of the
+ * unit when it doesn't fit. Fires `select` (detail = item id) and `close`
+ * (click outside).
+ */
 @customElement('unit-menu')
 export class UnitMenu extends LitElement {
+  static styles = [theme, css`
+    :host { position: absolute; inset: 0; pointer-events: none; }
+    .overlay { position: absolute; inset: 0; pointer-events: auto; }
+    .menu {
+      position: absolute;
+      width: calc(210 * var(--u));
+      pointer-events: auto;
+      animation: pop 120ms steps(3);
+    }
+    @keyframes pop {
+      from { transform: scale(0.85); opacity: 0; }
+    }
+    .items { display: flex; flex-direction: column; padding: calc(4 * var(--u)) 0; }
+    .btn { width: 100%; justify-content: space-between; }
+    .btn .detail { font-size: calc(14 * var(--t)); color: var(--mp); }
+    .btn:hover .detail, .btn:focus-visible .detail { color: #fff; }
+    .btn .arrow { font-size: calc(14 * var(--t)); }
+    .sub { display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.05); }
+    .sub .btn { flex-wrap: wrap; padding-left: calc(24 * var(--u)); }
+    .sub .desc {
+      flex-basis: 100%;
+      font-size: calc(14 * var(--t));
+      line-height: 1.25;
+      color: var(--muted);
+      text-shadow: none;
+    }
+    .sub .btn:hover:not(:disabled) .desc { color: #fff; }
+    .sep { height: calc(3 * var(--u)); margin: calc(4 * var(--u)) 0; background: rgba(255, 255, 255, 0.12); }
+  `]
 
-  createRenderRoot() {
-    return this
-  }
+  @property({ type: Boolean, reflect: true })
+    open = false
 
-  @property({ type: Number })
-    left: number = 0
+  @property()
+    title = ''
 
-  @property({ type: Number })
-    leftTooltip: number = 0
-
-  @property({ type: Number })
-    rightTooltip: number = 0
-
-  @property({ type: Number })
-    top: number = 0
-
-  @property({ type: Number })
-    fontSize: number = 0
-
-  @property({ type: Number })
-    width: number = 0
+  @property()
+    team: Team = 'blue'
 
   @property({ attribute: false })
-    unit: Unit | null = null
+    items: MenuItem[] = []
 
-  @property({ type: Number })
-    pixelConversion: number = 1
-
-  @property({ type: Boolean })
-    showSkillsList: boolean = false
+  @property({ attribute: false })
+    anchor: AnchorRect = { left: 0, right: 0, top: 0, bottom: 0 }
 
   @state()
-    _show: boolean = false
+  private expanded: string | null = null
 
   @query('.menu')
-    menuHtml?: HTMLDivElement
+  private menuEl?: HTMLDivElement
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  clearEvents: () => any = () => { }
-
-  override firstUpdated(): void {
-    this.menuHtml?.addEventListener('animationend', evt => {
-      if (evt.animationName === 'fadeOut') {
-        this._show = false
-        this.menuHtml?.classList.remove('hide')
-        this.requestUpdate()
-      }
-    })
+  override willUpdate(changed: Map<string, unknown>) {
+    if (changed.has('items') || (changed.has('open') && this.open)) this.expanded = null
   }
 
-  sendEvent(type: string) {
-    return () => {
-      this.dispatchEvent(new Event(type))
-      this.hide()
-      this.requestUpdate()
+  override updated() {
+    const menu = this.menuEl
+    if (!menu) return
+    const gap = 8
+    const width = menu.offsetWidth
+    const height = menu.offsetHeight
+    let left = this.anchor.right + gap
+    if (left + width > window.innerWidth - gap) left = this.anchor.left - width - gap
+    let top = this.anchor.top - height / 3
+    top = Math.min(Math.max(top, gap), window.innerHeight - height - gap)
+    menu.style.left = `${Math.max(left, gap)}px`
+    menu.style.top = `${top}px`
+  }
+
+  private choose(item: MenuItem) {
+    if (!item.enabled) return
+    if (item.children) {
+      this.expanded = this.expanded === item.id ? null : item.id
+      return
     }
+    this.dispatchEvent(new CustomEvent<string>('select', { detail: item.id }))
   }
 
-  private _debounce: number = 0
-  show() {
-    this._show = true
-    this._debounce = Date.now()
-    this.showSkillsList = false
-  }
-
-  hide() {
-    const now = Date.now()
-    if (now - this._debounce > 250) {
-      this.menuHtml?.classList.add('hide')
-      this.showSkillsList = false
-      this.clearEvents()
-    }
-  }
-
-  tooltipDirection(min = 0) {
-    return `${this.leftTooltip > 0 ? 'left:' : 'right:'} ${this.leftTooltip > 0 ? this.leftTooltip : this.rightTooltip - min}px; background-color: #${this.unit?.unitConfig.primary_color};`
-  }
-
-  toggleSkills = () => {
-    if (!this.unit?.unitConfig.skill?.length) return
-    this.showSkillsList = !this.showSkillsList
-    this.requestUpdate()
+  private renderItem(item: MenuItem): TemplateResult {
+    return html`
+      <button class="btn" ?disabled=${!item.enabled} @click=${() => this.choose(item)}>
+        <span>${item.label}</span>
+        ${item.children ? html`<span class="arrow">${this.expanded === item.id ? '▾' : '▸'}</span>` : nothing}
+        ${item.detail ? html`<span class="detail">${item.detail}</span>` : nothing}
+        ${item.description ? html`<span class="desc">${item.description}</span>` : nothing}
+      </button>
+      ${item.children && this.expanded === item.id ? html`
+        <div class="sub">${item.children.map(child => this.renderItem(child))}</div>
+      ` : nothing}
+    `
   }
 
   override render() {
-    return renderUnitMenu(this)
+    if (!this.open) return nothing
+    const [main, last] = [this.items.slice(0, -1), this.items[this.items.length - 1]]
+    return html`
+      <div class="overlay" @click=${() => this.dispatchEvent(new Event('close'))} @contextmenu=${(e: Event) => { e.preventDefault(); this.dispatchEvent(new Event('close')) }}></div>
+      <div class="panel menu team-${this.team}">
+        <div class="panel-title">${this.title}</div>
+        <div class="items">
+          ${main.map(item => this.renderItem(item))}
+          ${last ? html`<div class="sep"></div>${this.renderItem(last)}` : nothing}
+        </div>
+      </div>
+    `
   }
 }

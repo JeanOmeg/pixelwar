@@ -10,6 +10,8 @@ export abstract class Player {
 
   public readonly mask: number
   public active: boolean = false
+  /** Controlled by a person (mouse/keyboard) rather than the AI */
+  public readonly isHuman: boolean = false
   constructor(public name: string, public board: Board) {
     this.name = name
     this.board = board
@@ -33,6 +35,11 @@ export abstract class Player {
   }
 
   async turnEnd(): Promise<void> {
+    this.active = false
+  }
+
+  /** Releases input listeners when the match ends */
+  dispose(): void {
     this.active = false
   }
 

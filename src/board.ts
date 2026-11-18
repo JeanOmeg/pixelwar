@@ -13,10 +13,12 @@ export class Board {
   cells: Cell[] = []
 
   pathFinder: PathFinder
+  scene: ex.Scene
 
   constructor(rows: number, cols: number, scene: ex.Scene) {
     this.rows = rows
     this.cols = cols
+    this.scene = scene
     for (let i = 0; i < this.rows * this.cols; i++) {
       const cell = new Cell(i % this.cols, Math.floor(i / this.cols), this)
       this.cells.push(cell)
@@ -27,7 +29,7 @@ export class Board {
       cell.pathNode.connections = cell.getNeighbors().map(c => c.pathNode)
     }
 
-    this.pathFinder = new PathFinder(scene)
+    this.pathFinder = new PathFinder()
   }
 
   getCenter() {
@@ -45,6 +47,14 @@ export class Board {
       }
     }
     return result
+  }
+
+  /**
+   * Units still alive, including ones walking between cells (which are
+   * temporarily off the board, so `getUnits()` doesn't see them)
+   */
+  getLivingUnits(): Unit[] {
+    return this.scene.actors.filter((actor): actor is Unit => actor instanceof Unit && actor.health > 0)
   }
 
   getEmptyCells(): Cell[] {

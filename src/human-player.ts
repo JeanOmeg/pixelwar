@@ -2,23 +2,33 @@ import * as ex from 'excalibur'
 import { Board } from './board'
 import { Player } from './player'
 import { SelectionManager } from './selection-manager'
-import { UIManager } from './ui-manager'
+import type { GameUI } from './game-ui'
 import { Cell } from './cell'
 import { Unit } from './unit'
 import { Resources } from './resources'
 
 
 export class HumanPlayer extends Player {
+  override readonly isHuman = true
   private humanMove = new ex.Future<void>()
+  private subscriptions: ex.Subscription[] = []
 
-  constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public uiManager: UIManager, board: Board) {
+  constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public ui: GameUI, board: Board) {
     super(name, board)
     this.engine = engine
     this.selectionManager = selectionManager
-    this.uiManager = uiManager
-    engine.input.pointers.on('down', this.pointerClick.bind(this))
-    engine.input.pointers.on('move', this.pointerMove.bind(this))
+    this.ui = ui
+    this.subscriptions.push(
+      engine.input.pointers.on('down', this.pointerClick.bind(this)),
+      engine.input.pointers.on('move', this.pointerMove.bind(this))
+    )
     document.body.oncontextmenu = () => false
+  }
+
+  override dispose() {
+    super.dispose()
+    this.subscriptions.forEach(s => s.close())
+    this.subscriptions = []
   }
 
   async pointerClick(pointer: ex.PointerEvent) {
@@ -62,28 +72,65 @@ export class HumanPlayer extends Player {
       this.selectionManager.showCursor(cellBelowPointer.x, cellBelowPointer.y)
     }
 
-    if (!this.selectionManager.currentUnitSelection) return
+    this.showSelectionHighlight(cellBelowPointer)
+  }
+
+  /** Range of the selected unit (move or attack mode) plus the path/target under `hovered` */
+  private showSelectionHighlight(hovered: Cell | null) {
+    const unit = this.selectionManager.currentUnitSelection
+    if (!unit?.cell) return
 
     this.selectionManager.resetHighlight()
 
     if (this.selectionManager.currentSelectionMode === 'move') {
-      const currentRange = this.selectionManager.findMovementRange(this.selectionManager.currentUnitSelection)
-      this.selectionManager.showHighlight(currentRange, 'range')
+      const movementMap = this.board.pathFinder.getMovementMap(unit.cell.pathNode, this.mask, unit.effectiveMovement, unit.name)
+      this.selectionManager.showHighlight(movementMap.range, 'range')
 
-      const destination = this.board.getCellByWorldPos(pointer.worldPos)
-      if (destination) {
-        const currentPath = this.selectionManager.findPath(destination, currentRange, this.selectionManager.currentUnitSelection.name)
-        this.selectionManager.showHighlight(currentPath, 'path')
+      if (hovered) {
+        const path = movementMap.pathTo(hovered.pathNode)
+        if (path.length > 1) this.selectionManager.showHighlight(path, 'path')
       }
     } else {
-      const currentRange = this.selectionManager.findAttackRange(this.selectionManager.currentUnitSelection)
+      const currentRange = this.selectionManager.findAttackRange(unit)
       this.selectionManager.showHighlight(currentRange, 'attack')
 
-      const destination = this.board.getCellByWorldPos(pointer.worldPos)
-      if (destination && this.hasNonPlayerUnit(destination)) {
-        this.selectionManager.showHighlight([destination.pathNode], 'path')
+      if (hovered && this.hasNonPlayerUnit(hovered) && currentRange.includes(hovered.pathNode)) {
+        this.selectionManager.showHighlight([hovered.pathNode], 'path')
       }
     }
+  }
+
+  private selectMode(unit: Unit, mode: 'move' | 'attack') {
+    this.selectionManager.selectUnit(unit, mode)
+    this.showSelectionHighlight(null)
+  }
+
+  /**
+   * A skill picked from the menu (Run / Special Attack) only takes effect on
+   * the next move/attack. If that action didn't happen, give the MP back.
+   */
+  private refundPendingSkill(unit: Unit) {
+    if (unit.isRunning) {
+      unit.isRunning = false
+      if (!unit.moved) {
+        unit.mp += 2
+        unit.usedSkill = false
+      }
+    }
+    if (unit.forcesCritical && !unit.attacked) {
+      unit.forcesCritical = false
+      unit.mp += 4
+      unit.usedSkill = false
+    }
+  }
+
+  /** Esc: leaves move/attack mode, refunding a pending skill */
+  cancelSelection() {
+    if (!this.active) return
+    const unit = this.selectionManager.currentUnitSelection
+    if (unit) this.refundPendingSkill(unit)
+    this.selectionManager.reset()
+    this.ui.dismissAll()
   }
 
   async maybeMove(unit: Unit, destination: Cell | null) {
@@ -91,19 +138,10 @@ export class HumanPlayer extends Player {
       this.active = false
       Resources.TargetSelectSound.play()
       await this.selectionManager.selectDestinationAndMove(unit, destination)
-      if (unit.isRunning) {
-        unit.isRunning = false
-        if (!unit.moved) {
-          unit.mp += 2
-          unit.usedSkill = false
-        }
-      }
+      this.refundPendingSkill(unit)
       this.humanMove.resolve()
     } else {
-      if (unit.isRunning) {
-        unit.isRunning = false
-        unit.mp += 2
-      }
+      this.refundPendingSkill(unit)
       this.selectionManager.reset()
     }
   }
@@ -112,31 +150,23 @@ export class HumanPlayer extends Player {
     if (destination && attacker.canAttack() && this.hasNonPlayerUnit(destination)) {
       this.active = false
       await this.selectionManager.selectDestinationAndAttack(attacker, destination)
-      if (attacker.forcesCritical) {
-        attacker.forcesCritical = false
-        attacker.mp += 4
-        attacker.usedSkill = false
-      }
+      this.refundPendingSkill(attacker)
       this.humanMove.resolve()
     } else {
-      if (attacker.forcesCritical) {
-        attacker.forcesCritical = false
-        attacker.mp += 4
-        attacker.usedSkill = false
-      }
+      this.refundPendingSkill(attacker)
       this.selectionManager.reset()
     }
 
     const won = this.hasWon()
     if (won) {
       this.humanMove.resolve()
-      this.uiManager.dismissAll()
+      this.ui.dismissAll()
     }
   }
 
   /**
    * Highlight the range of any unit friendly or not
-   * @param cell 
+   * @param cell
    */
   async highlightUnitMoveRange(cell: Cell | null) {
     if (cell?.unit) {
@@ -150,14 +180,7 @@ export class HumanPlayer extends Player {
 
   async highlightUnitAttackRange(cell: Cell | null) {
     if (cell?.unit) {
-      const unit = cell.unit
-      const attack = this.board.pathFinder.getRangeAttack(
-        cell.pathNode,
-        ~unit.player.mask,
-        unit.unitConfig.range,
-        unit.name
-      )
-      this.selectionManager.showHighlight(attack, 'attack')
+      this.selectionManager.showHighlight(this.selectionManager.findAttackRange(cell.unit), 'attack')
     } else {
       this.selectionManager.reset()
     }
@@ -165,45 +188,29 @@ export class HumanPlayer extends Player {
 
   async maybeSelectUnit(cell: Cell | null) {
     if (cell?.unit && this.hasPlayerUnitWithActions(cell)) {
-      const maybeClickedCell = this.board.getCellByWorldPos(cell.pos)
-      if (maybeClickedCell) {
-        cell.unit.setAnim(cell.unit.selectAnimationMove())
-        this.selectionManager.showCursor(maybeClickedCell.x, maybeClickedCell.y)
-      }
+      const unit = cell.unit
+      unit.setAnim(unit.selectAnimationMove())
+      this.selectionManager.showCursor(cell.x, cell.y)
       Resources.SelectSound.play()
 
-      this.uiManager.showUnitMenu(cell.unit, {
-        move: () => {
-          this.selectionManager.selectUnit(cell.unit!, 'move')
-        },
-        attack: () => {
-          this.selectionManager.selectUnit(cell.unit!, 'attack')
-        },
+      this.ui.showUnitMenu(unit, {
+        move: () => this.selectMode(unit, 'move'),
+        attack: () => this.selectMode(unit, 'attack'),
         run: () => {
-          const unit = cell.unit!
           unit.mp -= 2
           unit.isRunning = true
           unit.usedSkill = true
-          this.selectionManager.selectUnit(unit, 'move')
+          this.selectMode(unit, 'move')
         },
         specialAttack: () => {
-          const unit = cell.unit!
           unit.mp -= 4
           unit.forcesCritical = true
           unit.usedSkill = true
-          this.selectionManager.selectUnit(unit, 'attack')
+          this.selectMode(unit, 'attack')
         },
         pass: async () => {
-          cell.unit?.setAnim(cell.unit?.selectAnimationIdle())
-          await cell.unit?.pass()
-          this.selectionManager.reset()
-          this.humanMove.resolve()
-        },
-        passTurn: async () => {
-          let  units = this.board.getUnits()
-          units = units.filter(u => u.player === this)
-          units.forEach(unit => unit.setAnim(unit.selectAnimationIdle()))
-          for (const unit of units) await unit.pass()
+          unit.setAnim(unit.selectAnimationIdle())
+          await unit.pass()
           this.selectionManager.reset()
           this.humanMove.resolve()
         }
@@ -211,6 +218,19 @@ export class HumanPlayer extends Player {
     } else {
       this.selectionManager.reset()
     }
+  }
+
+  /** Ends the turn for every unit of this player (End Turn button) */
+  async endTurn() {
+    if (!this.active) return
+    const unit = this.selectionManager.currentUnitSelection
+    if (unit) this.refundPendingSkill(unit)
+    this.ui.dismissAll()
+    const units = this.board.getUnits().filter(u => u.player === this)
+    units.forEach(u => u.setAnim(u.selectAnimationIdle()))
+    for (const u of units) await u.pass()
+    this.selectionManager.reset()
+    this.humanMove.resolve()
   }
 
   hasNonPlayerUnit(maybeClickedCell: Cell) {

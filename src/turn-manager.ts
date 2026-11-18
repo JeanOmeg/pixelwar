@@ -1,303 +1,121 @@
 import * as ex from 'excalibur'
 import { Player } from './player'
 import { SelectionManager } from './selection-manager'
-import { SCALE } from './config'
-import { HumanPlayer } from './human-player'
 import { Resources } from './resources'
 import { LevelBase } from './levels/level-base'
+import type { GameUI } from './game-ui'
+import type { GameResultView } from './ui-components/view-models'
+
+interface MatchResult {
+  /** null when the match ended in a draw */
+  winner: Player | null
+  reason: 'elimination' | 'turn-limit'
+}
 
 export class TurnManager {
-  public currentTurn = 1
+  /** Full rounds (every player played once) */
+  public round = 1
   public currentPlayer: Player
   private currentPlayerIndex = 0
-  public selectionManager: SelectionManager
-  private turnActor: ex.Actor
-  private turnText: ex.Text
-  private topScreen = ex.vec(0, 0)
-  private centerScreen = ex.vec(0, 0)
-  private bottomScreen = ex.vec(0, 0)
-  private victory: ex.Actor
-  private victoryDirections: ex.Actor
-  private failure: ex.Actor
-  private turn: number = this.maxTurns
+  /** Player phases left before the match ends in a draw */
+  private phasesLeft: number
 
-  constructor(public engine: ex.Engine, public level: LevelBase, public players: Player[], selectionManager: SelectionManager, public maxTurns: number) {
+  constructor(public engine: ex.Engine, public level: LevelBase, public players: Player[], public selectionManager: SelectionManager, public ui: GameUI, maxTurns: number) {
     if (players.length === 0) throw Error('Players should be non-zero in length')
-    this.currentPlayer = players[this.currentPlayerIndex]
-    this.selectionManager = selectionManager
+    this.engine = engine
     this.level = level
-    this.maxTurns = maxTurns
-
-    const screenWidth = engine.screen.contentArea.width
-    const screenHeight = engine.screen.contentArea.height
-
-    this.topScreen = ex.vec(screenWidth / 2, -(screenHeight + 200))
-    this.centerScreen = ex.vec(screenWidth / 2, screenHeight / 2)
-    this.bottomScreen = ex.vec(screenWidth / 2, screenHeight + 200)
-
-    this.turnText = new ex.Text({
-      text: `Turn ${this.currentTurn}`,
-      font: new ex.Font({
-        family: 'notjamslab14',
-        size: 32 * SCALE.x,
-        unit: ex.FontUnit.Px,
-        color: ex.Color.White,
-        baseAlign: ex.BaseAlign.Top,
-        quality: 1
-      }),
-    })
-
-    this.turnActor = new ex.Actor({
-      name: 'turn text',
-      pos: this.topScreen,
-      coordPlane: ex.CoordPlane.Screen,
-      z: 10
-    })
-
-    this.turnActor.graphics.opacity = 0
-    this.turnActor.graphics.add('text', this.turnText)
-    this.turnActor.graphics.use('text')
-    this.turnActor.addChild(new ex.Actor({
-      color: new ex.Color(255, 255, 255, .4),
-      width: screenWidth,
-      height: 100,
-    }))
-    engine.add(this.turnActor)
-
-    const victory = new ex.Text({
-      text: 'Victory!',
-      font: new ex.Font({
-        family: 'notjamslab14',
-        size: 32 * SCALE.x,
-        unit: ex.FontUnit.Px,
-        color: ex.Color.White,
-        baseAlign: ex.BaseAlign.Top,
-        quality: 1
-      }),
-    })
-
-    this.victory = new ex.Actor({
-      name: 'victory text',
-      pos: this.topScreen,
-      coordPlane: ex.CoordPlane.Screen,
-      color: new ex.Color(50, 240, 50, .4),
-      width: screenWidth,
-      height: 100,
-      z: 10
-    })
-
-    this.victory.graphics.opacity = 0
-    this.victory.graphics.add('text', victory)
-    this.victory.graphics.use('text')
-    engine.add(this.victory)
-
-    const victoryDirections = new ex.Text({
-      text: 'Click to proceed!',
-      font: new ex.Font({
-        family: 'notjamslab14',
-        size: 32 * SCALE.x,
-        unit: ex.FontUnit.Px,
-        color: ex.Color.White,
-        baseAlign: ex.BaseAlign.Top,
-        quality: 1
-      }),
-    })
-
-    this.victoryDirections = new ex.Actor({
-      name: 'directions',
-      pos: this.topScreen,
-      coordPlane: ex.CoordPlane.Screen,
-      color: new ex.Color(50, 240, 50, .4),
-      width: screenWidth,
-      height: 100,
-      z: 10
-    })
-
-    this.victoryDirections.graphics.opacity = 0
-    this.victoryDirections.graphics.add('text', victoryDirections)
-    this.victoryDirections.graphics.use('text')
-    engine.add(this.victoryDirections)
-
-    const failureText1 = new ex.Text({
-      text: 'Failure!',
-      font: new ex.Font({
-        family: 'notjamslab14',
-        size: 32 * SCALE.x,
-        unit: ex.FontUnit.Px,
-        color: ex.Color.White,
-        textAlign: ex.TextAlign.Center,
-        baseAlign: ex.BaseAlign.Top,
-        quality: 1
-      }),
-    })
-
-    const failureText2 = new ex.Text({
-      text: 'Click to try again!',
-      font: new ex.Font({
-        family: 'notjamslab14',
-        size: 32 * SCALE.x,
-        unit: ex.FontUnit.Px,
-        color: ex.Color.White,
-        textAlign: ex.TextAlign.Center,
-        baseAlign: ex.BaseAlign.Top,
-        quality: 1
-      }),
-    })
-
-    const failureGroup = new ex.GraphicsGroup({
-      members: [
-        new ex.Rectangle({
-          width: screenWidth,
-          height: 250,
-          color: new ex.Color(240, 50, 50, .4)
-        }),
-        { graphic: failureText1, useBounds: false, offset: ex.vec(screenWidth / 2, 0) },
-        { graphic: failureText2, useBounds: false, offset: ex.vec(screenWidth / 2, 100) },
-      ]
-    })
-
-    this.failure = new ex.Actor({
-      name: 'failure text',
-      pos: this.topScreen,
-      coordPlane: ex.CoordPlane.Screen,
-      z: 10
-    })
-
-    this.failure.graphics.opacity = 0
-    this.failure.graphics.use(failureGroup)
-    engine.add(this.failure)
+    this.players = players
+    this.selectionManager = selectionManager
+    this.ui = ui
+    this.currentPlayer = players[0]
+    this.phasesLeft = maxTurns
   }
 
-  async showTurnDisplay() {
-    const color = this.currentPlayerIndex % 2 === 0 ? ex.Color.Blue : ex.Color.Red
-
-    this.turnText.text = `${this.currentPlayer.name} Phase - Turn ${(this.turn - this.maxTurns) + 1} - Round ${this.currentTurn}`
-    this.turnText.color = color
-    const transitionTime = 1000
-    const waitTime = 1000
-
-    await this.turnActor.actions.runAction(
-      new ex.ParallelActions([
-        new ex.ActionSequence(this.turnActor, ctx => ctx.moveTo({
-          pos: this.centerScreen,
-          duration: transitionTime,
-          easing: ex.EasingFunctions.EaseInOutCubic
-        }).delay(waitTime).moveTo({
-          pos: this.bottomScreen,
-          duration: transitionTime,
-          easing: ex.EasingFunctions.EaseInOutCubic
-        })),
-        new ex.ActionSequence(this.turnActor, ctx => ctx.fade(1, transitionTime).delay(waitTime).fade(0, transitionTime))
-      ])
-    ).toPromise()
-
-    this.turnActor.pos = this.topScreen
-    return true
-  }
-
-  async showGameOver() {
-    const transitionTime = 1000
-    await this.failure.actions.runAction(
-      new ex.ParallelActions([
-        new ex.ActionSequence(this.failure, ctx =>
-          ctx.moveTo({ pos: this.centerScreen, duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic })),
-        new ex.ActionSequence(this.failure, ctx =>
-          ctx.fade(1, transitionTime))
-      ])
-    ).toPromise()
-  }
-
-  async showVictory() {
-    const transitionTime = 1000
-    await this.victory.actions.runAction(
-      new ex.ParallelActions([
-        new ex.ActionSequence(this.victory, ctx =>
-          ctx.moveTo({ pos: this.centerScreen, duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic })),
-        new ex.ActionSequence(this.victory, ctx =>
-          ctx.fade(1, transitionTime))
-      ])
-    ).toPromise()
-
-    await this.victoryDirections.actions.runAction(
-      new ex.ParallelActions([
-        new ex.ActionSequence(this.victoryDirections, ctx =>
-          ctx.moveTo({ pos: this.centerScreen.add(ex.vec(0, 150)), duration: transitionTime, easing: ex.EasingFunctions.EaseInOutCubic })),
-        new ex.ActionSequence(this.victoryDirections, ctx =>
-          ctx.fade(1, transitionTime))
-      ])
-    ).toPromise()
-  }
-
-  async checkWin(player: Player) {
-    const lost = player.hasLost()
-
-    if (lost || this.maxTurns == 0) {
-      if (player instanceof HumanPlayer) {
-        await this.showGameOver()
-      } else {
-        await this.showVictory()
-      }
-
-      this.engine.input.pointers.once('down', async () => {
-        Resources.LevelMusic2.stop()
-        await this.returnToMainMenu(this.engine)
-      })
-
-      return true
-    }
-
-    return false
+  /** Winner when only one player still has units */
+  private checkResult(): MatchResult | null {
+    const alive = this.players.filter(p => !p.hasLost())
+    if (alive.length > 1) return null
+    return { winner: alive[0] ?? null, reason: 'elimination' }
   }
 
   async start() {
-    while (this.maxTurns >= 0) {
-      const winFirst = await this.checkWin(this.currentPlayer)
-      if (winFirst) return
+    for (;;) {
+      const result = this.checkResult() ?? (this.phasesLeft <= 0 ? { winner: null, reason: 'turn-limit' } as MatchResult : null)
+      if (result) {
+        await this.finish(result)
+        return
+      }
+
       this.selectionManager.selectPlayer(this.currentPlayer)
-      await this.showTurnDisplay()
-      await ex.Util.delay(1000)
+      this.ui.setTurn(this.currentPlayer, this.round, this.phasesLeft)
+      await this.ui.playPhaseBanner(this.currentPlayer, this.round)
       await this.currentPlayer.turnStart()
-      let move = true
-      do {
-        move = await this.currentPlayer.makeMove()
-      } while (!move)
-      const win = await this.checkWin(this.currentPlayer)
-      if (win) return
+
+      let done = false
+      while (!done) {
+        done = await this.currentPlayer.makeMove()
+      }
+
       await this.currentPlayer.turnEnd()
-      await this.nextTurn()
+      this.nextTurn()
     }
   }
 
-  async nextTurn() {
-    this.maxTurns--
-    this.currentPlayerIndex++
-    this.currentPlayerIndex = this.currentPlayerIndex % this.players.length
+  nextTurn() {
+    this.phasesLeft--
+    this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length
     this.currentPlayer = this.players[this.currentPlayerIndex]
     if (this.currentPlayerIndex === 0) {
-      this.currentTurn++
+      this.round++
     }
   }
 
-  showStartScreenUi(engine: ex.Engine) {
-    const current = document.querySelector('start-screen-ui')
-    if (current) {
-      current.remove()
+  private describe(result: MatchResult): GameResultView {
+    // the result is checked after nextTurn(), so a new round may have just been counted
+    const lastRound = this.currentPlayerIndex === 0 ? Math.max(this.round - 1, 1) : this.round
+    const winner = result.winner
+    if (!winner) {
+      return {
+        title: 'Draw',
+        subtitle: result.reason === 'turn-limit' ? `Turn limit reached after ${lastRound} rounds` : 'No units left',
+        team: null
+      }
     }
 
-    const startScreen = document.createElement('start-screen-ui') as HTMLElement & {
-    engine: ex.Engine
+    const survivors = this.level.board.getLivingUnits().filter(u => u.player === winner).length
+    const subtitle = `Round ${lastRound} - ${survivors} unit${survivors === 1 ? '' : 's'} left`
+    const humans = this.players.filter(p => p.isHuman)
+
+    // Player vs CPU: speak from the human's point of view
+    if (humans.length === 1) {
+      return { title: winner.isHuman ? 'Victory!' : 'Defeat', subtitle, team: this.ui.teamOf(winner) }
+    }
+    return { title: `${this.ui.teamLabel(winner)} wins!`, subtitle, team: this.ui.teamOf(winner) }
   }
 
-    startScreen.engine = engine
+  private async finish(result: MatchResult) {
+    this.selectionManager.reset()
+    const choice = await this.ui.showGameOver(this.describe(result))
+    Resources.LevelMusic2.stop()
+    if (choice === 'rematch') {
+      await this.level.restart()
+    } else {
+      await this.returnToMainMenu()
+    }
+  }
+
+  showStartScreenUi() {
+    document.querySelector('start-screen-ui')?.remove()
+    const startScreen = document.createElement('start-screen-ui') as HTMLElement & { engine: ex.Engine }
+    startScreen.engine = this.engine
     document.body.appendChild(startScreen)
   }
 
-  async returnToMainMenu(engine: ex.Engine) {
-    await engine.goToScene('menu-shell', {
+  async returnToMainMenu() {
+    await this.engine.goToScene('menu-shell', {
       destinationIn: new ex.FadeInOut({ duration: 500, direction: 'in' }),
       sourceOut: new ex.FadeInOut({ duration: 1000, direction: 'out' })
     })
-
-    this.showStartScreenUi(engine)
+    this.showStartScreenUi()
   }
 }

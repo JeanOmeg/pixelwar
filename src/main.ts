@@ -1,6 +1,7 @@
 import * as ex from 'excalibur'
-import { loader, Resources } from './resources'
-import { LevelBase, LevelData } from './levels/level-base'
+import { loader } from './resources'
+import { LevelBase } from './levels/level-base'
+import { MAPS } from './maps'
 import './ui-components/audio-menu'
 import './ui-components/start-screen-ui'
 import { AudioManager } from './audio-manager'
@@ -60,7 +61,7 @@ function mountMobileWarning() {
             text-shadow: 3px 3px 0 black;
           "
         >
-          PixelWar
+          PixelFantasyWar
         </h1>
 
         <p
@@ -88,29 +89,13 @@ function mountMobileWarning() {
   `
 }
 
+/** One scene per entry in MAPS (maps.ts), plus an empty scene behind the menus */
 function addMaps() {
-  const menuShell = new ex.Scene()
-  game.addScene('menu-shell', menuShell)
-
-  const level1M1Data: LevelData = {
-    name: 'level1-map1',
-    maxTurns: 100,
-    players: ['Human', 'CPU'],
-    tiledMap: Resources.TiledMap1
+  game.addScene('menu-shell', new ex.Scene())
+  for (const map of MAPS) {
+    const level = new LevelBase(map)
+    game.addScene(level.name, level)
   }
-
-  const level1m1 = new LevelBase(level1M1Data, 'level1-map1')
-  game.addScene(level1m1.name, level1m1)
-
-  const level1M2Data: LevelData = {
-    name: 'level1-map2',
-    maxTurns: 100,
-    players: ['Human', 'CPU'],
-    tiledMap: Resources.TiledMap2
-  }
-
-  const level1m2 = new LevelBase(level1M2Data, 'level1-map2')
-  game.addScene(level1m2.name, level1m2)
 }
 
 function mountStartScreen() {
@@ -130,6 +115,15 @@ if (isMobileDevice()) {
   addMaps()
 
   game.start(loader).then(() => {
+    // Excalibur's loader leaves a keyup(Enter) listener that calls its play
+    // button getter, which rebuilds the "PLAY!" button after the loader is gone.
+    // From now on that getter builds an invisible button instead.
+    loader.startButtonFactory = () => {
+      const hiddenButton = document.createElement('button')
+      hiddenButton.hidden = true
+      hiddenButton.tabIndex = -1
+      return hiddenButton
+    }
     mountStartScreen()
   })
 }

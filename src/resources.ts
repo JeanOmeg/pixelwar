@@ -31,16 +31,30 @@ import WarriorASpriteSheetPath from './assets/minis/WarriorA.png'
 import WarriorBSpriteSheetPath from './assets/minis/WarriorB.png'
 import ThiefASpriteSheetPath from './assets/minis/ThiefA.png'
 import ThiefBSpriteSheetPath from './assets/minis/ThiefB.png'
-import Map1Path from './assets/maps/Map1.png'
-import Map2Path from './assets/maps/Map2.png'
+import PaladinASpriteSheetPath from './assets/minis/PaladinA.png'
+import PaladinBSpriteSheetPath from './assets/minis/PaladinB.png'
+import BerserkerASpriteSheetPath from './assets/minis/BerserkerA.png'
+import BerserkerBSpriteSheetPath from './assets/minis/BerserkerB.png'
+import AssassinASpriteSheetPath from './assets/minis/AssassinA.png'
+import AssassinBSpriteSheetPath from './assets/minis/AssassinB.png'
+import RangerASpriteSheetPath from './assets/minis/RangerA.png'
+import RangerBSpriteSheetPath from './assets/minis/RangerB.png'
+import NecromancerASpriteSheetPath from './assets/minis/NecromancerA.png'
+import NecromancerBSpriteSheetPath from './assets/minis/NecromancerB.png'
+import HalberdierASpriteSheetPath from './assets/minis/HalberdierA.png'
+import HalberdierBSpriteSheetPath from './assets/minis/HalberdierB.png'
 import Map1TmxPath from './assets/tiledMap/map_1.tmx'
 import Map2TmxPath from './assets/tiledMap/map_2.tmx'
+import Map3TmxPath from './assets/tiledMap/map_3.tmx'
+import Map4TmxPath from './assets/tiledMap/map_4.tmx'
+import Map5TmxPath from './assets/tiledMap/map_5.tmx'
+import Map6TmxPath from './assets/tiledMap/map_6.tmx'
+import Map7TmxPath from './assets/tiledMap/map_7.tmx'
+import Map8TmxPath from './assets/tiledMap/map_8.tmx'
 import TilesetTsxPath from './assets/tiledMap/NewFullTile.tsx'
 
 export const Resources = {
   //Maps
-  Map1: new ex.ImageSource(Map1Path),
-  Map2: new ex.ImageSource(Map2Path),
   // Utils
   TileSet: new ex.ImageSource(TilesetPath),
   TiledMap1:  new TiledResource(Map1TmxPath, {
@@ -53,6 +67,48 @@ export const Resources = {
   TiledMap2:  new TiledResource(Map2TmxPath, {
     pathMap: [
       { path: 'map_2.tmx', output: Map2TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap3:  new TiledResource(Map3TmxPath, {
+    pathMap: [
+      { path: 'map_3.tmx', output: Map3TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap4:  new TiledResource(Map4TmxPath, {
+    pathMap: [
+      { path: 'map_4.tmx', output: Map4TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap5:  new TiledResource(Map5TmxPath, {
+    pathMap: [
+      { path: 'map_5.tmx', output: Map5TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap6:  new TiledResource(Map6TmxPath, {
+    pathMap: [
+      { path: 'map_6.tmx', output: Map6TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap7:  new TiledResource(Map7TmxPath, {
+    pathMap: [
+      { path: 'map_7.tmx', output: Map7TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap8:  new TiledResource(Map8TmxPath, {
+    pathMap: [
+      { path: 'map_8.tmx', output: Map8TmxPath },
       { path: 'NewFullTile.png', output: TilesetPath },
       { path: 'NewFullTile.tsx', output: TilesetTsxPath }
     ]
@@ -85,7 +141,19 @@ export const Resources = {
   WarriorASpriteSheet: new ex.ImageSource(WarriorASpriteSheetPath),
   WarriorBSpriteSheet: new ex.ImageSource(WarriorBSpriteSheetPath),
   ThiefASpriteSheet: new ex.ImageSource(ThiefASpriteSheetPath),
-  ThiefBSpriteSheet: new ex.ImageSource(ThiefBSpriteSheetPath)
+  ThiefBSpriteSheet: new ex.ImageSource(ThiefBSpriteSheetPath),
+  PaladinASpriteSheet: new ex.ImageSource(PaladinASpriteSheetPath),
+  PaladinBSpriteSheet: new ex.ImageSource(PaladinBSpriteSheetPath),
+  BerserkerASpriteSheet: new ex.ImageSource(BerserkerASpriteSheetPath),
+  BerserkerBSpriteSheet: new ex.ImageSource(BerserkerBSpriteSheetPath),
+  AssassinASpriteSheet: new ex.ImageSource(AssassinASpriteSheetPath),
+  AssassinBSpriteSheet: new ex.ImageSource(AssassinBSpriteSheetPath),
+  RangerASpriteSheet: new ex.ImageSource(RangerASpriteSheetPath),
+  RangerBSpriteSheet: new ex.ImageSource(RangerBSpriteSheetPath),
+  NecromancerASpriteSheet: new ex.ImageSource(NecromancerASpriteSheetPath),
+  NecromancerBSpriteSheet: new ex.ImageSource(NecromancerBSpriteSheetPath),
+  HalberdierASpriteSheet: new ex.ImageSource(HalberdierASpriteSheetPath),
+  HalberdierBSpriteSheet: new ex.ImageSource(HalberdierBSpriteSheetPath)
 } as const
 
 export const CursorSpriteSheet = ex.SpriteSheet.fromImageSource({
@@ -2430,6 +2498,60 @@ export const ThiefBDeathDown = ex.Animation.fromSpriteSheetCoordinates({
     { x: 3, y: 8, duration: 125 }
   ]
 })
+
+/** The 12 animations every unit needs (left = side animation flipped) */
+export interface UnitAnimations {
+  idle: ex.Animation
+  idleUp: ex.Animation
+  idleDown: ex.Animation
+  move: ex.Animation
+  moveUp: ex.Animation
+  moveDown: ex.Animation
+  attack: ex.Animation
+  attackUp: ex.Animation
+  attackDown: ex.Animation
+  death: ex.Animation
+  deathUp: ex.Animation
+  deathDown: ex.Animation
+}
+
+/**
+ * Builds all unit animations from a standard mini sheet (4 columns x 14 rows of
+ * 32x32): rows 0-3 side, 5-8 facing down, 10-13 facing up; each block is
+ * idle / move / attack / death with 4 frames of 125 ms.
+ * Used by the newer classes; the original ones still have their animations spelled out above.
+ */
+export function buildUnitAnimations(image: ex.ImageSource): UnitAnimations {
+  const spriteSheet = ex.SpriteSheet.fromImageSource({
+    image,
+    grid: { rows: 14, columns: 4, spriteHeight: 32, spriteWidth: 32 }
+  })
+  const row = (y: number) => ex.Animation.fromSpriteSheetCoordinates({
+    spriteSheet,
+    strategy: ex.AnimationStrategy.Loop,
+    frameCoordinates: [0, 1, 2, 3].map(x => ({ x, y, duration: 125 }))
+  })
+  return {
+    idle: row(0), move: row(1), attack: row(2), death: row(3),
+    idleDown: row(5), moveDown: row(6), attackDown: row(7), deathDown: row(8),
+    idleUp: row(10), moveUp: row(11), attackUp: row(12), deathUp: row(13)
+  }
+}
+
+export const NewUnitAnimations = {
+  PaladinA: buildUnitAnimations(Resources.PaladinASpriteSheet),
+  PaladinB: buildUnitAnimations(Resources.PaladinBSpriteSheet),
+  BerserkerA: buildUnitAnimations(Resources.BerserkerASpriteSheet),
+  BerserkerB: buildUnitAnimations(Resources.BerserkerBSpriteSheet),
+  AssassinA: buildUnitAnimations(Resources.AssassinASpriteSheet),
+  AssassinB: buildUnitAnimations(Resources.AssassinBSpriteSheet),
+  RangerA: buildUnitAnimations(Resources.RangerASpriteSheet),
+  RangerB: buildUnitAnimations(Resources.RangerBSpriteSheet),
+  NecromancerA: buildUnitAnimations(Resources.NecromancerASpriteSheet),
+  NecromancerB: buildUnitAnimations(Resources.NecromancerBSpriteSheet),
+  HalberdierA: buildUnitAnimations(Resources.HalberdierASpriteSheet),
+  HalberdierB: buildUnitAnimations(Resources.HalberdierBSpriteSheet)
+}
 
 export const loader = new ex.Loader()
 loader.backgroundColor = 'black'

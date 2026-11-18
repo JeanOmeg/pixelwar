@@ -1,204 +1,235 @@
-import * as ex from 'excalibur'
 import { PathNodeComponent } from './path-node-component'
+import { getTerrainRules, TerrainRules } from './terrain-rules'
 
-export class PathFinder {
-  query: ex.Query<typeof PathNodeComponent>
+/** Direction index used only as the start state (no previous step) */
+const NO_DIRECTION = 4
+/** Priority = cost * COST_WEIGHT + turns, so turns only break ties between equal costs */
+const COST_WEIGHT = 1000
 
-  constructor(scene: ex.Scene) {
-    this.query = scene.world.queryManager.createQuery([PathNodeComponent])
+interface SearchState {
+  node: PathNodeComponent
+  dir: number
+  cost: number
+  turns: number
+  prev: SearchState | null
+}
+
+const priorityOf = (s: SearchState) => s.cost * COST_WEIGHT + s.turns
+
+function directionIndex(from: PathNodeComponent, to: PathNodeComponent): number {
+  if (to.y < from.y) return 0
+  if (to.y > from.y) return 1
+  if (to.x > from.x) return 2
+  return 3
+}
+
+/** Binary heap of search states ordered by `priorityOf` */
+class StateHeap {
+  private items: SearchState[] = []
+
+  private key(state: SearchState) {
+    return priorityOf(state)
   }
 
-  pos_x: string | undefined = undefined
-  pos_y: string | undefined = undefined
-  name_unit: string | undefined = undefined
-
-  heuristicWeight = 0.8
-  heuristic(start: PathNodeComponent, end: PathNodeComponent): number {
-    const startX = start.pos.x
-    const startY = start.pos.y
-    const endX = end.pos.x
-    const endY = end.pos.y
-
-    // manhattan distance
-    return Math.abs(startX - endX) + Math.abs(startY - endY)
+  get size() {
+    return this.items.length
   }
 
-  private _buildPath(currentNode: PathNodeComponent) {
-    const path: PathNodeComponent[] = []
-    while (currentNode.previousNode) {
-      path.unshift(currentNode)
-      currentNode = currentNode.previousNode
-    }
-    path.unshift(currentNode)
-    return path
-  }
-
-  private _getRangeHelperAttack(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number) {
-    if (range >= 0) {
-      let newRange
-      const unitName = this.name_unit
-      const startX = this.pos_x
-      const startY = this.pos_y
-
-      const name = cell.owner?.name as string
-      const x = this.getXOrYByNameCell(name, 'x')
-      const y = this.getXOrYByNameCell(name, 'y')
-
-      accum.push(cell)
-
-      const isStartCell = x === startX && y === startY
-      if (!isStartCell && cell.walkableMask !== -1) return
-
-      cell.connections.filter(node => node.isAttackable && !!(node.walkableMask & mask) && (startY == y || startX == x)).forEach(cell => {
-        newRange = cell.isFast ? 1 : 2
-        if (!cell.isFast && unitName !== 'Archer' && unitName !== 'Mage' && unitName !== 'Spearman') {
-          newRange = 1
-        }
-
-        this._getRangeHelperAttack(cell, accum, mask, range - newRange)
-      })
+  push(item: SearchState) {
+    const items = this.items
+    items.push(item)
+    let i = items.length - 1
+    while (i > 0) {
+      const parent = (i - 1) >> 1
+      if (this.key(items[parent]) <= this.key(items[i])) break
+      [items[parent], items[i]] = [items[i], items[parent]]
+      i = parent
     }
   }
 
-  getXOrYByNameCell(name: string, direction: 'x' | 'y'): string {
-    if (direction === 'x') {
-      return name.split(' ')[1].split(')')[0]
-    } else {
-      return name.split(',')[0].split('(')[1]
-    }
-  }
-
-  getNameUnit(name: string): string {
-    return name.replace(/[AB]$/, '')
-  }
-
-  getRangeAttack(start: PathNodeComponent, mask: number, range: number, unitName: string): PathNodeComponent[] {
-    let result: PathNodeComponent[] = []
-    if (start.isDoor) {
-      return result
-    }
-    const name = start.owner?.name as string
-    const x = this.getXOrYByNameCell(name, 'x')
-    const y = this.getXOrYByNameCell(name, 'y')
-
-    this.name_unit = this.getNameUnit(unitName)
-    this.pos_x = x
-    this.pos_y = y
-
-    this._getRangeHelperAttack(start, result, mask, range)
-
-    result = Array.from(new Set(result))
-    result = result.filter(node => node.isAttackable && (this.getXOrYByNameCell(node.owner?.name ?? '', 'x') === x || this.getXOrYByNameCell(node.owner?.name as string, 'y') === y))
-    result = result.filter(node => {
-      if (this.name_unit !== 'Archer' && this.name_unit !== 'Mage') {
-        return !node.isWater
+  pop(): SearchState | undefined {
+    const items = this.items
+    if (items.length === 0) return undefined
+    const top = items[0]
+    const last = items.pop() as SearchState
+    if (items.length > 0) {
+      items[0] = last
+      let i = 0
+      for (;;) {
+        const left = i * 2 + 1
+        const right = left + 1
+        let smallest = i
+        if (left < items.length && this.key(items[left]) < this.key(items[smallest])) smallest = left
+        if (right < items.length && this.key(items[right]) < this.key(items[smallest])) smallest = right
+        if (smallest === i) break
+        [items[smallest], items[i]] = [items[i], items[smallest]]
+        i = smallest
       }
-      return true
-    })
-    result = result.filter(node => !node.isDoor)
+    }
+    return top
+  }
+}
 
-    this.name_unit = undefined
-    this.pos_x = undefined
-    this.pos_y = undefined
+/**
+ * Result of a movement search from one node: which nodes are reachable within
+ * the budget and the cheapest path (fewest turns on ties) to each of them.
+ */
+export class MovementMap {
+  /** Nodes the unit can stop at: the start node plus every reachable empty node */
+  readonly range: PathNodeComponent[]
+  private readonly rangeSet: Set<PathNodeComponent>
+  readonly start: PathNodeComponent
+  private readonly best: Map<PathNodeComponent, SearchState>
 
-    return result
+  constructor(start: PathNodeComponent, best: Map<PathNodeComponent, SearchState>) {
+    this.start = start
+    this.best = best
+    this.range = [...best.keys()].filter(node => node === start || !node.isOccupied)
+    this.rangeSet = new Set(this.range)
   }
 
-  private _getRangeHelper(cell: PathNodeComponent, accum: PathNodeComponent[], mask: number, range: number, bestRange = new Map<PathNodeComponent, number>()): void {
-    if (range < 0) return
-    const prev = bestRange.get(cell)
-    if (prev !== undefined && prev >= range) return
-    bestRange.set(cell, range)
-
-    const unitName = this.name_unit
-    accum.push(cell)
-    cell.connections.filter(node => node.isWalkable && !!(node.walkableMask & mask)).forEach(connection => {
-      const newRange = connection.isFast ? 1 : unitName == 'Thief' && !connection.isDoor ? 1 : 2
-      this._getRangeHelper(connection, accum, mask, range - newRange, bestRange)
-    })
+  canStopAt(node: PathNodeComponent): boolean {
+    return this.rangeSet.has(node)
   }
 
-  getRange(start: PathNodeComponent, mask: number, range: number, unitName: string): PathNodeComponent[] {
-    let result: PathNodeComponent[] = []
-    
-    this.name_unit = this.getNameUnit(unitName)
-    this._getRangeHelper(start, result, mask, range)
-    this.name_unit = undefined
-
-    result = Array.from(new Set(result))
-    result = result.filter(node => node.isWalkable)
-    return result
+  costTo(node: PathNodeComponent): number {
+    return this.best.get(node)?.cost ?? Infinity
   }
 
   /**
-   * 
-   * @param start start node for the path
-   * @param end end node for the path
-   * @param mask bit mask to test against the node's walkability mask, same bit position means walkable (0b111 & 0b001) = walkable, (0b010 & 0b001) = not walkable
-   * @param range 
-   * @returns 
+   * Path from start to `end` (both included). Empty when `end` is unreachable
+   * or occupied; `[start]` when `end` is the start node.
    */
-  findPath(start: PathNodeComponent, end: PathNodeComponent, mask: number, range: PathNodeComponent[], unitName?: string): PathNodeComponent[] {
-    const nodes = this.query.getEntities().map(n => n.get(PathNodeComponent)) as PathNodeComponent[]
-    nodes.forEach(node => {
-      node.gScore = 0
-      node.hScore = 0
-      node.previousNode = null
-    })
+  pathTo(end: PathNodeComponent): PathNodeComponent[] {
+    if (!this.canStopAt(end)) return []
+    const path: PathNodeComponent[] = []
+    let state = this.best.get(end) ?? null
+    while (state) {
+      path.unshift(state.node)
+      state = state.prev
+    }
+    return path
+  }
+}
 
-    start.gScore = 0
-    start.hScore = start.gScore + this.heuristic(start, end) * this.heuristicWeight
-    start.direction = ex.Vector.Down
+export class PathFinder {
+  /**
+   * Movement cost of entering `node`: fast terrain 1, otherwise 2.
+   * Units that ignore slow terrain (Thief) pay 1 anywhere except doors.
+   */
+  movementCost(node: PathNodeComponent, rules: TerrainRules): number {
+    if (node.isFast) return 1
+    if (rules.ignoresSlowTerrain && !node.isDoor) return 1
+    return 2
+  }
 
-    const openNodes: PathNodeComponent[] = [start]
-    const closedNodes: PathNodeComponent[] = []
+  /**
+   * Range points spent when an attack crosses `node`: 1, or 2 on slow terrain
+   * for units with `slowTerrainCostsRange` (Archer, Mage, Spearman).
+   */
+  attackCost(node: PathNodeComponent, rules: TerrainRules): number {
+    return !node.isFast && rules.slowTerrainCostsRange ? 2 : 1
+  }
 
-    while (openNodes.length > 0) {
-      const priorityNodes = openNodes.sort((a, b) => {
-        return a.hScore - b.hScore
-      })
+  /**
+   * Dijkstra over (node, direction) states. Orthogonal moves only.
+   * Units can pass through nodes whose `walkableMask` matches `mask`
+   * (empty tiles and allies) but never stop on an occupied node.
+   *
+   * @param mask the moving player's mask
+   * @param budget movement points available
+   */
+  getMovementMap(start: PathNodeComponent, mask: number, budget: number, unitName: string): MovementMap {
+    const rules = getTerrainRules(unitName)
+    const bestByDirection = new Map<PathNodeComponent, number[]>()
+    const best = new Map<PathNodeComponent, SearchState>()
+    const open = new StateHeap()
 
-      const current = priorityNodes[0]
+    const startState: SearchState = { node: start, dir: NO_DIRECTION, cost: 0, turns: 0, prev: null }
+    bestByDirection.set(start, [Infinity, Infinity, Infinity, Infinity, 0])
+    open.push(startState)
 
-      if (current === end) {
-        return this._buildPath(current)
-      }
+    while (open.size > 0) {
+      const state = open.pop() as SearchState
+      const priority = priorityOf(state)
+      if (priority > (bestByDirection.get(state.node) as number[])[state.dir]) continue
 
-      const index = openNodes.indexOf(current)
-      openNodes.splice(index, 1)
-      closedNodes.push(current)
+      // states pop in priority order, so the first one for a node is its best
+      if (!best.has(state.node)) best.set(state.node, state)
 
-      let neighbors = current.connections.filter(node => {
-        return node.isWalkable && !!(node.walkableMask & mask)
-      }).filter(node => {
-        return closedNodes.indexOf(node) === -1
-      })
+      for (const next of state.node.connections) {
+        if (!next.isWalkable || !(next.walkableMask & mask)) continue
 
-      if (range) {
-        neighbors = neighbors.filter(node => range.indexOf(node) > -1)
-      }
+        const cost = state.cost + this.movementCost(next, rules)
+        if (cost > budget) continue
 
-      let currentDirection = current.direction
+        const dir = directionIndex(state.node, next)
+        const turns = state.turns + (state.dir !== NO_DIRECTION && state.dir !== dir ? 1 : 0)
+        const nextState: SearchState = { node: next, dir, cost, turns, prev: state }
 
-      neighbors.forEach((node) => {
-        if (openNodes.indexOf(node) === -1) {
-          node.previousNode = current
-          const movementCost = node.isFast ? 1 : unitName == 'Thief' && !node.isDoor ? 1 : 50
-          node.gScore = movementCost + current.gScore
-          node.hScore = node.gScore + this.heuristic(node, end) * this.heuristicWeight
-
-          const newDirection = node.pos.sub(current.pos).normalize()
-          node.direction = newDirection
-          const inline = currentDirection.dot(newDirection)
-          if (inline === 0.0) {
-            node.hScore += 130.0
-          }
-
-          openNodes.push(node)
+        let known = bestByDirection.get(next)
+        if (!known) {
+          known = [Infinity, Infinity, Infinity, Infinity, Infinity]
+          bestByDirection.set(next, known)
         }
-      })
+        const nextPriority = priorityOf(nextState)
+        if (nextPriority < known[dir]) {
+          known[dir] = nextPriority
+          open.push(nextState)
+        }
+      }
     }
 
-    return []
+    return new MovementMap(start, best)
+  }
+
+  /** Nodes the unit can stop at, including the start node */
+  getRange(start: PathNodeComponent, mask: number, budget: number, unitName: string): PathNodeComponent[] {
+    return this.getMovementMap(start, mask, budget, unitName).range
+  }
+
+  /** Cheapest path within `budget`, or [] if `end` can't be reached */
+  findPath(start: PathNodeComponent, end: PathNodeComponent, mask: number, budget: number, unitName: string): PathNodeComponent[] {
+    return this.getMovementMap(start, mask, budget, unitName).pathTo(end)
+  }
+
+  /**
+   * Attackable nodes in straight lines (same row or column) from `start`.
+   * Each line stops at the first unit (enemies are included, allies are not),
+   * at doors and at tiles that aren't attackable (walls, trees).
+   * A unit standing on a door can't attack.
+   *
+   * @param mask nodes whose `walkableMask` matches are targetable; pass `~player.mask`
+   * @param ignore node treated as empty, e.g. the attacker's current cell when
+   * evaluating an attack from another position
+   */
+  getRangeAttack(start: PathNodeComponent, mask: number, range: number, unitName: string, ignore?: PathNodeComponent): PathNodeComponent[] {
+    if (start.isDoor) return []
+    const rules = getTerrainRules(unitName)
+    const result: PathNodeComponent[] = []
+
+    for (const first of start.connections) {
+      const dx = first.x - start.x
+      const dy = first.y - start.y
+      let node: PathNodeComponent | undefined = first
+      let remaining = range
+
+      while (node) {
+        if (!node.isAttackable || node.isDoor) break
+        remaining -= this.attackCost(node, rules)
+        if (remaining < 0) break
+
+        const occupied = node.isOccupied && node !== ignore
+        if (occupied && !(node.walkableMask & mask)) break
+
+        if (!node.isWater || rules.targetsWater) result.push(node)
+        if (occupied) break
+
+        const current: PathNodeComponent = node
+        node = current.connections.find(c => c.x === current.x + dx && c.y === current.y + dy)
+      }
+    }
+
+    return result
   }
 }

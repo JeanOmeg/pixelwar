@@ -7,6 +7,7 @@ import { PathNodeComponent } from './path-finding/path-node-component'
 import { Player } from './player'
 import { DustParticles } from './dust-particles'
 import { DamageManager } from './damage-manager'
+import { Facing, facingBetween, resolveAttack, rollWithAdvantage } from './combat'
 
 export class Unit extends ex.Actor {
   cell: Cell | null = null
@@ -18,7 +19,7 @@ export class Unit extends ex.Actor {
   forcesCritical = false
   usedSkill = false
   anim: ex.Animation
-  miniDirection: string = 'right'
+  miniDirection: Facing = 'right'
   oldPosition!: ex.Vector | null
   health: number
   mp: number = 0
@@ -264,27 +265,14 @@ export class Unit extends ex.Actor {
       })
     })
 
-    const d20 = this.rollWithAdvantage(20)
-    const d6 = this.rollWithAdvantage(6)
-
-    const atk = this.unitConfig.attack + d20
-    const def = other.unitConfig.defense + 10
-
-    const isCritical = d20 === 20 || this.forcesCritical
-    const isBackAttack = this.miniDirection === other.miniDirection
-    const didHit = atk > def || isBackAttack || isCritical
-
-    let damage: number
-
-    if (isCritical) {
-      damage = (12 + this.unitConfig.attack) - other.unitConfig.defense
-    } else if (isBackAttack) {
-      damage = (d6 + (this.unitConfig.attack * 2)) - other.unitConfig.defense
-    } else {
-      damage = (d6 + this.unitConfig.attack) - other.unitConfig.defense
-    }
-
-    damage = didHit ? Math.max(damage, 1) : 1
+    const outcome = resolveAttack(
+      this.unitConfig,
+      other.unitConfig,
+      { forcesCritical: this.forcesCritical, backAttack: this.isBehind(other) },
+      rollWithAdvantage(20),
+      rollWithAdvantage(6)
+    )
+    const damage = outcome.damage
 
     Resources.HitSound.play()
 
@@ -295,7 +283,7 @@ export class Unit extends ex.Actor {
 
     await ex.Util.delay(350)
 
-    await this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), damage, isCritical ? 20 : d20)
+    await this.damageManager.spawnDamageNumber(other.pos.add(other.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 0)), outcome)
 
     if (other.health > 0) {
       other.actions.blink(100, 100, 4)
@@ -305,9 +293,9 @@ export class Unit extends ex.Actor {
     this.forcesCritical = false
   }
 
-  private rollWithAdvantage(sides: number): number {
-    const first = Math.floor(Math.random() * sides) + 1
-    const last = Math.floor(Math.random() * sides) + 1
-    return first > last ? first : last
+  /** True when attacking `other` from here would hit it in the back */
+  isBehind(other: Unit): boolean {
+    if (!this.cell || !other.cell) return false
+    return facingBetween(this.cell, other.cell) === other.miniDirection
   }
 }
