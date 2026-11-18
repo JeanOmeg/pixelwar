@@ -111,6 +111,7 @@ export function renderHowToPlay() {
           <li><b>Esc</b>: close the menu or cancel the action; with nothing to cancel, pause.</li>
           <li><b>Pause</b> button (top center, or <b>P</b>): resume or leave the match for the main menu.</li>
           <li><b>x1/x2/x3</b> button: game speed.</li>
+          <li><b>Eye</b> button (bottom left, or <b>H</b>): hide or show the top bars, the hint and the unit card to see the whole map. The unit menu always shows.</li>
           <li>Keyboard: <b>arrows</b> move the cursor, <b>Enter</b> acts, <b>Tab</b> jumps to the next unit, <b>R</b>/<b>F</b> show move/attack range, <b>E</b> ends the turn.</li>
         </ul>
       </section>

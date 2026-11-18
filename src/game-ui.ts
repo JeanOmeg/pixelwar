@@ -36,6 +36,8 @@ const UI_SCALE = 1.3
 const TEXT_SCALE = 1.1
 /** Default top of the unit card in base units (keep in sync with unit-card.ts) */
 const CARD_TOP = 84
+/** Tiles above a unit used by floating texts (damage, skill names); the card keeps clear of them */
+const FLOATING_TEXT_TILES = 1.5
 
 /**
  * In-game HTML UI: top HUD, contextual hint, unit card / attack forecast,
@@ -63,6 +65,9 @@ export class GameUI {
   private banner = new PhaseBanner()
   private gameOver = new GameOver()
   private pauseMenu = new PauseMenu()
+  /** Eye button above the sound button: hides/shows the HUD, the hint and the unit card */
+  private eye = document.createElement('button')
+  private overlaysHidden = false
 
   private players: Player[] = []
   private currentPlayer: Player | null = null
@@ -94,7 +99,9 @@ export class GameUI {
     // in-game panels are drawn 30% bigger than their base sizes, text a further 10%
     this.root.style.setProperty('--ui-scale', String(UI_SCALE))
     this.root.style.setProperty('--text-scale', String(TEXT_SCALE))
-    this.root.append(this.hud, this.hint, this.card, this.menu, this.banner, this.gameOver, this.pauseMenu)
+    this.setupEyeButton()
+    // the eye comes before the dialogs, so an open menu/pause/game over covers it
+    this.root.append(this.hud, this.hint, this.card, this.eye, this.menu, this.banner, this.gameOver, this.pauseMenu)
     document.body.appendChild(this.root)
 
     this.hud.addEventListener('end-turn', () => this.onEndTurn())
@@ -234,6 +241,45 @@ export class GameUI {
     this.menuOptions = null
   }
 
+  /**
+   * Hides or shows the HUD (team bars, pause, speed, End turn), the hint and
+   * the unit card, to see the whole map. The unit's action menu, the phase
+   * banner and the pause/game over dialogs always show.
+   */
+  toggleOverlays() {
+    this.overlaysHidden = !this.overlaysHidden
+    for (const el of [this.hud, this.hint, this.card]) el.style.display = this.overlaysHidden ? 'none' : ''
+    this.eye.textContent = this.overlaysHidden ? 'visibility_off' : 'visibility'
+    this.eye.title = this.overlaysHidden ? 'Show interface (H)' : 'Hide interface (H)'
+    this.eye.setAttribute('aria-pressed', String(this.overlaysHidden))
+  }
+
+  /** Same look and spot as the <audio-menu> buttons (index.html), one row above them */
+  private setupEyeButton() {
+    const eye = this.eye
+    eye.type = 'button'
+    eye.className = 'material-symbols-outlined'
+    eye.textContent = 'visibility'
+    eye.title = 'Hide interface (H)'
+    eye.setAttribute('aria-label', 'Hide or show the interface')
+    eye.setAttribute('aria-pressed', 'false')
+    Object.assign(eye.style, {
+      position: 'fixed',
+      left: 'max(16px, env(safe-area-inset-left, 0px))',
+      bottom: '56px',
+      margin: '0',
+      padding: '0',
+      border: 'none',
+      background: 'none',
+      color: 'white',
+      fontSize: '24px',
+      lineHeight: '1',
+      cursor: 'pointer',
+      pointerEvents: 'auto'
+    })
+    eye.addEventListener('click', () => this.toggleOverlays())
+  }
+
   destroy() {
     window.clearInterval(this.interval)
     if (this.pauseMenu.open) this.pauseMenu.resume()
@@ -263,6 +309,7 @@ export class GameUI {
     if (!this.pauseMenu.open && !this.matchOver && !this.menu.open && !event.ctrlKey && !event.metaKey) {
       if (key === 'e' && this.hud.view?.canEndTurn) { this.hud.requestEndTurn(); return }
       if (key === 'p') { void this.pause(); return }
+      if (key === 'h') { this.toggleOverlays(); return }
     }
     if (event.key !== 'Escape') return
     if (this.pauseMenu.open) {
@@ -434,8 +481,15 @@ export class GameUI {
     }
 
     // the card sits over a corner of the map: if it would cover the unit under
-    // the pointer, drop it right below that unit instead
-    this.card.top = this.hovered ? this.cardTopAvoiding(this.cellPageRect(this.hovered)) : null
+    // the pointer, or the space above it where damage and skill names float up,
+    // drop it right below that unit instead
+    if (this.hovered) {
+      const cell = this.cellPageRect(this.hovered)
+      const floatingText = (cell.bottom - cell.top) * FLOATING_TEXT_TILES
+      this.card.top = this.cardTopAvoiding({ ...cell, top: cell.top - floatingText })
+    } else {
+      this.card.top = null
+    }
   }
 
   /** Page pixels per world pixel; drives every size in the UI through `--s` */

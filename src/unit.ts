@@ -27,6 +27,9 @@ export type AttackEvent =
   | { kind: 'pin', unit: Unit }
   | { kind: 'splash', unit: Unit, damage: number }
 
+/** Color of the "Skill -N MP" text over a unit (the MP bar's color) */
+const SKILL_TEXT_COLOR = '#4cc9f0'
+
 /** Dice for one strike: [d20, d6], both with advantage */
 export type StrikeRolls = () => [number, number]
 const rollStrike: StrikeRolls = () => [rollWithAdvantage(20), rollWithAdvantage(6)]
@@ -152,6 +155,7 @@ export class Unit extends ex.Actor {
   }
 
   async move(path: PathNodeComponent[]) {
+    if (this.pendingSkill?.kind === 'move' && path.length > 1) this.announceSkill(this.pendingSkill)
     this.oldPosition = null
     const oldPos = this.cell?.pos as ex.Vector
 
@@ -348,8 +352,21 @@ export class Unit extends ex.Actor {
     this.mp -= skill.cost
     this.usedSkill = true
     if (skill.kind === 'move' || skill.kind === 'attack') this.pendingSkill = skill
-    if (skill.kind === 'self') this.applySelfSkill(skill.id)
+    if (skill.kind === 'self') {
+      this.announceSkill(skill)
+      this.applySelfSkill(skill.id)
+    }
     return true
+  }
+
+  /**
+   * "Guard -2 MP" floating over the unit when a skill really happens (self
+   * skills when used, Heal on its target, Run when the move starts, attack
+   * skills when the attack goes off). Picking a skill and cancelling shows
+   * nothing. Drawn a bit above the effect text (DEF +3, +8...) so both read.
+   */
+  private announceSkill(skill: SkillDefinition) {
+    void this.damageManager?.spawnText(this.textPos().add(ex.vec(0, -18 * SCALE.y)), `${skill.name} -${skill.cost} MP`, SKILL_TEXT_COLOR)
   }
 
   /** Gives the MP back for a move/attack skill that wasn't used */
@@ -376,6 +393,7 @@ export class Unit extends ex.Actor {
     if (id !== 'skill-heal' || !this.canUseSkill(id) || !this.healTargets().includes(target)) return false
     this.mp -= SKILLS[id].cost
     this.usedSkill = true
+    this.announceSkill(SKILLS[id])
     target.heal(HEAL_HP)
     return true
   }
@@ -505,6 +523,10 @@ export class Unit extends ex.Actor {
 
   async attack(other: Unit) {
     this.defineDirection(this.pos, other.pos)
+    if (this.pendingSkill?.kind === 'attack') {
+      this.announceSkill(this.pendingSkill)
+      await gameDelay(350)
+    }
     const events = this.resolveAttackOn(other)
     this.pendingSkill = null
     for (const event of events) {

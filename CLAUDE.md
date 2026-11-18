@@ -72,7 +72,7 @@ Roda também em celular/tablet (ver "Celular e toque").
 | [src/path-finding/](src/path-finding/) | `PathNodeComponent` (flags do tile, mask, x/y), `PathFinder` (Dijkstra de movimento → `MovementMap`, alcance de ataque em linha reta) e `terrain-rules.ts` (regras por classe) |
 | [src/game-ui.ts](src/game-ui.ts) | `GameUI`: controlador da UI de partida (HUD, dica, card/prévia, menu, banner, fim). Criado por partida e destruído no `onDeactivate` |
 | [src/ui-components/](src/ui-components/) | Lit (shadow DOM). Partida: `game-hud` (+ `game-hint`), `unit-card`, `unit-menu`, `phase-banner`, `game-over`, `pause-menu`. Menus: `start-screen-ui` (título, modo, páginas), `map-select`, `start-screen-pages.ts` (How to play, Units, Credits). `audio-menu`. Base visual em `theme.ts` e `icons.ts`; dados em `view-models.ts` |
-| [src/damage-manager.ts](src/damage-manager.ts) | Texto flutuante: dano (`Critical!`, `Back attack!`, `Miss`, `Counter!`) e efeitos (`+8`, `DEF +3`, `Pinned`) |
+| [src/damage-manager.ts](src/damage-manager.ts) | Texto flutuante: dano (`Critical!`, `Back attack!`, `Miss`, `Counter!`), efeitos (`+8`, `DEF +3`, `Pinned`) e nome da skill usada (`Guard -2 MP`, via `Unit.announceSkill`) |
 | [src/audio-manager.ts](src/audio-manager.ts) | Volumes padrão e mute (lembrado em `localStorage`: `pixelfantasywar.muted`) |
 | [src/device.ts](src/device.ts) | Celular/tablet: `isTouchDevice`, `readableBoost` (ampliação da UI em tela pequena), tela cheia + paisagem (`enterFullscreen`/`exitFullscreen`/`toggleFullscreen`, `setupTouchDevice` no primeiro toque) |
 | [src/css/main.css](src/css/main.css) | Só a fonte global e `.credits` (a UI de jogo tem estilos próprios nos componentes) |
@@ -212,6 +212,7 @@ Skills ([src/skills.ts](src/skills.ts)): toda classe tem Run, Special e uma pró
 - `self` (Second Wind, Guard, Shield Wall, Frenzy, Brace): efeito imediato em `applySelfSkill`.
 - `ally` (Heal): o humano entra no modo `heal` da `SelectionManager` e escolhe o alvo; `useSkillOn` cobra e aplica. Alvos: `healTargets()`.
 - 1 skill por turno; MP não regenera. Regras em `Unit.canUseSkill` (a classe precisa ter a skill).
+- **Aviso de skill**: `Unit.announceSkill` mostra "Nome -N MP" sobre quem usou, só quando a skill acontece de fato: self ao usar (`startSkill`), Heal ao curar (`useSkillOn`), Run quando o movimento começa (`move`), skills de ataque quando o ataque sai (`attack`, com 350 ms antes do golpe). Escolher e cancelar não mostra nada. Vale para humano e CPU. Fica um pouco acima do texto do efeito; o `unit-card` desvia desse espaço (`FLOATING_TEXT_TILES`).
 
 **Adicionar skill:** entrada em `SKILLS` (+ `CLASS_SKILL` se for de uma classe) → condição em `Unit.canUseSkill` (pelo `kind`) → efeito: `attackContext`/`attack` (ataque), `applySelfSkill` (self) ou `useSkillOn` (aliado) → IA: efeito em `scoreAttack` (skills de ataque, `src/ai/planner.ts`) ou `useEndOfTurnSkill` (self/aliado, `src/ai/turn.ts`) → teste em `tests/unit-rules.test.ts`. Menu, card e tela Units saem sozinhos.
 
@@ -249,6 +250,7 @@ UI de partida = `GameUI` ([src/game-ui.ts](src/game-ui.ts)) + componentes em `sr
 - Fonte do jogo: `notjamslab14` (`@font-face` em `main.css`, vale dentro do shadow DOM).
 - Controles: esquerdo = selecionar/agir; direito = ver alcance de movimento; meio = ver alcance de ataque; **Esc** = fecha o menu / cancela o modo mover/atacar (devolve MP de skill) / pula o banner / pausa (sem nada para cancelar) / retoma.
 - Teclado (`HumanPlayer.handleKey`, ignorado enquanto `GameUI.isBlockingInput()`): setas/WASD movem o cursor (`GameUI.setHovered` mostra o card), Enter/Espaço = clique esquerdo (`act`), Tab/Shift+Tab = próxima unidade que pode agir, R/F = alcance de movimento/ataque. No `GameUI`: E = End turn, P = pausa. Sem cursor no mapa, a primeira tecla vai para uma unidade.
+- **Olho** (`GameUI.setupEyeButton` / `toggleOverlays`, tecla H): botão fixo acima do `<audio-menu>` (mesmo estilo, só existe na partida). Esconde `game-hud`, `game-hint` e `unit-card` (`style.display`, porque o `:host` dos componentes define `display`). Nunca esconde o `unit-menu`, o banner nem os diálogos; ele vem antes deles no DOM, então os overlays abertos o cobrem. Volta a aparecer a cada partida.
 - Barra de HP no mapa: ator próprio de cada `Unit` (`hpBar`, adicionado à cena no `onInitialize`), redesenhado só quando o HP muda.
 
 ## Celular e toque

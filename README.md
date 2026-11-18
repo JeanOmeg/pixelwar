@@ -61,6 +61,7 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, 
 | Pausar | Botão **⏸** no topo da tela (ou **P**, ou **Esc** sem nada para cancelar). No menu de pausa: **Resume** continua, **Main menu** (pede confirmação) encerra a partida e volta ao menu principal |
 | Desfazer movimento | **Undo move** no menu, enquanto a unidade não atacou (devolve o MP do Run) |
 | Velocidade | Botão **x1/x2/x3** no topo: acelera animações e o turno da CPU (fica salvo) |
+| Esconder a interface | Botão de **olho** acima do botão de som (ou **H**): esconde/mostra as barras do topo (times, pausa, velocidade, End turn), a dica e o card da unidade, para ver o mapa inteiro. O menu da unidade continua aparecendo |
 
 ### Teclado
 
@@ -72,6 +73,7 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, 
 | **R** / **F** | Mostra o alcance de movimento/ataque da unidade sob o cursor |
 | **E** | Encerra o turno (pede confirmação se ainda houver unidades com ações) |
 | **P** | Pausa |
+| **H** | Esconde/mostra a interface (barras, dica e card) |
 | **Esc** | Fecha o menu, cancela, pula o anúncio de fase ou pausa |
 | Menu da unidade | **↑/↓** escolhem, **→/←** abrem/fecham as skills, **Enter** confirma |
 
@@ -90,6 +92,7 @@ O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece 
 ### Interface
 
 - **Topo:** os dois times (unidades vivas e HP total), pausa, velocidade (x1/x2/x3), a rodada, de quem é a vez e o botão **End turn**.
+- **Skill usada:** quando uma unidade (sua ou da CPU) usa uma skill, o nome e o custo aparecem em cima dela (ex.: "Guard -2 MP"). Só aparece se a skill for de fato executada: escolher e cancelar não mostra nada.
 - **Barra de HP** embaixo de cada unidade no mapa (verde, amarela abaixo de 50%, vermelha abaixo de 25%).
 - **Card da unidade:** passe o mouse sobre qualquer unidade para ver HP, MP, atributos (em verde/vermelho quando uma skill ou a floresta os altera), o alcance em tiles, para onde ela está virada e o estado no turno.
 - **Prévia de combate:** no modo de ataque, passe o mouse sobre um inimigo ao alcance para ver a chance de acerto, a faixa de dano, a chance de matar, se o ataque é pelas costas e o contra-ataque que você vai levar se ele sobreviver.

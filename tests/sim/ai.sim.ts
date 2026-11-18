@@ -1,4 +1,3 @@
-/* eslint-disable no-console -- report */
 import { expect, test } from 'vitest'
 import { Contender, legacyAi, newAi } from './match'
 import { Tally, duel, report } from './duel'

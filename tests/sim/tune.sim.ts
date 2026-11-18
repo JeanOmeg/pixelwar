@@ -1,4 +1,3 @@
-/* eslint-disable no-console -- report */
 import { test } from 'vitest'
 import type { AiWeights } from '../../src/ai/weights'
 import { newAi } from './match'
