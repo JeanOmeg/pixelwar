@@ -76,19 +76,31 @@ export function makeContext(board: Board, player: Player, opts: { difficulty?: D
 
 /**
  * Ahead in army value (HP-weighted) → more aggressive, behind → more careful;
- * and a bit more aggressive every round so matches don't stall into draws.
+ * and more aggressive every round so matches don't stall into draws.
+ * Last stand: with only 1-2 units left and behind, running away only delays
+ * the defeat (or drags the match into a draw), so it fights instead.
  */
 export function aggressionOf(board: Board, player: Player, round: number): number {
   let own = 0
   let enemy = 0
+  let ownUnits = 0
   for (const unit of board.getUnits()) {
     const value = unitValue(unit) * (0.5 + 0.5 * unit.health / unit.unitConfig.health)
-    if (unit.player === player) own += value
-    else enemy += value
+    if (unit.player === player) { own += value; ownUnits++ } else enemy += value
   }
-  const balance = enemy > 0 ? Math.min(2, Math.max(0.5, own / enemy)) : 2
-  return balance * (1 + Math.max(0, round - 8) / 15)
+  let balance = enemy > 0 ? Math.min(2, Math.max(BEHIND_AGGRESSION, own / enemy)) : 2
+  if (ownUnits <= LAST_STAND_UNITS && own < enemy) balance = LAST_STAND_AGGRESSION
+  return balance * (1 + Math.max(0, round - AGGRESSION_FROM_ROUND) / AGGRESSION_ROUNDS)
 }
+
+/** Lowest aggression when behind (fear x2 at 0.5) */
+const BEHIND_AGGRESSION = 0.7
+/** Units left at which the losing side stops running */
+const LAST_STAND_UNITS = 2
+const LAST_STAND_AGGRESSION = 1.3
+/** From this round on aggression grows by 1 every AGGRESSION_ROUNDS rounds */
+const AGGRESSION_FROM_ROUND = 6
+const AGGRESSION_ROUNDS = 10
 
 /** Value of a unit in score points: its army cost x VALUE_PER_POINT */
 export function unitValue(unit: Unit): number {
@@ -98,36 +110,83 @@ export function unitValue(unit: Unit): number {
 /** How much each role fears getting hit */
 const ROLE_THREAT: Record<ArmyRole, number> = { ranged: 1.3, reach: 1, skirmisher: 1, melee: 0.9, heavy: 0.75 }
 
-/** Ideal path distance (movement points) to the nearest enemy, by attack range */
-function idealDistance(unit: Unit): number {
+/**
+ * Tiles from which `unit` could attack some enemy, by the real attack rules
+ * (straight lines, range cost of the terrain, walls and doors block, enemies
+ * block the line). Allies are ignored: they will move. The reverse of
+ * PathFinder.getRangeAttack, walked outward from each enemy.
+ */
+function attackPositions(board: Board, unit: Unit): PathNodeComponent[] {
+  const rules = getTerrainRules(unit.name)
   const range = unit.unitConfig.range
-  return range <= 1 ? 0 : range - 1
+  const own = unit.cell?.pathNode
+  const isEnemy = (node: PathNodeComponent) => node.isOccupied && node !== own && !(node.walkableMask & unit.player.mask)
+  const result = new Set<PathNodeComponent>()
+  for (const enemy of board.getUnits()) {
+    if (enemy.player === unit.player || !enemy.cell) continue
+    const target = enemy.cell.pathNode
+    if (!target.isAttackable || target.isDoor) continue
+    for (const first of target.connections) {
+      const dx = first.x - target.x
+      const dy = first.y - target.y
+      // range spent from a tile on this line to the target (the target's tile included)
+      let spent = board.pathFinder.attackCost(target, rules)
+      let node: PathNodeComponent | undefined = first
+      while (node && spent <= range) {
+        if (node.isWalkable && !node.isDoor && !isEnemy(node)) result.add(node)
+        if (!node.isAttackable || node.isDoor || isEnemy(node)) break
+        spent += board.pathFinder.attackCost(node, rules)
+        const current: PathNodeComponent = node
+        node = current.connections.find(c => c.x === current.x + dx && c.y === current.y + dy)
+      }
+    }
+  }
+  return [...result]
 }
 
 /**
- * Path distance (movement points, by this unit's terrain rules) from every
- * tile to the nearest enemy. Walls and water block; units don't.
+ * Path cost (movement points, by this unit's terrain rules) from every tile
+ * to the nearest tile it can attack an enemy from (0 there). Walls, water and
+ * enemies block the way; allies don't. Without this, a unit "next to" an enemy
+ * on the other side of a door thought it was there and never went around.
+ * Tiles that can't reach any attack spot (enemy walled in) fall back to the
+ * plain distance to the enemies, a bit worse, so units still close in.
  */
 export function distanceToEnemies(board: Board, unit: Unit): Map<PathNodeComponent, number> {
   const rules = getTerrainRules(unit.name)
+  const own = unit.cell?.pathNode
+  const blocked = (node: PathNodeComponent) => !node.isWalkable || (node.isOccupied && node !== own && !(node.walkableMask & unit.player.mask))
+  const dist = reverseDijkstra(board, attackPositions(board, unit), blocked, rules)
+
+  const enemyCells = board.getUnits().filter(u => u.player !== unit.player && u.cell).map(u => u.cell!.pathNode)
+  const plain = reverseDijkstra(board, enemyCells, node => !node.isWalkable, rules)
+  for (const [node, cost] of plain) {
+    if (!dist.has(node)) dist.set(node, cost + FALLBACK_EXTRA)
+  }
+  return dist
+}
+
+/** Extra distance of tiles that can't reach any attack spot */
+const FALLBACK_EXTRA = 6
+
+/** Cost of walking from each tile to the nearest source (sources are 0) */
+function reverseDijkstra(board: Board, sources: PathNodeComponent[], blocked: (node: PathNodeComponent) => boolean, rules: ReturnType<typeof getTerrainRules>): Map<PathNodeComponent, number> {
   const dist = new Map<PathNodeComponent, number>()
   const queue: [PathNodeComponent, number][] = []
-  const sources = new Set<PathNodeComponent>()
-  for (const enemy of board.getUnits()) {
-    if (enemy.player === unit.player || !enemy.cell) continue
-    sources.add(enemy.cell.pathNode)
-    dist.set(enemy.cell.pathNode, 0)
-    queue.push([enemy.cell.pathNode, 0])
+  for (const node of sources) {
+    dist.set(node, 0)
+    queue.push([node, 0])
   }
   // small grid: a sorted array is enough as a priority queue
   while (queue.length > 0) {
     queue.sort((a, b) => b[1] - a[1])
     const [node, cost] = queue.pop()!
     if (cost > (dist.get(node) ?? Infinity)) continue
+    // sources may be enemy tiles (fallback): walking out of them is free
+    const step = blocked(node) ? 0 : board.pathFinder.movementCost(node, rules)
     for (const next of node.connections) {
-      if (!next.isWalkable) continue
-      // stepping from `next` into `node`; standing next to an enemy is distance 0
-      const step = sources.has(node) ? 0 : board.pathFinder.movementCost(node, rules)
+      if (blocked(next)) continue
+      // stepping from `next` into `node`
       const total = cost + step
       if (total < (dist.get(next) ?? Infinity)) {
         dist.set(next, total)
@@ -188,7 +247,7 @@ export function scoreAttack(unit: Unit, target: Unit, from: PathNodeComponent, s
 
   if (kill < 1 && target.canCounterFrom(from, context)) {
     const counter = forecastAttack(target.combatStats(), attackStats, PLAIN_ATTACK, unit.health)
-    parts.counter = -(1 - kill) * (
+    parts.counter = -(1 - kill) * w.counterShare * (
       Math.min(counter.expectedDamage, unit.health) / unit.unitConfig.health * selfValue * w.harmShare +
       counter.killChance * selfValue * w.deathShare
     )
@@ -238,7 +297,7 @@ export function scorePosition(unit: Unit, node: PathNodeComponent, facing: Facin
   }
 
   const distance = distances.get(node) ?? w.approachCap
-  parts.approach = -w.approach * personality.approach * ctx.aggression * Math.min(w.approachCap, Math.max(0, distance - idealDistance(unit)))
+  parts.approach = -w.approach * personality.approach * ctx.aggression * Math.min(w.approachCap, distance)
 
   if (blocksAllyFire(unit, node, ctx)) parts.block = -w.blockAlly
   if (node.isDoor && node !== unit.cell?.pathNode) parts.door = -w.door * ctx.aggression

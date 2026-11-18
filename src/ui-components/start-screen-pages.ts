@@ -31,6 +31,9 @@ export const pageStyles = [classDetailStyles, css`
   .credits { display: flex; flex-direction: column; gap: calc(14 * var(--u)); font-size: calc(20 * var(--t)); line-height: 1.4; }
   .credits ul { margin: 0; padding-left: calc(24 * var(--u)); display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
   .credits a { color: var(--gold); }
+  .creator { display: flex; flex-direction: column; gap: calc(4 * var(--u)); padding-bottom: calc(14 * var(--u)); border-bottom: calc(2 * var(--u)) solid rgba(255, 255, 255, 0.15); }
+  .creator small { font-size: calc(16 * var(--t)); color: var(--gold); text-transform: uppercase; letter-spacing: calc(2 * var(--u)); }
+  .creator strong { font-weight: normal; font-size: calc(32 * var(--t)); color: #fff; }
 `]
 
 export function renderHowToPlay() {
@@ -142,13 +145,16 @@ export function renderUnits() {
 export function renderCredits() {
   return html`
     <div class="credits">
+      <div class="creator">
+        <small>Created by</small>
+        <strong>Jean Fernandes</strong>
+        <span>aka <a href="https://github.com/JeanOmeg" target="_blank" rel="noopener">jeanomeg</a></span>
+        <span>Source code: <a href="https://github.com/JeanOmeg/pixelwar" target="_blank" rel="noopener">github.com/JeanOmeg/pixelwar</a></span>
+      </div>
       <div>Built with <a href="https://excaliburjs.com" target="_blank" rel="noopener">Excalibur.js</a> and <a href="https://lit.dev" target="_blank" rel="noopener">Lit</a>.</div>
       <ul>
         <li>Sound effects by <a href="https://erikonarheim.com" target="_blank" rel="noopener">Erik Onarheim</a> with <a href="https://sfxr.me/" target="_blank" rel="noopener">JSFXR</a></li>
         <li><a href="https://not-jam.itch.io/not-jam-slab-serif-11" target="_blank" rel="noopener">Font NotJamSlabSerif11</a> (CC0)</li>
-        <li><a href="https://opengameart.org/content/5-chiptunes-action" target="_blank" rel="noopener">Battle music by Juhani Junkala</a> (CC0)</li>
-        <li><a href="https://opengameart.org/content/title-x" target="_blank" rel="noopener">Battle music by poinl</a> (CC0)</li>
-        <li><a href="https://opengameart.org/content/two-left-socks" target="_blank" rel="noopener">Title music by congusbongus</a> (CC0)</li>
       </ul>
     </div>
   `

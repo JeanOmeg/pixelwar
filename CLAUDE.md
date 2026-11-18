@@ -25,6 +25,7 @@ yarn test           # vitest run
 yarn balance        # tabela de custos das classes (scripts/balance-report.ts)
 yarn ai:sim         # partidas CPU × CPU sem gráficos: IA nova × antiga e entre níveis (SIM_GAMES=n)
 yarn ai:tune        # variações de pesos da IA contra a base
+yarn ai:stall       # CPU × CPU do mesmo nível: empates, sequências sem ataque, turnos em porta, fim de partida
 ```
 
 ⚠️ `yarn build` **faz commit automaticamente** de tudo que estiver no working tree. Não rodar sem o usuário pedir.
@@ -222,7 +223,7 @@ Skills ([src/skills.ts](src/skills.ts)): toda classe tem Run, Special e uma pró
 Detalhes, diagnóstico e números em [CHECKLIST-IA.md](CHECKLIST-IA.md). Resumo:
 - [weights.ts](src/ai/weights.ts): **todos os números** — `AI_WEIGHTS` (escala: unidade vale custo × `VALUE_PER_POINT`), `DIFFICULTIES` (Easy/Normal/Hard: ruído, erro, uso de skill, peso da ameaça, pesos próprios do Hard) e `PERSONALITIES`.
 - [threat.ts](src/ai/threat.ts): `ThreatMap` — quais inimigos atacam cada tile no próximo turno (movimento + ataque em linha pelas regras reais), `harmAt` (dano esperado dos 3 mais fortes, chance de morrer, ataque pelas costas se o inimigo chega atrás).
-- [planner.ts](src/ai/planner.ts): `planUnit` gera e pontua o turno inteiro de uma unidade (destino parado/andando/correndo × atacar antes ou depois de mover × skill), com `scoreAttack` (forecast, costas, contra-ataque, efeitos de skill, MP) e `scorePosition` (ameaça, distância por caminho `distanceToEnemies`, linha de tiro de aliado, suporte, porta). `aggressionOf`: vantagem de exército e rodada deixam a IA mais ousada. Nada aqui muda o jogo.
+- [planner.ts](src/ai/planner.ts): `planUnit` gera e pontua o turno inteiro de uma unidade (destino parado/andando/correndo × atacar antes ou depois de mover × skill), com `scoreAttack` (forecast, costas, contra-ataque, efeitos de skill, MP) e `scorePosition` (ameaça, distância por caminho até um tile **de onde dá para atacar** `distanceToEnemies` — inimigos bloqueiam, porta tampada obriga a dar a volta —, linha de tiro de aliado, suporte, porta). `aggressionOf`: vantagem de exército e rodada deixam a IA mais ousada; com 1–2 unidades e atrás, "última resistência" (não foge). Nada aqui muda o jogo.
 - [turn.ts](src/ai/turn.ts): `playAiTurn` — a cada passo age a unidade que mais ganha agindo agora; `executePlan` via `AiExecutor` (animado no `ComputerPlayer`, instantâneo na simulação); `useEndOfTurnSkill`; log com `localStorage.debugAI = '1'`.
 - [computer-player.ts](src/computer-player.ts): só o executor animado (destaques + `gameDelay`), dificuldade (de `MatchSettings.difficulty`) e personalidade (sorteada).
 - Simulação: `yarn ai:sim` (IA nova × antiga e entre níveis, `SIM_GAMES`), `yarn ai:tune` (variações de peso). Em [tests/sim/](tests/sim/): `map-loader.ts` lê os `.tmx` (reaproveita um `Board` por mapa: atores da engine não são liberados), `legacy-ai.ts` é a IA antiga, `match.ts` joga uma partida com `Unit.moveInstant`/`attackInstant`.

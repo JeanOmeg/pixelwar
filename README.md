@@ -20,7 +20,7 @@ Elimine todas as unidades inimigas antes que eliminem as suas. Se o limite de 10
 | **Player vs Player** | Dois jogadores se alternam no mesmo computador |
 | **CPU vs CPU** | Assista dois times controlados pela IA se enfrentarem |
 
-**Dificuldade da CPU** (na tela de modo, fica salva): **Easy** comete erros e quase não usa skills; **Normal** joga bem; **Hard** não erra e usa pesos ajustados por simulação. A IA planeja o turno inteiro de cada unidade (para onde ir, quem atacar, de que lado e com qual skill), prevê o que o seu exército pode fazer no turno seguinte para não deixar unidades expostas, recua arqueiros e magos depois de atirar, procura ataques pelas costas e age primeiro com quem pode matar. Cada CPU também ganha uma personalidade (equilibrada, agressiva ou defensiva). Em simulações nos 8 mapas, a IA Normal vence a IA anterior em ~85% das partidas, e a Hard vence a Normal em ~77%.
+**Dificuldade da CPU** (na tela de modo, fica salva): **Easy** comete erros e quase não usa skills; **Normal** joga bem; **Hard** não erra e usa pesos ajustados por simulação. A IA planeja o turno inteiro de cada unidade (para onde ir, quem atacar, de que lado e com qual skill), prevê o que o seu exército pode fazer no turno seguinte para não deixar unidades expostas, recua arqueiros e magos depois de atirar, bate antes de recuar quando está colada num inimigo, procura ataques pelas costas age primeiro com quem pode matar, dá a volta quando um inimigo tampa uma porta e, com 1 ou 2 unidades sobrando, luta em vez de fugir. Cada CPU também ganha uma personalidade (equilibrada, agressiva ou defensiva). Em simulações nos 8 mapas, a IA Normal vence a IA anterior em ~85% das partidas, e a Hard vence a Normal em ~70%.
 
 ### Menu inicial
 

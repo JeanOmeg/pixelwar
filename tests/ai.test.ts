@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, test } from 'vitest'
-import { AiPlan, distanceToEnemies, makeContext, planUnit } from '../src/ai/planner'
+import { AiPlan, aggressionOf, distanceToEnemies, makeContext, planUnit } from '../src/ai/planner'
 import { ThreatMap } from '../src/ai/threat'
 import type { Unit } from '../src/unit'
 import { makeBoard, makePlayers, place } from './helpers'
@@ -57,6 +57,48 @@ test('distance field follows the real path around walls', () => {
   expect(dist.get(board.getCell(2, 0)!.pathNode)).toBe(5)
 })
 
+test('an enemy behind a door is not "next to" it: the way around counts', () => {
+  // the red fighter stands right behind the door, which blocks both the way and attacks
+  const board = makeBoard([
+    '.......',
+    '##.####',
+    '.D.....'
+  ])
+  const [a, b] = makePlayers(board)
+  const fighter = place(board, 'FighterA', 0, 2, a)
+  place(board, 'FighterB', 2, 2, b)
+  const dist = distanceToEnemies(board, fighter)
+  // through the door is blocked by the enemy itself: it must go around the top
+  expect(dist.get(board.getCell(0, 2)!.pathNode)).toBeGreaterThan(4)
+  // above the enemy is a real attack spot
+  expect(dist.get(board.getCell(2, 1)!.pathNode)).toBe(0)
+})
+
+test('a ranged unit wants a tile it can shoot from', () => {
+  const board = makeBoard([
+    '.......',
+    '.......'
+  ])
+  const [a, b] = makePlayers(board)
+  const archer = place(board, 'MageA', 0, 0, a)
+  place(board, 'FighterB', 6, 0, b)
+  const dist = distanceToEnemies(board, archer)
+  // range 5 in a straight line: from x = 1 it already hits the target
+  expect(dist.get(board.getCell(1, 0)!.pathNode)).toBe(0)
+  expect(dist.get(board.getCell(0, 0)!.pathNode)).toBe(1)
+})
+
+test('last stand: with 1-2 units left and behind, it stops being careful', () => {
+  const board = makeBoard(OPEN)
+  const [a, b] = makePlayers(board)
+  place(board, 'FighterA', 0, 0, a)
+  place(board, 'WarriorB', 9, 0, b)
+  place(board, 'WarriorB', 9, 2, b)
+  place(board, 'WarriorB', 9, 4, b)
+  expect(aggressionOf(board, a, 1)).toBeGreaterThanOrEqual(1)
+  expect(aggressionOf(board, b, 1)).toBeGreaterThan(1)
+})
+
 describe('decisions', () => {
   test('prefers the kill', () => {
     const board = makeBoard(OPEN)
@@ -89,6 +131,34 @@ describe('decisions', () => {
     expect(best.attack?.target.name).toBe(enemy.name)
     const threat = new ThreatMap(board, a)
     expect(threat.threatsAt(best.dest)).toHaveLength(0)
+  })
+
+  // a dead-end hall: nobody can get behind the enemy, so its counterattack is certain
+  const HALL = ['##########', '......####', '##########']
+
+  test('next to an even enemy it strikes before stepping away (the counter is not a reason to just leave)', () => {
+    const board = makeBoard(HALL)
+    const [a, b] = makePlayers(board)
+    const fighter = place(board, 'FighterA', 4, 1, a)
+    fighter.mp = 0 // no skills: a plain hit
+    const enemy = place(board, 'FighterB', 5, 1, b)
+    enemy.miniDirection = 'left'
+    const best = plansFor(fighter)[0]
+    expect(best.attack?.target.name).toBe(enemy.name)
+    expect(best.attack?.order).toBe('attack-first')
+  })
+
+  test('almost dead next to a strong melee enemy, it leaves without attacking', () => {
+    const board = makeBoard(HALL)
+    const [a, b] = makePlayers(board)
+    const cleric = place(board, 'ClericA', 4, 1, a)
+    cleric.health = 2
+    cleric.mp = 0
+    const barbarian = place(board, 'BarbarianB', 5, 1, b)
+    barbarian.miniDirection = 'left'
+    const best = plansFor(cleric)[0]
+    expect(best.attack === null).toBe(true)
+    expect(best.dest.x).toBeLessThan(4)
   })
 
   test('prefers hitting from behind', () => {

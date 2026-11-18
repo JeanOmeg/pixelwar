@@ -3,7 +3,7 @@
 Código em [src/ai/](src/ai/) (o [computer-player.ts](src/computer-player.ts) só executa com animação).
 Marque `[x]` ao concluir. Prioridade: 🔴 alta · 🟡 média · 🟢 baixa.
 
-Última revisão: 18/11/2026 — IA reescrita. Todos os itens abaixo estão feitos.
+Última revisão: 18/11/2026 — IA reescrita; depois, correção do travamento em portas, da fuga no fim e do "sair sem atacar" (seção 9).
 
 ---
 
@@ -26,11 +26,11 @@ Marque `[x]` ao concluir. Prioridade: 🔴 alta · 🟡 média · 🟢 baixa.
 
 | Confronto (128 partidas cada) | Vitórias | Derrotas | Empates | Unidades vivas no fim |
 |---|---|---|---|---|
-| Hard × IA antiga | **87%** | 5% | 8% | 4,3 × 0,3 |
-| Normal × IA antiga | **84%** | 15% | 1% | 3,7 × 0,4 |
-| Easy × IA antiga | 50% | 50% | 0% | 1,3 × 1,1 |
-| Hard × Normal | **77%** | 22% | 2% | 2,8 × 0,6 |
-| Hard × Easy | **95%** | 5% | 0% | 3,9 × 0,1 |
+| Hard × IA antiga | **96%** | 4% | 0% | 4,3 × 0,1 |
+| Normal × IA antiga | **84%** | 16% | 0% | 3,6 × 0,3 |
+| Easy × IA antiga | 63% | 37% | 0% | 2,0 × 0,7 |
+| Hard × Normal | **67%** | 33% | 0% | 2,2 × 0,8 |
+| Hard × Easy | **93%** | 7% | 0% | 3,8 × 0,1 |
 
 O Easy joga no nível da IA antiga; Normal e Hard a vencem com folga, e cada nível vence o de baixo.
 
@@ -97,6 +97,21 @@ O Easy joga no nível da IA antiga; Normal e Hard a vencem com folga, e cada ní
 - [x] 🟢 **Testes da pontuação** — [tests/ai.test.ts](tests/ai.test.ts): prefere a kill, não corre se pode atacar parado, arqueiro atira e recua, prefere atacar pelas costas, unidade ferida recua, não bloqueia a linha de tiro; mapa de ameaça (inclusive costas) e distância por caminho.
 
 ---
+
+### 9. Travamento no fim e nas portas (18/11/2026)
+
+- [x] 🔴 **Ficava parada atrás de porta tampada** — `distanceToEnemies` media a distância até "ao lado do inimigo" ignorando unidades, então um inimigo do outro lado de uma porta parecia a 2 passos (porta não deixa atacar e a unidade atrás dela tampa a passagem). Agora é o custo até um tile **de onde a unidade consegue atacar** (linha reta, alcance pelo terreno, porta e parede bloqueiam), com inimigos bloqueando o caminho; sem nenhum tile assim, cai na distância simples + 6.
+- [x] 🔴 **Última unidade fugindo até o empate** — atrás no placar a agressividade ia a 0,5 (medo ×2, avanço ×½). Agora o mínimo é 0,7 e, com 1–2 unidades e atrás, vale 1,3 ("última resistência"). A ousadia por rodada começa na 6ª (antes 8ª) e cresce +1 a cada 10 (antes 15).
+- [x] 🔴 **Ao lado do inimigo, saía sem atacar** — o plano "bate e sai" existia, mas o contra-ataque esperado pesava tanto quanto o dano causado: numa troca equilibrada (Fighter × Fighter num corredor: +25 de dano, −25 de revide) a unidade só ia embora. Novo peso `counterShare` = 0,5 (bater primeiro vale por si: o alvo fica mais fácil para os aliados e revida mais fraco). Em 2.600 decisões simuladas, "podia atacar e saiu sem atacar" caiu de 20% para 9%; o que sobra é unidade com pouco HP diante de revide forte (aí fugir é o certo). Na força, neutro a levemente melhor (`yarn ai:tune`: Hard 55%, Normal 51% contra o peso antigo).
+- [x] 🟡 **Medição** — `yarn ai:stall` ([tests/sim/stall.sim.ts](tests/sim/stall.sim.ts)): CPU × CPU do mesmo nível.
+
+| Hard × Hard (64 partidas) | Antes | Depois |
+|---|---|---|
+| Empates | 11% | 0% |
+| Fases do fim (time com 1–2 unidades) | 17 | 6 |
+| Fases do fim com ataque | 32% | 85% |
+| Turnos de unidade ao lado de porta | 16% | 8% |
+| Maior sequência sem ataque | 90 | 5 |
 
 ## Ideias para depois
 

@@ -15,6 +15,13 @@ export interface AiWeights {
   harmShare: number
   /** Share of its own value lost per chance of dying next enemy turn */
   deathShare: number
+  /**
+   * How much the counterattack of the target counts (x harm and death).
+   * Below 1: striking first is worth something by itself (the target is
+   * weaker for the allies acting next and for its own turn), so an even trade
+   * isn't a reason to walk away without attacking.
+   */
+  counterShare: number
   /** Enemies don't all hit the same unit: share of the threat map damage that counts */
   threatShare: number
   /** Per point of path distance past the ideal distance to the enemy */
@@ -46,6 +53,7 @@ export const AI_WEIGHTS: AiWeights = {
   damageShare: 0.6,
   harmShare: 0.6,
   deathShare: 1,
+  counterShare: 0.5,
   threatShare: 0.6,
   approach: 4,
   approachCap: 24,

@@ -13,7 +13,8 @@
     "balance": "vite-node scripts/balance-report.ts",
     "tree": "node show-tree.js",
     "ai:sim": "vitest run --config vitest.sim.config.ts tests/sim/ai.sim.ts",
-    "ai:tune": "vitest run --config vitest.sim.config.ts tests/sim/tune.sim.ts"
+    "ai:tune": "vitest run --config vitest.sim.config.ts tests/sim/tune.sim.ts",
+    "ai:stall": "vitest run --config vitest.sim.config.ts tests/sim/stall.sim.ts"
   },
   "author": "Jean Fernandes",
   "license": "BSD-2-Clause",
