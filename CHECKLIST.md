@@ -3,21 +3,22 @@
 Marque `[x]` ao concluir. Prioridade: 🔴 alta · 🟡 média · 🟢 baixa.
 Itens da IA estão em [CHECKLIST-IA.md](CHECKLIST-IA.md).
 
-Última revisão: 17/11/2026, depois da reescrita do pathfinder e da UI de jogo (`tsc --noEmit` e `eslint src` passam sem erros).
+Última revisão: 17/11/2026. Todos os itens foram conferidos no código antes de fechar. `yarn validate` (tipos + lint + 74 testes) passa.
 
 ## 1. Bugs
 
 - [x] 🔴 **Ataque pelas costas indevido no início da partida.** Todas as unidades começavam com `miniDirection = 'right'`, e as do time B eram só espelhadas na imagem. Quando A atacava B de frente, o golpe contava como pelas costas. Agora o time 1 começa com `miniDirection = 'left'` ([level-base.ts](src/levels/level-base.ts)).
 - [x] 🔴 **Listeners e menus acumulam entre partidas.** Cada partida criava um `HumanPlayer` com `pointers.on(...)` e um `UIManager` com outro `<unit-menu>` e outro listener de `resize`, e nada era removido. Agora o `HumanPlayer` guarda as inscrições e as fecha em `dispose()`, e o `GameUI` remove tudo em `destroy()`. As duas coisas são chamadas no `LevelBase.onDeactivate`.
-- [ ] 🟡 **Prévia de alcance (botão direito/meio) some ao mover o mouse.** O cursor e os highlights usam o mesmo ator `decoration` da célula. `showCursor` chama `toggleCursor(false)` em todas as células ([selection-manager.ts](src/selection-manager.ts)), e isso esconde qualquer highlight ([cell.ts:83-90](src/cell.ts#L83-L90)). Pelo mesmo motivo, o cursor não aparece sobre células destacadas. Além disso, `hasCursor` nunca vira `true`. Correção: usar atores separados para o cursor e para o highlight, e só limpar a prévia no próximo clique.
-- [x] 🟡 **Cancelar o Run clicando fora do mapa trava a skill do turno.** A devolução de MP do humano agora fica toda em `HumanPlayer.refundPendingSkill`, que também volta `usedSkill` para `false`.
-- [ ] 🟡 **Morte da unidade roda várias vezes.** `onPostUpdate` é `async` e roda a cada frame; enquanto `health <= 0`, enfileira a animação de morte de novo a cada frame ([unit.ts](src/unit.ts)). Além disso, `ex.Util.delay(600)` não tem `await`. Correção: usar uma flag `isDying` ou tratar a morte direto em `attack()`.
+- [x] 🟡 **Prévia de alcance (botão direito/meio) some ao mover o mouse.** O cursor e os highlights usavam o mesmo ator `decoration` da célula, então mover o cursor apagava os destaques, e `hasCursor` nunca virava `true`. Agora o cursor é um ator separado na `Cell` (`cursor`), o highlight guarda o tipo (`Cell.highlight`) e só o próximo clique limpa a prévia.
+- [x] 🟡 **Cancelar o Run clicando fora do mapa trava a skill do turno.** A devolução de MP agora fica em `Unit.settlePendingSkill`, que também volta `usedSkill` para `false`.
+- [x] 🟡 **Morte da unidade roda várias vezes.** `onPostUpdate` era `async` e enfileirava a animação de morte a cada frame; o `ex.Util.delay(600)` não tinha `await`. Agora `die()` roda uma vez (flag `dying`), e unidades com HP ≤ 0 saem de `Board.getUnits()` na hora e não podem agir.
 - [x] 🟡 **Tela de fim no PvP e no CPU vs CPU.** Agora mostra "Victory!"/"Defeat" no PvCPU, "Blue/Red wins!" no PvP e no CPU vs CPU, e "Draw" quando acaba o limite de fases. Também tem "Play again" e "Main menu".
 - [x] 🟡 **`findAttackRange` usa o alcance da unidade selecionada, e não da unidade recebida.** Por isso a IA precisava chamar `selectUnit` antes de calcular alvos. `findPath` tinha o mesmo acoplamento.
-- [ ] 🟢 **Erro de ataque causa 1 de dano** (`MISS_DAMAGE` em [combat.ts](src/combat.ts)). O número flutuante agora mostra "Miss 1". Decidir se essa é a regra e deixar explícito no README.
-- [x] 🟢 **Descrição da skill Run dizia "Ends turn"**, mas ela não encerra o turno ([config.ts](src/config.ts)).
+- [x] 🟢 **Erro de ataque causa 1 de dano** (`MISS_DAMAGE`). Decidido: a regra fica. Está explícita no README, na tela How to play e no número flutuante ("Miss 1").
+- [x] 🟢 **Descrição da skill Run dizia "Ends turn"**, mas ela não encerra o turno.
 - [x] 🟢 **Modo de jogo passado por `localStorage`.** Agora vai em `goToScene(cena, { sceneActivationData: { mode } })` e a `LevelBase` lê no `onActivate`. O `localStorage` só guarda a última escolha para pré-selecionar no menu.
 - [x] 🟢 **Texto do banner de turno.** O cálculo `Turn ${(this.turn - this.maxTurns) + 1}` foi trocado por "Round N".
+- [x] 🟢 **Barbarian vermelho andava de lado ao subir/descer** (achado ao gerar as animações): `MoveUp`/`MoveDown` usavam a linha 1 da spritesheet. Resolvido com `buildUnitAnimations` para todas as classes.
 
 ## 2. Performance
 
@@ -28,53 +29,50 @@ Itens da IA estão em [CHECKLIST-IA.md](CHECKLIST-IA.md).
 
 ## 3. Organização do código
 
-- [ ] 🟡 **`resources.ts` tem ~2500 linhas repetidas** (12 animações × 16 unidades). Criar uma função `buildUnitAnimations(spriteSheet)` que gera todas a partir da grade 4×14.
-- [ ] 🟡 **`config.ts` repete o mesmo bloco 16 vezes.** Definir stats por classe uma vez e gerar as variantes A/B (cor + spritesheet). Skills comuns em uma constante.
+- [x] 🟡 **`resources.ts` tinha ~2500 linhas repetidas.** As 28 variantes usam `buildUnitAnimations` (`UNIT_ANIMATIONS`); o arquivo caiu para ~260 linhas. Antes de trocar, um script conferiu que as 190 animações escritas à mão seguiam a grade (as 2 diferentes eram o bug do Barbarian acima). O `loader` foi para [loader.ts](src/loader.ts).
+- [x] 🟡 **`config.ts` repetia o mesmo bloco 16 vezes.** Agora `UNIT_CONFIG` é gerado a partir de `CLASS_STATS` ([class-stats.ts](src/class-stats.ts)), `UNIT_ANIMATIONS` e `skillsOf` ([skills.ts](src/skills.ts)). A lista de classes fica em [unit-types.ts](src/unit-types.ts).
 - [x] 🟡 **Nomes de classe espalhados como string.** `'Archer'`, `'Mage'`, `'Spearman'`, `'Thief'` apareciam em `if`s no `PathFinder`. Agora ficam em `TERRAIN_RULES` ([terrain-rules.ts](src/path-finding/terrain-rules.ts)).
-- [ ] 🟡 **Lógica de skill duplicada.** A cobrança de MP está repetida em `HumanPlayer` e `ComputerPlayer` (a devolução do humano já está centralizada em `refundPendingSkill`). Centralizar em métodos da `Unit`, como `startSkill(event)` e `cancelSkill()`.
+- [x] 🟡 **Lógica de skill duplicada.** Cobrança e devolução de MP ficam em `Unit.startSkill`, `Unit.settlePendingSkill` e `Unit.useSkillOn`, usados pelo `HumanPlayer` e pela IA.
 - [x] 🟢 **Lado do menu decidido pelo nome do jogador.** O `UIManager` foi removido. O `GameUI` usa o índice do jogador para o time, e o menu fica ancorado ao lado da unidade.
-- [ ] 🟢 **Remover código morto:** `src/actors/`, `src/texts/`, `src/fonts/`, `src/assets/tiledMap/map1.js|map2.js|map3.js`, `src/assets/maps/Map1.png|Map2.png` (miniaturas antigas), `credits.html` e `Resources.LevelMusic1`. A `description` de `UNIT_CONFIG` também ficou sem uso (o texto das classes está em `CLASS_INFO`). Membros sem uso: `Cell.getRandomNumber`, `Cell.getDistance`, `Board.getEmptyCells` e `Unit.availableActions`.
-- [ ] 🟢 **Ativar `noUnusedLocals` e `noUnusedParameters`** no `tsconfig.json` para o compilador apontar esse tipo de sobra.
+- [x] 🟢 **Remover código morto.** Apagados `src/actors/`, `src/texts/`, `src/fonts/`, `map1.js|map2.js|map3.js`, `src/assets/maps/`, `credits.html`, `Resources.LevelMusic1`, `description` do `UNIT_CONFIG`, `Cell.getRandomNumber`, `Cell.getDistance`, `Board.getEmptyCells` e `Unit.availableActions` (nada os importava).
+- [x] 🟢 **`noUnusedLocals` e `noUnusedParameters`** ativos no `tsconfig.json`.
 - [x] 🟢 **Tipar `miniDirection`.** Agora é `Facing` (`'up' | 'down' | 'left' | 'right'`), de [combat.ts](src/combat.ts).
 
 ## 4. Qualidade e infraestrutura
 
-- [ ] 🟡 **Adicionar testes (Vitest)** para as regras puras: `combat.ts` (já extraído, com dados injetáveis em `resolveAttack` e `random` em `rollWithAdvantage`), `canUseSkill` e o `PathFinder`/`terrain-rules.ts`, que já rodam fora do navegador.
-- [ ] 🟡 **Deploy sem commit automático.** O `build.js` faz `git add .` e commita tudo, inclusive arquivos que não deveriam entrar. Trocar por GitHub Actions que builda e publica no Pages, e tirar `docs/` do repositório.
-- [ ] 🟢 **Adicionar scripts `lint` e `typecheck`** ao `package.json`.
-- [ ] 🟢 **Alinhar versões:** `excalibur ^0.30.3` com `plugin-tiled 0.30.2` fixo.
-- [ ] 🟢 **Corrigir a seção "Desenvolvimento" do README.** Ela manda usar `npm`, mas o projeto usa `yarn`. Também não avisa que `build` faz commit de tudo.
-- [ ] 🟢 **Lembrar a escolha de mudo** (`audio-menu`) no `localStorage`. Hoje ela volta para "som ligado" a cada recarga.
+- [x] 🟡 **Testes (Vitest)** em [tests/](tests/): combate, balanceamento (custos = fórmula; exército clássico de cada mapa = 100), exército da CPU, `PathFinder` e regras da `Unit` (skills, floresta, contra-ataque). Os que precisam da engine rodam com `happy-dom`.
+- [ ] 🟡 **Deploy sem commit automático.** O `build.js` faz `git add .` e commita tudo, inclusive arquivos que não deveriam entrar. Trocar por GitHub Actions que builda e publica no Pages, e tirar `docs/` do repositório. *Adiado:* exige mudar a origem do Pages nas configurações do GitHub para "GitHub Actions" antes de remover `docs/`.
+- [x] 🟢 **Scripts** `lint`, `typecheck`, `test`, `validate` (os três) e `balance` no `package.json`.
+- [x] 🟢 **Versões alinhadas:** `excalibur` fixado em `0.30.3` (o que estava instalado), `plugin-tiled` em `0.30.2` (pede `~0.30.1`).
+- [x] 🟢 **Seção "Desenvolvimento" do README** usa `yarn` e avisa que `yarn build` faz commit de tudo.
+- [x] 🟢 **Mudo lembrado** no `localStorage` (`pixelfantasywar.muted`).
 
-## 5. Gameplay e UX (ideias)
+## 5. Gameplay e UX
 
 - [x] 🟡 **Novas classes e escolha de exército.** 6 classes novas (Paladin, Berserker, Assassin, Ranger, Necromancer, Halberdier) com sprites derivados das originais, custos em pontos calculados pela matemática de combate e tela de montagem de exército com orçamento de 100 pontos.
-- [ ] 🟡 **IA montar o próprio exército** (hoje a CPU usa o exército desenhado no mapa). Poderia escolher por pontos de acordo com o mapa e o exército do jogador.
-- [ ] 🟡 **Identidade por classe nas skills.** Hoje todas têm Run e Special; com 14 classes isso pesa mais. Sugestões:
-  - Cleric cura um aliado adjacente.
-  - Thief rouba MP do alvo.
-  - Warrior recebe um bônus de defesa até o próximo turno.
-  - Mage causa dano em área.
-- [x] 🟡 **Prévia de combate.** No modo de ataque, ao passar o mouse sobre um inimigo ao alcance, o `unit-card` mostra a chance de acerto, a faixa de dano, a chance de matar e se o ataque é pelas costas (`forecastAttack`).
-- [x] 🟡 **Feedback do resultado do ataque.** O número flutuante agora diferencia "Miss", "Back attack!" e "Critical!". O som de acerto continua igual para todos; um som de erro seria um bom extra.
-- [ ] 🟡 **Alcance de ataque mostrado em "pontos", não em tiles** (o README já explica a regra). O Archer mostra alcance 6, mas paga 2 por tile não rápido, então alcança só 3 tiles em terreno normal. O Spearman (alcance 2) só atinge o tile ao lado. Converter para tiles ou explicar no card.
-- [ ] 🟡 **Barra de HP sobre as unidades no mapa.** O card já mostra HP/MP com barra e máximo; falta a barrinha no próprio mapa.
-- [ ] 🟡 **Controle de velocidade** (principalmente no CPU vs CPU). O banner de fase já pode ser pulado com clique ou Esc.
-- [ ] 🟡 **Desfazer movimento** antes de atacar ou encerrar a unidade.
+- [x] 🟡 **IA monta o próprio exército** ([army-ai.ts](src/army-ai.ts)): cada posição mantém o papel da classe do mapa (de longe, alcance 2, flanco, corpo a corpo, pesado) e recebe uma classe sorteada desse papel, dentro dos 100 pontos.
+- [x] 🟡 **Identidade por classe nas skills.** Cada classe tem uma skill própria além de Run e Special: Aimed Shot, Fireball, Pierce, Steal, Second Wind, Heal, Rage, Guard, Shield Wall, Frenzy, Backstab, Pinning Shot, Drain e Brace ([skills.ts](src/skills.ts)). A IA também usa.
+- [x] 🟡 **Prévia de combate.** No modo de ataque, ao passar o mouse sobre um inimigo ao alcance, o `unit-card` mostra a chance de acerto, a faixa de dano, a chance de matar, se o ataque é pelas costas e o contra-ataque (`forecastAttack`).
+- [x] 🟡 **Feedback do resultado do ataque.** O número flutuante diferencia "Miss", "Back attack!", "Critical!" e "Counter!", e mostra curas e buffs. Um som de erro seria um bom extra.
+- [x] 🟡 **Alcance de ataque em "pontos".** O card mostra o alcance em tiles ("6 tiles in the open, 3 over forest or water"), e a tela Units marca "Range halves over forest/water".
+- [x] 🟡 **Barra de HP sobre as unidades no mapa** (verde, amarela abaixo de 50%, vermelha abaixo de 25%).
+- [x] 🟡 **Controle de velocidade** x1/x2/x3 no HUD (salvo): acelera animações (`engine.timescale`) e as pausas da CPU (`gameDelay`).
+- [x] 🟡 **Desfazer movimento** ("Undo move" no menu) enquanto a unidade não atacou; devolve o MP do Run.
 - [x] 🟡 **Indicar para onde cada unidade está virada.** O card e a prévia mostram uma seta com a direção. Um indicador no próprio mapa seria um extra.
-- [ ] 🟢 **Bônus de terreno**, como defesa extra na floresta.
-- [ ] 🟢 **Contra-ataque** do defensor corpo a corpo quando sobrevive e o atacante está no alcance. Deixa o posicionamento mais importante.
-- [ ] 🟢 **Controles por teclado** (setas, Enter) e atalho para encerrar o turno. O Esc já funciona.
+- [x] 🟢 **Bônus de terreno:** +2 DEF na floresta (aparece no card e entra na prévia e no custo das classes).
+- [x] 🟢 **Contra-ataque** de quem tem alcance 1 contra atacante adjacente, se sobreviver e não tiver sido atacado pelas costas (Halberdier com Brace revida a 2 tiles). Custos rebalanceados: Archer 10, Berserker 15, Halberdier 12, Cleric 15.
+- [x] 🟢 **Controles por teclado:** setas/WASD, Enter/Espaço, Tab (próxima unidade), R/F (alcances), E (encerrar turno), P (pausa), menus navegáveis pelas setas.
 - [x] 🟢 **Confirmação ao encerrar o turno** quando ainda há unidades com ações. O **End turn** do HUD pede um segundo clique.
-- [ ] 🟢 **Mais mapas** e um modo campanha com progressão. O seletor já está pronto para muitos mapas (basta uma entrada em `MAPS`, ver CLAUDE.md). Quando houver mapas de tamanhos diferentes: filtro por tamanho no seletor e câmera/zoom na partida (hoje o enquadramento assume 28×17).
+- [ ] 🟢 **Mais mapas** e um modo campanha com progressão. O seletor já está pronto para muitos mapas (basta uma entrada em `MAPS`, ver CLAUDE.md). Quando houver mapas de tamanhos diferentes: filtro por tamanho no seletor e câmera/zoom na partida (hoje o enquadramento assume 28×17). *Deixado para uma tarefa própria.*
 - [x] 🟢 **Suporte a mobile/touch.** Toque com prévia + confirmação, aviso para girar o aparelho, tela cheia no primeiro toque e UI ampliada em telas pequenas (ver CLAUDE.md, "Celular e toque").
-- [x] 🟢 **Descrição das unidades.** Papel e descrição de cada classe em `CLASS_INFO` ([unit-classes.ts](src/unit-classes.ts)), mostrados na tela Units.
+- [x] 🟢 **Botão de tela cheia** ao lado do som (gira o celular para a horizontal) e tela cheia ao começar a partida no celular.
+- [x] 🟢 **Pausa** com opção de sair para o menu principal (botão no HUD, P ou Esc).
+- [x] 🟢 **Logo e botão PLAY do carregamento** iguais à tela título e proporcionais à tela.
+- [x] 🟢 **Descrição das unidades.** Papel, descrição e skill própria de cada classe na tela Units.
 
 ## Ordem sugerida
 
-1. Bugs 🟡 restantes: prévia de alcance (botão direito/meio) e morte repetida.
-2. Centralizar a cobrança de skill na `Unit`. Isso também ajuda a IA ([CHECKLIST-IA.md](CHECKLIST-IA.md)), que pode passar a usar `forecastAttack`.
-3. Testes de `combat.ts` e do `PathFinder` (já são puros).
-4. Gerar animações e config por função (`resources.ts` e `config.ts`).
-5. Deploy por GitHub Actions.
-6. Gameplay e UX.
+1. IA: seções 1–3 do [CHECKLIST-IA.md](CHECKLIST-IA.md) (distância em tiles, Run só quando precisa, recuar depois de atacar, ataque pelas costas, mapa de ameaça). Agora ela já tem o dano esperado real e o risco de contra-ataque.
+2. Deploy por GitHub Actions (depois de trocar a origem do Pages).
+3. Mais mapas e campanha.
+4. Extras: som de erro, seta de direção no mapa.

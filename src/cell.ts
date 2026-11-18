@@ -10,12 +10,18 @@ const PathHighlightAnimation = CursorAnimation.clone()
 const AttackHighlightAnimation = RedHighlightAnimation.clone()
 const CursorHighlightAnimation = CursorAnimation.clone()
 
+export type HighlightType = 'range' | 'path' | 'attack'
+
 export class Cell extends ex.Actor {
+  /** Range/path/attack highlight */
   decoration: ex.Actor
+  /** Pointer cursor: its own actor, so moving it doesn't erase highlights */
+  cursor: ex.Actor
   sprite!: ex.Sprite
   pathNode: PathNodeComponent
   unit: Unit | null = null
   hasCursor = false
+  highlight: HighlightType | null = null
 
   /**
    * Individual cells on the board
@@ -35,6 +41,8 @@ export class Cell extends ex.Actor {
     })
     this.decoration = new ex.Actor({ anchor: ex.vec(0, 0) })
     this.addChild(this.decoration)
+    this.cursor = new ex.Actor({ anchor: ex.vec(0, 0), z: 1 })
+    this.addChild(this.cursor)
 
     this.pathNode = new PathNodeComponent(this.pos, x, y)
     this.addComponent(this.pathNode)
@@ -50,13 +58,10 @@ export class Cell extends ex.Actor {
     this.decoration.graphics.add('range', RangeHighlightAnimation)
     this.decoration.graphics.add('path', PathHighlightAnimation)
     this.decoration.graphics.add('attack', AttackHighlightAnimation)
-    this.decoration.graphics.add('cursor', CursorHighlightAnimation)
+    this.cursor.graphics.add('cursor', CursorHighlightAnimation)
 
     this.decoration.graphics.offset = ex.vec(-4, -4)
-  }
-
-  getRandomNumber(num1: number, num2: number) {
-    return Math.floor(Math.random() * num2) + num1
+    this.cursor.graphics.offset = ex.vec(-4, -4)
   }
 
   addUnit(unit: Unit) {
@@ -73,24 +78,21 @@ export class Cell extends ex.Actor {
     unit.cell = null
   }
 
-  toggleHighlight(show: boolean, type: 'range' | 'path' | 'attack') {
-    this.decoration.graphics.hide()
+  toggleHighlight(show: boolean, type: HighlightType) {
     if (show) {
       this.decoration.graphics.use(type)
+      this.highlight = type
+    } else if (this.highlight === type || this.highlight === null) {
+      this.decoration.graphics.hide()
+      this.highlight = null
     }
   }
 
   toggleCursor(show: boolean) {
-    if (show) {
-      this.decoration.graphics.use('cursor')
-    } else {
-      this.decoration.graphics.hide()
-      this.hasCursor = false
-    }
-  }
-
-  getDistance(other: Cell) {
-    return Math.abs(this.pos.x - other.pos.x) + Math.abs(this.pos.y - other.pos.y)
+    if (show === this.hasCursor) return
+    this.hasCursor = show
+    if (show) this.cursor.graphics.use('cursor')
+    else this.cursor.graphics.hide()
   }
 
   /**

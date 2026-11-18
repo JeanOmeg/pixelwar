@@ -46,7 +46,7 @@ export class AudioMenu extends LitElement {
   `
 
   @property({ type: Boolean })
-    soundOn = true
+    soundOn = !AudioManager.muted
 
   @state()
   private fullscreen = isFullscreen()

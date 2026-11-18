@@ -18,9 +18,10 @@ const baseConfig = {
     'dist/**/*'
   ],
   rules: {
-    'no-unused-vars': 'error',
+    // the base rule doesn't understand TypeScript (type parameters, constructor properties)
+    'no-unused-vars': 'off',
     'no-console': 'warn',
-    '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     indent: ['error', 2],
@@ -36,7 +37,7 @@ const baseConfig = {
 
 module.exports = [
   {
-    files: ['src/**/*.ts'],
+    files: ['src/**/*.ts', 'tests/**/*.ts', 'scripts/**/*.ts', 'vitest.config.ts'],
     ...baseConfig,
     rules: {
       ...baseConfig.rules

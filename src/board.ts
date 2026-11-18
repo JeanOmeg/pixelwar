@@ -42,7 +42,8 @@ export class Board {
   getUnits() {
     let result: Unit[] = []
     for (let cell of this.cells) {
-      if (cell.unit && cell.unit.active) {
+      // a unit at 0 HP is already out, even while its death animation plays
+      if (cell.unit && cell.unit.active && cell.unit.health > 0) {
         result.push(cell.unit)
       }
     }
@@ -55,10 +56,6 @@ export class Board {
    */
   getLivingUnits(): Unit[] {
     return this.scene.actors.filter((actor): actor is Unit => actor instanceof Unit && actor.health > 0)
-  }
-
-  getEmptyCells(): Cell[] {
-    return this.cells.filter(cell => !cell.unit)
   }
 
   getCellByWorldPos(pos: ex.Vector): Cell | null {

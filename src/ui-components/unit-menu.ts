@@ -81,9 +81,11 @@ export class UnitMenu extends LitElement {
     }
   }
 
-  override updated() {
+  override updated(changed: Map<string, unknown>) {
     const menu = this.menuEl
     if (!menu) return
+    // keyboard: start on the first item that can be picked
+    if (changed.has('open') || changed.has('items')) this.enabledButtons()[0]?.focus({ preventScroll: true })
     const gap = 8
     const width = menu.offsetWidth
     const height = menu.offsetHeight
@@ -93,6 +95,26 @@ export class UnitMenu extends LitElement {
     top = Math.min(Math.max(top, gap), window.innerHeight - height - gap)
     menu.style.left = `${Math.max(left, gap)}px`
     menu.style.top = `${top}px`
+  }
+
+  private enabledButtons(): HTMLButtonElement[] {
+    return [...(this.shadowRoot?.querySelectorAll<HTMLButtonElement>('.menu .btn:not(:disabled)') ?? [])]
+  }
+
+  /** Arrows move between items, → opens and ← closes the Skills submenu */
+  private onKeyDown(event: KeyboardEvent) {
+    const buttons = this.enabledButtons()
+    const index = buttons.indexOf(this.shadowRoot?.activeElement as HTMLButtonElement)
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault()
+      const step = event.key === 'ArrowDown' ? 1 : -1
+      buttons[(index + step + buttons.length) % buttons.length]?.focus()
+    } else if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      const parent = this.items.find(item => item.children)
+      if (!parent?.enabled) return
+      event.preventDefault()
+      this.expanded = event.key === 'ArrowRight' ? parent.id : null
+    }
   }
 
   private choose(item: MenuItem) {
@@ -128,7 +150,7 @@ export class UnitMenu extends LitElement {
       <!-- closes on pointerdown, not click: after a tap the browser sends a click to
            whatever is under the finger, which would be this overlay, just opened by that tap -->
       <div class="overlay" @pointerdown=${() => this.dispatchEvent(new Event('close'))} @contextmenu=${(e: Event) => { e.preventDefault(); this.dispatchEvent(new Event('close')) }}></div>
-      <div class="panel menu team-${this.team}">
+      <div class="panel menu team-${this.team}" @keydown=${(event: KeyboardEvent) => this.onKeyDown(event)}>
         <div class="panel-title">${this.title}</div>
         <div class="items">
           ${main.map(item => this.renderItem(item))}

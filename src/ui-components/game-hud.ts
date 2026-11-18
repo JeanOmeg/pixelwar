@@ -6,7 +6,8 @@ import { HudView, TeamView, hpLevel } from './view-models'
 
 /**
  * Top bar: both teams (units left, total HP), round/phase and End Turn.
- * Fires `end-turn` when the current human player confirms, and `pause`.
+ * Fires `end-turn` when the current human player confirms, `pause` and
+ * `speed` (cycle the game speed).
  */
 @customElement('game-hud')
 export class GameHud extends LitElement {
@@ -83,6 +84,7 @@ export class GameHud extends LitElement {
     }
     .end-turn { font-size: calc(16 * var(--t)); padding: calc(7 * var(--u)) calc(12 * var(--u)); }
     .pause { --team: #2a2d3a; padding: calc(8 * var(--u)); }
+    .speed { --team: #2a2d3a; font-size: calc(16 * var(--t)); padding: calc(7 * var(--u)) calc(10 * var(--u)); min-width: calc(48 * var(--u)); justify-content: center; }
     /* pixel pause sign: two bars */
     .pause i {
       display: block;
@@ -100,6 +102,11 @@ export class GameHud extends LitElement {
   private confirming = false
 
   private confirmTimer = 0
+
+  /** Same as clicking End turn (keyboard shortcut): asks first if units can still act */
+  requestEndTurn() {
+    this.onEndTurn()
+  }
 
   private onEndTurn() {
     if (!this.view?.canEndTurn) return
@@ -141,14 +148,15 @@ export class GameHud extends LitElement {
       ${this.renderTeam(left, 'left', view.activeTeam === left.team)}
       <div class="panel center team-${active.team}">
         ${view.canPause ? html`
-          <button class="btn btn-solid pause" title="Pause (Esc)" @click=${() => this.dispatchEvent(new Event('pause'))}><i></i></button>
+          <button class="btn btn-solid pause" title="Pause (P)" @click=${() => this.dispatchEvent(new Event('pause'))}><i></i></button>
+          <button class="btn btn-solid speed" title="Game speed" @click=${() => this.dispatchEvent(new Event('speed'))}>x${view.speed}</button>
         ` : nothing}
         <div class="phase">
           <small>Round ${view.round}</small>
           <strong>${active.label} phase</strong>
         </div>
         ${view.canEndTurn ? html`
-          <button class="btn btn-solid end-turn ${this.confirming ? 'confirm' : ''}" @click=${this.onEndTurn}>
+          <button class="btn btn-solid end-turn ${this.confirming ? 'confirm' : ''}" title="End turn (E)" @click=${this.onEndTurn}>
             ${this.confirming ? `${view.unitsWithActions} left - sure?` : 'End turn'}
           </button>
         ` : nothing}

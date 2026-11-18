@@ -78,7 +78,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
 
   private createPlayers(mode: GameMode, board: Board): Player[] {
     const human = (name: string) => new HumanPlayer(name, this.engine, this.selectionManager, this.ui, board)
-    const cpu = (name: string) => new ComputerPlayer(name, this.selectionManager, board)
+    const cpu = (name: string) => new ComputerPlayer(name, this.selectionManager, board, this.settings.difficulty ?? 'normal')
     switch (mode) {
     case 'p1vsp2': return [human('Human A'), human('Human B')]
     case 'cpuvscpu': return [cpu('CPU A'), cpu('CPU B')]
@@ -97,7 +97,6 @@ export class LevelBase extends ex.Scene<MatchSettings> {
     this.selectionManager = new SelectionManager(board, this.engine)
     this.ui = new GameUI(this.engine, board, this.selectionManager)
 
-    this.selectionManager.showCursor(4, 8)
 
     Player.resetMasks()
     this.players = this.createPlayers(this.settings.mode, board)

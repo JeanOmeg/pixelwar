@@ -1,4 +1,5 @@
 import type { UnitClass } from './path-finding/terrain-rules'
+import type { Difficulty } from './ai/weights'
 
 export type GameMode = 'p1vscpu' | 'p1vsp2' | 'cpuvscpu'
 
@@ -43,4 +44,6 @@ export interface MatchSettings {
    * null or missing = the army drawn in the map.
    */
   armies?: (UnitClass[] | null)[]
+  /** How well the CPU plays (missing = normal) */
+  difficulty?: Difficulty
 }

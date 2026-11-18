@@ -8,7 +8,12 @@
  * - Critical (d20 = 20 or forced): 12 + ATK - DEF.
  * - Back attack (attacker faces the same way as the target): d6 + 2*ATK - DEF.
  * - Normal: d6 + ATK - DEF.
- * - Minimum damage on hit is 1. A miss also deals 1 damage.
+ * - Minimum damage on hit is 1. A miss also deals 1 damage (MISS_DAMAGE).
+ * - Forest: a unit standing on a forest tile gets +FOREST_DEFENSE (applied by
+ *   the caller to the defender's stats, see Unit.combatStats).
+ * - Counterattack: a melee defender that survives strikes back once, unless it
+ *   was hit in the back (rules in Unit.counterReach / Unit.attack).
+ * - Skills add the optional modifiers of AttackContext.
  */
 
 export type Facing = 'up' | 'down' | 'left' | 'right'
@@ -23,6 +28,12 @@ export interface AttackContext {
   forcesCritical: boolean
   /** Attacker is facing the same direction as the target */
   backAttack: boolean
+  /** Aimed Shot: the attack cannot miss (it still needs a 20 to be critical) */
+  guaranteedHit?: boolean
+  /** Pierce: the target's defense counts as 0 */
+  ignoreDefense?: boolean
+  /** Rage: extra damage when the attack hits */
+  bonusDamage?: number
 }
 
 export interface AttackOutcome {
@@ -44,12 +55,17 @@ export interface AttackForecast {
   /** Chance that the damage is >= the target's current HP */
   killChance: number
   backAttack: boolean
-  /** Hit is certain (critical forced or back attack) */
+  /** Hit is certain (critical forced, back attack or Aimed Shot) */
   guaranteedHit: boolean
 }
 
 export const MISS_DAMAGE = 1
 export const CRITICAL_BASE_DAMAGE = 12
+/** Extra defense of a unit standing on a forest tile */
+export const FOREST_DEFENSE = 2
+
+/** A plain attack: no back attack, no skill */
+export const PLAIN_ATTACK: AttackContext = { forcesCritical: false, backAttack: false }
 
 /** Direction a unit faces after stepping/attacking from `from` towards `to` */
 export function facingBetween(from: { x: number, y: number }, to: { x: number, y: number }): Facing {
@@ -72,17 +88,18 @@ export function advantageChance(value: number, sides: number): number {
 
 export function resolveAttack(attacker: CombatStats, defender: CombatStats, context: AttackContext, d20: number, d6: number): AttackOutcome {
   const critical = d20 === 20 || context.forcesCritical
-  const hit = attacker.attack + d20 > defender.defense + 10 || context.backAttack || critical
+  const defense = context.ignoreDefense ? 0 : Math.max(defender.defense, 0)
+  const hit = attacker.attack + d20 > defense + 10 || context.backAttack || critical || !!context.guaranteedHit
 
   let damage: number
   if (critical) {
-    damage = CRITICAL_BASE_DAMAGE + attacker.attack - defender.defense
+    damage = CRITICAL_BASE_DAMAGE + attacker.attack - defense
   } else if (context.backAttack) {
-    damage = d6 + attacker.attack * 2 - defender.defense
+    damage = d6 + attacker.attack * 2 - defense
   } else {
-    damage = d6 + attacker.attack - defender.defense
+    damage = d6 + attacker.attack - defense
   }
-  damage = hit ? Math.max(damage, 1) : MISS_DAMAGE
+  damage = hit ? Math.max(damage + (context.bonusDamage ?? 0), 1) : MISS_DAMAGE
 
   return { hit, critical, backAttack: context.backAttack, damage, d20 }
 }
@@ -119,6 +136,6 @@ export function forecastAttack(attacker: CombatStats, defender: CombatStats, con
     expectedDamage,
     killChance,
     backAttack: context.backAttack,
-    guaranteedHit: context.forcesCritical || context.backAttack
+    guaranteedHit: context.forcesCritical || context.backAttack || !!context.guaranteedHit
   }
 }

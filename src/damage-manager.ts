@@ -9,15 +9,14 @@ function describe(outcome: AttackOutcome): { text: string, color: ex.Color } {
   return { text: outcome.damage.toFixed(0), color: ex.Color.White }
 }
 
+/** Floating text over the map (damage numbers, heals, buffs) */
 export class Damage extends ex.Actor {
-  constructor(pos: ex.Vector, outcome: AttackOutcome) {
+  constructor(pos: ex.Vector, text: string, color: ex.Color) {
     super({
       name: 'damage',
       pos,
       z: 10
     })
-
-    const { text, color } = describe(outcome)
 
     const font = new ex.Font({
       family: 'notjamslab14',
@@ -42,8 +41,18 @@ export class DamageManager {
     this.scene = scene
   }
 
-  async spawnDamageNumber(pos: ex.Vector, outcome: AttackOutcome) {
-    const damageNumber = new Damage(pos, outcome)
+  /** `label` goes before the text, e.g. 'Counter! ' */
+  async spawnDamageNumber(pos: ex.Vector, outcome: AttackOutcome, label = '') {
+    const { text, color } = describe(outcome)
+    this.spawn(pos, label + text, color)
+  }
+
+  async spawnText(pos: ex.Vector, text: string, hex: string) {
+    this.spawn(pos, text, ex.Color.fromHex(hex))
+  }
+
+  private spawn(pos: ex.Vector, text: string, color: ex.Color) {
+    const damageNumber = new Damage(pos, text, color)
     damageNumber.actions.moveBy({
       offset: ex.vec(0, -50 * SCALE.y),
       duration: 700,

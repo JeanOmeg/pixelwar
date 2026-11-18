@@ -20,6 +20,8 @@ Elimine todas as unidades inimigas antes que eliminem as suas. Se o limite de 10
 | **Player vs Player** | Dois jogadores se alternam no mesmo computador |
 | **CPU vs CPU** | Assista dois times controlados pela IA se enfrentarem |
 
+**Dificuldade da CPU** (na tela de modo, fica salva): **Easy** comete erros e quase não usa skills; **Normal** joga bem; **Hard** não erra e usa pesos ajustados por simulação. A IA planeja o turno inteiro de cada unidade (para onde ir, quem atacar, de que lado e com qual skill), prevê o que o seu exército pode fazer no turno seguinte para não deixar unidades expostas, recua arqueiros e magos depois de atirar, procura ataques pelas costas e age primeiro com quem pode matar. Cada CPU também ganha uma personalidade (equilibrada, agressiva ou defensiva). Em simulações nos 8 mapas, a IA Normal vence a IA anterior em ~85% das partidas, e a Hard vence a Normal em ~77%.
+
 ### Menu inicial
 
 **Play** → escolha o modo → escolha o mapa (ou **Random map**) → **Start**. O seletor mostra uma prévia de cada mapa com as posições iniciais das unidades, o tamanho, quantas unidades cada time tem e o limite de rodadas. Use ↑/↓ e Enter, ou o mouse. O jogo lembra o último modo e mapa escolhidos.
@@ -56,7 +58,22 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, 
 | Ver alcance de ataque | Clique com o **botão do meio** sobre qualquer unidade |
 | Ver alcance de um inimigo | Clique com o **botão esquerdo** sobre um inimigo (ou unidade que já agiu): movimento; clique de novo: ataque |
 | Pular o anúncio de fase | Clique na tela ou aperte **Esc** |
-| Pausar | Botão **⏸** no topo da tela (ou **Esc** sem nada para cancelar). No menu de pausa: **Resume** continua, **Main menu** (pede confirmação) encerra a partida e volta ao menu principal |
+| Pausar | Botão **⏸** no topo da tela (ou **P**, ou **Esc** sem nada para cancelar). No menu de pausa: **Resume** continua, **Main menu** (pede confirmação) encerra a partida e volta ao menu principal |
+| Desfazer movimento | **Undo move** no menu, enquanto a unidade não atacou (devolve o MP do Run) |
+| Velocidade | Botão **x1/x2/x3** no topo: acelera animações e o turno da CPU (fica salvo) |
+
+### Teclado
+
+| Tecla | Ação |
+|---|---|
+| **Setas** / **WASD** | Movem o cursor no mapa |
+| **Enter** / **Espaço** | Age na célula do cursor (como o clique esquerdo) |
+| **Tab** / **Shift+Tab** | Vai para a próxima/anterior unidade que ainda pode agir |
+| **R** / **F** | Mostra o alcance de movimento/ataque da unidade sob o cursor |
+| **E** | Encerra o turno (pede confirmação se ainda houver unidades com ações) |
+| **P** | Pausa |
+| **Esc** | Fecha o menu, cancela, pula o anúncio de fase ou pausa |
+| Menu da unidade | **↑/↓** escolhem, **→/←** abrem/fecham as skills, **Enter** confirma |
 
 ### Celular e tablet
 
@@ -72,9 +89,10 @@ O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece 
 
 ### Interface
 
-- **Topo:** os dois times (unidades vivas e HP total), a rodada, de quem é a vez e o botão **End turn**.
-- **Card da unidade:** passe o mouse sobre qualquer unidade para ver HP, MP, atributos, para onde ela está virada e o estado no turno.
-- **Prévia de combate:** no modo de ataque, passe o mouse sobre um inimigo ao alcance para ver a chance de acerto, a faixa de dano, a chance de matar e se o ataque é pelas costas.
+- **Topo:** os dois times (unidades vivas e HP total), pausa, velocidade (x1/x2/x3), a rodada, de quem é a vez e o botão **End turn**.
+- **Barra de HP** embaixo de cada unidade no mapa (verde, amarela abaixo de 50%, vermelha abaixo de 25%).
+- **Card da unidade:** passe o mouse sobre qualquer unidade para ver HP, MP, atributos (em verde/vermelho quando uma skill ou a floresta os altera), o alcance em tiles, para onde ela está virada e o estado no turno.
+- **Prévia de combate:** no modo de ataque, passe o mouse sobre um inimigo ao alcance para ver a chance de acerto, a faixa de dano, a chance de matar, se o ataque é pelas costas e o contra-ataque que você vai levar se ele sobreviver.
 - **Rodapé:** dica do que fazer no momento.
 
 ---
@@ -94,48 +112,67 @@ Cada ataque envolve três rolagens:
 | **Golpe crítico** (D20 = 20) | Dano fixo de **12 + ATK - DEF** (ignora o D6) |
 | **Ataque pelas costas** | Atacante e defensor estão virados na mesma direção. Dano: **D6 + ATK×2 - DEF** |
 | **Sempre acerta** | Golpe crítico e ataque pelas costas acertam independente do teste |
+| **Erro** | Um ataque que erra ainda causa **1 de dano** |
+| **Contra-ataque** | Uma unidade corpo a corpo (alcance 1) que sobrevive revida uma vez contra um atacante adjacente, com um ataque normal, e se vira para ele. **Não há contra-ataque depois de um ataque pelas costas**, nem de unidades de alcance 2 ou mais (exceto o Halberdier com Brace) |
+| **Floresta** | Quem está num tile de floresta recebe **+2 DEF** |
 
 > Todo ataque é em **linha reta** (mesma linha ou coluna) e para na primeira unidade do caminho; aliados bloqueiam a linha de tiro. Paredes, árvores e portas também bloqueiam. Uma unidade parada em uma porta não pode atacar.
 >
-> O alcance é medido em pontos: cada tile custa 1 ponto. Para **Arqueiros, Magos e Lanceiros**, tiles de terreno lento (incluindo água) custam 2 pontos. Por exemplo, o Arqueiro (alcance 6) atinge 6 tiles em terreno rápido, mas só 3 em terreno lento.
+> O alcance é medido em pontos: cada tile custa 1 ponto. Para **Archer, Mage, Spearman, Ranger e Necromancer**, tiles de floresta e de água custam 2 pontos. Por exemplo, o Arqueiro (alcance 6) atinge 6 tiles em campo aberto, mas só 3 sobre floresta ou água. O card da unidade mostra isso em tiles.
 
 ---
 
 ## Unidades
 
-| Unidade | HP | ATK | DEF | Alcance | Movimento | Custo |
-|---|---|---|---|---|---|---|
-| **Archer** | 10 | 2 | 2 | 6 | 4 | 9 |
-| **Mage** | 10 | 2 | 2 | 5 | 5 | 9 |
-| **Spearman** | 10 | 4 | 2 | 2 | 6 | 8 |
-| **Thief** | 10 | 5 | 2 | 1 | 6 | 9 |
-| **Fighter** | 15 | 4 | 3 | 1 | 6 | 12 |
-| **Cleric** | 20 | 3 | 4 | 1 | 6 | 16 |
-| **Barbarian** | 20 | 5 | 4 | 1 | 4 | 16 |
-| **Warrior** | 25 | 4 | 5 | 1 | 4 | 21 |
-| **Paladin** | 18 | 4 | 4 | 1 | 5 | 15 |
-| **Berserker** | 16 | 7 | 2 | 1 | 5 | 14 |
-| **Assassin** | 8 | 6 | 1 | 1 | 7 | 8 |
-| **Ranger** | 10 | 3 | 2 | 5 | 5 | 12 |
-| **Necromancer** | 8 | 4 | 2 | 4 | 4 | 8 |
-| **Halberdier** | 14 | 4 | 3 | 2 | 4 | 11 |
+| Unidade | HP | ATK | DEF | Alcance | Movimento | Custo | Skill própria |
+|---|---|---|---|---|---|---|---|
+| **Archer** | 10 | 2 | 2 | 6 | 4 | 10 | Aimed Shot |
+| **Mage** | 10 | 2 | 2 | 5 | 5 | 9 | Fireball |
+| **Spearman** | 10 | 4 | 2 | 2 | 6 | 8 | Pierce |
+| **Thief** | 10 | 5 | 2 | 1 | 6 | 9 | Steal |
+| **Fighter** | 15 | 4 | 3 | 1 | 6 | 12 | Second Wind |
+| **Cleric** | 20 | 3 | 4 | 1 | 6 | 15 | Heal |
+| **Barbarian** | 20 | 5 | 4 | 1 | 4 | 16 | Rage |
+| **Warrior** | 25 | 4 | 5 | 1 | 4 | 21 | Guard |
+| **Paladin** | 18 | 4 | 4 | 1 | 5 | 15 | Shield Wall |
+| **Berserker** | 16 | 7 | 2 | 1 | 5 | 15 | Frenzy |
+| **Assassin** | 8 | 6 | 1 | 1 | 7 | 8 | Backstab |
+| **Ranger** | 10 | 3 | 2 | 5 | 5 | 12 | Pinning Shot |
+| **Necromancer** | 8 | 4 | 2 | 4 | 4 | 8 | Drain |
+| **Halberdier** | 14 | 4 | 3 | 2 | 4 | 12 | Brace |
 
-> **Thief**, **Assassin** e **Ranger** pagam só 1 ponto de movimento em terreno lento (portas continuam custando 2). **Archer**, **Mage**, **Ranger** e **Necromancer** podem mirar em tiles de água. O **Halberdier** tem alcance 2 em qualquer terreno.
+> **Thief**, **Assassin** e **Ranger** pagam só 1 ponto de movimento na floresta (portas continuam custando 2). **Archer**, **Mage**, **Ranger** e **Necromancer** podem mirar em tiles de água. O **Halberdier** tem alcance 2 em qualquer terreno. As classes de alcance 1 contra-atacam.
+>
+> Os custos saem da matemática real de combate (dano médio causado e recebido, contra-ataques, floresta, mobilidade e alcance), escalados para que as 8 classes originais somem 100. Com o contra-ataque e a floresta, Archer, Berserker e Halberdier subiram 1 ponto e o Cleric caiu 1. `yarn balance` mostra a conta.
 
 ### Montando o exército
 
-Antes de cada partida você escolhe a classe de cada uma das 8 posições iniciais do seu time, gastando até **100 pontos** (custo na tabela acima). O botão **Classic army** volta para o exército desenhado no mapa, que custa exatamente 100. No modo Player vs Player, cada jogador monta o seu; a CPU usa o exército do mapa.
+Antes de cada partida você escolhe a classe de cada uma das 8 posições iniciais do seu time, gastando até **100 pontos** (custo na tabela acima). O botão **Classic army** volta para o exército desenhado no mapa, que custa exatamente 100. No modo Player vs Player, cada jogador monta o seu. A **CPU monta o próprio exército** com o mesmo orçamento: cada posição mantém o papel da classe desenhada no mapa (de longe, alcance 2, flanco, corpo a corpo ou pesado) e recebe uma classe sorteada desse papel.
 
 ---
 
 ## Skills
 
-Cada unidade possui **4 PM (Pontos de Magia)** e pode usar **uma skill por turno**.
+Cada unidade possui **4 PM (Pontos de Magia)** e pode usar **uma skill por turno**. Todas têm **Run** e **Special**, e cada classe tem uma skill própria. Skills de movimento/ataque só valem para o próximo movimento/ataque; se ele for cancelado, o PM volta. Efeitos "até o próximo turno" acabam quando começa o próximo turno do dono.
 
-| Skill | Custo | Condição | Efeito |
+| Skill | Classe | Custo | Efeito |
 |---|---|---|---|
-| **Run** | 2 PM | Sem mover ou atacar ainda | Move o dobro da distância normal. Pode atacar depois. |
-| **Special Attack** | 4 PM | Sem atacar ainda | O próximo ataque é sempre um golpe crítico. |
+| **Run** | Todas | 2 PM | Move o dobro da distância normal (sem ter movido nem atacado). Pode atacar depois. |
+| **Special** | Todas | 4 PM | O próximo ataque é sempre um golpe crítico. |
+| **Aimed Shot** | Archer | 2 PM | O próximo ataque não erra. |
+| **Fireball** | Mage | 3 PM | O próximo ataque também causa 3 de dano aos inimigos ao lado do alvo. |
+| **Pierce** | Spearman | 2 PM | O próximo ataque ignora a DEF do alvo (armadura e floresta). |
+| **Steal** | Thief | 1 PM | O próximo ataque, se acertar, rouba até 2 PM do alvo. |
+| **Second Wind** | Fighter | 2 PM | Recupera 6 HP. |
+| **Heal** | Cleric | 3 PM | Recupera 8 HP dele ou de um aliado adjacente (escolha o alvo no mapa). |
+| **Rage** | Barbarian | 2 PM | O próximo ataque causa +3 de dano se acertar. |
+| **Guard** | Warrior | 2 PM | +3 DEF até o próximo turno dele. |
+| **Shield Wall** | Paladin | 3 PM | Ele e os aliados adjacentes ganham +2 DEF até o próximo turno dele. |
+| **Frenzy** | Berserker | 2 PM | +3 ATK e −2 DEF até o próximo turno dele. |
+| **Backstab** | Assassin | 3 PM | O próximo ataque conta como ataque pelas costas (acerto garantido, ATK dobrado, sem contra-ataque). |
+| **Pinning Shot** | Ranger | 2 PM | Se o próximo ataque acertar, o alvo não pode se mover no próximo turno dele. |
+| **Drain** | Necromancer | 2 PM | O próximo ataque cura o Necromancer pelo dano causado. |
+| **Brace** | Halberdier | 2 PM | +1 DEF e contra-ataca a até 2 tiles, até o próximo turno dele. |
 
 > PM não se regenera durante a batalha — use com estratégia.
 
@@ -145,8 +182,8 @@ Cada unidade possui **4 PM (Pontos de Magia)** e pode usar **uma skill por turno
 
 | Tipo | Efeito |
 |---|---|
-| **Terreno rápido** | Custa 1 ponto de movimento |
-| **Terreno lento** | Custa 2 pontos de movimento (1 para o Thief) |
+| **Campo aberto** (grama, terra, pedra) | Custa 1 ponto de movimento |
+| **Floresta** | Custa 2 pontos de movimento (1 para Thief, Assassin e Ranger) e dá **+2 DEF** a quem está nela |
 | **Água** | Ninguém atravessa andando. Ataques passam por cima dela. |
 | **Porta** | Todos passam, com custo 2. Bloqueia a linha de ataque, e quem está sobre ela não pode atacar nem ser atacado. |
 | **Árvores / Paredes** | Bloqueiam movimento e linha de ataque |
@@ -157,10 +194,18 @@ Cada unidade possui **4 PM (Pontos de Magia)** e pode usar **uma skill por turno
 
 ## Desenvolvimento
 
+O projeto usa **yarn**.
+
 ```
-npm install
-npm run dev     # inicia servidor de desenvolvimento
-npm run build   # gera build de produção
+yarn install
+yarn dev        # servidor de desenvolvimento (Parcel)
+yarn validate   # tipos + lint + testes (rode antes de publicar)
+yarn test       # testes (Vitest)
+yarn balance    # tabela de custos das classes calculada pela matemática de combate
+yarn ai:sim     # partidas CPU vs CPU sem gráficos (IA atual × anterior e entre dificuldades)
+yarn build      # gera o build em docs/ e FAZ COMMIT de tudo que estiver no working tree
 ```
+
+> ⚠️ `yarn build` roda `git add .` e cria o commit "- Build deploy" sozinho. Confira o `git status` antes.
 
 **Stack:** TypeScript · Excalibur.js · Lit (Web Components) · Tiled (mapas)

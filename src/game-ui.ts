@@ -2,7 +2,7 @@ import * as ex from 'excalibur'
 import { Board } from './board'
 import { Cell } from './cell'
 import { SCALE } from './config'
-import { forecastAttack } from './combat'
+import { forecastAttack, PLAIN_ATTACK } from './combat'
 import { Player } from './player'
 import { SelectionManager } from './selection-manager'
 import { Unit } from './unit'
@@ -14,14 +14,18 @@ import { GameOver, GameOverChoice } from './ui-components/game-over'
 import { PauseMenu } from './ui-components/pause-menu'
 import { Resources } from './resources'
 import { isTouchDevice, readableBoost } from './device'
+import { SKILLS, SkillId } from './skills'
+import { DIFFICULTIES, Difficulty } from './ai/weights'
+import { cycleSpeed, getSpeed } from './speed'
+import { rangeNote } from './unit-classes'
 import { ForecastView, GameResultView, HudView, MenuItem, Team, UnitView } from './ui-components/view-models'
 
 export interface MenuOptions {
   move: () => void
   attack: () => void
   pass: () => void
-  run: () => void
-  specialAttack: () => void
+  undo: () => void
+  skill: (id: SkillId) => void
 }
 
 const TEAMS: Team[] = ['blue', 'red']
@@ -95,6 +99,7 @@ export class GameUI {
 
     this.hud.addEventListener('end-turn', () => this.onEndTurn())
     this.hud.addEventListener('pause', () => void this.pause())
+    this.hud.addEventListener('speed', () => { cycleSpeed(); this.refresh() })
     this.menu.addEventListener('select', event => this.onMenuSelect((event as CustomEvent<string>).detail))
     this.menu.addEventListener('close', () => this.dismissAll())
 
@@ -135,7 +140,9 @@ export class GameUI {
   controllerLabel(player: Player): string {
     const sameKind = this.players.filter(p => p.isHuman === player.isHuman)
     const base = player.isHuman ? 'Player' : 'CPU'
-    return sameKind.length > 1 ? `${base} ${sameKind.indexOf(player) + 1}` : base
+    const label = sameKind.length > 1 ? `${base} ${sameKind.indexOf(player) + 1}` : base
+    const difficulty = (player as Partial<{ difficulty: Difficulty }>).difficulty
+    return difficulty ? `${label} (${DIFFICULTIES[difficulty].label})` : label
   }
 
   async playPhaseBanner(player: Player, round: number): Promise<void> {
@@ -145,6 +152,18 @@ export class GameUI {
     await this.banner.play(this.teamOf(player), `${this.teamLabel(player)} phase`, `Round ${round} - ${this.controllerLabel(player)}`)
     this.bannerActive = false
     this.refresh()
+  }
+
+  /** Keyboard cursor: the cell under it is shown like the one under the mouse */
+  setHovered(cell: Cell | null) {
+    this.touch = false
+    this.hovered = cell
+    this.refresh()
+  }
+
+  /** A dialog or banner is up: the board shouldn't react to keys */
+  isBlockingInput(): boolean {
+    return this.menu.open || this.pauseMenu.open || this.bannerActive || this.matchOver
   }
 
   showGameOver(result: GameResultView): Promise<GameOverChoice> {
@@ -181,7 +200,7 @@ export class GameUI {
     this.menuUnit = unit
     this.menuOptions = options
 
-    const skills = unit.unitConfig.skill ?? []
+    const skills = unit.unitConfig.skills
     const items: MenuItem[] = [
       { id: 'move', label: 'Move', enabled: unit.canMove() },
       { id: 'attack', label: 'Attack', enabled: unit.canAttack() },
@@ -190,13 +209,14 @@ export class GameUI {
         label: 'Skills',
         enabled: skills.length > 0,
         children: skills.map(skill => ({
-          id: skill.event,
+          id: skill.id,
           label: skill.name,
           detail: `${skill.cost} MP`,
           description: skill.description,
-          enabled: unit.canUseSkill(skill.event)
+          enabled: unit.canUseSkill(skill.id)
         }))
       },
+      ...(unit.canUndoMove() ? [{ id: 'undo', label: 'Undo move', enabled: true }] : []),
       { id: 'pass', label: 'Wait', enabled: true }
     ]
 
@@ -232,13 +252,18 @@ export class GameUI {
     case 'move': options.move(); break
     case 'attack': options.attack(); break
     case 'pass': options.pass(); break
-    case 'skill-run': options.run(); break
-    case 'skill-special-attack': options.specialAttack(); break
+    case 'undo': options.undo(); break
+    default: if (id in SKILLS) options.skill(id as SkillId)
     }
     this.refresh()
   }
 
   private handleKey(event: KeyboardEvent) {
+    const key = event.key.toLowerCase()
+    if (!this.pauseMenu.open && !this.matchOver && !this.menu.open && !event.ctrlKey && !event.metaKey) {
+      if (key === 'e' && this.hud.view?.canEndTurn) { this.hud.requestEndTurn(); return }
+      if (key === 'p') { void this.pause(); return }
+    }
     if (event.key !== 'Escape') return
     if (this.pauseMenu.open) {
       this.pauseMenu.resume()
@@ -276,9 +301,12 @@ export class GameUI {
       if (unit.moved) status.push('Moved')
       if (unit.attacked) status.push('Attacked')
     }
-    if (unit.isRunning) status.push('Running')
-    if (unit.forcesCritical) status.push('Critical ready')
-    if (unit.usedSkill && !unit.isRunning && !unit.forcesCritical) status.push('Skill used')
+    if (unit.pendingSkill) status.push(`${unit.pendingSkill.name} ready`)
+    else if (unit.usedSkill) status.push('Skill used')
+    if (unit.isInForest()) status.push('Forest DEF +2')
+    if (unit.braced) status.push('Braced')
+    if (unit.pinned) status.push('Pinned')
+    const stats = unit.combatStats()
 
     return {
       name: this.className(unit),
@@ -287,9 +315,12 @@ export class GameUI {
       maxHp: unit.unitConfig.health,
       mp: unit.mp,
       maxMp: unit.unitConfig.mp,
-      attack: unit.unitConfig.attack,
-      defense: unit.unitConfig.defense,
+      attack: stats.attack,
+      baseAttack: unit.unitConfig.attack,
+      defense: stats.defense,
+      baseDefense: unit.unitConfig.defense,
       range: unit.unitConfig.range,
+      rangeNote: rangeNote(unit.name, unit.unitConfig.range),
       movement: unit.effectiveMovement,
       facing: unit.miniDirection,
       status,
@@ -320,7 +351,8 @@ export class GameUI {
       phasesLeft: this.phasesLeft,
       canEndTurn: current.isHuman && current.active && !this.matchOver,
       unitsWithActions: units.filter(u => u.player === current && u.hasActions()).length,
-      canPause: !this.matchOver
+      canPause: !this.matchOver,
+      speed: getSpeed()
     }
   }
 
@@ -331,15 +363,17 @@ export class GameUI {
     if (target.player === attacker.player || !target.cell) return null
     if (!this.selection.findAttackRange(attacker).includes(target.cell.pathNode)) return null
 
+    const context = attacker.attackContext(target)
+    const forecast = forecastAttack(attacker.combatStats(), target.combatStats(), context, target.health)
+    // if the target may survive and can strike back, show the counterattack too
+    const counter = forecast.killChance < 1 && target.canCounter(attacker, context)
+      ? forecastAttack(target.combatStats(), attacker.combatStats(), PLAIN_ATTACK, attacker.health)
+      : null
     return {
       attacker: this.unitView(attacker),
       defender: this.unitView(target),
-      forecast: forecastAttack(
-        attacker.unitConfig,
-        target.unitConfig,
-        { forcesCritical: attacker.forcesCritical, backAttack: attacker.isBehind(target) },
-        target.health
-      )
+      forecast,
+      counter
     }
   }
 
@@ -350,19 +384,23 @@ export class GameUI {
     if (this.touch) return this.touchHintText()
     if (this.menu.open) return 'Choose an action · [Esc] close'
     if (this.selection.currentUnitSelection) {
-      return this.selection.currentSelectionMode === 'move'
-        ? 'Click a highlighted tile to move · [Esc] cancel'
-        : 'Click an enemy in range to attack · [Esc] cancel'
+      switch (this.selection.currentSelectionMode) {
+      case 'move': return 'Click a highlighted tile to move · [Esc] cancel'
+      case 'attack': return 'Click an enemy in range to attack · [Esc] cancel'
+      case 'heal': return 'Click an ally to heal · [Esc] cancel'
+      }
     }
-    return '[Left click] select unit · [Right click] move range · [Middle click] attack range'
+    return '[Left click] select unit · [Right click] move range · [Middle click] attack range · [Tab] next unit'
   }
 
   private touchHintText(): string {
     if (this.menu.open) return 'Choose an action · [tap outside] close'
     if (this.selection.currentUnitSelection) {
-      return this.selection.currentSelectionMode === 'move'
-        ? '[Tap] a tile to preview, [tap again] to move · tap outside to cancel'
-        : '[Tap] an enemy to preview, [tap again] to attack · tap outside to cancel'
+      switch (this.selection.currentSelectionMode) {
+      case 'move': return '[Tap] a tile to preview, [tap again] to move · tap outside to cancel'
+      case 'attack': return '[Tap] an enemy to preview, [tap again] to attack · tap outside to cancel'
+      case 'heal': return '[Tap] an ally to preview, [tap again] to heal · tap outside to cancel'
+      }
     }
     return '[Tap] your unit to act · [tap] other units to see their range (again: attack range)'
   }

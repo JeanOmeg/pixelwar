@@ -31,7 +31,6 @@ type FullscreenDocument = Document & {
 }
 type FullscreenElement = HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void }
 type LockableOrientation = ScreenOrientation & {
-  // eslint-disable-next-line no-unused-vars -- parameter name of a type
   lock?: (orientation: string) => Promise<void>
   unlock?: () => void
 }

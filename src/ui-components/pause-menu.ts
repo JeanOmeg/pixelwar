@@ -40,7 +40,6 @@ export class PauseMenu extends LitElement {
   @state()
   private confirming = false
 
-  // eslint-disable-next-line no-unused-vars -- parameter name of a type
   private settle: ((choice: PauseChoice) => void) | null = null
 
   get open() {
@@ -51,6 +50,11 @@ export class PauseMenu extends LitElement {
     this.visible = true
     this.confirming = false
     return new Promise(resolve => { this.settle = resolve })
+  }
+
+  override updated(changed: Map<string, unknown>) {
+    // keyboard: Enter resumes, Tab/arrows reach Main menu
+    if (changed.has('visible') && this.visible) this.shadowRoot?.querySelector<HTMLButtonElement>('.resume')?.focus()
   }
 
   /** Same as clicking Resume (used by Esc) */

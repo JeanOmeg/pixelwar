@@ -1,6 +1,7 @@
 /* eslint-disable indent -- nested lit templates read better with their own indentation */
 import { css, html } from 'lit'
 import { CLASS_INFO, UNIT_CLASSES, classStats, classTraits } from '../unit-classes'
+import { CLASS_SKILL, SKILLS } from '../skills'
 import { unitPortrait } from '../ui-sprites'
 import type { UnitType } from '../config'
 
@@ -32,6 +33,8 @@ export const pageStyles = css`
   .unit .stats small { display: block; font-size: calc(12 * var(--t)); color: var(--muted); margin-top: calc(3 * var(--u)); }
   .unit .traits { display: flex; flex-wrap: wrap; gap: calc(5 * var(--u)); }
   .unit .traits .chip { font-size: calc(13 * var(--t)); color: var(--mp); }
+  .unit .skill { font-size: calc(14 * var(--t)); line-height: 1.35; color: var(--muted); }
+  .unit .skill b { font-weight: normal; color: var(--gold); }
 
   .credits { display: flex; flex-direction: column; gap: calc(14 * var(--u)); font-size: calc(20 * var(--t)); line-height: 1.4; }
   .credits ul { margin: 0; padding-left: calc(24 * var(--u)); display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
@@ -53,7 +56,8 @@ export function renderHowToPlay() {
         <ul>
           <li>Click a unit and pick <b>Move</b>, <b>Attack</b>, <b>Skills</b> or <b>Wait</b>.</li>
           <li>Each unit can move once and attack once per turn, in any order.</li>
-          <li>Press <b>End turn</b> at the top when you are done.</li>
+          <li><b>Undo move</b> puts a unit back while it hasn't attacked.</li>
+          <li>Press <b>End turn</b> at the top when you are done. The turn also ends when no unit can move or attack.</li>
         </ul>
       </section>
       <section>
@@ -62,7 +66,9 @@ export function renderHowToPlay() {
           <li>Hit if <b>ATK + d20</b> beats <b>DEF + 10</b>. Damage is <b>d6 + ATK − DEF</b>.</li>
           <li>Dice are rolled twice and the best roll counts.</li>
           <li>A natural 20 is a <b>critical</b>: 12 + ATK − DEF damage.</li>
+          <li>A miss still deals 1 damage.</li>
           <li>Hit an enemy from <b>behind</b> to never miss and use double ATK.</li>
+          <li><b>Counterattack</b>: a melee unit that survives strikes back at a melee attacker, unless it was hit from behind.</li>
           <li>Attacks go in straight lines and stop at the first unit.</li>
           <li>Aim at an enemy to see the hit and kill chances before attacking.</li>
         </ul>
@@ -70,7 +76,9 @@ export function renderHowToPlay() {
       <section>
         <h3>Terrain</h3>
         <ul>
-          <li>Open ground costs 1 move. Woods and rough terrain cost 2.</li>
+          <li>Open ground costs 1 move. Forest costs 2.</li>
+          <li>Units in the <b>forest</b> get +2 DEF.</li>
+          <li>Archers, mages and spearmen pay 2 points of range per forest or water tile.</li>
           <li>Walls and trees block moves and attacks.</li>
           <li>Water blocks moves, but attacks fly over it.</li>
           <li>Doors can be crossed, but block attacks. Units on a door can't attack or be attacked.</li>
@@ -81,7 +89,8 @@ export function renderHowToPlay() {
         <ul>
           <li><b>Run</b> (2 MP): double movement this turn.</li>
           <li><b>Special</b> (4 MP): the next attack is a critical hit.</li>
-          <li>One skill per turn. MP does not come back.</li>
+          <li>Every class also has a <b>skill of its own</b> (see Units): heal, guard, pierce armor, backstab...</li>
+          <li>Every unit has 4 MP. One skill per turn. MP does not come back.</li>
         </ul>
       </section>
       <section>
@@ -100,7 +109,9 @@ export function renderHowToPlay() {
           <li><b>Middle click</b>: show a unit's attack range.</li>
           <li><b>Click</b> an enemy (or a unit that already acted): its movement range; click again: its attack range.</li>
           <li><b>Esc</b>: close the menu or cancel the action; with nothing to cancel, pause.</li>
-          <li><b>Pause</b> button (top center): resume or leave the match for the main menu.</li>
+          <li><b>Pause</b> button (top center, or <b>P</b>): resume or leave the match for the main menu.</li>
+          <li><b>x1/x2/x3</b> button: game speed.</li>
+          <li>Keyboard: <b>arrows</b> move the cursor, <b>Enter</b> acts, <b>Tab</b> jumps to the next unit, <b>R</b>/<b>F</b> show move/attack range, <b>E</b> ends the turn.</li>
         </ul>
       </section>
       <section>
@@ -137,6 +148,7 @@ export function renderUnits() {
               <div>${stats.range}<small>RNG</small></div>
               <div>${stats.movement}<small>MOV</small></div>
             </div>
+            <div class="skill"><b>${SKILLS[CLASS_SKILL[unitClass]].name}</b> (${SKILLS[CLASS_SKILL[unitClass]].cost} MP): ${SKILLS[CLASS_SKILL[unitClass]].description}</div>
             ${traits.length ? html`<div class="traits">${traits.map(t => html`<span class="chip">${t}</span>`)}</div>` : ''}
           </div>
         `

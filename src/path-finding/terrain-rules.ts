@@ -1,5 +1,7 @@
-export type UnitClass = 'Archer' | 'Barbarian' | 'Cleric' | 'Fighter' | 'Mage' | 'Spearman' | 'Thief' | 'Warrior'
-  | 'Paladin' | 'Berserker' | 'Assassin' | 'Ranger' | 'Necromancer' | 'Halberdier'
+import { UnitClass, unitClassOf } from '../unit-types'
+
+export type { UnitClass } from '../unit-types'
+export { unitClassOf } from '../unit-types'
 
 export interface TerrainRules {
   /** Pays 1 movement point on slow terrain (doors still cost 2) */
@@ -32,11 +34,6 @@ export const TERRAIN_RULES: Record<UnitClass, Partial<TerrainRules>> = {
   Necromancer: { slowTerrainCostsRange: true, targetsWater: true },
   // reach 2 on any terrain: unlike the Spearman it doesn't pay extra range on slow tiles
   Halberdier: {}
-}
-
-/** 'ArcherA' -> 'Archer' */
-export function unitClassOf(unitName: string): UnitClass {
-  return unitName.replace(/[AB]$/, '') as UnitClass
 }
 
 export function getTerrainRules(unitName: string): TerrainRules {

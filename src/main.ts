@@ -1,11 +1,12 @@
 import * as ex from 'excalibur'
-import { loader } from './resources'
+import { loader } from './loader'
 import { LevelBase } from './levels/level-base'
 import { MAPS } from './maps'
 import './ui-components/audio-menu'
 import './ui-components/start-screen-ui'
 import { AudioManager } from './audio-manager'
 import { isTouchDevice, setupTouchDevice } from './device'
+import { attachSpeedToEngine } from './speed'
 
 const game = new ex.Engine({
   resolution: { width: 1920, height: 1080 },
@@ -24,6 +25,7 @@ const game = new ex.Engine({
 })
 
 AudioManager.init()
+attachSpeedToEngine(game)
 
 setupTouchDevice()
 
@@ -68,5 +70,8 @@ game.start(loader).then(() => {
     window.setTimeout(() => { startScreen.style.pointerEvents = '' }, 400)
   }
 })
+
+// dev builds only: lets automated browser tests reach the engine (see CLAUDE.md)
+if (process.env.NODE_ENV !== 'production') (window as unknown as { __game: ex.Engine }).__game = game
 
 export { game }

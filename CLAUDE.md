@@ -5,7 +5,8 @@ Deploy: GitHub Pages servindo a pasta `docs/` → https://jeanomeg.github.io/pix
 
 ## Stack
 
-- **TypeScript** (strict, `experimentalDecorators`) — sem testes automatizados.
+- **TypeScript** (strict, `experimentalDecorators`, `noUnusedLocals`/`noUnusedParameters`).
+- **Vitest** (testes em `tests/`; os que precisam da engine usam `happy-dom`).
 - **Excalibur.js 0.30.x** (engine 2D) + **@excaliburjs/plugin-tiled 0.30.2** (mapas `.tmx`).
 - **Lit 3** para UI em HTML sobre o canvas (Web Components).
 - **Parcel 2.11** como bundler. Assets (`png, wav, mp3, tmx, tsx, ttf`) usam `transformer-raw` (`.parcelrc`) e são importados como URL (tipos em `src/files.d.ts`).
@@ -17,12 +18,18 @@ Deploy: GitHub Pages servindo a pasta `docs/` → https://jeanomeg.github.io/pix
 yarn dev            # parcel serve index.html
 yarn build:parcel   # build em ./docs (public-url ./)
 yarn build          # node build.js: apaga .parcel-cache/docs/dist, builda, faz `git add .` e commit "- Build deploy"
-npx eslint src      # lint
-npx tsc --noEmit    # checagem de tipos
+yarn validate       # typecheck + lint + test (não use "yarn check": é um comando do próprio yarn)
+yarn typecheck      # tsc --noEmit
+yarn lint           # eslint src tests scripts vitest.config.ts
+yarn test           # vitest run
+yarn balance        # tabela de custos das classes (scripts/balance-report.ts)
+yarn ai:sim         # partidas CPU × CPU sem gráficos: IA nova × antiga e entre níveis (SIM_GAMES=n)
+yarn ai:tune        # variações de pesos da IA contra a base
 ```
 
 ⚠️ `yarn build` **faz commit automaticamente** de tudo que estiver no working tree. Não rodar sem o usuário pedir.
 ⚠️ `docs/` é saída de build (com hashes). Nunca editar à mão.
+⚠️ Se o `yarn dev` cair com `ENOENT ... dist/*.js`, apague `dist/` e `.parcel-cache/` e rode de novo.
 
 ## Estilo de código (eslint.config.js)
 
@@ -41,32 +48,40 @@ Roda também em celular/tablet (ver "Celular e toque").
 | [src/maps.ts](src/maps.ts) | **Registro de mapas `MAPS`** (fonte única: cenas, seletor e sorteio), `sceneNameOf`, `getMapInfo` (tamanho, tiles e spawns lidos do `.tmx`) |
 | [src/game-modes.ts](src/game-modes.ts) | `GameMode`, `GAME_MODES` (textos da tela de modo) e `MatchSettings` (dados passados à cena) |
 | [src/ui-sprites.ts](src/ui-sprites.ts) | Desenha em canvas e devolve data URL: `mapPreview(map)` (miniatura gerada do `.tmx`) e `unitPortrait(type)`. Com cache |
-| [src/unit-classes.ts](src/unit-classes.ts) | `CLASS_INFO` (papel e descrição por classe), traços derivados de `TERRAIN_RULES`; usado na tela Units |
-| [src/resources.ts](src/resources.ts) | Todos os assets (`Resources`), spritesheets e **todas as animações** das unidades (~2500 linhas geradas por repetição), `loader` |
-| [src/config.ts](src/config.ts) | `SCALE` (2x), `SCALE_UNIT`, `UNIT_OFFSET`, `ENEMY_SPEED`, tipos `UnitType`, e **`UNIT_CONFIG`** (stats + animações + skills de cada unidade) |
+| [src/unit-types.ts](src/unit-types.ts) | **Lista de classes** `UNIT_CLASSES`, `UnitClass`, `UnitType` (`<Classe><A|B>`), `UNIT_TYPES`, `unitClassOf`, `unitTypeOf`. Puro (sem assets) |
+| [src/class-stats.ts](src/class-stats.ts) | `CLASS_STATS`: HP/ATK/DEF/alcance/movimento de cada classe (os dois times). Puro |
+| [src/skills.ts](src/skills.ts) | `SKILLS` (definição de todas as skills), `CLASS_SKILL` (a skill própria de cada classe), `skillsOf` e as constantes dos efeitos. Puro |
+| [src/unit-classes.ts](src/unit-classes.ts) | `CLASS_INFO` (papel, descrição, **custo**), `ARMY_BUDGET`, `armyCost`, traços (`classTraits`) e `rangeNote` (alcance em tiles); usado nas telas Units e de exército |
+| [src/balance.ts](src/balance.ts) | Fórmula dos custos (`computeCosts`, `classPower`). Um teste garante que `CLASS_INFO` bate com ela |
+| [src/army-ai.ts](src/army-ai.ts) | `buildCpuArmy`: exército da CPU por papel (de longe, alcance 2, flanco, corpo a corpo, pesado) dentro do orçamento; `roleOf` (usado também pela IA de partida) |
+| [src/ai/](src/ai/) | IA de partida: pesos/dificuldades, mapa de ameaça, planejador e turno (ver seção "IA") |
+| [src/speed.ts](src/speed.ts) | Velocidade do jogo (x1/x2/x3, salva): `engine.timescale` e `gameDelay(ms)` (use no lugar de `ex.Util.delay` em pausas da partida) |
+| [src/loader.ts](src/loader.ts) | Tela de carregamento (logo, botão PLAY!) e registro de todos os `Resources` |
+| [src/resources.ts](src/resources.ts) | Todos os assets (`Resources`), cursores/destaques, `buildUnitAnimations` e `UNIT_ANIMATIONS` (as 12 animações de cada `UnitType`, geradas da grade da spritesheet) |
+| [src/config.ts](src/config.ts) | `SCALE` (2x), `SCALE_UNIT`, `UNIT_OFFSET`, `ENEMY_SPEED`, `STARTING_MP` e **`UNIT_CONFIG`** (gerado: stats de `CLASS_STATS` + animações + skills de cada `UnitType`) |
 | [src/levels/level-base.ts](src/levels/level-base.ts) | `LevelBase` (ex.Scene, uma por mapa): no `onActivate` lê o modo de `context.data` (`MatchSettings`), limpa a cena, monta o tabuleiro, cria jogadores, posiciona unidades (spawns de `getMapInfo`) e inicia o `TurnManager` |
 | [src/board.ts](src/board.ts) | Grade de `Cell`s, conversão world→cell, `getUnits()`, instancia `PathFinder` |
-| [src/cell.ts](src/cell.ts) | Actor de cada tile; guarda `unit`, `pathNode` e os highlights (`range`/`path`/`attack`/`cursor`) |
-| [src/unit.ts](src/unit.ts) | Actor da unidade: estado do turno, movimento animado, ataque (usa `combat.ts`), animações direcionais, morte |
+| [src/cell.ts](src/cell.ts) | Actor de cada tile; guarda `unit`, `pathNode`, o highlight (`decoration`: `range`/`path`/`attack`) e o cursor (ator **separado**, para mover o cursor não apagar destaques) |
+| [src/unit.ts](src/unit.ts) | Actor da unidade: estado do turno, movimento animado, **skills** (`canUseSkill`, `startSkill`, `settlePendingSkill`, `useSkillOn`), stats efetivos (`combatStats`: buffs + floresta), ataque + **contra-ataque**, desfazer movimento, barra de HP no mapa, morte (uma vez) |
 | [src/combat.ts](src/combat.ts) | **Regras de combate puras** (sem engine): `resolveAttack`, `forecastAttack` (probabilidades exatas), `facingBetween`, `rollWithAdvantage` |
 | [src/player.ts](src/player.ts) | Classe abstrata. Cada jogador recebe um **bitmask** (`mask`) usado no pathfinding; `Player.resetMasks()` a cada level |
-| [src/human-player.ts](src/human-player.ts) | Input do mouse e callbacks do menu de unidade; turno aguarda `ex.Future` (`humanMove`) |
-| [src/computer-player.ts](src/computer-player.ts) | IA: gera `ActionPlan`s, pontua (`evaluate*`) e executa a melhor, por unidade (ordem: menor HP primeiro) |
+| [src/human-player.ts](src/human-player.ts) | Input (mouse, toque e **teclado**, todos por `act(cell, button)`), callbacks do menu de unidade, modo de alvo de skill; turno aguarda `ex.Future` (`humanMove`) |
+| [src/computer-player.ts](src/computer-player.ts) | Jogador CPU: executa com animação os planos de `src/ai/` (dificuldade e personalidade) |
 | [src/turn-manager.ts](src/turn-manager.ts) | Loop de fases, resultado (vitória/empate), tela de fim, revanche e volta ao menu |
-| [src/selection-manager.ts](src/selection-manager.ts) | Unidade selecionada, modo `move`/`attack`, ranges, caminho, highlights e cursor |
+| [src/selection-manager.ts](src/selection-manager.ts) | Unidade selecionada, modo `move`/`attack`/`heal`, ranges, caminho, highlights e cursor |
 | [src/path-finding/](src/path-finding/) | `PathNodeComponent` (flags do tile, mask, x/y), `PathFinder` (Dijkstra de movimento → `MovementMap`, alcance de ataque em linha reta) e `terrain-rules.ts` (regras por classe) |
 | [src/game-ui.ts](src/game-ui.ts) | `GameUI`: controlador da UI de partida (HUD, dica, card/prévia, menu, banner, fim). Criado por partida e destruído no `onDeactivate` |
 | [src/ui-components/](src/ui-components/) | Lit (shadow DOM). Partida: `game-hud` (+ `game-hint`), `unit-card`, `unit-menu`, `phase-banner`, `game-over`, `pause-menu`. Menus: `start-screen-ui` (título, modo, páginas), `map-select`, `start-screen-pages.ts` (How to play, Units, Credits). `audio-menu`. Base visual em `theme.ts` e `icons.ts`; dados em `view-models.ts` |
-| [src/damage-manager.ts](src/damage-manager.ts) | Número de dano flutuante (`Critical!`, `Back attack!`, `Miss`) |
-| [src/audio-manager.ts](src/audio-manager.ts) | Volumes padrão e mute |
+| [src/damage-manager.ts](src/damage-manager.ts) | Texto flutuante: dano (`Critical!`, `Back attack!`, `Miss`, `Counter!`) e efeitos (`+8`, `DEF +3`, `Pinned`) |
+| [src/audio-manager.ts](src/audio-manager.ts) | Volumes padrão e mute (lembrado em `localStorage`: `pixelfantasywar.muted`) |
 | [src/device.ts](src/device.ts) | Celular/tablet: `isTouchDevice`, `readableBoost` (ampliação da UI em tela pequena), tela cheia + paisagem (`enterFullscreen`/`exitFullscreen`/`toggleFullscreen`, `setupTouchDevice` no primeiro toque) |
 | [src/css/main.css](src/css/main.css) | Só a fonte global e `.credits` (a UI de jogo tem estilos próprios nos componentes) |
 
-**Código morto / legado** (não importado pelo jogo): `src/actors/actor-start-screen.ts`, `src/texts/`, `src/fonts/`, `src/assets/tiledMap/map1.js|map2.js|map3.js`, `src/assets/maps/Map1.png|Map2.png` (miniaturas antigas; agora são geradas) e `credits.html` (o conteúdo está na tela Credits). `Resources.LevelMusic1` não é usado (só `LevelMusic2`).
+Testes em [tests/](tests/): `combat`, `balance` (custos = fórmula; exército clássico de cada `.tmx` = 100), `army-ai`, `pathfinding` e `unit-rules` (skills, floresta, contra-ataque). `tests/helpers.ts` monta tabuleiros a partir de mapas ASCII. O `vitest.config.ts` trata `.tmx`/`.tsx`/áudio/fonte como assets, igual ao `transformer-raw` do Parcel.
 
 ## Fluxo de jogo
 
-1. `start-screen-ui`: título (Play / How to play / Units / Credits) → modo → `map-select` → `engine.goToScene(sceneNameOf(map), { sceneActivationData: { mode } })`. O último modo e mapa escolhidos ficam em `localStorage` (`pixelfantasywar.mode`, `pixelfantasywar.map`) só para pré-selecionar; a partida não depende disso.
+1. `start-screen-ui`: título (Play / How to play / Units / Credits) → modo → `map-select` → `engine.goToScene(sceneNameOf(map), { sceneActivationData: { mode } })`. O último modo, mapa e dificuldade escolhidos ficam em `localStorage` (`pixelfantasywar.mode`, `pixelfantasywar.map`, `pixelfantasywar.difficulty`) só para pré-selecionar; a partida recebe tudo em `MatchSettings` (`mode`, `armies`, `difficulty`).
 2. `LevelBase.onActivate` → `resetAndLoad()` → `parse()` (cria `SelectionManager`, `GameUI`, jogadores, unidades e `TurnManager`) → `turnManager.start()` (não aguardado).
 3. `TurnManager.start()`: para cada fase: `checkResult` (só um jogador com unidades → vencedor) → `ui.setTurn` + `ui.playPhaseBanner` → `player.turnStart()` (reseta unidades) → `makeMove()` até retornar `true` → `turnEnd()` → `nextTurn()`.
 4. Fim: `ui.showGameOver(...)` com "Victory!"/"Defeat" (PvCPU), "Blue/Red wins!" (PvP e CPUvCPU) ou "Draw" (limite de fases). "Play again" → `LevelBase.restart()` (vai a `menu-shell` e volta com o mesmo `MatchSettings`); "Main menu" → `menu-shell` + remonta `start-screen-ui`.
@@ -109,9 +124,9 @@ Pronto: cena, item no seletor, miniatura, sorteio e "Play again" saem dessa entr
 14 classes, cada uma com variante **A (azul, jogador 0)** e **B (vermelho, jogador 1)**, com os **mesmos stats nos dois times**.
 - Originais: Archer, Mage, Spearman, Thief, Fighter, Cleric, Barbarian, Warrior.
 - Novas: Paladin, Berserker, Assassin, Ranger, Necromancer, Halberdier.
-O nome do actor é o `UnitType`; regras por classe removem o sufixo com `name.replace(/[AB]$/, '')` (`unitClassOf`).
+O nome do actor é o `UnitType`; regras por classe removem o sufixo com `unitClassOf` (`unit-types.ts`).
 
-Spritesheets em `src/assets/minis/<Classe><A|B>.png`: grade 4 colunas x 14 linhas de 32x32 (linhas 0–3 lateral, 5–8 de frente, 10–13 de costas; cada bloco = idle/move/attack/death, 4 quadros). Esquerda = lateral com `flipHorizontal`. As originais têm as 12 animações escritas uma a uma em `resources.ts`; as novas usam `buildUnitAnimations(image)` (`NewUnitAnimations`).
+Spritesheets em `src/assets/minis/<Classe><A|B>.png`: grade 4 colunas x 14 linhas de 32x32 (linhas 0–3 lateral, 5–8 de frente, 10–13 de costas; cada bloco = idle/move/attack/death, 4 quadros). Esquerda = lateral com `flipHorizontal`. Todas as 28 variantes usam `buildUnitAnimations(Resources.<Classe><A|B>SpriteSheet)` (`UNIT_ANIMATIONS`). (Antes as originais eram escritas à mão, e o Barbarian vermelho usava a animação lateral ao andar para cima/baixo.)
 
 **Sprites das classes novas** foram derivados das originais (mesmo estilo e animações): troca de paleta + peças desenhadas por quadro acima da cabeça. Paleta comum a todos os minis: contorno `#0a0d2a`, sombra `#000000` (alpha 128), time escuro `#0000c0`/`#a61414`, time claro `#7d7dea`/`#f96363`, branco `#ffffff` (brilho e efeito de golpe), madeira `#684722`/`#bc9148`, pele `#f3cb87`, dourado `#fff000`.
 | Nova | Base | Mudança |
@@ -123,39 +138,39 @@ Spritesheets em `src/assets/minis/<Classe><A|B>.png`: grade 4 colunas x 14 linha
 | Necromancer | Mage | manto escuro, pele pálida, cajado de osso, magia verde |
 | Halberdier | Spearman | elmo com crista, haste de aço |
 
-**Adicionar unidade:** spritesheet (as duas cores) → `ImageSource` em `Resources` + entrada em `NewUnitAnimations` (`resources.ts`) → `UnitType` + stats em `NEW_CLASS_STATS` + entradas A/B em `UNIT_CONFIG` (`config.ts`) → `UnitClass` + `TERRAIN_RULES` (`terrain-rules.ts`) → `CLASS_INFO` (papel, descrição, **custo**) e `NEW_CLASSES` (`unit-classes.ts`). Ela aparece sozinha na tela de exército e na tela Units. Recalcular o custo como descrito em "Balanceamento".
+**Adicionar unidade:** spritesheet (as duas cores) → `ImageSource` `<Classe>ASpriteSheet`/`<Classe>BSpriteSheet` em `Resources` → nome em `UNIT_CLASSES` (`unit-types.ts`) → stats em `CLASS_STATS` (`class-stats.ts`) → `TERRAIN_RULES` (`terrain-rules.ts`) → skill própria em `SKILLS`/`CLASS_SKILL` (`skills.ts`, ver "Adicionar skill") → `CLASS_INFO` (papel, descrição, **custo** = o que `yarn balance` mostrar) → papel em `ROLE_CLASSES` (`army-ai.ts`). Animações, `UNIT_CONFIG`, tela de exército e tela Units saem sozinhos. `yarn test` falha se o custo não bater com a fórmula.
 
-| Classe | HP | ATK | DEF | Range | Move | Custo | Terreno |
-|---|---|---|---|---|---|---|---|
-| Archer | 10 | 2 | 2 | 6 | 4 | 9 | mira água; alcance cai em terreno lento |
-| Mage | 10 | 2 | 2 | 5 | 5 | 9 | mira água; alcance cai em terreno lento |
-| Spearman | 10 | 4 | 2 | 2 | 6 | 8 | alcance cai em terreno lento |
-| Thief | 10 | 5 | 2 | 1 | 6 | 9 | velocidade total em terreno lento |
-| Fighter | 15 | 4 | 3 | 1 | 6 | 12 | — |
-| Cleric | 20 | 3 | 4 | 1 | 6 | 16 | — |
-| Barbarian | 20 | 5 | 4 | 1 | 4 | 16 | — |
-| Warrior | 25 | 4 | 5 | 1 | 4 | 21 | — |
-| Paladin | 18 | 4 | 4 | 1 | 5 | 15 | — |
-| Berserker | 16 | 7 | 2 | 1 | 5 | 14 | — |
-| Assassin | 8 | 6 | 1 | 1 | 7 | 8 | velocidade total em terreno lento |
-| Ranger | 10 | 3 | 2 | 5 | 5 | 12 | velocidade total em terreno lento; mira água; alcance cai em terreno lento |
-| Necromancer | 8 | 4 | 2 | 4 | 4 | 8 | mira água; alcance cai em terreno lento |
-| Halberdier | 14 | 4 | 3 | 2 | 4 | 11 | alcance 2 em qualquer terreno |
+| Classe | HP | ATK | DEF | Range | Move | Custo | Skill própria | Terreno |
+|---|---|---|---|---|---|---|---|---|
+| Archer | 10 | 2 | 2 | 6 | 4 | 10 | Aimed Shot | mira água; alcance cai em floresta/água |
+| Mage | 10 | 2 | 2 | 5 | 5 | 9 | Fireball | mira água; alcance cai em floresta/água |
+| Spearman | 10 | 4 | 2 | 2 | 6 | 8 | Pierce | alcance cai em floresta/água |
+| Thief | 10 | 5 | 2 | 1 | 6 | 9 | Steal | velocidade total na floresta |
+| Fighter | 15 | 4 | 3 | 1 | 6 | 12 | Second Wind | — |
+| Cleric | 20 | 3 | 4 | 1 | 6 | 15 | Heal | — |
+| Barbarian | 20 | 5 | 4 | 1 | 4 | 16 | Rage | — |
+| Warrior | 25 | 4 | 5 | 1 | 4 | 21 | Guard | — |
+| Paladin | 18 | 4 | 4 | 1 | 5 | 15 | Shield Wall | — |
+| Berserker | 16 | 7 | 2 | 1 | 5 | 15 | Frenzy | — |
+| Assassin | 8 | 6 | 1 | 1 | 7 | 8 | Backstab | velocidade total na floresta |
+| Ranger | 10 | 3 | 2 | 5 | 5 | 12 | Pinning Shot | velocidade total na floresta; mira água; alcance cai em floresta/água |
+| Necromancer | 8 | 4 | 2 | 4 | 4 | 8 | Drain | mira água; alcance cai em floresta/água |
+| Halberdier | 14 | 4 | 3 | 2 | 4 | 12 | Brace | alcance 2 em qualquer terreno |
 
-Todas têm `mp: 4` e as mesmas skills. O Barbarian B tinha ATK 6 (o A tinha 5); foi igualado em 5 para os exércitos por pontos serem justos.
+Todas têm `STARTING_MP` (4), Run, Special e a skill própria. As de alcance 1 contra-atacam. O Barbarian B tinha ATK 6 (o A tinha 5); foi igualado em 5 para os exércitos por pontos serem justos.
 
 ### Balanceamento
 
-O custo de cada classe sai da matemática real de combate (`forecastAttack`, probabilidades exatas com vantagem):
-- **ataque** = dano médio esperado contra todas as classes;
-- **resistência** = HP ÷ dano médio recebido de todas as classes (quantos ataques aguenta);
-- **ameaça** = movimento + alcance efetivos, supondo ~35% de terreno lento (quem paga 2 em terreno lento perde metade disso);
-- **poder** = ataque × resistência × ameaça/6 × (1 + 0,12 por tile de alcance além de 1).
-O custo é o poder escalado para que as 8 originais somem **100** (= `ARMY_BUDGET`). Assim o exército desenhado nos mapas atuais custa exatamente o orçamento. Faixa de poder relativo: originais 0,63–1,70; novas 0,60–1,18 (nenhuma domina, nenhuma é inútil).
+O custo de cada classe sai da matemática real de combate (`forecastAttack`, probabilidades exatas com vantagem). Fórmula em [src/balance.ts](src/balance.ts) (`computeCosts`); `yarn balance` imprime a tabela e um teste exige que `CLASS_INFO` bata com ela:
+- **ataque** = dano médio esperado contra as 14 classes (alvo na floresta, +2 DEF, em 35% dos casos) **+**, para classes corpo a corpo, o contra-ataque que causam quando um corpo a corpo as ataca;
+- **resistência** = HP ÷ (dano médio recebido das 14 classes **+**, para corpo a corpo, o contra-ataque que levam ao atacar um corpo a corpo);
+- **ameaça** = movimento + alcance efetivos, supondo 35% de floresta (quem paga 2 lá perde metade disso);
+- **poder** = ataque × resistência × ameaça/6 × (1 + 0,12 por tile de alcance efetivo além de 1).
+O custo é o poder escalado para que as 8 originais somem **100** (= `ARMY_BUDGET`; arredondamento pelo maior resto). Assim o exército desenhado nos mapas custa exatamente o orçamento (um teste lê os `.tmx`). As skills próprias ficam fora da conta: toda classe tem uma, paga com os mesmos 4 MP. Sem contra-ataque e floresta (`computeCosts({ counterattack: false, forest: false })`) a fórmula devolve os custos antigos; com eles, Archer, Berserker e Halberdier subiram 1 e o Cleric caiu 1. Faixa de poder relativo: 0,63–1,67.
 
 ### Escolha de exército
 
-Antes da partida, cada humano monta o exército na tela `<army-select>` (após o seletor de mapas; no PvP primeiro o Azul, depois o Vermelho; a CPU usa o exército do mapa; no CPU vs CPU a tela é pulada).
+Antes da partida, cada humano monta o exército na tela `<army-select>` (após o seletor de mapas; no PvP primeiro o Azul, depois o Vermelho; no CPU vs CPU a tela é pulada). A **CPU monta o dela** no `launch()` do `start-screen-ui` com `buildCpuArmy` (mesmos papéis do exército do mapa, até `ARMY_BUDGET`).
 - Os **slots** são os spawns do time no `.tmx`, na ordem dos objetos (`teamSpawns`). O jogador escolhe a classe de cada slot; posição continua a do mapa.
 - Orçamento `ARMY_BUDGET` (100). "Classic army" = exército desenhado no mapa (`defaultArmy`). Último exército usado por mapa/time fica em `localStorage` (`pixelfantasywar.army.<mapId>.<time>`).
 - O resultado vai em `MatchSettings.armies` (`[azul, vermelho]`, `null` = do mapa) e a `LevelBase` aplica com `spawnsWithArmies`. "Play again" reaproveita os mesmos exércitos.
@@ -167,39 +182,50 @@ Antes da partida, cada humano monta o exército na tela `<army-select>` (após o
 - Crítico: `d20 === 20` ou `forcesCritical` → dano `12 + ATK − DEF`.
 - Pelas costas: direção do atacante até o alvo (`facingBetween`) igual a `alvo.miniDirection` (`Unit.isBehind`) → `d6 + 2·ATK − DEF`.
 - Normal: `d6 + ATK − DEF`.
-- Dano mínimo 1. **Errar também causa 1 de dano** (o README diz que erro não causa dano — divergência).
-- `forecastAttack` enumera todas as combinações d20×d6 com vantagem e devolve chance de acerto, de crítico, faixa de dano, dano médio e chance de matar. A prévia da UI usa isso, e a IA pode usar também. Mudou a regra? Mude **só** `resolveAttack`.
-- Morte tratada em `onPostUpdate` quando `health <= 0`.
+- Dano mínimo 1. **Errar também causa 1 de dano** (`MISS_DAMAGE`, documentado no README).
+- Modificadores de skill em `AttackContext`: `guaranteedHit` (Aimed Shot), `ignoreDefense` (Pierce), `bonusDamage` (Rage, só se acertar). Backstab liga `backAttack`; Special, `forcesCritical`.
+- **Floresta**: quem está num tile de floresta (andável, não rápido, não porta) tem `+FOREST_DEFENSE` (2). Aplicado em `Unit.combatStats()`, junto com os buffs de skill; passe sempre `combatStats()` (e não `unitConfig`) para `resolveAttack`/`forecastAttack`.
+- **Contra-ataque** (`Unit.attack` → `canCounter`): o defensor que sobrevive revida uma vez com `PLAIN_ATTACK` e se vira para o atacante, se `counterReach()` > 0 (1 para alcance 1; 2 com Brace) e o atacante estiver na linha de ataque dele. Nunca depois de um ataque pelas costas.
+- `forecastAttack` enumera todas as combinações d20×d6 com vantagem e devolve chance de acerto, de crítico, faixa de dano, dano médio e chance de matar. A prévia da UI (inclusive do contra-ataque) e a IA usam isso. Mudou a regra? Mude **só** `resolveAttack`.
+- Ataque em duas partes: `Unit.resolveAttackOn` rola os dados e devolve os `AttackEvent`s (golpe, efeitos de skill, contra-ataque) sem mudar nada; `applyAttackEvent` aplica um. `Unit.attack` anima evento por evento; `attackInstant`/`moveInstant` aplicam tudo na hora (simulação e testes).
+- Morte: `onPostUpdate` chama `die()` quando `health <= 0`, que roda só uma vez (flag `dying`). `Board.getUnits()` já ignora unidades com HP ≤ 0, e elas não podem agir nem ser selecionadas.
 
 ## Movimento e alcance (`PathFinder`)
 
-- Vizinhança ortogonal (4 direções). Custo por tile: `isfast` = 1, normal = 2. **Thief** paga 1 em qualquer tile que não seja porta.
+- Vizinhança ortogonal (4 direções). Custo por tile: `isfast` = 1, normal (floresta, tiles 50–79 do tileset) = 2, porta = 2. **Thief/Assassin/Ranger** pagam 1 em qualquer tile que não seja porta.
 - Regras por classe (Thief ignora terreno lento, quem paga 2 de alcance em terreno lento, quem mira água) ficam em [src/path-finding/terrain-rules.ts](src/path-finding/terrain-rules.ts) (`TERRAIN_RULES`). Esse módulo não importa assets, para poder ser testado fora do navegador.
 - `getMovementMap(start, mask, budget, unitName)` → `MovementMap`: Dijkstra sobre estados (nó, direção) com prioridade `custo·1000 + curvas`, então o caminho é sempre o mais barato e, no empate, o com menos curvas. `range` = nós onde a unidade pode **parar** (a própria célula + tiles vazios); `pathTo(node)` devolve `[start..node]` ou `[]`; `costTo(node)`. `getRange`/`findPath` são atalhos para ele. Use um único `MovementMap` quando precisar de vários caminhos (a IA faz isso).
 - Passagem: tile `isWalkable` cujo `walkableMask & player.mask` ≠ 0. Tile com unidade tem `walkableMask = mask do dono` → aliados passam (mas não dá para parar neles), inimigos bloqueiam. `PathNodeComponent.isOccupied` = `walkableMask !== -1`.
-- `getRangeAttack(start, ~player.mask, range, unitName, ignore?)`: anda em linha reta nas 4 direções; para em tile não `isAttackable`, em porta, quando acaba o alcance, ou na primeira unidade (inimigo entra no resultado, aliado não). Não inclui a célula de origem. Água só é alvo para Archer/Mage. Archer/Mage/Spearman pagam 2 em tile não-rápido; demais pagam 1. Unidade parada em porta não ataca. `ignore` trata um nó como vazio (a IA usa para avaliar ataque a partir de outra célula, sem que a própria unidade bloqueie a linha).
+- `getRangeAttack(start, ~player.mask, range, unitName, ignore?)`: anda em linha reta nas 4 direções; para em tile não `isAttackable`, em porta, quando acaba o alcance, ou na primeira unidade (inimigo entra no resultado, aliado não). Não inclui a célula de origem. Água só é alvo para quem tem `targetsWater` (Archer, Mage, Ranger, Necromancer). Quem tem `slowTerrainCostsRange` (Archer, Mage, Spearman, Ranger, Necromancer) paga 2 em tile não-rápido (floresta e água); demais pagam 1. Unidade parada em porta não ataca. `ignore` trata um nó como vazio (a IA usa para avaliar ataque a partir de outra célula, sem que a própria unidade bloqueie a linha).
 - `PathNodeComponent` guarda `x`/`y` da grade; não depende mais do nome da cell.
 - No mapa: `#` (parede/árvore) = não andável e não atacável; água = não andável, mas atacável (ataque passa por cima); porta = andável (custo 2) e não atacável.
 
 ## Turno e skills
 
-Flags da unidade: `moved`, `attacked`, `passed`, `usedSkill`, `isRunning`, `forcesCritical`. `reset()` no início do turno do dono. Unidade sem ações fica com tint cinza.
+Flags da unidade: `moved`, `attacked`, `passed`, `usedSkill`, `pendingSkill` (skill de movimento/ataque paga e ainda não usada; `isRunning`/`forcesCritical` são getters dela), `attackBonus`/`defenseBonus`, `braced`, `pinned`. `reset()` no início do turno do dono limpa tudo isso (efeitos "até o próximo turno"); `pinned` vira `moved = true` nesse turno. Unidade sem ações fica com tint cinza.
 
-Skills (definidas em `UNIT_CONFIG[...].skill`, `event` é o nome do evento DOM do menu):
-- `skill-run` (2 MP): exige não ter movido nem atacado; `effectiveMovement` = 2× movimento. Se o movimento for cancelado, MP é devolvido.
-- `skill-special-attack` (4 MP): exige não ter atacado; próximo ataque é crítico. Se cancelado, MP é devolvido.
-- 1 skill por turno; MP não regenera. Regras em `Unit.canUseSkill`.
-- A devolução de MP do humano fica em `HumanPlayer.refundPendingSkill` (usada ao mover, atacar, cancelar com Esc e encerrar o turno).
+- **O turno termina sozinho** quando nenhuma unidade pode mover nem atacar (`hasActions`). Skills que não precisam de movimento/ataque e o "Undo move" só servem antes disso; o menu ainda abre para unidades assim (`canBeSelected`).
+- **Desfazer movimento**: `Unit.move` guarda `previousMove`; `canUndoMove()` enquanto não atacou e a célula antiga está livre; `undoMove()` volta a posição e a direção e devolve o MP do Run.
 
-**Adicionar skill:** entrada em `skill[]` no `UNIT_CONFIG` → caso em `canUseSkill` → callback em `MenuOptions` + `case` em `GameUI.onMenuSelect` → implementação em `HumanPlayer.maybeSelectUnit` (e devolução em `refundPendingSkill`) → suporte na IA (`ActionPlan.type`, `evaluateAction`, `executeAction`).
+Skills ([src/skills.ts](src/skills.ts)): toda classe tem Run, Special e uma própria (`CLASS_SKILL`). `kind`:
+- `move` (Run) / `attack` (Special, Aimed Shot, Fireball, Pierce, Steal, Rage, Backstab, Pinning Shot, Drain): `startSkill` cobra o MP e guarda em `pendingSkill`; vale para o próximo movimento/ataque. `settlePendingSkill()` (chamado depois de mover/atacar, ao cancelar com Esc e ao encerrar o turno) devolve o MP se não foi usada. `attackContext()` traduz a skill pendente para o `AttackContext`; os efeitos depois do golpe (Steal, Drain, Pinning Shot, Fireball) ficam em `Unit.attack`.
+- `self` (Second Wind, Guard, Shield Wall, Frenzy, Brace): efeito imediato em `applySelfSkill`.
+- `ally` (Heal): o humano entra no modo `heal` da `SelectionManager` e escolhe o alvo; `useSkillOn` cobra e aplica. Alvos: `healTargets()`.
+- 1 skill por turno; MP não regenera. Regras em `Unit.canUseSkill` (a classe precisa ter a skill).
 
-## IA (`ComputerPlayer`)
+**Adicionar skill:** entrada em `SKILLS` (+ `CLASS_SKILL` se for de uma classe) → condição em `Unit.canUseSkill` (pelo `kind`) → efeito: `attackContext`/`attack` (ataque), `applySelfSkill` (self) ou `useSkillOn` (aliado) → IA: efeito em `scoreAttack` (skills de ataque, `src/ai/planner.ts`) ou `useEndOfTurnSkill` (self/aliado, `src/ai/turn.ts`) → teste em `tests/unit-rules.test.ts`. Menu, card e tela Units saem sozinhos.
 
-Para cada unidade (menor HP primeiro), em loop até mover+atacar: gera ações (`attack`, `skillSpecialAttack`, `skillRun`, `move`, `moveAndAttack`, `flee`, `wait`), pontua e executa a de maior score; cada tipo só uma vez por unidade; para se todos os scores ≤ 0.
-- `evaluateAttack`: 1000 se mata (estimativa `ATK−DEF+6`), senão dano×3 + HP perdido do alvo. +60 para unidades de alcance.
-- `evaluateCriticalAttack`: 1200 só se o crítico mata e o normal não.
-- `evaluateMove`: aproxima do inimigo mais próximo, +200 se puder atacar de lá. `flee` quando HP < 20% e em desvantagem numérica.
-- Velocidade das animações da IA: `ENEMY_SPEED` em `config.ts`.
+## IA ([src/ai/](src/ai/))
+
+Detalhes, diagnóstico e números em [CHECKLIST-IA.md](CHECKLIST-IA.md). Resumo:
+- [weights.ts](src/ai/weights.ts): **todos os números** — `AI_WEIGHTS` (escala: unidade vale custo × `VALUE_PER_POINT`), `DIFFICULTIES` (Easy/Normal/Hard: ruído, erro, uso de skill, peso da ameaça, pesos próprios do Hard) e `PERSONALITIES`.
+- [threat.ts](src/ai/threat.ts): `ThreatMap` — quais inimigos atacam cada tile no próximo turno (movimento + ataque em linha pelas regras reais), `harmAt` (dano esperado dos 3 mais fortes, chance de morrer, ataque pelas costas se o inimigo chega atrás).
+- [planner.ts](src/ai/planner.ts): `planUnit` gera e pontua o turno inteiro de uma unidade (destino parado/andando/correndo × atacar antes ou depois de mover × skill), com `scoreAttack` (forecast, costas, contra-ataque, efeitos de skill, MP) e `scorePosition` (ameaça, distância por caminho `distanceToEnemies`, linha de tiro de aliado, suporte, porta). `aggressionOf`: vantagem de exército e rodada deixam a IA mais ousada. Nada aqui muda o jogo.
+- [turn.ts](src/ai/turn.ts): `playAiTurn` — a cada passo age a unidade que mais ganha agindo agora; `executePlan` via `AiExecutor` (animado no `ComputerPlayer`, instantâneo na simulação); `useEndOfTurnSkill`; log com `localStorage.debugAI = '1'`.
+- [computer-player.ts](src/computer-player.ts): só o executor animado (destaques + `gameDelay`), dificuldade (de `MatchSettings.difficulty`) e personalidade (sorteada).
+- Simulação: `yarn ai:sim` (IA nova × antiga e entre níveis, `SIM_GAMES`), `yarn ai:tune` (variações de peso). Em [tests/sim/](tests/sim/): `map-loader.ts` lê os `.tmx` (reaproveita um `Board` por mapa: atores da engine não são liberados), `legacy-ai.ts` é a IA antiga, `match.ts` joga uma partida com `Unit.moveInstant`/`attackInstant`.
+- Mudou uma regra que a IA precisa entender? Ajuste `scoreAttack`/`scorePosition`/`ThreatMap`, rode `yarn test` (tests/ai.test.ts) e `yarn ai:sim`.
+- Pausas da IA: `ENEMY_SPEED` em `config.ts`, divididas pela velocidade do jogo (`gameDelay`).
 
 ## UI (Lit)
 
@@ -210,10 +236,10 @@ UI de partida = `GameUI` ([src/game-ui.ts](src/game-ui.ts)) + componentes em `sr
   - Partida: `UI_SCALE = 1.3` e `TEXT_SCALE = 1.1` em `game-ui.ts` (painéis 30% maiores, texto ~43%). Menus: só `MENU_TEXT_SCALE = 1.3` em `start-screen-ui.ts` (o layout já ocupa a tela). Para deixar tudo maior/menor, mude essas constantes.
   - Tamanho mínimo de texto: 14 (12–13 só em rótulos dentro de caixinhas de atributo).
 - **Fluxo de dados:** os componentes são "burros" e recebem view-models (`view-models.ts`). O `GameUI` monta esses dados a partir do estado do jogo no `pointermove` e a cada 150 ms (`refresh`). Para mostrar algo novo, adicione ao view-model e calcule no `GameUI`.
-- `game-hud`: times (unidades vivas, HP total), rodada/fase e **End turn** (pede confirmação quando ainda há unidades com ações) → evento `end-turn` → `HumanPlayer.endTurn()`.
+- `game-hud`: times (unidades vivas, HP total), pausa, velocidade (evento `speed` → `cycleSpeed`), rodada/fase e **End turn** (pede confirmação quando ainda há unidades com ações; `requestEndTurn()` é o mesmo pelo teclado) → evento `end-turn` → `HumanPlayer.endTurn()`.
 - `game-hint`: dica contextual embaixo (`[texto]` sai destacado).
-- `unit-card`: unidade sob o mouse (ou a selecionada), no topo, logo abaixo da barra do time da própria unidade (azul à esquerda, vermelho à direita), com a mesma largura e margem. Se nessa posição ele cobriria a unidade sob o mouse, desce para logo abaixo dela (`GameUI.cardTopAvoiding`). Em modo ataque, sobre um inimigo ao alcance, vira a **prévia de combate** (`forecastAttack`), sob a barra do time de quem ataca.
-- `unit-menu`: ancorado ao lado da unidade (vira para o outro lado se não couber). Itens: Move, Attack, Skills (submenu com custo e descrição), Wait. Evento `select` (id) / `close`.
+- `unit-card`: unidade sob o mouse (ou a selecionada), no topo, logo abaixo da barra do time da própria unidade (azul à esquerda, vermelho à direita), com a mesma largura e margem. Se nessa posição ele cobriria a unidade sob o mouse, desce para logo abaixo dela (`GameUI.cardTopAvoiding`). Mostra ATK/DEF efetivos (verde acima da base, vermelho abaixo), o alcance em tiles (`rangeNote`) e o estado (skill pronta, floresta, Braced, Pinned). Em modo ataque, sobre um inimigo ao alcance, vira a **prévia de combate** (`forecastAttack`, com `combatStats` e `attackContext`), sob a barra do time de quem ataca, e mostra o contra-ataque que vem se o alvo sobreviver (`ForecastView.counter`).
+- `unit-menu`: ancorado ao lado da unidade (vira para o outro lado se não couber). Itens: Move, Attack, Skills (submenu com custo e descrição), Undo move (se der), Wait. Evento `select` (id) / `close`. Teclado: o foco vai para o primeiro item ativo; ↑/↓ navegam, →/← abrem/fecham as skills, Enter escolhe.
 - **Pausa**: botão no painel central do `game-hud` (evento `pause`, `HudView.canPause`) ou Esc sem nada para cancelar → `GameUI.pause()`: `engine.clock.stop()` congela o loop (animações, movimento e as ações da CPU esperam), pausa os `ex.Sound` que estavam tocando e abre o `pause-menu` (`show()` → `'resume' | 'quit'`; Esc = Resume; "Main menu" pede um segundo clique). Ao retomar: `engine.clock.start()` e `play()` nesses sons. **Não usar `engine.stop()`/`engine.start()`**: o evento `stop` faz todo `ex.Sound` parar e se recusar a tocar até um evento `start` (o jogo ficava mudo), e `engine.start()` rodaria o loader de novo. "Quit" → `GameUI.onQuit` → `TurnManager.quit()`: marca `aborted` (o loop de fases sai no próximo passo), para a música e chama `returnToMainMenu()`. `Player.disposed` faz a CPU parar de agir depois que a cena sai.
 - `phase-banner`: `play()` devolve Promise; clique ou Esc pula. `game-over`: `show()` devolve `'rematch' | 'menu'`.
 - Contagem de unidades da UI usa `Board.getLivingUnits()` (atores vivos na cena), porque `getUnits()` não vê a unidade enquanto ela anda.
@@ -222,6 +248,8 @@ UI de partida = `GameUI` ([src/game-ui.ts](src/game-ui.ts)) + componentes em `sr
 - `<audio-menu>` fica fixo no `index.html` (botões de som e de tela cheia).
 - Fonte do jogo: `notjamslab14` (`@font-face` em `main.css`, vale dentro do shadow DOM).
 - Controles: esquerdo = selecionar/agir; direito = ver alcance de movimento; meio = ver alcance de ataque; **Esc** = fecha o menu / cancela o modo mover/atacar (devolve MP de skill) / pula o banner / pausa (sem nada para cancelar) / retoma.
+- Teclado (`HumanPlayer.handleKey`, ignorado enquanto `GameUI.isBlockingInput()`): setas/WASD movem o cursor (`GameUI.setHovered` mostra o card), Enter/Espaço = clique esquerdo (`act`), Tab/Shift+Tab = próxima unidade que pode agir, R/F = alcance de movimento/ataque. No `GameUI`: E = End turn, P = pausa. Sem cursor no mapa, a primeira tecla vai para uma unidade.
+- Barra de HP no mapa: ator próprio de cada `Unit` (`hpBar`, adicionado à cena no `onInitialize`), redesenhado só quando o HP muda.
 
 ## Celular e toque
 
@@ -234,7 +262,7 @@ UI de partida = `GameUI` ([src/game-ui.ts](src/game-ui.ts)) + componentes em `sr
 - **Clique fantasma**: depois de um toque o navegador manda um `click` ao elemento que estiver sob o dedo, mesmo que ele tenha acabado de aparecer. Por isso o overlay do `unit-menu` fecha no `pointerdown`, os itens do menu ignoram cliques nos primeiros 350 ms (`GHOST_CLICK_MS`) e o `main.ts` bloqueia a tela inicial por 400 ms (o loader da Excalibur começa no `pointerup`). UI nova que abre em resposta a um toque no canvas precisa do mesmo cuidado.
 - Escala: `readableBoost` aumenta `--ui-scale` na partida (até 1,6×) e `--text-scale` nos menus (até 1,4×, `MENU_MAX_TEXT_BOOST`) quando 1 `--u` daria menos de 0,68 px de página. No desktop fica 1.
 - No toque, o `unit-card` vai para a metade da tela oposta ao tile tocado (no desktop fica no lado do time) e o tile tocado é esquecido a cada fase. As dicas falam em "tap"; dicas só de teclado usam a classe `keys-only` (escondida com `hover: none` + `pointer: coarse`, em `theme.ts`).
-- Teste: Chrome headless com `Emulation.setDeviceMetricsOverride` (mobile, paisagem), `Emulation.setTouchEmulationEnabled` e `Input.dispatchTouchEvent`.
+- Teste: Chrome headless com `Emulation.setDeviceMetricsOverride` (mobile, paisagem), `Emulation.setTouchEmulationEnabled` e `Input.dispatchTouchEvent`. Em `yarn dev` o engine fica em `window.__game` (só fora de produção), o que deixa o teste montar cenas (mover unidades, mudar HP) direto pela cena.
 
 ## Cuidados ao mexer
 
@@ -246,4 +274,5 @@ UI de partida = `GameUI` ([src/game-ui.ts](src/game-ui.ts)) + componentes em `sr
 - `UNIT_CONFIG` é copiado raso por unidade (`{ ...UNIT_CONFIG[t] }`) — não mutar objetos aninhados (graphics, skill).
 - O loader da Excalibur deixa um listener de `keyup` Enter no `body` que recria o botão "PLAY!" depois do carregamento. O `main.ts` troca `loader.startButtonFactory` por um botão invisível após o `game.start`; não remova isso (o seletor de mapas usa Enter).
 - Teste automatizado no Chrome headless: emular foco (`Emulation.setFocusEmulationEnabled`) e usar polling por intervalo, senão o loop da Excalibur fica estrangulado e as animações parecem travadas.
-- Validar mudanças com `npx tsc --noEmit` e `npx eslint src`, e testar no navegador com `yarn dev`.
+- Validar mudanças com `yarn validate` (tipos + lint + testes) e testar no navegador com `yarn dev`.
+- Pausas na partida: use `gameDelay` (`speed.ts`), não `ex.Util.delay`, para respeitar a velocidade do jogo.

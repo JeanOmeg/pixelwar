@@ -6,7 +6,14 @@ import type { GameUI } from './game-ui'
 import { Cell } from './cell'
 import { Unit } from './unit'
 import { Resources } from './resources'
+import { SKILLS, SkillId } from './skills'
 
+type Button = 'left' | 'right' | 'middle'
+
+const ARROWS: Record<string, [number, number]> = {
+  ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0],
+  w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0]
+}
 
 export class HumanPlayer extends Player {
   override readonly isHuman = true
@@ -14,18 +21,19 @@ export class HumanPlayer extends Player {
   private subscriptions: ex.Subscription[] = []
   /** Touch: cell tapped once in move/attack mode, waiting for a second tap to confirm */
   private pendingTarget: Cell | null = null
-  /** Unit whose range is shown by tapping it (no right/middle button on touch) */
+  /** Unit whose range is shown by clicking it (no right/middle button on touch) */
   private inspected: { unit: Unit, mode: 'range' | 'attack' } | null = null
+  private onKeyDown = (event: KeyboardEvent) => this.handleKey(event)
 
-  constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public ui: GameUI, board: Board) {
+  constructor(name: string, engine: ex.Engine, private selectionManager: SelectionManager, public ui: GameUI, board: Board) {
     super(name, board)
-    this.engine = engine
     this.selectionManager = selectionManager
     this.ui = ui
     this.subscriptions.push(
       engine.input.pointers.on('down', this.pointerClick.bind(this)),
       engine.input.pointers.on('move', this.pointerMove.bind(this))
     )
+    window.addEventListener('keydown', this.onKeyDown)
     document.body.oncontextmenu = () => false
   }
 
@@ -33,20 +41,28 @@ export class HumanPlayer extends Player {
     super.dispose()
     this.subscriptions.forEach(s => s.close())
     this.subscriptions = []
+    window.removeEventListener('keydown', this.onKeyDown)
   }
 
-  async pointerClick(pointer: ex.PointerEvent) {
-    if (!this.active) return
-    const maybeClickedCell = this.board.getCellByWorldPos(pointer.worldPos)
+  pointerClick(pointer: ex.PointerEvent) {
     const touch = pointer.pointerType === ex.PointerType.Touch
+    const button: Button | null = touch || pointer.button === ex.PointerButton.Left ? 'left'
+      : pointer.button === ex.PointerButton.Right ? 'right'
+        : pointer.button === ex.PointerButton.Middle ? 'middle' : null
+    if (button) void this.act(this.board.getCellByWorldPos(pointer.worldPos), button, touch)
+  }
+
+  /** Click, tap or Enter on `cell` */
+  async act(cell: Cell | null, button: Button, confirmTwice = false) {
+    if (!this.active) return
 
     // Touch has no hover to preview the path or the attack: the first tap on a
     // valid target previews it, a second tap on the same cell confirms
     const selected = this.selectionManager.currentUnitSelection
-    if (touch && selected && maybeClickedCell && maybeClickedCell !== this.pendingTarget && this.isValidTarget(selected, maybeClickedCell)) {
-      this.pendingTarget = maybeClickedCell
-      this.selectionManager.showCursor(maybeClickedCell.x, maybeClickedCell.y)
-      this.showSelectionHighlight(maybeClickedCell)
+    if (confirmTwice && selected && cell && cell !== this.pendingTarget && this.isValidTarget(selected, cell)) {
+      this.pendingTarget = cell
+      this.selectionManager.showCursor(cell.x, cell.y)
+      this.showSelectionHighlight(cell)
       return
     }
     this.pendingTarget = null
@@ -54,55 +70,102 @@ export class HumanPlayer extends Player {
     this.board.getUnits().forEach(u => u.setAnim(u.selectAnimationIdle()))
     this.selectionManager.resetHighlight()
 
-    if (pointer.button === ex.PointerButton.Left || touch) {
-      if (this.selectionManager.currentUnitSelection) {
-        const unit = this.selectionManager.currentUnitSelection
-        if (this.selectionManager.currentSelectionMode === 'move') {
-          await this.maybeMove(unit, maybeClickedCell)
-          await this.maybeSelectUnit(unit.cell)
+    if (button === 'left') {
+      const unit = this.selectionManager.currentUnitSelection
+      if (unit) {
+        const mode = this.selectionManager.currentSelectionMode
+        if (mode === 'move') {
+          await this.maybeMove(unit, cell)
+        } else if (mode === 'attack') {
+          await this.maybeAttack(unit, cell)
         } else {
-          await this.maybeAttack(unit, maybeClickedCell)
-          const won = this.hasWon()
-          if (!won) {
-            await this.maybeSelectUnit(unit.cell)
-          }
+          this.maybeHeal(unit, cell)
         }
-      } else if (maybeClickedCell?.unit && !this.hasPlayerUnitWithActions(maybeClickedCell)) {
-        this.inspectUnit(maybeClickedCell.unit)
+        if (!this.hasWon()) this.maybeSelectUnit(unit.cell)
+      } else if (cell?.unit && !this.isOwnSelectableUnit(cell)) {
+        this.inspectUnit(cell.unit)
       } else {
-        this.maybeSelectUnit(maybeClickedCell)
+        this.maybeSelectUnit(cell)
       }
-    }
-    if (!this.selectionManager.currentUnitSelection && !maybeClickedCell?.unit) this.inspected = null
-
-    if (pointer.button === ex.PointerButton.Right) {
-      this.highlightUnitMoveRange(maybeClickedCell)
+      if (!this.selectionManager.currentUnitSelection && !cell?.unit) this.inspected = null
     }
 
-    if (pointer.button === ex.PointerButton.Middle) {
-      this.highlightUnitAttackRange(maybeClickedCell)
-    }
+    if (button === 'right') this.highlightUnitMoveRange(cell)
+    if (button === 'middle') this.highlightUnitAttackRange(cell)
   }
 
   pointerMove(pointer: ex.PointerEvent) {
     if (!this.active) return
-
-    const cellBelowPointer = this.board.getCellByWorldPos(pointer.worldPos)
-    if (cellBelowPointer) {
-      this.selectionManager.showCursor(cellBelowPointer.x, cellBelowPointer.y)
-    }
-
-    this.showSelectionHighlight(cellBelowPointer)
+    this.hover(this.board.getCellByWorldPos(pointer.worldPos))
   }
 
-  /** Range of the selected unit (move or attack mode) plus the path/target under `hovered` */
+  private hover(cell: Cell | null) {
+    if (cell) this.selectionManager.showCursor(cell.x, cell.y)
+    this.showSelectionHighlight(cell)
+  }
+
+  /**
+   * Keyboard: arrows/WASD move the cursor, Enter/Space act on it (like a left
+   * click), Tab jumps to the next unit that can act, R/F show the move/attack
+   * range of the unit under the cursor. Esc, E (end turn) and P (pause) are
+   * handled by GameUI.
+   */
+  private handleKey(event: KeyboardEvent) {
+    if (!this.active || this.ui.isBlockingInput()) return
+    if (event.target instanceof HTMLElement && event.target.closest('input, textarea')) return
+    const { x, y } = this.selectionManager.currentCursor
+    const step = ARROWS[event.key] ?? ARROWS[event.key.toLowerCase()]
+    // no cursor on the board yet (mouse never moved): start on a unit
+    if ((step || event.key === 'Enter' || event.key === ' ') && !this.board.getCell(x, y)?.hasCursor) {
+      event.preventDefault()
+      this.cycleUnits(1)
+      return
+    }
+    if (step && !event.ctrlKey && !event.metaKey) {
+      event.preventDefault()
+      this.moveCursor(this.board.getCell(x + step[0], y + step[1]))
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      void this.act(this.board.getCell(x, y), 'left')
+    } else if (event.key === 'Tab') {
+      event.preventDefault()
+      this.cycleUnits(event.shiftKey ? -1 : 1)
+    } else if (event.key.toLowerCase() === 'r') {
+      void this.act(this.board.getCell(x, y), 'right')
+    } else if (event.key.toLowerCase() === 'f') {
+      void this.act(this.board.getCell(x, y), 'middle')
+    }
+  }
+
+  private moveCursor(cell: Cell | null) {
+    if (!cell) return
+    this.hover(cell)
+    this.ui.setHovered(cell)
+  }
+
+  /** Tab: cursor to the next own unit that can still act */
+  private cycleUnits(direction: 1 | -1) {
+    const units = this.board.getUnits().filter(u => u.player === this && u.canBeSelected() && u.cell)
+    if (units.length === 0) return
+    const { x, y } = this.selectionManager.currentCursor
+    const order = (u: Unit) => (u.cell!.y * this.board.cols) + u.cell!.x
+    units.sort((a, b) => order(a) - order(b))
+    const current = y * this.board.cols + x
+    const next = direction === 1
+      ? units.find(u => order(u) > current) ?? units[0]
+      : [...units].reverse().find(u => order(u) < current) ?? units[units.length - 1]
+    this.moveCursor(next.cell)
+  }
+
+  /** Range of the selected unit (move/attack/heal mode) plus the path/target under `hovered` */
   private showSelectionHighlight(hovered: Cell | null) {
     const unit = this.selectionManager.currentUnitSelection
     if (!unit?.cell) return
 
     this.selectionManager.resetHighlight()
+    const mode = this.selectionManager.currentSelectionMode
 
-    if (this.selectionManager.currentSelectionMode === 'move') {
+    if (mode === 'move') {
       const movementMap = this.board.pathFinder.getMovementMap(unit.cell.pathNode, this.mask, unit.effectiveMovement, unit.name)
       this.selectionManager.showHighlight(movementMap.range, 'range')
 
@@ -110,30 +173,36 @@ export class HumanPlayer extends Player {
         const path = movementMap.pathTo(hovered.pathNode)
         if (path.length > 1) this.selectionManager.showHighlight(path, 'path')
       }
-    } else {
+    } else if (mode === 'attack') {
       const currentRange = this.selectionManager.findAttackRange(unit)
       this.selectionManager.showHighlight(currentRange, 'attack')
 
       if (hovered && this.hasNonPlayerUnit(hovered) && currentRange.includes(hovered.pathNode)) {
         this.selectionManager.showHighlight([hovered.pathNode], 'path')
       }
+    } else {
+      const targets = unit.healTargets().map(u => u.cell!.pathNode)
+      this.selectionManager.showHighlight(targets, 'range')
+      if (hovered && targets.includes(hovered.pathNode)) this.selectionManager.showHighlight([hovered.pathNode], 'path')
     }
   }
 
-  /** Whether tapping `cell` would move/attack with `unit` in the current mode */
+  /** Whether clicking `cell` would move/attack/heal with `unit` in the current mode */
   private isValidTarget(unit: Unit, cell: Cell): boolean {
     if (!unit.cell) return false
-    if (this.selectionManager.currentSelectionMode === 'move') {
+    const mode = this.selectionManager.currentSelectionMode
+    if (mode === 'move') {
       if (!unit.canMove()) return false
       const movementMap = this.board.pathFinder.getMovementMap(unit.cell.pathNode, this.mask, unit.effectiveMovement, unit.name)
       return movementMap.pathTo(cell.pathNode).length > 1
     }
+    if (mode === 'heal') return !!cell.unit && unit.healTargets().includes(cell.unit)
     return unit.canAttack() && !!this.hasNonPlayerUnit(cell) && this.selectionManager.findAttackRange(unit).includes(cell.pathNode)
   }
 
   /**
-   * Left click / tap on an enemy or on a unit that already acted: shows its
-   * movement range; tapping it again shows its attack range (and so on).
+   * Click / tap on an enemy or on a unit that can't act: shows its movement
+   * range; clicking it again shows its attack range (and so on).
    */
   private inspectUnit(unit: Unit) {
     const mode = this.inspected?.unit === unit && this.inspected.mode === 'range' ? 'attack' : 'range'
@@ -142,51 +211,48 @@ export class HumanPlayer extends Player {
     else this.highlightUnitAttackRange(unit.cell)
   }
 
-  private selectMode(unit: Unit, mode: 'move' | 'attack') {
+  private selectMode(unit: Unit, mode: 'move' | 'attack' | 'heal') {
     this.pendingTarget = null
     this.inspected = null
     this.selectionManager.selectUnit(unit, mode)
     this.showSelectionHighlight(null)
   }
 
-  /**
-   * A skill picked from the menu (Run / Special Attack) only takes effect on
-   * the next move/attack. If that action didn't happen, give the MP back.
-   */
-  private refundPendingSkill(unit: Unit) {
-    if (unit.isRunning) {
-      unit.isRunning = false
-      if (!unit.moved) {
-        unit.mp += 2
-        unit.usedSkill = false
-      }
+  /** Skill picked in the menu */
+  private useSkill(unit: Unit, id: SkillId) {
+    const skill = SKILLS[id]
+    if (!skill || !unit.canUseSkill(id)) return
+    if (skill.kind === 'ally') {
+      // paid when the target is picked
+      this.selectMode(unit, 'heal')
+      return
     }
-    if (unit.forcesCritical && !unit.attacked) {
-      unit.forcesCritical = false
-      unit.mp += 4
-      unit.usedSkill = false
-    }
+    unit.startSkill(id)
+    Resources.SelectSound.play()
+    if (skill.kind === 'move') this.selectMode(unit, 'move')
+    else if (skill.kind === 'attack') this.selectMode(unit, 'attack')
+    else this.maybeSelectUnit(unit.cell)
   }
 
-  /** Esc: leaves move/attack mode, refunding a pending skill */
+  /** Esc: leaves move/attack/heal mode, refunding a pending skill */
   cancelSelection() {
     if (!this.active) return
     const unit = this.selectionManager.currentUnitSelection
-    if (unit) this.refundPendingSkill(unit)
+    unit?.settlePendingSkill()
     this.pendingTarget = null
     this.selectionManager.reset()
     this.ui.dismissAll()
   }
 
   async maybeMove(unit: Unit, destination: Cell | null) {
-    if (destination && unit.canMove()) {
+    if (destination && unit.canMove() && this.isValidTarget(unit, destination)) {
       this.active = false
       Resources.TargetSelectSound.play()
       await this.selectionManager.selectDestinationAndMove(unit, destination)
-      this.refundPendingSkill(unit)
+      unit.settlePendingSkill()
       this.humanMove.resolve()
     } else {
-      this.refundPendingSkill(unit)
+      unit.settlePendingSkill()
       this.selectionManager.reset()
     }
   }
@@ -195,35 +261,34 @@ export class HumanPlayer extends Player {
     if (destination && attacker.canAttack() && this.hasNonPlayerUnit(destination)) {
       this.active = false
       await this.selectionManager.selectDestinationAndAttack(attacker, destination)
-      this.refundPendingSkill(attacker)
+      attacker.settlePendingSkill()
       this.humanMove.resolve()
     } else {
-      this.refundPendingSkill(attacker)
+      attacker.settlePendingSkill()
       this.selectionManager.reset()
     }
 
-    const won = this.hasWon()
-    if (won) {
+    if (this.hasWon()) {
       this.humanMove.resolve()
       this.ui.dismissAll()
     }
   }
 
-  /**
-   * Highlight the range of any unit friendly or not
-   * @param cell
-   */
-  async highlightUnitMoveRange(cell: Cell | null) {
+  private maybeHeal(unit: Unit, cell: Cell | null) {
+    if (cell?.unit && unit.useSkillOn('skill-heal', cell.unit)) Resources.SelectSound.play()
+    this.selectionManager.reset()
+  }
+
+  /** Highlight the movement range of any unit, friendly or not */
+  highlightUnitMoveRange(cell: Cell | null) {
     if (cell?.unit) {
-      const unit = cell.unit
-      const currentRange = this.selectionManager.findMovementRange(unit)
-      this.selectionManager.showHighlight(currentRange, 'range')
+      this.selectionManager.showHighlight(this.selectionManager.findMovementRange(cell.unit), 'range')
     } else {
       this.selectionManager.reset()
     }
   }
 
-  async highlightUnitAttackRange(cell: Cell | null) {
+  highlightUnitAttackRange(cell: Cell | null) {
     if (cell?.unit) {
       this.selectionManager.showHighlight(this.selectionManager.findAttackRange(cell.unit), 'attack')
     } else {
@@ -231,8 +296,8 @@ export class HumanPlayer extends Player {
     }
   }
 
-  async maybeSelectUnit(cell: Cell | null) {
-    if (cell?.unit && this.hasPlayerUnitWithActions(cell)) {
+  maybeSelectUnit(cell: Cell | null) {
+    if (cell?.unit && this.isOwnSelectableUnit(cell)) {
       const unit = cell.unit
       unit.setAnim(unit.selectAnimationMove())
       this.selectionManager.showCursor(cell.x, cell.y)
@@ -241,17 +306,11 @@ export class HumanPlayer extends Player {
       this.ui.showUnitMenu(unit, {
         move: () => this.selectMode(unit, 'move'),
         attack: () => this.selectMode(unit, 'attack'),
-        run: () => {
-          unit.mp -= 2
-          unit.isRunning = true
-          unit.usedSkill = true
-          this.selectMode(unit, 'move')
-        },
-        specialAttack: () => {
-          unit.mp -= 4
-          unit.forcesCritical = true
-          unit.usedSkill = true
-          this.selectMode(unit, 'attack')
+        skill: id => this.useSkill(unit, id),
+        undo: () => {
+          unit.undoMove()
+          this.selectionManager.reset()
+          this.maybeSelectUnit(unit.cell)
         },
         pass: async () => {
           unit.setAnim(unit.selectAnimationIdle())
@@ -268,8 +327,7 @@ export class HumanPlayer extends Player {
   /** Ends the turn for every unit of this player (End Turn button) */
   async endTurn() {
     if (!this.active) return
-    const unit = this.selectionManager.currentUnitSelection
-    if (unit) this.refundPendingSkill(unit)
+    this.selectionManager.currentUnitSelection?.settlePendingSkill()
     this.ui.dismissAll()
     const units = this.board.getUnits().filter(u => u.player === this)
     units.forEach(u => u.setAnim(u.selectAnimationIdle()))
@@ -278,12 +336,13 @@ export class HumanPlayer extends Player {
     this.humanMove.resolve()
   }
 
-  hasNonPlayerUnit(maybeClickedCell: Cell) {
-    return maybeClickedCell && maybeClickedCell.unit && maybeClickedCell.unit.player !== this
+  hasNonPlayerUnit(cell: Cell) {
+    return !!cell.unit && cell.unit.player !== this
   }
 
-  hasPlayerUnitWithActions(maybeClickedCell: Cell) {
-    return maybeClickedCell?.unit && maybeClickedCell?.unit?.hasActions() && maybeClickedCell.unit.player === this
+  /** Own unit whose menu can open (it can act, undo its move or use a skill) */
+  isOwnSelectableUnit(cell: Cell) {
+    return !!cell.unit && cell.unit.player === this && cell.unit.canBeSelected()
   }
 
   async waitForHumanMove() {
@@ -292,11 +351,10 @@ export class HumanPlayer extends Player {
     this.humanMove = new ex.Future()
   }
 
+  /** The turn goes on while some unit can still move or attack */
   async hasMoves() {
-    let units = this.board.getUnits()
-    units = units.filter(u => u.player === this).filter(u => u.hasActions())
-    const won = this.hasWon()
-    return units.length > 0 && !won
+    const units = this.board.getUnits().filter(u => u.player === this && u.hasActions())
+    return units.length > 0 && !this.hasWon()
   }
 
   override async makeMove(): Promise<boolean> {

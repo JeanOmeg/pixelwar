@@ -11,7 +11,8 @@ import * as ex from 'excalibur'
 export class SelectionManager {
 
   currentPlayer: Player | null = null
-  currentSelectionMode: 'move' | 'attack' = 'move'
+  /** heal = picking the target of an ally skill (Heal) */
+  currentSelectionMode: 'move' | 'attack' | 'heal' = 'move'
   currentUnitSelection: Unit | null = null
   currentCursor: { x: number, y: number } = { x: 0, y: 0 }
 
@@ -27,14 +28,14 @@ export class SelectionManager {
 
   showCursor(x: number, y: number) {
     const cell = this.board.getCell(x, y)
-    if (cell?.unit || cell?.hasCursor) {
+    if (cell?.unit || cell?.highlight) {
       this.engine.canvas.style.cursor = 'pointer'
     } else {
       this.engine.canvas.style.cursor = 'default'
     }
 
     if (cell) {
-      this.board.cells.forEach(c => c.toggleCursor(false))
+      this.board.getCell(this.currentCursor.x, this.currentCursor.y)?.toggleCursor(false)
       cell.toggleCursor(true)
       this.currentCursor = { x, y }
     }
@@ -44,7 +45,7 @@ export class SelectionManager {
     this.currentPlayer = player
   }
 
-  selectUnit(unit: Unit, type: 'move' | 'attack') {
+  selectUnit(unit: Unit, type: 'move' | 'attack' | 'heal') {
     if (unit.player !== this.currentPlayer) return
     this.currentUnitSelection = unit
     this.currentSelectionMode = type
@@ -94,9 +95,7 @@ export class SelectionManager {
 
   resetHighlight() {
     this.board.cells.forEach(cell => {
-      cell.toggleHighlight(false, 'range')
-      cell.toggleHighlight(false, 'path')
-      cell.toggleHighlight(false, 'attack')
+      if (cell.highlight) cell.toggleHighlight(false, cell.highlight)
     })
   }
 

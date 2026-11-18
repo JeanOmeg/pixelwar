@@ -13,6 +13,8 @@ import { pageStyles, renderCredits, renderHowToPlay, renderUnits } from './start
 import { GAME_MODES, GameMode, MatchSettings, findGameMode } from '../game-modes'
 import { MAPS, MapDefinition, defaultArmy, findMap, getMapInfo, randomMap, sceneNameOf, teamSpawns } from '../maps'
 import { mapPreview, unitPortrait } from '../ui-sprites'
+import { buildCpuArmy } from '../army-ai'
+import { DIFFICULTIES, DIFFICULTY_IDS, Difficulty, findDifficulty } from '../ai/weights'
 import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, armyCost, classStats, classTraits, unitTypeOf } from '../unit-classes'
 import type { UnitClass } from '../path-finding/terrain-rules'
 import type { UnitType } from '../config'
@@ -20,6 +22,7 @@ import type { UnitType } from '../config'
 type Screen = 'title' | 'mode' | 'map' | 'army' | 'howto' | 'units' | 'credits'
 
 const PREF_MODE = 'pixelfantasywar.mode'
+const PREF_DIFFICULTY = 'pixelfantasywar.difficulty'
 const PREF_MAP = 'pixelfantasywar.map'
 const prefArmy = (mapId: string, team: number) => `pixelfantasywar.army.${mapId}.${team}`
 /** Text size in the menus relative to the base sizes in the components */
@@ -111,6 +114,10 @@ export class StartScreenUi extends LitElement {
     .bottom { display: flex; gap: calc(14 * var(--u)); align-items: center; }
     .bottom .btn { --team: #2a2d3a; font-size: calc(24 * var(--t)); padding: calc(10 * var(--u)) calc(26 * var(--u)); }
     .bottom small { font-size: calc(14 * var(--t)); color: var(--muted); }
+    .difficulty { display: flex; align-items: center; gap: calc(10 * var(--u)); font-size: calc(18 * var(--t)); }
+    .difficulty .label { color: var(--muted); margin-right: calc(6 * var(--u)); }
+    .difficulty .btn { --team: #2a2d3a; font-size: calc(20 * var(--t)); padding: calc(8 * var(--u)) calc(20 * var(--u)); }
+    .difficulty .btn.on { --team: var(--blue); }
 
     .fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity 600ms steps(6); }
     .fade.visible { opacity: 1; pointer-events: auto; }
@@ -124,6 +131,10 @@ export class StartScreenUi extends LitElement {
 
   @state()
   private mode: GameMode = findGameMode(readPref(PREF_MODE))?.id ?? 'p1vscpu'
+
+  /** How well the CPU plays (Player vs CPU and CPU vs CPU) */
+  @state()
+  private difficulty: Difficulty = findDifficulty(readPref(PREF_DIFFICULTY)) ?? 'normal'
 
   @state()
   private leaving = false
@@ -176,6 +187,12 @@ export class StartScreenUi extends LitElement {
   private go(screen: Screen) {
     Resources.SelectSound.play()
     this.screen = screen
+  }
+
+  private chooseDifficulty(difficulty: Difficulty) {
+    Resources.SelectSound.play()
+    this.difficulty = difficulty
+    writePref(PREF_DIFFICULTY, difficulty)
   }
 
   private chooseMode(mode: GameMode) {
@@ -247,8 +264,12 @@ export class StartScreenUi extends LitElement {
     // and turn to landscape (the browser only allows it during a user gesture)
     if (isTouchDevice()) void enterFullscreen()
     this.leaving = true
+    // the CPU builds its own army with the same budget (roles follow the map)
+    const info = getMapInfo(map)
+    const cpuTeams = this.mode === 'cpuvscpu' ? [0, 1] : this.mode === 'p1vscpu' ? [1] : []
+    for (const team of cpuTeams) this.armies[team] = buildCpuArmy(defaultArmy(info, team), ARMY_BUDGET)
     await new Promise(resolve => window.setTimeout(resolve, 650))
-    const settings: MatchSettings = { mode: this.mode, armies: this.armies }
+    const settings: MatchSettings = { mode: this.mode, armies: this.armies, difficulty: this.difficulty }
     this.engine.goToScene(sceneNameOf(map), { sceneActivationData: settings })
     this.remove()
   }
@@ -353,6 +374,12 @@ export class StartScreenUi extends LitElement {
               </button>
             `
           })}
+        </div>
+        <div class="difficulty">
+          <span class="label">CPU difficulty</span>
+          ${DIFFICULTY_IDS.map(id => html`
+            <button class="btn btn-solid ${id === this.difficulty ? 'on' : ''}" @click=${() => this.chooseDifficulty(id)}>${DIFFICULTIES[id].label}</button>
+          `)}
         </div>
         <div class="bottom">
           <button class="btn btn-solid" @click=${() => this.go('title')}>Back</button>

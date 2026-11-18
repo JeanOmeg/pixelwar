@@ -6,23 +6,33 @@
     "dev": "parcel serve index.html",
     "build:parcel": "parcel build ./index.html --dist-dir ./docs --public-url ./",
     "build": "node build.js",
-    "tree": "node show-tree.js"
+    "lint": "eslint src tests scripts vitest.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "validate": "yarn typecheck && yarn lint && yarn test",
+    "balance": "vite-node scripts/balance-report.ts",
+    "tree": "node show-tree.js",
+    "ai:sim": "vitest run --config vitest.sim.config.ts tests/sim/ai.sim.ts",
+    "ai:tune": "vitest run --config vitest.sim.config.ts tests/sim/tune.sim.ts"
   },
   "author": "Jean Fernandes",
   "license": "BSD-2-Clause",
   "dependencies": {
     "@excaliburjs/plugin-tiled": "0.30.2",
-    "excalibur": "^0.30.3",
+    "excalibur": "0.30.3",
     "lit": "^3.1.2"
   },
   "devDependencies": {
+    "@types/node": "20.17.10",
     "@typescript-eslint/eslint-plugin": "^8.18.1",
     "@typescript-eslint/parser": "^8.18.1",
     "buffer": "^5.5.0 || ^6.0.0",
     "eslint": "^9.17.0",
+    "happy-dom": "15.11.7",
     "parcel": "2.11.0",
     "ts-lit-plugin": "^2.0.1",
     "typescript": "^5.3.3",
-    "typescript-lit-html-plugin": "^0.9.0"
+    "typescript-lit-html-plugin": "^0.9.0",
+    "vitest": "2.1.9"
   }
 }

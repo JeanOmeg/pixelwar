@@ -27,6 +27,8 @@ export interface HudView {
   unitsWithActions: number
   /** The pause button is shown (the match is still going) */
   canPause: boolean
+  /** Game speed: 1, 2 or 3 */
+  speed: number
 }
 
 export interface UnitView {
@@ -36,9 +38,15 @@ export interface UnitView {
   maxHp: number
   mp: number
   maxMp: number
+  /** Current attack/defense (skills and forest included) and the class base values */
   attack: number
+  baseAttack: number
   defense: number
+  baseDefense: number
+  /** Range in points (1 per tile, 2 per forest tile for some classes) */
   range: number
+  /** How the range works on the map, e.g. 'Forest tiles count double' */
+  rangeNote: string
   movement: number
   facing: Facing
   status: string[]
@@ -49,6 +57,8 @@ export interface ForecastView {
   attacker: UnitView
   defender: UnitView
   forecast: AttackForecast
+  /** The defender's counterattack if it survives (null: it can't strike back) */
+  counter: AttackForecast | null
 }
 
 export interface MenuItem {

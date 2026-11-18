@@ -1,303 +1,62 @@
-import * as ex from 'excalibur'
 import { Player } from './player'
 import type { SelectionManager } from './selection-manager'
 import type { Board } from './board'
-import { ENEMY_SPEED } from './config'
-import type { PathNodeComponent } from './path-finding/path-node-component'
 import type { Cell } from './cell'
-import type { Unit } from './unit'
+import { ENEMY_SPEED } from './config'
+import { gameDelay } from './speed'
+import { AiExecutor, playAiTurn } from './ai/turn'
+import { Difficulty, Personality, randomPersonality } from './ai/weights'
 
-interface ActionPlan {
-  type: 'attack' | 'move' | 'flee' | 'wait' | 'moveAndAttack' | 'skillRun' | 'skillSpecialAttack'
-  score: number
-  target?: Unit
-  destination?: Cell
-  path?: PathNodeComponent[]
-}
-
+/**
+ * CPU player. The decisions live in src/ai/ (planner, threat map, weights);
+ * this class plays them with the game's animations and pauses.
+ */
 export class ComputerPlayer extends Player {
   public override active = false
+  readonly difficulty: Difficulty
+  readonly personality: Personality
+  /** Own turns played this match (the AI gets bolder as it drags on) */
+  private turns = 0
 
-  constructor(name: string, private selectionManger: SelectionManager, board: Board) {
+  constructor(name: string, private selectionManager: SelectionManager, board: Board, difficulty: Difficulty = 'normal', personality: Personality = randomPersonality()) {
     super(name, board)
-    this.selectionManger = selectionManger
+    this.difficulty = difficulty
+    this.personality = personality
   }
 
   override async turnStart() {
     this.active = true
-    const units = this.board.getUnits().filter(unit => unit.player instanceof ComputerPlayer && unit.player === this)
-    for (const unit of units) {
-      unit.reset()
-    }
+    const units = this.board.getUnits()
+    units.filter(unit => unit.player === this).forEach(unit => unit.reset())
+    units.forEach(unit => unit.setAnim(unit.selectAnimationIdle()))
   }
 
   override async turnEnd() {
     this.active = false
   }
 
-  findClosestCell(unit: Unit, cells: Cell[]) {
-    let closest = null
-    let distance = Infinity
-    for (const cell of cells) {
-      const cellDistance = cell.pos.squareDistance(unit.cell?.pos ?? ex.vec(0, 0))
-      if (cellDistance < distance) {
-        closest = cell
-        distance = cellDistance
-      }
-    }
-    return closest
-  }
-
-  findAttackableTargets(unit: Unit): PathNodeComponent[] {
-    const attackRange = this.selectionManger.findAttackRange(unit)
-    return attackRange.filter(node => {
-      const cell = node.owner as Cell
-      return cell.unit && cell.unit.player !== this
-    }).sort((a, b) => ((a.owner as Cell).unit as Unit).health - ((b.owner as Cell).unit as Unit).health)
-  }
-
-  async maybeAttack(unit: Unit, target: Unit) {
-    const possibleTargets = this.findAttackableTargets(unit)
-    const match = possibleTargets.find(enemy => enemy.owner?.name === target.cell?.name)
-    if (!match) return false
-
-    this.selectionManger.showHighlight([(target.cell ?? {} as Cell).pathNode], 'attack')
-    await ex.Util.delay(ENEMY_SPEED * 2)
-    await unit.attack(target)
-    this.selectionManger.reset()
-    return true
-  }
-
-  evaluateAttack(unit: Unit, target: Unit): number {
-    const damagePotential = unit.unitConfig.attack - target.unitConfig.defense
-    const estimated = damagePotential > 0 ? damagePotential + 6 : 6
-    if (target.health <= estimated) return 1000
-    return (estimated * 3) + (target.unitConfig.health - target.health)
-  }
-
-  evaluateCriticalAttack(unit: Unit, target: Unit): number {
-    const critDamage = Math.max((12 + unit.unitConfig.attack) - target.unitConfig.defense, 1)
-    const damagePotential = unit.unitConfig.attack - target.unitConfig.defense
-    const estimatedNormal = damagePotential > 0 ? damagePotential + 6 : 6
-    const critKills = target.health <= critDamage
-    const normalKills = target.health <= estimatedNormal
-    if (critKills && !normalKills) return 1200  // unique kill — worth the 4 MP
-    if (critKills && normalKills) return -1      // normal attack already kills, save MP
-    return -1                                    // no kill either way, not worth 4 MP
-  }
-
-  findAttackableFromCell(fromCell: Cell, unit: Unit): Unit[] {
-    const range = this.board.pathFinder.getRangeAttack(
-      fromCell.pathNode,
-      ~this.mask,
-      unit.unitConfig.range,
-      unit.name,
-      unit.cell?.pathNode // the unit will have left its current cell
-    )
-    return range
-      .map(node => (node.owner as Cell).unit)
-      .filter((u): u is Unit => !!u && u.player !== this)
-      .sort((a, b) => this.evaluateAttack(unit, b) - this.evaluateAttack(unit, a))
-  }
-
-  evaluateMove(unit: Unit, destination: Cell, flee = false): number {
-    const enemies = this.board.getUnits().filter(enemy => enemy.player !== this && enemy.cell)
-    const closest = this.findClosestCell(destination.unit ?? unit, enemies.map(e => e.cell) as Cell[])
-    if (!closest) return 0
-    const dist = destination.pos.squareDistance(closest.pos)
-
-    if (flee) return dist * 1.5
-
-    const canAttackFromHere = this.findAttackableFromCell(destination, unit).length > 0
-    return 100 / (dist + 1) + (canAttackFromHere ? 200 : 0)
-  }
-
-  evaluateAction(unit: Unit, action: ActionPlan): number {
-    switch (action.type) {
-    case 'attack': {
-      if (!action.target) return 0
-      const rangeBonus = unit.unitConfig.range > 1 ? 60 : 0
-      return this.evaluateAttack(unit, action.target) + rangeBonus
-    }
-    case 'skillSpecialAttack':
-      return action.target ? this.evaluateCriticalAttack(unit, action.target) : 0
-    case 'skillRun':
-      return action.destination ? this.evaluateMove(unit, action.destination) - 15 : 0
-    case 'moveAndAttack': {
-      const attackScore = action.target ? this.evaluateAttack(unit, action.target) : 0
-      const moveScore = action.destination ? this.evaluateMove(unit, action.destination) : 0
-      return attackScore + moveScore * 0.2
-    }
-    case 'move': return action.destination ? this.evaluateMove(unit, action.destination) : 0
-    case 'flee': return action.destination ? this.evaluateMove(unit, action.destination, true) : 0
-    case 'wait': return -10
-    }
-  }
-
-  shouldFlee(unit: Unit): boolean {
-    const ownUnits = this.board.getUnits().filter(u => u.player === this)
-    const enemyUnits = this.board.getUnits().filter(u => u.player !== this)
-    const isLowHealth = unit.health < unit.unitConfig.health * 0.2
-    const isOutnumbered = ownUnits.length < enemyUnits.length
-    return isLowHealth && isOutnumbered
-  }
-
-  async decideActionForUnit(unit: Unit): Promise<void> {
-    const executedTypes = new Set<string>()
-
-    const generateAndEvaluateActions = async (): Promise<ActionPlan[]> => {
-      const actions: ActionPlan[] = []
-      const attackTargets = this.findAttackableTargets(unit)
-
-      if (!unit.attacked && attackTargets.length > 0) {
-        const targets = attackTargets.map(node => (node.owner as Cell).unit!).filter(Boolean)
-        const bestTarget = targets.reduce((best, t) =>
-          this.evaluateAttack(unit, t) > this.evaluateAttack(unit, best) ? t : best
-        )
-        actions.push({ type: 'attack', score: 0, target: bestTarget })
-
-        if (unit.canUseSkill('skill-special-attack')) {
-          const specialTarget = targets.reduce((best, t) =>
-            this.evaluateCriticalAttack(unit, t) > this.evaluateCriticalAttack(unit, best) ? t : best
-          )
-          actions.push({ type: 'skillSpecialAttack', score: 0, target: specialTarget })
-        }
-      }
-
-      if (!unit.moved && unit.cell) {
-        await ex.Util.delay(ENEMY_SPEED)
-
-        const start = unit.cell.pathNode
-        const pathFinder = this.board.pathFinder
-        const moveMap = pathFinder.getMovementMap(start, this.mask, unit.unitConfig.movement, unit.name)
-
-        if (unit.canUseSkill('skill-run')) {
-          const runMap = pathFinder.getMovementMap(start, this.mask, unit.unitConfig.movement * 2, unit.name)
-          for (const node of runMap.range) {
-            if (moveMap.canStopAt(node)) continue
-            const path = runMap.pathTo(node)
-            if (path.length < 2) continue
-            actions.push({ type: 'skillRun', score: 0, destination: node.owner as Cell, path })
-          }
-        }
-
-        const flee = this.shouldFlee(unit)
-        for (const node of moveMap.range) {
-          const path = moveMap.pathTo(node)
-          if (path.length < 2) continue
-          const cell = node.owner as Cell
-
-          if (flee) {
-            actions.push({ type: 'flee', score: 0, destination: cell, path })
-          } else if (!unit.attacked) {
-            const targetsFromDest = this.findAttackableFromCell(cell, unit)
-            if (targetsFromDest.length > 0) {
-              actions.push({ type: 'moveAndAttack', score: 0, destination: cell, path, target: targetsFromDest[0] })
-            } else {
-              actions.push({ type: 'move', score: 0, destination: cell, path })
-            }
-          } else {
-            actions.push({ type: 'move', score: 0, destination: cell, path })
-          }
-        }
-      }
-
-      actions.push({ type: 'wait', score: -10 })
-
-      for (const action of actions) {
-        action.score = this.evaluateAction(unit, action)
-      }
-
-      return actions.sort((a, b) => b.score - a.score)
-    }
-
-    const executeAction = async (action: ActionPlan): Promise<boolean> => {
-      switch (action.type) {
-      case 'attack':
-        if (!unit.attacked && action.target) {
-          return await this.maybeAttack(unit, action.target)
-        }
-        break
-      case 'skillSpecialAttack':
-        if (unit.canUseSkill('skill-special-attack') && action.target) {
-          unit.mp -= 4
-          unit.forcesCritical = true
-          unit.usedSkill = true
-          return await this.maybeAttack(unit, action.target)
-        }
-        break
-      case 'skillRun':
-        if (unit.canUseSkill('skill-run') && action.destination && action.path) {
-          unit.mp -= 2
-          unit.isRunning = true
-          unit.usedSkill = true
-          this.selectionManger.showHighlight(action.path, 'path')
-          await ex.Util.delay(ENEMY_SPEED + ENEMY_SPEED)
-          await this.selectionManger.selectDestinationAndMove(unit, action.destination, action.path)
-          unit.isRunning = false
-          if (!unit.moved) {
-            unit.mp += 2
-            unit.usedSkill = false
-          }
-          return true
-        }
-        break
-      case 'moveAndAttack':
-        if (!unit.moved && action.destination && action.path) {
-          this.selectionManger.showHighlight(action.path, 'path')
-          await ex.Util.delay(ENEMY_SPEED + ENEMY_SPEED)
-          await this.selectionManger.selectDestinationAndMove(unit, action.destination, action.path)
-          if (!unit.attacked && action.target) {
-            await this.maybeAttack(unit, action.target)
-          }
-          return true
-        }
-        break
-      case 'move':
-      case 'flee':
-        if (!unit.moved && action.destination && action.path) {
-          this.selectionManger.showHighlight(action.path, 'path')
-          await ex.Util.delay(ENEMY_SPEED + ENEMY_SPEED)
-          await this.selectionManger.selectDestinationAndMove(unit, action.destination, action.path)
-          return true
-        }
-        break
-      case 'wait':
-        return true
-      }
-      return false
-    }
-
-    while(!unit.attacked || !unit.moved) {
-      const actions = (await generateAndEvaluateActions()).filter(a => !executedTypes.has(a.type))
-      if (actions.length === 0 || actions.every(a => a.score <= 0)) {
-        break
-      }
-      const action = actions[0]
-      const success = await executeAction(action!)
-      if (success) {
-        executedTypes.add(action!.type)
-
-      }
-      if (unit.attacked && unit.moved) break
-    }
-
-    this.selectionManger.reset()
-    unit.pass()
+  private executor: AiExecutor = {
+    move: async (unit, path) => {
+      this.selectionManager.showHighlight(path, 'path')
+      await gameDelay(ENEMY_SPEED * 2)
+      const dest = path[path.length - 1].owner as Cell
+      await this.selectionManager.selectDestinationAndMove(unit, dest, path)
+    },
+    attack: async (unit, target) => {
+      if (target.cell) this.selectionManager.showHighlight([target.cell.pathNode], 'attack')
+      await gameDelay(ENEMY_SPEED * 2)
+      await unit.attack(target)
+      this.selectionManager.reset()
+    },
+    pause: () => gameDelay(ENEMY_SPEED)
   }
 
   override async makeMove(): Promise<boolean> {
-    const units = this.board.getUnits().filter(u => u.player === this)
-    await ex.Util.delay(150)
-    units.sort((a, b) => a.health - b.health)
-
-    for (const unit of units) {
-      if (this.disposed) break
-      await this.decideActionForUnit(unit)
-      await ex.Util.delay(ENEMY_SPEED)
-    }
-
-    await ex.Util.delay(ENEMY_SPEED)
+    await gameDelay(150)
+    this.turns++
+    await playAiTurn(this.board, this, { difficulty: this.difficulty, personality: this.personality, round: this.turns }, this.executor, () => this.disposed)
+    this.selectionManager.reset()
+    await gameDelay(ENEMY_SPEED)
     return true
   }
 }

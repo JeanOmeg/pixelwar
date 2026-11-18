@@ -13,6 +13,12 @@ function facingArrow(facing: Facing) {
   </svg>`
 }
 
+/** A stat changed by skills or terrain: green when above its base value, red below */
+function changed(value: number, base: number) {
+  if (value === base) return html`${value}`
+  return html`<span class="${value > base ? 'up' : 'down'}">${value}</span>`
+}
+
 /**
  * Bottom card: the hovered/selected unit, or the attack forecast when the
  * player is aiming at an enemy. Placed on the side opposite to the pointer.
@@ -51,6 +57,9 @@ export class UnitCard extends LitElement {
       line-height: 1;
     }
     .stat small { font-size: calc(13 * var(--t)); color: var(--muted); }
+    .stat .up { color: var(--hp); }
+    .stat .down { color: var(--hp-low); }
+    .range-note { font-size: calc(14 * var(--t)); color: var(--muted); }
 
     .status { display: flex; flex-wrap: wrap; gap: calc(5 * var(--u)); }
     .status .chip { color: var(--muted); }
@@ -74,6 +83,9 @@ export class UnitCard extends LitElement {
     .badges { display: flex; justify-content: center; gap: calc(6 * var(--u)); padding: 0 calc(12 * var(--u)) calc(12 * var(--u)); }
     .badge-back { color: var(--orange); }
     .badge-crit { color: var(--gold); }
+    .counter { display: flex; justify-content: center; gap: calc(10 * var(--u)); padding: 0 calc(12 * var(--u)) calc(12 * var(--u)); font-size: calc(15 * var(--t)); }
+    .counter .label { color: var(--orange); }
+    .counter .kill { color: var(--gold); }
   `]
 
   @property({ attribute: false })
@@ -115,14 +127,15 @@ export class UnitCard extends LitElement {
             <span class="value">${unit.mp}/${unit.maxMp}</span>
           </div>
           <div class="stats">
-            <div class="stat"><i class="icon i-sword"></i>${unit.attack}<small>ATK</small></div>
-            <div class="stat"><i class="icon i-shield"></i>${unit.defense}<small>DEF</small></div>
+            <div class="stat"><i class="icon i-sword"></i>${changed(unit.attack, unit.baseAttack)}<small>ATK</small></div>
+            <div class="stat"><i class="icon i-shield"></i>${changed(unit.defense, unit.baseDefense)}<small>DEF</small></div>
             <div class="stat"><i class="icon i-bow"></i>${unit.range}<small>RNG</small></div>
             <div class="stat"><i class="icon i-boot"></i>${unit.movement}<small>MOV</small></div>
           </div>
+          <div class="range-note">Range: ${unit.rangeNote}</div>
           ${unit.status.length > 0 ? html`
             <div class="status">
-              ${unit.status.map(s => html`<span class="chip ${s === 'Critical ready' || s === 'Running' ? 'hot' : ''}">${s}</span>`)}
+              ${unit.status.map(s => html`<span class="chip ${s.endsWith(' ready') ? 'hot' : ''}">${s}</span>`)}
             </div>
           ` : nothing}
         </div>
@@ -168,6 +181,14 @@ export class UnitCard extends LitElement {
           </dl>
           ${this.renderFighter(view.defender, 'right', { min: f.minDamage, max: f.maxDamage })}
         </div>
+        ${view.counter ? html`
+          <div class="counter">
+            <span class="label">Counterattack if it survives:</span>
+            <span>${percent(view.counter.hitChance)} hit</span>
+            <span>${view.counter.minDamage === view.counter.maxDamage ? view.counter.maxDamage : `${view.counter.minDamage}-${view.counter.maxDamage}`} dmg</span>
+            ${view.counter.killChance > 0 ? html`<span class="kill">${percent(view.counter.killChance)} kills you</span>` : nothing}
+          </div>
+        ` : nothing}
         ${f.backAttack || f.critChance >= 1 ? html`
           <div class="badges">
             ${f.backAttack ? html`<span class="chip badge-back">Back attack: sure hit, double ATK</span>` : nothing}
