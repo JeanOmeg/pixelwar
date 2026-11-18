@@ -12,6 +12,7 @@ import { UnitMenu } from './ui-components/unit-menu'
 import { PhaseBanner } from './ui-components/phase-banner'
 import { GameOver, GameOverChoice } from './ui-components/game-over'
 import { PauseMenu } from './ui-components/pause-menu'
+import { Resources } from './resources'
 import { isTouchDevice, readableBoost } from './device'
 import { ForecastView, GameResultView, HudView, MenuItem, Team, UnitView } from './ui-components/view-models'
 
@@ -154,17 +155,21 @@ export class GameUI {
   }
 
   /**
-   * Freezes the match (engine loop stopped: animations, moves and the CPU's
-   * actions wait) and shows the pause menu. Leaving calls `onQuit`.
+   * Freezes the match (engine clock stopped: animations, moves and the CPU's
+   * actions wait), pauses the sounds playing and shows the pause menu.
+   * Leaving calls `onQuit`.
    */
   async pause() {
     if (this.matchOver || this.pauseMenu.open) return
     this.dismissAll()
-    this.engine.stop()
+    // Not engine.stop(): its 'stop' event makes every ex.Sound stop and refuse
+    // to play again until a 'start' event. Stop only the clock instead.
+    this.engine.clock.stop()
+    const sounds = Object.values(Resources).filter((r): r is ex.Sound => r instanceof ex.Sound && r.isPlaying())
+    sounds.forEach(sound => sound.pause())
     const choice = await this.pauseMenu.show()
-    // engine.start() would run the loader again: just restart the main loop
-    this.engine.browser.resume()
     this.engine.clock.start()
+    if (choice === 'resume') sounds.forEach(sound => void sound.play())
     if (choice === 'quit') {
       this.matchOver = true
       this.onQuit()
