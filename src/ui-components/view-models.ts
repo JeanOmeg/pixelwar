@@ -25,6 +25,8 @@ export interface HudView {
   canEndTurn: boolean
   /** Units of the current player that still have actions */
   unitsWithActions: number
+  /** The pause button is shown (the match is still going) */
+  canPause: boolean
 }
 
 export interface UnitView {

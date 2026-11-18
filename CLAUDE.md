@@ -56,10 +56,10 @@ Roda também em celular/tablet (ver "Celular e toque").
 | [src/selection-manager.ts](src/selection-manager.ts) | Unidade selecionada, modo `move`/`attack`, ranges, caminho, highlights e cursor |
 | [src/path-finding/](src/path-finding/) | `PathNodeComponent` (flags do tile, mask, x/y), `PathFinder` (Dijkstra de movimento → `MovementMap`, alcance de ataque em linha reta) e `terrain-rules.ts` (regras por classe) |
 | [src/game-ui.ts](src/game-ui.ts) | `GameUI`: controlador da UI de partida (HUD, dica, card/prévia, menu, banner, fim). Criado por partida e destruído no `onDeactivate` |
-| [src/ui-components/](src/ui-components/) | Lit (shadow DOM). Partida: `game-hud` (+ `game-hint`), `unit-card`, `unit-menu`, `phase-banner`, `game-over`. Menus: `start-screen-ui` (título, modo, páginas), `map-select`, `start-screen-pages.ts` (How to play, Units, Credits). `audio-menu`. Base visual em `theme.ts` e `icons.ts`; dados em `view-models.ts` |
+| [src/ui-components/](src/ui-components/) | Lit (shadow DOM). Partida: `game-hud` (+ `game-hint`), `unit-card`, `unit-menu`, `phase-banner`, `game-over`, `pause-menu`. Menus: `start-screen-ui` (título, modo, páginas), `map-select`, `start-screen-pages.ts` (How to play, Units, Credits). `audio-menu`. Base visual em `theme.ts` e `icons.ts`; dados em `view-models.ts` |
 | [src/damage-manager.ts](src/damage-manager.ts) | Número de dano flutuante (`Critical!`, `Back attack!`, `Miss`) |
 | [src/audio-manager.ts](src/audio-manager.ts) | Volumes padrão e mute |
-| [src/device.ts](src/device.ts) | Celular/tablet: `isTouchDevice`, `readableBoost` (ampliação da UI em tela pequena), tela cheia + paisagem no primeiro toque (`setupTouchDevice`) |
+| [src/device.ts](src/device.ts) | Celular/tablet: `isTouchDevice`, `readableBoost` (ampliação da UI em tela pequena), tela cheia + paisagem (`enterFullscreen`/`exitFullscreen`/`toggleFullscreen`, `setupTouchDevice` no primeiro toque) |
 | [src/css/main.css](src/css/main.css) | Só a fonte global e `.credits` (a UI de jogo tem estilos próprios nos componentes) |
 
 **Código morto / legado** (não importado pelo jogo): `src/actors/actor-start-screen.ts`, `src/texts/`, `src/fonts/`, `src/assets/tiledMap/map1.js|map2.js|map3.js`, `src/assets/maps/Map1.png|Map2.png` (miniaturas antigas; agora são geradas) e `credits.html` (o conteúdo está na tela Credits). `Resources.LevelMusic1` não é usado (só `LevelMusic2`).
@@ -214,17 +214,19 @@ UI de partida = `GameUI` ([src/game-ui.ts](src/game-ui.ts)) + componentes em `sr
 - `game-hint`: dica contextual embaixo (`[texto]` sai destacado).
 - `unit-card`: unidade sob o mouse (ou a selecionada), no topo, logo abaixo da barra do time da própria unidade (azul à esquerda, vermelho à direita), com a mesma largura e margem. Se nessa posição ele cobriria a unidade sob o mouse, desce para logo abaixo dela (`GameUI.cardTopAvoiding`). Em modo ataque, sobre um inimigo ao alcance, vira a **prévia de combate** (`forecastAttack`), sob a barra do time de quem ataca.
 - `unit-menu`: ancorado ao lado da unidade (vira para o outro lado se não couber). Itens: Move, Attack, Skills (submenu com custo e descrição), Wait. Evento `select` (id) / `close`.
+- **Pausa**: botão no painel central do `game-hud` (evento `pause`, `HudView.canPause`) ou Esc sem nada para cancelar → `GameUI.pause()`: `engine.stop()` congela o loop (animações, movimento e as ações da CPU esperam) e abre o `pause-menu` (`show()` → `'resume' | 'quit'`; Esc = Resume; "Main menu" pede um segundo clique). Para retomar, `engine.browser.resume()` + `engine.clock.start()` (**não** `engine.start()`, que rodaria o loader de novo). "Quit" → `GameUI.onQuit` → `TurnManager.quit()`: marca `aborted` (o loop de fases sai no próximo passo), para a música e chama `returnToMainMenu()`. `Player.disposed` faz a CPU parar de agir depois que a cena sai.
 - `phase-banner`: `play()` devolve Promise; clique ou Esc pula. `game-over`: `show()` devolve `'rematch' | 'menu'`.
 - Contagem de unidades da UI usa `Board.getLivingUnits()` (atores vivos na cena), porque `getUnits()` não vê a unidade enquanto ela anda.
 - **Menus** (`start-screen-ui`): mesmo tema e unidade `--u` da UI de partida (ela calcula `--s` = `min(largura/1920, altura/1080)`). Telas: `title` → `mode` → `map` (`<map-select>`), e `howto`/`units`/`credits` (templates em `start-screen-pages.ts`). Esc volta. Toca `TitleMusic` enquanto montada. Montada pelo `main.ts` e pelo `TurnManager.returnToMainMenu`.
 - `map-select` recebe `MapListItem[]` (montados de `MAPS` + `getMapInfo` + `mapPreview`) e emite `start` (id ou `'random'`) e `back`. ↑/↓/Enter/Esc.
-- `<audio-menu>` fica fixo no `index.html`.
+- `<audio-menu>` fica fixo no `index.html` (botões de som e de tela cheia).
 - Fonte do jogo: `notjamslab14` (`@font-face` em `main.css`, vale dentro do shadow DOM).
-- Controles: esquerdo = selecionar/agir; direito = ver alcance de movimento; meio = ver alcance de ataque; **Esc** = fecha o menu / cancela o modo mover/atacar (devolve MP de skill) / pula o banner.
+- Controles: esquerdo = selecionar/agir; direito = ver alcance de movimento; meio = ver alcance de ataque; **Esc** = fecha o menu / cancela o modo mover/atacar (devolve MP de skill) / pula o banner / pausa (sem nada para cancelar) / retoma.
 
 ## Celular e toque
 
-- Detecção: `isTouchDevice()` = `(pointer: coarse)`. `setupTouchDevice()` (no `main.ts`) põe a classe `touch` no `<html>` e pede tela cheia + trava em paisagem no primeiro toque (não funciona no iPhone; falhas são ignoradas).
+- Detecção: `isTouchDevice()` = `(pointer: coarse)`. `setupTouchDevice()` (no `main.ts`) põe a classe `touch` no `<html>` e pede tela cheia + trava em paisagem no primeiro toque (não funciona no iPhone; falhas são ignoradas). No toque, o `launch()` do `start-screen-ui` chama `enterFullscreen()` de novo (ainda dentro do toque em Start/Confirm, porque o navegador só permite durante um gesto do usuário).
+- Botão de tela cheia: no `<audio-menu>`, ao lado do mute (`toggleFullscreen`; entrar também trava em paisagem, sair destrava). Escondido onde `canFullscreen()` é falso (iPhone). O ícone segue o evento `fullscreenchange`.
 - No toque o engine usa `DisplayMode.FitScreen` (no desktop continua `FitScreenAndFill`): com o aparelho de pé o `FitScreenAndFill` esticava a resolução para 1920×4155, acima do limite de textura WebGL. O canvas é centralizado por CSS (`html.touch body` em `main.css`); a Excalibur converte coordenadas com `getBoundingClientRect`, então isso é seguro.
 - De pé (`pointer: coarse` + `orientation: portrait`) aparece o `.rotate-hint` do `index.html` por cima de tudo.
 - O toque chega como `PointerEvent` com `pointerType = Touch` e botão esquerdo. Não há hover: o `GameUI` também atualiza `hovered` no `down`, e o `HumanPlayer` usa **toque para prévia, segundo toque no mesmo tile para confirmar** (`pendingTarget`, `isValidTarget`). Toque fora do alcance cancela, como no desktop.

@@ -107,6 +107,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
       const current = this.turnManager.currentPlayer
       if (current instanceof HumanPlayer) current.endTurn()
     }
+    this.ui.onQuit = () => void this.turnManager.quit()
     this.ui.onCancel = () => {
       const current = this.turnManager.currentPlayer
       if (current instanceof HumanPlayer) current.cancelSelection()

@@ -99,7 +99,8 @@ export function renderHowToPlay() {
           <li><b>Right click</b>: show a unit's movement range.</li>
           <li><b>Middle click</b>: show a unit's attack range.</li>
           <li><b>Click</b> an enemy (or a unit that already acted): its movement range; click again: its attack range.</li>
-          <li><b>Esc</b>: close the menu or cancel the action.</li>
+          <li><b>Esc</b>: close the menu or cancel the action; with nothing to cancel, pause.</li>
+          <li><b>Pause</b> button (top center): resume or leave the match for the main menu.</li>
         </ul>
       </section>
       <section>

@@ -10,6 +10,8 @@ export abstract class Player {
 
   public readonly mask: number
   public active: boolean = false
+  /** The match was left: stop acting */
+  public disposed = false
   /** Controlled by a person (mouse/keyboard) rather than the AI */
   public readonly isHuman: boolean = false
   constructor(public name: string, public board: Board) {
@@ -41,6 +43,7 @@ export abstract class Player {
   /** Releases input listeners when the match ends */
   dispose(): void {
     this.active = false
+    this.disposed = true
   }
 
   /**

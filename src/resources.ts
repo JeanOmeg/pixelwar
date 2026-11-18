@@ -52,6 +52,7 @@ import Map6TmxPath from './assets/tiledMap/map_6.tmx'
 import Map7TmxPath from './assets/tiledMap/map_7.tmx'
 import Map8TmxPath from './assets/tiledMap/map_8.tmx'
 import TilesetTsxPath from './assets/tiledMap/NewFullTile.tsx'
+import LoaderLogoPath from './assets/loader-logo.png'
 
 export const Resources = {
   //Maps
@@ -2559,17 +2560,24 @@ loader.backgroundColor = 'black'
 loader.startButtonFactory = () => {
   const myButton = document.createElement('button')
   myButton.textContent = 'PLAY!'
-  myButton.style.minWidth = '250px'
-  myButton.style.minHeight = '100px'
-  myButton.style.padding = '10px 18px'
-  myButton.style.border = '4px solid white'
+  // sizes follow the screen like the rest of the game (N = N px at 1920x1080),
+  // with a floor so the button stays easy to tap on a phone
+  const unit = 'min(100vw / 1920, 100vh / 1080)'
+  const size = (px: number, floor: number) => `max(${floor}px, calc(${px} * ${unit}))`
+  myButton.style.minWidth = size(250, 120)
+  myButton.style.minHeight = size(100, 48)
+  myButton.style.padding = `${size(10, 4)} ${size(18, 10)}`
+  myButton.style.border = `${size(4, 3)} solid white`
   myButton.style.color = 'white'
   myButton.style.fontFamily = '\'notjamslab14\', sans-serif'
-  myButton.style.fontSize = '70px'
+  myButton.style.fontSize = size(70, 26)
   myButton.style.backgroundColor = 'blue'
   myButton.style.cursor = 'pointer'
   myButton.style.imageRendering = 'pixelated'
-  myButton.style.boxShadow = '4px 4px 0 black'
+  myButton.style.boxShadow = `${size(4, 3)} ${size(4, 3)} 0 black`
+  // Excalibur puts the button 100px below the screen center: replace that with
+  // a scaled offset so it sits right under the logo on any screen
+  myButton.style.translate = `0 calc(-100px + ${size(110, 40)})`
   myButton.style.display = 'inline-block'
   myButton.style.transition = 'transform 0.12s ease, filter 0.12s ease, opacity 0.12s ease'
 
@@ -2607,9 +2615,11 @@ loader.startButtonFactory = () => {
   return myButton
 }
 
-loader.logoWidth = 256
-loader.logoHeight = 54
-loader.logo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAwCAYAAAD+f6R/AAAAAXNSR0IArs4c6QAAAkRJREFUeJzt3NtyhCAMgGHs9P1fmd7UjrNTDzmQBPy/621EYAMYt60BAAAAAAAAAAAAAAAAmN4m+XDvvbs3YNvc2iCNtZqn43PXT9pxHtn/Fdu0gq/sBvRf1WKtbFQ/Vex75sS19AQAIE+ZBCDZvrKtA3yUSQCt1dxCAiv7zm7Apz0J3K3y7AIAu1I7AACxVKtoxFb9uMJHl7f+i+PVBkksaVxp7BHlwKuYHiVc73Kgtb/O/v7zs5brjCx9q44A+0Xvbko7GaCnSZx3sSzj7K1im2a21BHAq+ZriTOyxr5y0pzh/iTts9xL1HVaWywBAJApVwVYkefK9rRKgnNRq7OFZhegmRPsAIAXIwFMaoYzM2Jp5kRKApA20mu7y2vEOvSZXdW5N/QZgOcK9bT84xkrqtTkUaMe7arPrs6g0ns4ixVZ9rOMx9M3WKuU0DkCKEVk84orxpURDzsrWfH19FcngBkHDPCct5QBlY4rlHVAKq52qG3bts1j3pRJAFmrseezBSCSx3fm1UeAI0tnkjwwKxIARKqWs6CT/l+B/xoyoOxh+UmmlkcpTHs9r356otquR3IPGfMgcmwkhj4DyF4peu/d0gbNl8vjXf3oftP0U/azk+y5dcc6945xWht3vxwBgBcrUwVYmbRk4/HGGc55ldBWQAIIkr1lriLqFden7bD8LmWFseQIEMxr5ebXgPlW2IWRAIAXEyWArBqw13UtcTzvfVQfzjw2eyyPONJrRlRseH8CAAAAAAAAAAAAAAAAwDA/212gaw4Jm7oAAAAASUVORK5CYII='
+// same look as the title screen logo (rendered from the game font, 667x329).
+// Drawn in canvas resolution units, so it scales with the screen like the game.
+loader.logo = LoaderLogoPath
+loader.logoWidth = 667
+loader.logoHeight = 329
 
 for (let res of Object.values(Resources)) {
   loader.addResource(res)

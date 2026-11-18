@@ -292,6 +292,7 @@ export class ComputerPlayer extends Player {
     units.sort((a, b) => a.health - b.health)
 
     for (const unit of units) {
+      if (this.disposed) break
       await this.decideActionForUnit(unit)
       await ex.Util.delay(ENEMY_SPEED)
     }

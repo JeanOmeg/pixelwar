@@ -24,22 +24,57 @@ export function readableBoost(pagePxPerUnit: number): number {
   return Math.min(MAX_BOOST, Math.max(1, MIN_PAGE_UNIT / pagePxPerUnit))
 }
 
+type FullscreenDocument = Document & {
+  webkitFullscreenElement?: Element | null
+  webkitFullscreenEnabled?: boolean
+  webkitExitFullscreen?: () => Promise<void> | void
+}
 type FullscreenElement = HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void }
-// eslint-disable-next-line no-unused-vars -- parameter name of a type
-type LockableOrientation = ScreenOrientation & { lock?: (orientation: string) => Promise<void> }
+type LockableOrientation = ScreenOrientation & {
+  // eslint-disable-next-line no-unused-vars -- parameter name of a type
+  lock?: (orientation: string) => Promise<void>
+  unlock?: () => void
+}
 
-/** Fullscreen and landscape lock (where the browser allows it; iPhone does not) */
-async function enterFullscreen() {
+const doc = document as FullscreenDocument
+
+/** Whether this browser lets the page go fullscreen (iPhone Safari does not) */
+export function canFullscreen(): boolean {
+  return !!(doc.fullscreenEnabled || doc.webkitFullscreenEnabled)
+}
+
+export function isFullscreen(): boolean {
+  return !!(doc.fullscreenElement || doc.webkitFullscreenElement)
+}
+
+/**
+ * Fullscreen, then landscape lock (browsers only allow the lock while
+ * fullscreen). Must run inside a user gesture (tap/click handler).
+ */
+export async function enterFullscreen() {
   const root = document.documentElement as FullscreenElement
   try {
-    if (!document.fullscreenElement) {
+    if (!isFullscreen()) {
       if (root.requestFullscreen) await root.requestFullscreen({ navigationUI: 'hide' })
       else await root.webkitRequestFullscreen?.()
     }
   } catch { /* not allowed: keep the browser chrome */ }
   try {
     await (screen.orientation as LockableOrientation | undefined)?.lock?.('landscape')
-  } catch { /* not supported */ }
+  } catch { /* not supported (desktop, iPhone) */ }
+}
+
+export async function exitFullscreen() {
+  try { (screen.orientation as LockableOrientation | undefined)?.unlock?.() } catch { /* not supported */ }
+  try {
+    if (!isFullscreen()) return
+    if (doc.exitFullscreen) await doc.exitFullscreen()
+    else await doc.webkitExitFullscreen?.()
+  } catch { /* already left */ }
+}
+
+export function toggleFullscreen() {
+  return isFullscreen() ? exitFullscreen() : enterFullscreen()
 }
 
 /** On touch devices, goes fullscreen on the first tap (needs a user gesture) */

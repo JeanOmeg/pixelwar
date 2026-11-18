@@ -56,10 +56,11 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, 
 | Ver alcance de ataque | Clique com o **botão do meio** sobre qualquer unidade |
 | Ver alcance de um inimigo | Clique com o **botão esquerdo** sobre um inimigo (ou unidade que já agiu): movimento; clique de novo: ataque |
 | Pular o anúncio de fase | Clique na tela ou aperte **Esc** |
+| Pausar | Botão **⏸** no topo da tela (ou **Esc** sem nada para cancelar). No menu de pausa: **Resume** continua, **Main menu** (pede confirmação) encerra a partida e volta ao menu principal |
 
 ### Celular e tablet
 
-O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece um aviso para girá-lo). No primeiro toque ele entra em tela cheia, onde o navegador permite (no iPhone não).
+O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece um aviso para girá-lo). Ele entra em tela cheia e gira para a horizontal no primeiro toque e ao começar a partida, onde o navegador permite (no iPhone não). O botão ao lado do de som, no canto inferior esquerdo, liga e desliga a tela cheia (também no computador).
 
 | Ação | Como fazer |
 |---|---|

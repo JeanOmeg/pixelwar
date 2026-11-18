@@ -11,6 +11,7 @@ import { UnitCard } from './ui-components/unit-card'
 import { UnitMenu } from './ui-components/unit-menu'
 import { PhaseBanner } from './ui-components/phase-banner'
 import { GameOver, GameOverChoice } from './ui-components/game-over'
+import { PauseMenu } from './ui-components/pause-menu'
 import { isTouchDevice, readableBoost } from './device'
 import { ForecastView, GameResultView, HudView, MenuItem, Team, UnitView } from './ui-components/view-models'
 
@@ -43,6 +44,8 @@ export class GameUI {
   onEndTurn: () => void = () => {}
   /** Called on Esc when no menu is open (cancel the current selection) */
   onCancel: () => void = () => {}
+  /** Called when the player leaves the match from the pause menu */
+  onQuit: () => void = () => {}
 
   private engine: ex.Engine
   private board: Board
@@ -54,6 +57,7 @@ export class GameUI {
   private menu = new UnitMenu()
   private banner = new PhaseBanner()
   private gameOver = new GameOver()
+  private pauseMenu = new PauseMenu()
 
   private players: Player[] = []
   private currentPlayer: Player | null = null
@@ -85,10 +89,11 @@ export class GameUI {
     // in-game panels are drawn 30% bigger than their base sizes, text a further 10%
     this.root.style.setProperty('--ui-scale', String(UI_SCALE))
     this.root.style.setProperty('--text-scale', String(TEXT_SCALE))
-    this.root.append(this.hud, this.hint, this.card, this.menu, this.banner, this.gameOver)
+    this.root.append(this.hud, this.hint, this.card, this.menu, this.banner, this.gameOver, this.pauseMenu)
     document.body.appendChild(this.root)
 
     this.hud.addEventListener('end-turn', () => this.onEndTurn())
+    this.hud.addEventListener('pause', () => void this.pause())
     this.menu.addEventListener('select', event => this.onMenuSelect((event as CustomEvent<string>).detail))
     this.menu.addEventListener('close', () => this.dismissAll())
 
@@ -148,6 +153,25 @@ export class GameUI {
     return this.gameOver.show(result)
   }
 
+  /**
+   * Freezes the match (engine loop stopped: animations, moves and the CPU's
+   * actions wait) and shows the pause menu. Leaving calls `onQuit`.
+   */
+  async pause() {
+    if (this.matchOver || this.pauseMenu.open) return
+    this.dismissAll()
+    this.engine.stop()
+    const choice = await this.pauseMenu.show()
+    // engine.start() would run the loader again: just restart the main loop
+    this.engine.browser.resume()
+    this.engine.clock.start()
+    if (choice === 'quit') {
+      this.matchOver = true
+      this.onQuit()
+    }
+    this.refresh()
+  }
+
   showUnitMenu(unit: Unit, options: MenuOptions) {
     this.menuUnit = unit
     this.menuOptions = options
@@ -187,6 +211,7 @@ export class GameUI {
 
   destroy() {
     window.clearInterval(this.interval)
+    if (this.pauseMenu.open) this.pauseMenu.resume()
     window.removeEventListener('keydown', this.onKeyDown)
     this.subscriptions.forEach(s => s.close())
     this.subscriptions = []
@@ -210,12 +235,18 @@ export class GameUI {
 
   private handleKey(event: KeyboardEvent) {
     if (event.key !== 'Escape') return
-    if (this.menu.open) {
+    if (this.pauseMenu.open) {
+      this.pauseMenu.resume()
+    } else if (this.matchOver) {
+      return
+    } else if (this.menu.open) {
       this.dismissAll()
     } else if (this.bannerActive) {
       this.banner.stop()
-    } else {
+    } else if (this.selection.currentUnitSelection) {
       this.onCancel()
+    } else {
+      void this.pause()
     }
     this.refresh()
   }
@@ -283,7 +314,8 @@ export class GameUI {
       round: this.round,
       phasesLeft: this.phasesLeft,
       canEndTurn: current.isHuman && current.active && !this.matchOver,
-      unitsWithActions: units.filter(u => u.player === current && u.hasActions()).length
+      unitsWithActions: units.filter(u => u.player === current && u.hasActions()).length,
+      canPause: !this.matchOver
     }
   }
 

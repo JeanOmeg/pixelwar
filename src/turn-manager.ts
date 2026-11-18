@@ -19,6 +19,8 @@ export class TurnManager {
   private currentPlayerIndex = 0
   /** Player phases left before the match ends in a draw */
   private phasesLeft: number
+  /** The player left the match (pause menu): the loop stops at the next step */
+  private aborted = false
 
   constructor(public engine: ex.Engine, public level: LevelBase, public players: Player[], public selectionManager: SelectionManager, public ui: GameUI, maxTurns: number) {
     if (players.length === 0) throw Error('Players should be non-zero in length')
@@ -40,6 +42,7 @@ export class TurnManager {
 
   async start() {
     for (;;) {
+      if (this.aborted) return
       const result = this.checkResult() ?? (this.phasesLeft <= 0 ? { winner: null, reason: 'turn-limit' } as MatchResult : null)
       if (result) {
         await this.finish(result)
@@ -53,8 +56,10 @@ export class TurnManager {
 
       let done = false
       while (!done) {
+        if (this.aborted) return
         done = await this.currentPlayer.makeMove()
       }
+      if (this.aborted) return
 
       await this.currentPlayer.turnEnd()
       this.nextTurn()
@@ -102,6 +107,16 @@ export class TurnManager {
     } else {
       await this.returnToMainMenu()
     }
+  }
+
+  /** Leaves the match from the pause menu, without a result */
+  async quit() {
+    if (this.aborted) return
+    this.aborted = true
+    this.players.forEach(p => { p.active = false })
+    this.selectionManager.reset()
+    Resources.LevelMusic2.stop()
+    await this.returnToMainMenu()
   }
 
   showStartScreenUi() {

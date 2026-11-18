@@ -6,7 +6,7 @@ import { HudView, TeamView, hpLevel } from './view-models'
 
 /**
  * Top bar: both teams (units left, total HP), round/phase and End Turn.
- * Fires `end-turn` when the current human player confirms.
+ * Fires `end-turn` when the current human player confirms, and `pause`.
  */
 @customElement('game-hud')
 export class GameHud extends LitElement {
@@ -82,6 +82,14 @@ export class GameHud extends LitElement {
       text-shadow: calc(2 * var(--u)) calc(2 * var(--u)) 0 #000;
     }
     .end-turn { font-size: calc(16 * var(--t)); padding: calc(7 * var(--u)) calc(12 * var(--u)); }
+    .pause { --team: #2a2d3a; padding: calc(8 * var(--u)); }
+    /* pixel pause sign: two bars */
+    .pause i {
+      display: block;
+      width: calc(16 * var(--u));
+      height: calc(18 * var(--u));
+      background: linear-gradient(90deg, currentColor 0 35%, transparent 35% 65%, currentColor 65%);
+    }
     .end-turn.confirm { background: var(--orange); }
   `]
 
@@ -132,6 +140,9 @@ export class GameHud extends LitElement {
     return html`
       ${this.renderTeam(left, 'left', view.activeTeam === left.team)}
       <div class="panel center team-${active.team}">
+        ${view.canPause ? html`
+          <button class="btn btn-solid pause" title="Pause (Esc)" @click=${() => this.dispatchEvent(new Event('pause'))}><i></i></button>
+        ` : nothing}
         <div class="phase">
           <small>Round ${view.round}</small>
           <strong>${active.label} phase</strong>

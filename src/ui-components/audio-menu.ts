@@ -1,7 +1,13 @@
-import { LitElement, css, html } from 'lit'
-import { customElement, property } from 'lit/decorators'
+import { LitElement, css, html, nothing } from 'lit'
+import { customElement, property, state } from 'lit/decorators'
 import { AudioManager } from '../audio-manager'
+import { canFullscreen, isFullscreen, toggleFullscreen } from '../device'
 
+/**
+ * Corner buttons: sound on/off and fullscreen (entering fullscreen also turns
+ * a phone to landscape). The fullscreen button is hidden where the browser
+ * can't do it (iPhone Safari).
+ */
 @customElement('audio-menu')
 export class AudioMenu extends LitElement {
   static styles = css`
@@ -10,7 +16,10 @@ export class AudioMenu extends LitElement {
         left: 0;
         bottom: 0;
         margin: 16px;
+        margin-left: max(16px, env(safe-area-inset-left, 0px));
         z-index: 9999;
+        display: flex;
+        gap: 12px;
     }
     button {
         all: unset;
@@ -39,6 +48,23 @@ export class AudioMenu extends LitElement {
   @property({ type: Boolean })
     soundOn = true
 
+  @state()
+  private fullscreen = isFullscreen()
+
+  private onFullscreenChange = () => { this.fullscreen = isFullscreen() }
+
+  override connectedCallback() {
+    super.connectedCallback()
+    document.addEventListener('fullscreenchange', this.onFullscreenChange)
+    document.addEventListener('webkitfullscreenchange', this.onFullscreenChange)
+  }
+
+  override disconnectedCallback() {
+    document.removeEventListener('fullscreenchange', this.onFullscreenChange)
+    document.removeEventListener('webkitfullscreenchange', this.onFullscreenChange)
+    super.disconnectedCallback()
+  }
+
   toggleSound() {
     this.soundOn = !this.soundOn
     AudioManager.toggleMute(!this.soundOn)
@@ -47,8 +73,11 @@ export class AudioMenu extends LitElement {
   override render() {
     // material symbols
     // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:volume_off:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=speaker
-    return this.soundOn ?
-      html`<button @click=${this.toggleSound} class="material-symbols-outlined">volume_up</button>` :
-      html`<button @click=${this.toggleSound} class="material-symbols-outlined">volume_off</button>`
+    return html`
+      <button @click=${this.toggleSound} class="material-symbols-outlined" title="Sound">${this.soundOn ? 'volume_up' : 'volume_off'}</button>
+      ${canFullscreen() ? html`
+        <button @click=${() => toggleFullscreen()} class="material-symbols-outlined" title="Fullscreen">${this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</button>
+      ` : nothing}
+    `
   }
 }
