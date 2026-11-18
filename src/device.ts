@@ -43,6 +43,22 @@ export function canFullscreen(): boolean {
   return !!(doc.fullscreenEnabled || doc.webkitFullscreenEnabled)
 }
 
+/** Opened from the home screen icon (installed app): already without browser bars */
+export function isStandalone(): boolean {
+  const media = (query: string) => window.matchMedia?.(query).matches ?? false
+  return (navigator as Navigator & { standalone?: boolean }).standalone === true ||
+    media('(display-mode: fullscreen)') || media('(display-mode: standalone)')
+}
+
+/**
+ * iPhone: no fullscreen API for pages. The closest is adding the game to the
+ * home screen (manifest.webmanifest + apple-* tags in index.html), so the
+ * fullscreen button explains that instead.
+ */
+export function needsHomeScreenForFullscreen(): boolean {
+  return isTouchDevice() && !canFullscreen() && !isStandalone()
+}
+
 export function isFullscreen(): boolean {
   return !!(doc.fullscreenElement || doc.webkitFullscreenElement)
 }

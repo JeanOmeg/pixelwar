@@ -80,7 +80,7 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, 
 
 ### Celular e tablet
 
-O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece um aviso para girá-lo). Ele entra em tela cheia e gira para a horizontal no primeiro toque e ao começar a partida, onde o navegador permite (no iPhone não). O botão ao lado do de som, no canto inferior esquerdo, liga e desliga a tela cheia (também no computador).
+O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece um aviso para girá-lo). A tela cheia é escolha do jogador: a partir do menu principal, o botão ao lado do de som, no canto inferior esquerdo, liga e desliga a tela cheia (também no computador; entrar trava o aparelho na horizontal). No iPhone o navegador não permite tela cheia: o mesmo botão explica como jogar sem as barras do Safari, adicionando o jogo à Tela de Início (Compartilhar → Adicionar à Tela de Início) e abrindo pelo ícone. No Android também dá para instalar o jogo ("Instalar app" / "Adicionar à tela inicial"), que abre em tela cheia.
 
 | Ação | Como fazer |
 |---|---|

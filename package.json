@@ -23,6 +23,8 @@
     "lit": "^3.1.2"
   },
   "devDependencies": {
+    "@parcel/packager-raw-url": "2.11.0",
+    "@parcel/transformer-webmanifest": "2.11.0",
     "@types/node": "20.17.10",
     "@typescript-eslint/eslint-plugin": "^8.18.1",
     "@typescript-eslint/parser": "^8.18.1",
