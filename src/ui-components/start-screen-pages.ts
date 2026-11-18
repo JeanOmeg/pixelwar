@@ -98,7 +98,17 @@ export function renderHowToPlay() {
           <li><b>Left click</b>: select and act.</li>
           <li><b>Right click</b>: show a unit's movement range.</li>
           <li><b>Middle click</b>: show a unit's attack range.</li>
+          <li><b>Click</b> an enemy (or a unit that already acted): its movement range; click again: its attack range.</li>
           <li><b>Esc</b>: close the menu or cancel the action.</li>
+        </ul>
+      </section>
+      <section>
+        <h3>Touch screen</h3>
+        <ul>
+          <li><b>Tap</b> one of your units to open its menu.</li>
+          <li>When moving or attacking, the first <b>tap</b> previews the path or the combat; <b>tap the same tile again</b> to confirm.</li>
+          <li><b>Tap</b> outside the highlighted tiles to cancel.</li>
+          <li><b>Tap</b> an enemy: its movement range; tap it again: its attack range.</li>
         </ul>
       </section>
     </div>

@@ -54,7 +54,20 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, 
 | Cancelar | **Esc** fecha o menu ou sai do modo mover/atacar (o MP de uma skill não usada é devolvido) |
 | Ver alcance de movimento | Clique com o **botão direito** sobre qualquer unidade |
 | Ver alcance de ataque | Clique com o **botão do meio** sobre qualquer unidade |
+| Ver alcance de um inimigo | Clique com o **botão esquerdo** sobre um inimigo (ou unidade que já agiu): movimento; clique de novo: ataque |
 | Pular o anúncio de fase | Clique na tela ou aperte **Esc** |
+
+### Celular e tablet
+
+O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece um aviso para girá-lo). No primeiro toque ele entra em tela cheia, onde o navegador permite (no iPhone não).
+
+| Ação | Como fazer |
+|---|---|
+| Selecionar unidade | **Toque** numa unidade aliada para abrir o menu |
+| Mover / Atacar | O primeiro toque no destino (ou no inimigo) mostra o caminho (ou a prévia do combate); **toque de novo no mesmo lugar** para confirmar |
+| Cancelar | Toque fora das células destacadas, ou fora do menu para fechá-lo |
+| Ver alcance | Toque num inimigo: movimento; toque de novo: ataque |
+| Pular o anúncio de fase | Toque na tela |
 
 ### Interface
 

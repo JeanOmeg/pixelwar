@@ -43,6 +43,11 @@ export const theme = css`
     user-select: none;
   }
 
+  /* keyboard hints are noise on touch screens */
+  @media (hover: none) and (pointer: coarse) {
+    .keys-only { display: none !important; }
+  }
+
   .team-blue { --team: var(--blue); --team-dark: var(--blue-dark); }
   .team-red { --team: var(--red); --team-dark: var(--red-dark); }
 

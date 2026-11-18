@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
+import { isTouchDevice } from '../device'
 import { theme } from './theme'
 import { Team } from './view-models'
 
@@ -94,7 +95,7 @@ export class PhaseBanner extends LitElement {
       <div class="band team-${banner.team} ${this.leaving ? 'out' : ''}">
         <div class="title">${banner.title}</div>
         <div class="subtitle">${banner.subtitle}</div>
-        <div class="skip">click to skip</div>
+        <div class="skip">${isTouchDevice() ? 'tap' : 'click'} to skip</div>
       </div>
     `
   }

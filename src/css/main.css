@@ -18,3 +18,80 @@ html {
 
 
 /* In-game UI styles live in the Lit components (src/ui-components, theme.ts) */
+
+/* ---- Phones and tablets ---- */
+
+html,
+body {
+    margin: 0;
+    background: #000;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* The game is landscape only: on a touch screen held upright, ask to rotate */
+.rotate-hint {
+    display: none;
+}
+
+@media (pointer: coarse) and (orientation: portrait) {
+    .rotate-hint {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: #0b0d16;
+        color: #f4f1e8;
+        text-align: center;
+    }
+}
+
+.rotate-hint-box {
+    border: 4px solid #f4f1e8;
+    box-shadow: 6px 6px 0 #000;
+    background: #0e101a;
+    padding: 28px 24px;
+}
+
+.rotate-hint-box p {
+    margin: 20px 0 8px;
+    font-size: 26px;
+    text-shadow: 3px 3px 0 #000;
+}
+
+.rotate-hint-box small {
+    font-size: 15px;
+    color: #9ea3b8;
+}
+
+.rotate-hint-phone {
+    width: 36px;
+    height: 60px;
+    margin: 0 auto;
+    border: 4px solid #f4f1e8;
+    border-radius: 6px;
+    animation: rotate-phone 2s steps(1) infinite;
+}
+
+@keyframes rotate-phone {
+    50% { transform: rotate(90deg); }
+}
+
+/* Touch screens use DisplayMode.FitScreen (main.ts): center the 16:9 canvas */
+html.touch,
+html.touch body {
+    height: 100%;
+    overflow: hidden;
+}
+
+html.touch body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

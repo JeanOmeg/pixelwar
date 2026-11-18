@@ -10,10 +10,13 @@ export interface AnchorRect {
   bottom: number
 }
 
+/** Clicks this soon after the menu opens come from the tap that opened it */
+const GHOST_CLICK_MS = 350
+
 /**
  * Action menu shown next to the selected unit. Flips to the other side of the
  * unit when it doesn't fit. Fires `select` (detail = item id) and `close`
- * (click outside).
+ * (pointer down outside).
  */
 @customElement('unit-menu')
 export class UnitMenu extends LitElement {
@@ -68,8 +71,14 @@ export class UnitMenu extends LitElement {
   @query('.menu')
   private menuEl?: HTMLDivElement
 
+  /** when the menu last opened (or moved to another unit) */
+  private openedAt = 0
+
   override willUpdate(changed: Map<string, unknown>) {
-    if (changed.has('items') || (changed.has('open') && this.open)) this.expanded = null
+    if (changed.has('items') || (changed.has('open') && this.open)) {
+      this.expanded = null
+      this.openedAt = performance.now()
+    }
   }
 
   override updated() {
@@ -87,6 +96,9 @@ export class UnitMenu extends LitElement {
   }
 
   private choose(item: MenuItem) {
+    // a tap on the map can open the menu under the finger, and the browser then
+    // sends that tap's click to the menu item there: ignore it
+    if (performance.now() - this.openedAt < GHOST_CLICK_MS) return
     if (!item.enabled) return
     if (item.children) {
       this.expanded = this.expanded === item.id ? null : item.id
@@ -113,7 +125,9 @@ export class UnitMenu extends LitElement {
     if (!this.open) return nothing
     const [main, last] = [this.items.slice(0, -1), this.items[this.items.length - 1]]
     return html`
-      <div class="overlay" @click=${() => this.dispatchEvent(new Event('close'))} @contextmenu=${(e: Event) => { e.preventDefault(); this.dispatchEvent(new Event('close')) }}></div>
+      <!-- closes on pointerdown, not click: after a tap the browser sends a click to
+           whatever is under the finger, which would be this overlay, just opened by that tap -->
+      <div class="overlay" @pointerdown=${() => this.dispatchEvent(new Event('close'))} @contextmenu=${(e: Event) => { e.preventDefault(); this.dispatchEvent(new Event('close')) }}></div>
       <div class="panel menu team-${this.team}">
         <div class="panel-title">${this.title}</div>
         <div class="items">

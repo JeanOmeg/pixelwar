@@ -33,7 +33,7 @@ npx tsc --noEmit    # checagem de tipos
 ## Arquitetura
 
 Fluxo: `index.html` → [src/main.ts](src/main.ts) cria `ex.Engine` (1920x1080, FitScreenAndFill, pixel-art) → registra cenas → `game.start(loader)` → monta `<start-screen-ui>`.
-Em mobile mostra só um aviso (jogo não suportado).
+Roda também em celular/tablet (ver "Celular e toque").
 
 | Arquivo | Responsabilidade |
 |---|---|
@@ -59,6 +59,7 @@ Em mobile mostra só um aviso (jogo não suportado).
 | [src/ui-components/](src/ui-components/) | Lit (shadow DOM). Partida: `game-hud` (+ `game-hint`), `unit-card`, `unit-menu`, `phase-banner`, `game-over`. Menus: `start-screen-ui` (título, modo, páginas), `map-select`, `start-screen-pages.ts` (How to play, Units, Credits). `audio-menu`. Base visual em `theme.ts` e `icons.ts`; dados em `view-models.ts` |
 | [src/damage-manager.ts](src/damage-manager.ts) | Número de dano flutuante (`Critical!`, `Back attack!`, `Miss`) |
 | [src/audio-manager.ts](src/audio-manager.ts) | Volumes padrão e mute |
+| [src/device.ts](src/device.ts) | Celular/tablet: `isTouchDevice`, `readableBoost` (ampliação da UI em tela pequena), tela cheia + paisagem no primeiro toque (`setupTouchDevice`) |
 | [src/css/main.css](src/css/main.css) | Só a fonte global e `.credits` (a UI de jogo tem estilos próprios nos componentes) |
 
 **Código morto / legado** (não importado pelo jogo): `src/actors/actor-start-screen.ts`, `src/texts/`, `src/fonts/`, `src/assets/tiledMap/map1.js|map2.js|map3.js`, `src/assets/maps/Map1.png|Map2.png` (miniaturas antigas; agora são geradas) e `credits.html` (o conteúdo está na tela Credits). `Resources.LevelMusic1` não é usado (só `LevelMusic2`).
@@ -220,6 +221,18 @@ UI de partida = `GameUI` ([src/game-ui.ts](src/game-ui.ts)) + componentes em `sr
 - `<audio-menu>` fica fixo no `index.html`.
 - Fonte do jogo: `notjamslab14` (`@font-face` em `main.css`, vale dentro do shadow DOM).
 - Controles: esquerdo = selecionar/agir; direito = ver alcance de movimento; meio = ver alcance de ataque; **Esc** = fecha o menu / cancela o modo mover/atacar (devolve MP de skill) / pula o banner.
+
+## Celular e toque
+
+- Detecção: `isTouchDevice()` = `(pointer: coarse)`. `setupTouchDevice()` (no `main.ts`) põe a classe `touch` no `<html>` e pede tela cheia + trava em paisagem no primeiro toque (não funciona no iPhone; falhas são ignoradas).
+- No toque o engine usa `DisplayMode.FitScreen` (no desktop continua `FitScreenAndFill`): com o aparelho de pé o `FitScreenAndFill` esticava a resolução para 1920×4155, acima do limite de textura WebGL. O canvas é centralizado por CSS (`html.touch body` em `main.css`); a Excalibur converte coordenadas com `getBoundingClientRect`, então isso é seguro.
+- De pé (`pointer: coarse` + `orientation: portrait`) aparece o `.rotate-hint` do `index.html` por cima de tudo.
+- O toque chega como `PointerEvent` com `pointerType = Touch` e botão esquerdo. Não há hover: o `GameUI` também atualiza `hovered` no `down`, e o `HumanPlayer` usa **toque para prévia, segundo toque no mesmo tile para confirmar** (`pendingTarget`, `isValidTarget`). Toque fora do alcance cancela, como no desktop.
+- Sem botão direito/meio: clicar/tocar num inimigo ou numa unidade sem ações mostra o alcance de movimento; de novo, o de ataque (`inspectUnit`, vale também no mouse).
+- **Clique fantasma**: depois de um toque o navegador manda um `click` ao elemento que estiver sob o dedo, mesmo que ele tenha acabado de aparecer. Por isso o overlay do `unit-menu` fecha no `pointerdown`, os itens do menu ignoram cliques nos primeiros 350 ms (`GHOST_CLICK_MS`) e o `main.ts` bloqueia a tela inicial por 400 ms (o loader da Excalibur começa no `pointerup`). UI nova que abre em resposta a um toque no canvas precisa do mesmo cuidado.
+- Escala: `readableBoost` aumenta `--ui-scale` na partida (até 1,6×) e `--text-scale` nos menus (até 1,4×, `MENU_MAX_TEXT_BOOST`) quando 1 `--u` daria menos de 0,68 px de página. No desktop fica 1.
+- No toque, o `unit-card` vai para a metade da tela oposta ao tile tocado (no desktop fica no lado do time) e o tile tocado é esquecido a cada fase. As dicas falam em "tap"; dicas só de teclado usam a classe `keys-only` (escondida com `hover: none` + `pointer: coarse`, em `theme.ts`).
+- Teste: Chrome headless com `Emulation.setDeviceMetricsOverride` (mobile, paisagem), `Emulation.setTouchEmulationEnabled` e `Input.dispatchTouchEvent`.
 
 ## Cuidados ao mexer
 

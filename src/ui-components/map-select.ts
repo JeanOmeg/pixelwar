@@ -238,7 +238,7 @@ export class MapSelect extends LitElement {
         <div class="panel detail">
           ${this.renderDetail(map)}
           <div class="actions">
-            <span class="keys">↑↓ choose · Enter start · Esc back</span>
+            <span class="keys"><span class="keys-only">↑↓ choose · Enter start · Esc back</span></span>
             <button class="btn btn-solid back" @click=${() => this.dispatchEvent(new Event('back'))}>Back</button>
             <button class="btn btn-solid start" @click=${() => this.start()}>Start</button>
           </div>

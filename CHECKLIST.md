@@ -67,7 +67,7 @@ Itens da IA estão em [CHECKLIST-IA.md](CHECKLIST-IA.md).
 - [ ] 🟢 **Controles por teclado** (setas, Enter) e atalho para encerrar o turno. O Esc já funciona.
 - [x] 🟢 **Confirmação ao encerrar o turno** quando ainda há unidades com ações. O **End turn** do HUD pede um segundo clique.
 - [ ] 🟢 **Mais mapas** e um modo campanha com progressão. O seletor já está pronto para muitos mapas (basta uma entrada em `MAPS`, ver CLAUDE.md). Quando houver mapas de tamanhos diferentes: filtro por tamanho no seletor e câmera/zoom na partida (hoje o enquadramento assume 28×17).
-- [ ] 🟢 **Suporte a mobile/touch.** Hoje o jogo é bloqueado nesses dispositivos.
+- [x] 🟢 **Suporte a mobile/touch.** Toque com prévia + confirmação, aviso para girar o aparelho, tela cheia no primeiro toque e UI ampliada em telas pequenas (ver CLAUDE.md, "Celular e toque").
 - [x] 🟢 **Descrição das unidades.** Papel e descrição de cada classe em `CLASS_INFO` ([unit-classes.ts](src/unit-classes.ts)), mostrados na tela Units.
 
 ## Ordem sugerida

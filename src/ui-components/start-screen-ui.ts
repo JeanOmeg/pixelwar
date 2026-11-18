@@ -8,6 +8,7 @@ import { MapListItem, RANDOM_MAP_ID } from './map-select'
 import './map-select'
 import { ArmyClassOption } from './army-select'
 import './army-select'
+import { readableBoost } from '../device'
 import { pageStyles, renderCredits, renderHowToPlay, renderUnits } from './start-screen-pages'
 import { GAME_MODES, GameMode, MatchSettings, findGameMode } from '../game-modes'
 import { MAPS, MapDefinition, defaultArmy, findMap, getMapInfo, randomMap, sceneNameOf, teamSpawns } from '../maps'
@@ -23,6 +24,8 @@ const PREF_MAP = 'pixelfantasywar.map'
 const prefArmy = (mapId: string, team: number) => `pixelfantasywar.army.${mapId}.${team}`
 /** Text size in the menus relative to the base sizes in the components */
 const MENU_TEXT_SCALE = 1.3
+/** Extra text size allowed on small screens (the layout itself doesn't grow) */
+const MENU_MAX_TEXT_BOOST = 1.4
 
 function readPref(key: string): string | null {
   try { return localStorage.getItem(key) } catch { return null }
@@ -160,12 +163,14 @@ export class StartScreenUi extends LitElement {
 
   /**
    * Same unit system as the in-game UI: 1 --u = 1 px at 1920x1080. The menus
-   * keep their layout size (they already fill the screen) and only enlarge text.
+   * keep their layout size (they already fill the screen) and only enlarge text,
+   * a bit more on phones so it stays readable.
    */
   private updateScale() {
     const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+    const boost = Math.min(MENU_MAX_TEXT_BOOST, readableBoost(scale * MENU_TEXT_SCALE))
     this.style.setProperty('--s', scale.toFixed(4))
-    this.style.setProperty('--text-scale', String(MENU_TEXT_SCALE))
+    this.style.setProperty('--text-scale', (MENU_TEXT_SCALE * boost).toFixed(4))
   }
 
   private go(screen: Screen) {
@@ -348,7 +353,7 @@ export class StartScreenUi extends LitElement {
         </div>
         <div class="bottom">
           <button class="btn btn-solid" @click=${() => this.go('title')}>Back</button>
-          <small>Esc back</small>
+          <small class="keys-only">Esc back</small>
         </div>
       </div>
     `

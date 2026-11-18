@@ -12,6 +12,10 @@ export class HumanPlayer extends Player {
   override readonly isHuman = true
   private humanMove = new ex.Future<void>()
   private subscriptions: ex.Subscription[] = []
+  /** Touch: cell tapped once in move/attack mode, waiting for a second tap to confirm */
+  private pendingTarget: Cell | null = null
+  /** Unit whose range is shown by tapping it (no right/middle button on touch) */
+  private inspected: { unit: Unit, mode: 'range' | 'attack' } | null = null
 
   constructor(name: string, private engine: ex.Engine, private selectionManager: SelectionManager, public ui: GameUI, board: Board) {
     super(name, board)
@@ -33,11 +37,24 @@ export class HumanPlayer extends Player {
 
   async pointerClick(pointer: ex.PointerEvent) {
     if (!this.active) return
+    const maybeClickedCell = this.board.getCellByWorldPos(pointer.worldPos)
+    const touch = pointer.pointerType === ex.PointerType.Touch
+
+    // Touch has no hover to preview the path or the attack: the first tap on a
+    // valid target previews it, a second tap on the same cell confirms
+    const selected = this.selectionManager.currentUnitSelection
+    if (touch && selected && maybeClickedCell && maybeClickedCell !== this.pendingTarget && this.isValidTarget(selected, maybeClickedCell)) {
+      this.pendingTarget = maybeClickedCell
+      this.selectionManager.showCursor(maybeClickedCell.x, maybeClickedCell.y)
+      this.showSelectionHighlight(maybeClickedCell)
+      return
+    }
+    this.pendingTarget = null
+
     this.board.getUnits().forEach(u => u.setAnim(u.selectAnimationIdle()))
     this.selectionManager.resetHighlight()
-    const maybeClickedCell = this.board.getCellByWorldPos(pointer.worldPos)
 
-    if (pointer.button === ex.PointerButton.Left) {
+    if (pointer.button === ex.PointerButton.Left || touch) {
       if (this.selectionManager.currentUnitSelection) {
         const unit = this.selectionManager.currentUnitSelection
         if (this.selectionManager.currentSelectionMode === 'move') {
@@ -50,10 +67,13 @@ export class HumanPlayer extends Player {
             await this.maybeSelectUnit(unit.cell)
           }
         }
+      } else if (maybeClickedCell?.unit && !this.hasPlayerUnitWithActions(maybeClickedCell)) {
+        this.inspectUnit(maybeClickedCell.unit)
       } else {
         this.maybeSelectUnit(maybeClickedCell)
       }
     }
+    if (!this.selectionManager.currentUnitSelection && !maybeClickedCell?.unit) this.inspected = null
 
     if (pointer.button === ex.PointerButton.Right) {
       this.highlightUnitMoveRange(maybeClickedCell)
@@ -100,7 +120,31 @@ export class HumanPlayer extends Player {
     }
   }
 
+  /** Whether tapping `cell` would move/attack with `unit` in the current mode */
+  private isValidTarget(unit: Unit, cell: Cell): boolean {
+    if (!unit.cell) return false
+    if (this.selectionManager.currentSelectionMode === 'move') {
+      if (!unit.canMove()) return false
+      const movementMap = this.board.pathFinder.getMovementMap(unit.cell.pathNode, this.mask, unit.effectiveMovement, unit.name)
+      return movementMap.pathTo(cell.pathNode).length > 1
+    }
+    return unit.canAttack() && !!this.hasNonPlayerUnit(cell) && this.selectionManager.findAttackRange(unit).includes(cell.pathNode)
+  }
+
+  /**
+   * Left click / tap on an enemy or on a unit that already acted: shows its
+   * movement range; tapping it again shows its attack range (and so on).
+   */
+  private inspectUnit(unit: Unit) {
+    const mode = this.inspected?.unit === unit && this.inspected.mode === 'range' ? 'attack' : 'range'
+    this.inspected = { unit, mode }
+    if (mode === 'range') this.highlightUnitMoveRange(unit.cell)
+    else this.highlightUnitAttackRange(unit.cell)
+  }
+
   private selectMode(unit: Unit, mode: 'move' | 'attack') {
+    this.pendingTarget = null
+    this.inspected = null
     this.selectionManager.selectUnit(unit, mode)
     this.showSelectionHighlight(null)
   }
@@ -129,6 +173,7 @@ export class HumanPlayer extends Player {
     if (!this.active) return
     const unit = this.selectionManager.currentUnitSelection
     if (unit) this.refundPendingSkill(unit)
+    this.pendingTarget = null
     this.selectionManager.reset()
     this.ui.dismissAll()
   }

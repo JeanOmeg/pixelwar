@@ -11,6 +11,7 @@ import { UnitCard } from './ui-components/unit-card'
 import { UnitMenu } from './ui-components/unit-menu'
 import { PhaseBanner } from './ui-components/phase-banner'
 import { GameOver, GameOverChoice } from './ui-components/game-over'
+import { isTouchDevice, readableBoost } from './device'
 import { ForecastView, GameResultView, HudView, MenuItem, Team, UnitView } from './ui-components/view-models'
 
 export interface MenuOptions {
@@ -67,6 +68,10 @@ export class GameUI {
   private subscriptions: ex.Subscription[] = []
   private interval: number
   private scale = 0
+  /** UI_SCALE, enlarged on small screens so the text stays readable */
+  private uiScale = UI_SCALE
+  /** last input came from a finger: hints talk about taps instead of clicks */
+  private touch = isTouchDevice()
   private onKeyDown = (event: KeyboardEvent) => this.handleKey(event)
 
   constructor(engine: ex.Engine, board: Board, selection: SelectionManager) {
@@ -87,10 +92,13 @@ export class GameUI {
     this.menu.addEventListener('select', event => this.onMenuSelect((event as CustomEvent<string>).detail))
     this.menu.addEventListener('close', () => this.dismissAll())
 
-    this.subscriptions.push(engine.input.pointers.on('move', event => {
+    // on touch screens there is no hover: the tapped cell acts as the hovered one
+    const track = (event: ex.PointerEvent) => {
+      this.touch = event.pointerType === ex.PointerType.Touch
       this.hovered = this.board.getCellByWorldPos(event.worldPos)
       this.refresh()
-    }))
+    }
+    this.subscriptions.push(engine.input.pointers.on('move', track), engine.input.pointers.on('down', track))
     window.addEventListener('keydown', this.onKeyDown)
     this.interval = window.setInterval(() => this.refresh(), REFRESH_MS)
     this.refresh()
@@ -103,6 +111,8 @@ export class GameUI {
   setTurn(player: Player, round: number, phasesLeft: number) {
     if (this.totals.size === 0) this.captureTotals()
     this.currentPlayer = player
+    // a tap has no "pointer leaves": drop the last tapped cell at each phase
+    if (this.touch) this.hovered = null
     this.round = round
     this.phasesLeft = phasesLeft
     this.refresh()
@@ -300,6 +310,7 @@ export class GameUI {
     const current = this.currentPlayer
     if (this.matchOver || this.bannerActive || !current) return ''
     if (!current.isHuman) return `${this.teamLabel(current)} (${this.controllerLabel(current)}) is thinking...`
+    if (this.touch) return this.touchHintText()
     if (this.menu.open) return 'Choose an action · [Esc] close'
     if (this.selection.currentUnitSelection) {
       return this.selection.currentSelectionMode === 'move'
@@ -307,6 +318,16 @@ export class GameUI {
         : 'Click an enemy in range to attack · [Esc] cancel'
     }
     return '[Left click] select unit · [Right click] move range · [Middle click] attack range'
+  }
+
+  private touchHintText(): string {
+    if (this.menu.open) return 'Choose an action · [tap outside] close'
+    if (this.selection.currentUnitSelection) {
+      return this.selection.currentSelectionMode === 'move'
+        ? '[Tap] a tile to preview, [tap again] to move · tap outside to cancel'
+        : '[Tap] an enemy to preview, [tap again] to attack · tap outside to cancel'
+    }
+    return '[Tap] your unit to act · [tap] other units to see their range (again: attack range)'
   }
 
   private refresh() {
@@ -328,7 +349,14 @@ export class GameUI {
     // under the bar of the unit's own team (Blue left, Red right);
     // the forecast goes under the attacker's team
     const owner = forecast ? this.selection.currentUnitSelection : unit
-    if (owner) this.card.side = this.teamOf(owner.player) === 'blue' ? 'left' : 'right'
+    if (this.touch && this.hovered) {
+      // on a phone the card covers a big part of the map: keep it on the half
+      // of the screen away from the tapped tile
+      const cell = this.cellPageRect(this.hovered)
+      this.card.side = (cell.left + cell.right) / 2 < window.innerWidth / 2 ? 'right' : 'left'
+    } else if (owner) {
+      this.card.side = this.teamOf(owner.player) === 'blue' ? 'left' : 'right'
+    }
 
     // the card sits over a corner of the map: if it would cover the unit under
     // the pointer, drop it right below that unit instead
@@ -342,7 +370,9 @@ export class GameUI {
     const scale = (screen.worldToPageCoordinates(ex.vec(1000, 0)).x - origin.x) / 1000
     if (Number.isFinite(scale) && scale > 0 && Math.abs(scale - this.scale) > 0.0001) {
       this.scale = scale
+      this.uiScale = UI_SCALE * readableBoost(scale * UI_SCALE)
       this.root.style.setProperty('--s', scale.toFixed(4))
+      this.root.style.setProperty('--ui-scale', this.uiScale.toFixed(4))
     }
   }
 
@@ -353,7 +383,7 @@ export class GameUI {
   private cardTopAvoiding(cell: { left: number, right: number, top: number, bottom: number }): number | null {
     const box = this.card.shadowRoot?.firstElementChild?.getBoundingClientRect()
     if (!box || box.width === 0) return null
-    const defaultTop = CARD_TOP * this.scale * UI_SCALE
+    const defaultTop = CARD_TOP * this.scale * this.uiScale
     const defaultBottom = defaultTop + box.height
     const covers = cell.left < box.right && cell.right > box.left && cell.top < defaultBottom && cell.bottom > defaultTop
     return covers ? cell.bottom + 8 : null

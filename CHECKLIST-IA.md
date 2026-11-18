@@ -125,7 +125,7 @@ Com 8 unidades isso ainda é aceitável, mas não escala para mapas maiores.
 
 ### 2. Ataque pelas costas
 
-- [ ] 🔴 **Corrigir antes a direção inicial das unidades** (item do [CHECKLIST.md](CHECKLIST.md)); sem isso, qualquer lógica de costas fica errada.
+- [x] 🔴 **Corrigir antes a direção inicial das unidades** (item do [CHECKLIST.md](CHECKLIST.md)); sem isso, qualquer lógica de costas fica errada. Feito: o time 1 começa virado para a esquerda.
 - [ ] 🔴 **Preferir atacar pelas costas:** em `moveAndAttack`, calcular a direção final do atacante e dar bônus quando ela for igual à do alvo (acerto garantido + dano 2×ATK).
 - [ ] 🟡 **Evitar expor as costas:** penalizar posições onde um inimigo consegue chegar atrás da unidade no próximo turno.
 
