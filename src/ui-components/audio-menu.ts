@@ -17,7 +17,8 @@ export class AudioMenu extends LitElement {
         bottom: 0;
         margin: 16px;
         margin-left: max(16px, env(safe-area-inset-left, 0px));
-        z-index: 9999;
+        /* above the "rotate your device" hint (10000): always reachable */
+        z-index: 10001;
         display: flex;
         gap: 12px;
     }

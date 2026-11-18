@@ -1,6 +1,7 @@
 /**
- * Phone/tablet support: touch detection, fullscreen + landscape on the first
- * tap, and how much to enlarge the UI on small screens.
+ * Phone/tablet support: touch detection, fullscreen + landscape (when the
+ * player asks), keeping the canvas fitted to the screen and how much to enlarge
+ * the UI on small screens.
  */
 
 /** True when the main pointer is a finger (phones, tablets) */
@@ -76,13 +77,41 @@ export function toggleFullscreen() {
   return isFullscreen() ? exitFullscreen() : enterFullscreen()
 }
 
-/** On touch devices, goes fullscreen on the first tap (needs a user gesture) */
+/**
+ * Excalibur's FitScreen sizes the canvas from window.innerWidth/innerHeight on
+ * each `resize`. Phones (Android Chrome) send that event while entering or
+ * leaving fullscreen and while rotating, often before the viewport reaches its
+ * final size, so the board was left small until the next resize. Re-sends a
+ * `resize` a few times after every screen change so the canvas fits again.
+ */
+function keepScreenFitted() {
+  const REFIT_DELAYS_MS = [100, 300, 700, 1200]
+  let timers: number[] = []
+  let refitting = false
+  const refit = () => {
+    refitting = true
+    try { window.dispatchEvent(new Event('resize')) } finally { refitting = false }
+  }
+  const schedule = () => {
+    if (refitting) return
+    timers.forEach(timer => window.clearTimeout(timer))
+    timers = REFIT_DELAYS_MS.map(ms => window.setTimeout(refit, ms))
+  }
+  window.addEventListener('resize', schedule)
+  window.addEventListener('orientationchange', schedule)
+  document.addEventListener('fullscreenchange', schedule)
+  document.addEventListener('webkitfullscreenchange', schedule)
+  screen.orientation?.addEventListener?.('change', schedule)
+  window.visualViewport?.addEventListener('resize', schedule)
+}
+
+/**
+ * Touch devices: marks the page (`html.touch`) and keeps the canvas fitted to
+ * the screen. Fullscreen is never forced: the player chooses it with the
+ * corner button (<audio-menu>), which is always visible.
+ */
 export function setupTouchDevice() {
   if (!isTouchDevice()) return
   document.documentElement.classList.add('touch')
-  const onFirstTap = () => {
-    window.removeEventListener('pointerup', onFirstTap, true)
-    enterFullscreen()
-  }
-  window.addEventListener('pointerup', onFirstTap, true)
+  keepScreenFitted()
 }

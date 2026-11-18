@@ -8,7 +8,7 @@ import { MapListItem, RANDOM_MAP_ID } from './map-select'
 import './map-select'
 import { ArmyClassOption } from './army-select'
 import './army-select'
-import { enterFullscreen, isTouchDevice, readableBoost } from '../device'
+import { readableBoost } from '../device'
 import { pageStyles, renderCredits, renderHowToPlay, renderUnits } from './start-screen-pages'
 import { GAME_MODES, GameMode, MatchSettings, findGameMode } from '../game-modes'
 import { MAPS, MapDefinition, defaultArmy, findMap, getMapInfo, randomMap, sceneNameOf, teamSpawns } from '../maps'
@@ -270,9 +270,6 @@ export class StartScreenUi extends LitElement {
     const map = this.chosenMap
     if (!map || this.leaving) return
     Resources.SelectSound.play()
-    // still inside the tap/click that started the match: phones go fullscreen
-    // and turn to landscape (the browser only allows it during a user gesture)
-    if (isTouchDevice()) void enterFullscreen()
     this.leaving = true
     await new Promise(resolve => window.setTimeout(resolve, 650))
     const settings: MatchSettings = { mode: this.mode, armies: this.armies, difficulty: this.difficulty }
