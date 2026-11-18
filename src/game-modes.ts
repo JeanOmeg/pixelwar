@@ -1,7 +1,7 @@
 import type { UnitClass } from './path-finding/terrain-rules'
 import type { Difficulty } from './ai/weights'
 
-export type GameMode = 'p1vscpu' | 'p1vsp2' | 'cpuvscpu'
+export type GameMode = 'p1vscpu' | 'p1vsp2' | 'cpuvscpu' | 'online'
 
 export interface GameModeDefinition {
   id: GameMode
@@ -29,6 +29,12 @@ export const GAME_MODES: GameModeDefinition[] = [
     title: 'CPU vs CPU',
     description: 'Sit back and watch two AI armies fight it out.',
     sides: ['CPU', 'CPU']
+  },
+  {
+    id: 'online',
+    title: 'Online',
+    description: 'Play or watch a friend on another device.',
+    sides: ['You', 'Friend']
   }
 ]
 

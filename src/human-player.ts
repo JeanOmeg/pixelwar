@@ -4,7 +4,10 @@ import { Player } from './player'
 import { SelectionManager } from './selection-manager'
 import type { GameUI } from './game-ui'
 import { Cell } from './cell'
-import { Unit } from './unit'
+import { Unit, fixedRolls, type StrikeRolls } from './unit'
+import type { ActionFeed } from './online/feed'
+import type { GameAction } from './online/protocol'
+import { applyAction, instantPresenter, posOf, rollAttackDice } from './online/actions'
 import { Resources } from './resources'
 import { SKILLS, SkillId } from './skills'
 import type { CameraController } from './camera-controller'
@@ -27,6 +30,10 @@ export class HumanPlayer extends Player {
   private inspected: { unit: Unit, mode: 'range' | 'attack' } | null = null
   private onKeyDown = (event: KeyboardEvent) => this.handleKey(event)
   private stopTaps: () => void
+  /** Online: every confirmed action is recorded here (and sent to the others) */
+  feed: ActionFeed | null = null
+  /** Online: a replayed action broke the rules (the match went out of sync) */
+  onOutOfSync: (error: unknown) => void = () => {}
 
   constructor(name: string, engine: ex.Engine, private selectionManager: SelectionManager, public ui: GameUI, board: Board, private camera: CameraController) {
     super(name, board)
@@ -238,7 +245,9 @@ export class HumanPlayer extends Player {
       this.selectMode(unit, 'heal')
       return
     }
-    unit.startSkill(id)
+    if (!unit.startSkill(id)) return
+    // move/attack skills are sent with the move/attack that uses them
+    if (skill.kind === 'self' && unit.cell) this.record({ a: 'self-skill', unit: posOf(unit.cell), skill: id })
     Resources.SelectSound.play()
     if (skill.kind === 'move') this.selectMode(unit, 'move')
     else if (skill.kind === 'attack') this.selectMode(unit, 'attack')
@@ -259,7 +268,12 @@ export class HumanPlayer extends Player {
     if (destination && unit.canMove() && this.isValidTarget(unit, destination)) {
       this.active = false
       Resources.TargetSelectSound.play()
-      await this.selectionManager.selectDestinationAndMove(unit, destination)
+      const path = this.selectionManager.findPath(destination, unit)
+      if (path.length > 1 && unit.cell) {
+        const skill = unit.pendingSkill?.kind === 'move' ? unit.pendingSkill.id : undefined
+        this.record({ a: 'move', unit: posOf(unit.cell), path: path.map(node => [node.x, node.y]), ...(skill ? { skill } : {}) })
+      }
+      await this.selectionManager.selectDestinationAndMove(unit, destination, path)
       unit.settlePendingSkill()
       this.humanMove.resolve()
     } else {
@@ -271,7 +285,15 @@ export class HumanPlayer extends Player {
   async maybeAttack(attacker: Unit, destination: Cell | null) {
     if (destination && attacker.canAttack() && this.hasNonPlayerUnit(destination)) {
       this.active = false
-      await this.selectionManager.selectDestinationAndAttack(attacker, destination)
+      // online: roll here and send the dice, so every board plays the same attack
+      let rolls: StrikeRolls | undefined
+      if (this.feed && attacker.cell && this.selectionManager.findAttackRange(attacker).includes(destination.pathNode)) {
+        const dice = rollAttackDice()
+        const skill = attacker.pendingSkill?.kind === 'attack' ? attacker.pendingSkill.id : undefined
+        this.record({ a: 'attack', unit: posOf(attacker.cell), target: posOf(destination), rolls: dice, ...(skill ? { skill } : {}) })
+        rolls = fixedRolls(dice)
+      }
+      await this.selectionManager.selectDestinationAndAttack(attacker, destination, rolls)
       attacker.settlePendingSkill()
       this.humanMove.resolve()
     } else {
@@ -286,7 +308,10 @@ export class HumanPlayer extends Player {
   }
 
   private maybeHeal(unit: Unit, cell: Cell | null) {
-    if (cell?.unit && unit.useSkillOn('skill-heal', cell.unit)) Resources.SelectSound.play()
+    if (cell?.unit && unit.cell && unit.useSkillOn('skill-heal', cell.unit)) {
+      this.record({ a: 'heal', unit: posOf(unit.cell), target: posOf(cell) })
+      Resources.SelectSound.play()
+    }
     this.selectionManager.reset()
   }
 
@@ -319,11 +344,14 @@ export class HumanPlayer extends Player {
         attack: () => this.selectMode(unit, 'attack'),
         skill: id => this.useSkill(unit, id),
         undo: () => {
+          if (!unit.canUndoMove() || !unit.cell) return
+          this.record({ a: 'undo', unit: posOf(unit.cell) })
           unit.undoMove()
           this.selectionManager.reset()
           this.maybeSelectUnit(unit.cell)
         },
         pass: async () => {
+          if (unit.cell) this.record({ a: 'pass', unit: posOf(unit.cell) })
           unit.setAnim(unit.selectAnimationIdle())
           await unit.pass()
           this.selectionManager.reset()
@@ -335,16 +363,46 @@ export class HumanPlayer extends Player {
     }
   }
 
-  /** Ends the turn for every unit of this player (End Turn button) */
-  async endTurn() {
-    if (!this.active) return
+  /**
+   * Ends the turn for every unit of this player (End Turn button; online, also
+   * when the turn timer runs out). Returns false when it can't right now (an
+   * animation is playing).
+   */
+  async endTurn(reason: 'button' | 'timeout' = 'button'): Promise<boolean> {
+    if (!this.active) return false
+    this.active = false
+    this.pendingTarget = null
     this.selectionManager.currentUnitSelection?.settlePendingSkill()
+    this.record({ a: 'end-turn', reason })
     this.ui.dismissAll()
     const units = this.board.getUnits().filter(u => u.player === this)
     units.forEach(u => u.setAnim(u.selectAnimationIdle()))
     for (const u of units) await u.pass()
     this.selectionManager.reset()
     this.humanMove.resolve()
+    return true
+  }
+
+  private record(action: GameAction) {
+    this.feed?.recordLocal(action)
+  }
+
+  /**
+   * Online, back after a reload: this player's own actions come back through
+   * the history and are replayed at once. Returns true if they ended the turn.
+   */
+  private async catchUp(): Promise<boolean> {
+    while (this.feed?.catchingUp && await this.hasMoves()) {
+      const entry = this.feed.take()
+      if (!entry) break
+      try {
+        if (await applyAction(this.board, this, entry.action, instantPresenter)) return true
+      } catch (error) {
+        this.onOutOfSync(error)
+        return true
+      }
+    }
+    return false
   }
 
   hasNonPlayerUnit(cell: Cell) {
@@ -369,6 +427,7 @@ export class HumanPlayer extends Player {
   }
 
   override async makeMove(): Promise<boolean> {
+    if (await this.catchUp()) return true
     let moves = false
     do {
       moves = await this.hasMoves()

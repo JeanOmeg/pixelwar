@@ -19,7 +19,8 @@ import { SKILLS, SkillId } from './skills'
 import { DIFFICULTIES, Difficulty } from './ai/weights'
 import { cycleSpeed, getSpeed } from './speed'
 import { rangeNote } from './unit-classes'
-import { ForecastView, GameResultView, HudView, MenuItem, Team, UnitView } from './ui-components/view-models'
+import { ForecastView, GameResultView, HudView, MenuItem, OnlineHudView, Team, UnitView } from './ui-components/view-models'
+import { GameNotice, NoticeView } from './ui-components/game-notice'
 
 export interface MenuOptions {
   move: () => void
@@ -54,6 +55,12 @@ export class GameUI {
   onCancel: () => void = () => {}
   /** Called when the player leaves the match from the pause menu */
   onQuit: () => void = () => {}
+  /** Online: timer, spectators and emotes for the HUD (null offline) */
+  onlineView: (() => OnlineHudView | null) | null = null
+  /** Online: the player picked an emote */
+  onEmote: (emote: string) => void = () => {}
+  /** Online: "Mute emotes" in the pause menu */
+  onToggleEmotes: () => void = () => {}
 
   private engine: ex.Engine
   private board: Board
@@ -66,6 +73,7 @@ export class GameUI {
   private banner = new PhaseBanner()
   private gameOver = new GameOver()
   private pauseMenu = new PauseMenu()
+  private notice = new GameNotice()
   /** Eye button above the sound button: hides/shows the HUD, the hint and the unit card */
   private eye = document.createElement('button')
   private overlaysHidden = false
@@ -103,12 +111,14 @@ export class GameUI {
     this.root.style.setProperty('--text-scale', String(TEXT_SCALE))
     this.setupEyeButton()
     // the eye comes before the dialogs, so an open menu/pause/game over covers it
-    this.root.append(this.hud, this.hint, this.card, this.eye, this.menu, this.banner, this.gameOver, this.pauseMenu)
+    this.root.append(this.hud, this.hint, this.card, this.eye, this.menu, this.banner, this.notice, this.gameOver, this.pauseMenu)
     document.body.appendChild(this.root)
 
     this.hud.addEventListener('end-turn', () => this.onEndTurn())
     this.hud.addEventListener('pause', () => void this.pause())
     this.hud.addEventListener('speed', () => { cycleSpeed(); this.refresh() })
+    this.hud.addEventListener('emote', event => this.onEmote((event as CustomEvent<string>).detail))
+    this.pauseMenu.addEventListener('toggle-emotes', () => this.onToggleEmotes())
     this.menu.addEventListener('select', event => this.onMenuSelect((event as CustomEvent<string>).detail))
     this.menu.addEventListener('close', () => this.dismissAll())
 
@@ -157,6 +167,7 @@ export class GameUI {
   }
 
   controllerLabel(player: Player): string {
+    if (player.displayName) return player.displayName
     const sameKind = this.players.filter(p => p.isHuman === player.isHuman)
     const base = player.isHuman ? 'Player' : 'CPU'
     const label = sameKind.length > 1 ? `${base} ${sameKind.indexOf(player) + 1}` : base
@@ -168,7 +179,10 @@ export class GameUI {
     this.dismissAll()
     this.bannerActive = true
     this.refresh()
-    await this.banner.play(this.teamOf(player), `${this.teamLabel(player)} phase`, `Round ${round} - ${this.controllerLabel(player)}`)
+    // online: "Jean's turn"; otherwise "Blue phase"
+    const title = player.displayName ? `${player.displayName}'s turn` : `${this.teamLabel(player)} phase`
+    const subtitle = player.displayName ? `Round ${round} - ${this.teamLabel(player)}` : `Round ${round} - ${this.controllerLabel(player)}`
+    await this.banner.play(this.teamOf(player), title, subtitle)
     this.bannerActive = false
     this.refresh()
   }
@@ -182,7 +196,36 @@ export class GameUI {
 
   /** A dialog or banner is up: the board shouldn't react to keys */
   isBlockingInput(): boolean {
-    return this.menu.open || this.isModalOpen()
+    return this.menu.open || this.notice.open || this.isModalOpen()
+  }
+
+  /** Online: a message over the match (see GameNotice); resolves with the button picked */
+  showNotice(view: NoticeView): Promise<string | null> {
+    this.dismissAll()
+    return this.notice.show(view)
+  }
+
+  changeNotice(changes: Partial<NoticeView>) {
+    this.notice.change(changes)
+  }
+
+  closeNotice() {
+    this.notice.close()
+  }
+
+  get noticeOpen(): boolean {
+    return this.notice.open
+  }
+
+  /** Online: pause menu texts and the emote switch */
+  setPauseOptions(options: { quitWarning?: string, emotesMuted?: boolean | null }) {
+    if (options.quitWarning !== undefined) this.pauseMenu.quitWarning = options.quitWarning
+    if (options.emotesMuted !== undefined) this.pauseMenu.emotesMuted = options.emotesMuted
+  }
+
+  /** Online: "Rematch" or "Stay in room" instead of "Play again" */
+  setRematchLabel(label: string) {
+    this.gameOver.rematchLabel = label
   }
 
   /** Pause menu, phase banner or game over: the map shouldn't zoom or pan */
@@ -310,6 +353,7 @@ export class GameUI {
   destroy() {
     window.clearInterval(this.interval)
     if (this.pauseMenu.open) this.pauseMenu.resume()
+    this.notice.close()
     window.removeEventListener('keydown', this.onKeyDown)
     this.subscriptions.forEach(s => s.close())
     this.subscriptions = []
@@ -337,13 +381,14 @@ export class GameUI {
     const key = event.key.toLowerCase()
     if (!this.pauseMenu.open && !this.matchOver && !this.menu.open && !event.ctrlKey && !event.metaKey) {
       if (key === 'e' && this.hud.view?.canEndTurn) { this.hud.requestEndTurn(); return }
+      if (/^[1-6]$/.test(key) && this.hud.view?.online?.canEmote) { this.hud.sendEmote(Number(key) - 1); return }
       if (key === 'p') { void this.pause(); return }
       if (key === 'h') { this.toggleOverlays(); return }
     }
     if (event.key !== 'Escape') return
     if (this.pauseMenu.open) {
       this.pauseMenu.resume()
-    } else if (this.matchOver) {
+    } else if (this.matchOver || this.notice.open) {
       return
     } else if (this.menu.open) {
       this.dismissAll()
@@ -425,10 +470,11 @@ export class GameUI {
       activeTeam: this.teamOf(current),
       round: this.round,
       phasesLeft: this.phasesLeft,
-      canEndTurn: current.isHuman && current.active && !this.matchOver,
+      canEndTurn: current.isLocal && current.active && !this.matchOver,
       unitsWithActions: units.filter(u => u.player === current && u.hasActions()).length,
       canPause: !this.matchOver,
-      speed: getSpeed()
+      speed: getSpeed(),
+      online: this.onlineView?.() ?? undefined
     }
   }
 
@@ -456,7 +502,9 @@ export class GameUI {
   private hintText(): string {
     const current = this.currentPlayer
     if (this.matchOver || this.bannerActive || !current) return ''
-    if (!current.isHuman) return `${this.teamLabel(current)} (${this.controllerLabel(current)}) is thinking...`
+    if (!current.isLocal) {
+      return current.isHuman ? `Waiting for ${this.controllerLabel(current)}...` : `${this.teamLabel(current)} (${this.controllerLabel(current)}) is thinking...`
+    }
     if (this.touch) return this.touchHintText()
     if (this.menu.open) return 'Choose an action · [Esc] close'
     if (this.selection.currentUnitSelection) {

@@ -97,6 +97,16 @@ export function renderHowToPlay() {
         </ul>
       </section>
       <section>
+        <h3>Online</h3>
+        <ul>
+          <li>Type your name, then <b>create a room</b> or join one with its <b>code</b>. Open rooms are listed for everyone; <b>locked</b> rooms only take people with the code.</li>
+          <li>Up to 8 people can <b>watch</b> a match, even one already going.</li>
+          <li>Each turn has <b>2 minutes</b>. When time runs out the turn ends by itself.</li>
+          <li>Leaving the match counts as a forfeit. Lost the connection? Reload the page to get back in.</li>
+          <li><b>Play on Wi-Fi</b>: the devices connect directly, and some mobile networks block that.</li>
+        </ul>
+      </section>
+      <section>
         <h3>Controls</h3>
         <ul>
           <li><b>Left click</b>: select and act.</li>

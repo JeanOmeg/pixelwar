@@ -5,11 +5,27 @@ import { Resources } from './resources'
 import { LevelBase } from './levels/level-base'
 import type { GameUI } from './game-ui'
 import type { GameResultView } from './ui-components/view-models'
+import type { GameOverChoice } from './ui-components/game-over'
 
-interface MatchResult {
+export interface MatchResult {
   /** null when the match ended in a draw */
   winner: Player | null
-  reason: 'elimination' | 'turn-limit'
+  /** forfeit/abandoned/out-of-sync: online only */
+  reason: 'elimination' | 'turn-limit' | 'forfeit' | 'abandoned' | 'out-of-sync'
+}
+
+/** Online play hooks into the turn loop (see OnlineMatch) */
+export interface TurnHooks {
+  /** Catching up on a match already going: no phase banner */
+  skipBanner?: () => boolean
+  /** The player's phase begins (after the banner) */
+  phaseStarted?: (player: Player) => void
+  /** The player's phase is over (before the next one starts) */
+  phaseEnded?: (player: Player) => void
+  /** The match just ended (before the game over screen) */
+  ended?: (result: MatchResult) => void
+  /** Replaces "Play again"/"Main menu" after the game over screen */
+  finished?: (result: MatchResult, choice: GameOverChoice) => Promise<void>
 }
 
 export class TurnManager {
@@ -21,6 +37,9 @@ export class TurnManager {
   private phasesLeft: number
   /** The player left the match (pause menu): the loop stops at the next step */
   private aborted = false
+  /** The game over screen was shown (once per match) */
+  private finished = false
+  hooks: TurnHooks = {}
 
   constructor(public engine: ex.Engine, public level: LevelBase, public players: Player[], public selectionManager: SelectionManager, public ui: GameUI, maxTurns: number) {
     if (players.length === 0) throw Error('Players should be non-zero in length')
@@ -51,8 +70,10 @@ export class TurnManager {
 
       this.selectionManager.selectPlayer(this.currentPlayer)
       this.ui.setTurn(this.currentPlayer, this.round, this.phasesLeft)
-      await this.ui.playPhaseBanner(this.currentPlayer, this.round)
+      if (!this.hooks.skipBanner?.()) await this.ui.playPhaseBanner(this.currentPlayer, this.round)
+      if (this.aborted) return
       await this.currentPlayer.turnStart()
+      this.hooks.phaseStarted?.(this.currentPlayer)
 
       let done = false
       while (!done) {
@@ -62,6 +83,7 @@ export class TurnManager {
       if (this.aborted) return
 
       await this.currentPlayer.turnEnd()
+      this.hooks.phaseEnded?.(this.currentPlayer)
       this.nextTurn()
     }
   }
@@ -80,6 +102,7 @@ export class TurnManager {
     const lastRound = this.currentPlayerIndex === 0 ? Math.max(this.round - 1, 1) : this.round
     const winner = result.winner
     if (!winner) {
+      if (result.reason === 'out-of-sync') return { title: 'Match ended', subtitle: 'The two games went out of sync', team: null }
       return {
         title: 'Draw',
         subtitle: result.reason === 'turn-limit' ? `Turn limit reached after ${lastRound} rounds` : 'No units left',
@@ -87,22 +110,44 @@ export class TurnManager {
       }
     }
 
+    const loser = this.players.find(p => p !== winner)
+    const loserName = loser?.displayName ?? (loser ? this.ui.teamLabel(loser) : 'The opponent')
     const survivors = this.level.board.getLivingUnits().filter(u => u.player === winner).length
-    const subtitle = `Round ${lastRound} - ${survivors} unit${survivors === 1 ? '' : 's'} left`
-    const humans = this.players.filter(p => p.isHuman)
+    const subtitle = result.reason === 'forfeit' ? `${loserName} left the match`
+      : result.reason === 'abandoned' ? `${loserName} stopped responding`
+        : `Round ${lastRound} - ${survivors} unit${survivors === 1 ? '' : 's'} left`
+    const locals = this.players.filter(p => p.isLocal)
 
-    // Player vs CPU: speak from the human's point of view
-    if (humans.length === 1) {
-      return { title: winner.isHuman ? 'Victory!' : 'Defeat', subtitle, team: this.ui.teamOf(winner) }
+    // one player on this device (vs CPU, online): speak from their point of view
+    if (locals.length === 1) {
+      // online defeat: say who won
+      const named = !winner.isLocal && winner.displayName ? `${winner.displayName} wins - ${subtitle}` : subtitle
+      return { title: winner.isLocal ? 'Victory!' : 'Defeat', subtitle: named, team: this.ui.teamOf(winner) }
     }
-    return { title: `${this.ui.teamLabel(winner)} wins!`, subtitle, team: this.ui.teamOf(winner) }
+    return { title: `${winner.displayName ?? this.ui.teamLabel(winner)} wins!`, subtitle, team: this.ui.teamOf(winner) }
+  }
+
+  /**
+   * Online: ends the match now (the opponent left, stopped responding, or the
+   * games went out of sync), whatever the turn loop is waiting for.
+   */
+  endWith(result: MatchResult) {
+    if (this.finished || this.aborted) return
+    this.aborted = true
+    this.players.forEach(p => { p.active = false })
+    void this.finish(result)
   }
 
   private async finish(result: MatchResult) {
+    if (this.finished) return
+    this.finished = true
+    this.hooks.ended?.(result)
     this.selectionManager.reset()
     const choice = await this.ui.showGameOver(this.describe(result))
     Resources.LevelMusic2.stop()
-    if (choice === 'rematch') {
+    if (this.hooks.finished) {
+      await this.hooks.finished(result, choice)
+    } else if (choice === 'rematch') {
       await this.level.restart()
     } else {
       await this.returnToMainMenu()

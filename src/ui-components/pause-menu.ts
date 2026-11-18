@@ -1,5 +1,5 @@
 import { LitElement, css, html, nothing } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
 
 export type PauseChoice = 'resume' | 'quit'
@@ -35,6 +35,14 @@ export class PauseMenu extends LitElement {
 
   @state()
   private visible = false
+
+  /** Shown under "Main menu" once armed */
+  @property()
+    quitWarning = 'The match in progress will be lost.'
+
+  /** Online: the "Mute emotes" switch (null: not shown) */
+  @property({ attribute: false })
+    emotesMuted: boolean | null = null
 
   /** First click on "Main menu" only arms it; the second one quits */
   @state()
@@ -89,7 +97,10 @@ export class PauseMenu extends LitElement {
             <button class="btn btn-solid quit ${this.confirming ? 'confirm' : ''}" @click=${() => this.onQuit()}>
               ${this.confirming ? 'Quit match - sure?' : 'Main menu'}
             </button>
-            <div class="warning">${this.confirming ? 'The match in progress will be lost.' : ''}</div>
+            ${this.emotesMuted !== null ? html`
+              <button class="btn btn-solid quit" @click=${() => this.dispatchEvent(new Event('toggle-emotes'))}>${this.emotesMuted ? 'Show emotes' : 'Mute emotes'}</button>
+            ` : nothing}
+            <div class="warning">${this.confirming ? this.quitWarning : ''}</div>
           </div>
         </div>
       </div>

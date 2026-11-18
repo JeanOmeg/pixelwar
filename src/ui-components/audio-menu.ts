@@ -1,5 +1,5 @@
 import { LitElement, css, html, nothing } from 'lit'
-import { customElement, property, state } from 'lit/decorators'
+import { customElement, property, state } from 'lit/decorators.js'
 import { AudioManager } from '../audio-manager'
 import { canFullscreen, isFullscreen, isStandalone, needsHomeScreenForFullscreen, toggleFullscreen } from '../device'
 

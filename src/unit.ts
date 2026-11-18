@@ -32,7 +32,20 @@ const SKILL_TEXT_COLOR = '#4cc9f0'
 
 /** Dice for one strike: [d20, d6], both with advantage */
 export type StrikeRolls = () => [number, number]
-const rollStrike: StrikeRolls = () => [rollWithAdvantage(20), rollWithAdvantage(6)]
+export const rollStrike: StrikeRolls = () => [rollWithAdvantage(20), rollWithAdvantage(6)]
+
+/**
+ * Dice already rolled, used in order (online play: the attacker rolls and
+ * sends them, everybody else replays the same attack)
+ */
+export function fixedRolls(rolls: [number, number][]): StrikeRolls {
+  let next = 0
+  return () => {
+    const roll = rolls[next++]
+    if (!roll) throw new Error('Not enough dice for this attack')
+    return roll
+  }
+}
 
 /** Where the unit was before its last move this turn (for Undo move) */
 interface PreviousMove {
@@ -521,13 +534,14 @@ export class Unit extends ex.Actor {
     return events
   }
 
-  async attack(other: Unit) {
+  /** Animated attack; `rolls` can fix the dice (online play) */
+  async attack(other: Unit, rolls: StrikeRolls = rollStrike) {
     this.defineDirection(this.pos, other.pos)
     if (this.pendingSkill?.kind === 'attack') {
       this.announceSkill(this.pendingSkill)
       await gameDelay(350)
     }
-    const events = this.resolveAttackOn(other)
+    const events = this.resolveAttackOn(other, rolls)
     this.pendingSkill = null
     for (const event of events) {
       if (event.kind === 'strike') {
@@ -560,7 +574,11 @@ export class Unit extends ex.Actor {
       applyAttackEvent(event)
     }
     this.attacked = true
-    for (const unit of [this, other]) if (unit.health <= 0) unit.cell?.removeUnit(unit)
+    // everybody the attack killed (Fireball splash too) leaves the board now
+    for (const event of events) {
+      const hit = event.kind === 'strike' ? event.defender : event.kind === 'splash' ? event.unit : null
+      if (hit && hit.health <= 0) hit.cell?.removeUnit(hit)
+    }
     return events
   }
 

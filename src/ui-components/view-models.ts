@@ -29,6 +29,21 @@ export interface HudView {
   canPause: boolean
   /** Game speed: 1, 2 or 3 */
   speed: number
+  /** Online only (missing offline) */
+  online?: OnlineHudView
+}
+
+export interface OnlineHudView {
+  /** Seconds left in the current turn (null: no timer, e.g. catching up) */
+  timeLeft: number | null
+  timeTotal: number
+  /** This device only watches: "Watching" instead of End turn */
+  watching: boolean
+  spectators: number
+  /** The emote button is offered (players only) */
+  canEmote: boolean
+  /** Emotes on screen, under each team's bar */
+  emotes: Partial<Record<Team, string>>
 }
 
 export interface UnitView {

@@ -8,6 +8,8 @@ import { MapListItem, RANDOM_MAP_ID } from './map-select'
 import './map-select'
 import { ArmyClassOption } from './army-select'
 import './army-select'
+import './online-screen'
+import { activeSession, savedSession } from '../online/session'
 import { readableBoost } from '../device'
 import { pageStyles, renderCredits, renderHowToPlay, renderUnits } from './start-screen-pages'
 import { GAME_MODES, GameMode, MatchSettings, findGameMode } from '../game-modes'
@@ -15,16 +17,16 @@ import { MAPS, MapDefinition, defaultArmy, findMap, getMapInfo, randomMap, scene
 import { mapPreview, unitPortrait } from '../ui-sprites'
 import { buildCpuArmy } from '../army-ai'
 import { DIFFICULTIES, DIFFICULTY_IDS, Difficulty, findDifficulty } from '../ai/weights'
-import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, armyCost, unitTypeOf } from '../unit-classes'
+import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, unitTypeOf } from '../unit-classes'
+import { saveArmy, savedArmy } from './army-prefs'
 import type { UnitClass } from '../path-finding/terrain-rules'
 import type { UnitType } from '../config'
 
-type Screen = 'title' | 'mode' | 'map' | 'army' | 'howto' | 'units' | 'credits'
+type Screen = 'title' | 'mode' | 'map' | 'army' | 'online' | 'howto' | 'units' | 'credits'
 
 const PREF_MODE = 'pixelfantasywar.mode'
 const PREF_DIFFICULTY = 'pixelfantasywar.difficulty'
 const PREF_MAP = 'pixelfantasywar.map'
-const prefArmy = (mapId: string, team: number) => `pixelfantasywar.army.${mapId}.${team}`
 /** Text size in the menus relative to the base sizes in the components */
 const MENU_TEXT_SCALE = 1.3
 /** Extra text size allowed on small screens (the layout itself doesn't grow) */
@@ -86,7 +88,7 @@ export class StartScreenUi extends LitElement {
     /* Mode */
     .mode-screen { display: flex; flex-direction: column; align-items: center; gap: calc(28 * var(--u)); }
     .heading { margin: 0; font-weight: normal; font-size: calc(56 * var(--t)); text-shadow: calc(5 * var(--u)) calc(5 * var(--u)) 0 #000; }
-    .modes { display: grid; grid-template-columns: repeat(3, calc(430 * var(--u))); gap: calc(24 * var(--u)); }
+    .modes { display: grid; grid-template-columns: repeat(4, calc(400 * var(--u))); gap: calc(22 * var(--u)); }
     .mode {
       appearance: none;
       font: inherit;
@@ -126,8 +128,12 @@ export class StartScreenUi extends LitElement {
   @property({ attribute: false })
     engine!: ex.Engine
 
+  /** Back from an online match, or reloaded while in a room: the Online screen */
   @state()
-  private screen: Screen = 'title'
+  private screen: Screen = activeSession()?.status === 'joined' || savedSession() ? 'online' : 'title'
+
+  /** Reloaded while in a room: reconnect right away */
+  private autoResume = !activeSession() && !!savedSession()
 
   @state()
   private mode: GameMode = findGameMode(readPref(PREF_MODE))?.id ?? 'p1vscpu'
@@ -155,7 +161,8 @@ export class StartScreenUi extends LitElement {
 
   private onResize = () => this.updateScale()
   private onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && this.screen !== 'title' && this.screen !== 'map') this.go('title')
+    // the map, army and online screens handle Esc themselves
+    if (event.key === 'Escape' && !['title', 'map', 'army', 'online'].includes(this.screen)) this.go('title')
   }
 
   override connectedCallback(): void {
@@ -200,7 +207,18 @@ export class StartScreenUi extends LitElement {
   private chooseMode(mode: GameMode) {
     this.mode = mode
     writePref(PREF_MODE, mode)
-    this.go('map')
+    this.go(mode === 'online' ? 'online' : 'map')
+  }
+
+  /** The online room's match starts: armies and seats come from the room */
+  private async launchOnline(map: MapDefinition) {
+    const room = activeSession()?.room
+    if (!room || this.leaving) return
+    this.leaving = true
+    await new Promise(resolve => window.setTimeout(resolve, 400))
+    const settings: MatchSettings = { mode: 'online', armies: room.seats.map(s => s?.army ?? null) }
+    this.engine.goToScene(sceneNameOf(map), { sceneActivationData: settings })
+    this.remove()
   }
 
   private buildMapItems(): MapListItem[] {
@@ -244,7 +262,7 @@ export class StartScreenUi extends LitElement {
     const map = this.chosenMap
     if (!map) return
     this.armies[this.armyTeam] = army
-    writePref(prefArmy(map.id, this.armyTeam), army.join(','))
+    saveArmy(map.id, this.armyTeam, army)
     if (this.armyTeam === 0) {
       this.armyTeam = 1
       Resources.SelectSound.play()
@@ -277,13 +295,6 @@ export class StartScreenUi extends LitElement {
     this.remove()
   }
 
-  /** Last army used on this map, if it is still valid */
-  private savedArmy(map: MapDefinition, team: number, slots: number): UnitClass[] | null {
-    const saved = readPref(prefArmy(map.id, team))?.split(',') as UnitClass[] | undefined
-    if (!saved || saved.length !== slots || saved.some(c => !UNIT_CLASSES.includes(c))) return null
-    return armyCost(saved) <= ARMY_BUDGET ? saved : null
-  }
-
   private renderArmy() {
     const map = this.chosenMap
     if (!map) return html``
@@ -312,7 +323,7 @@ export class StartScreenUi extends LitElement {
         .slots=${slots}
         .classes=${options}
         .defaultArmy=${classic}
-        .initialArmy=${this.savedArmy(map, team, slots.length) ?? (cpu ? suggestion : classic)}
+        .initialArmy=${savedArmy(map.id, team, slots.length) ?? (cpu ? suggestion : classic)}
         .randomize=${() => this.randomArmy(info, team)}
         .budget=${ARMY_BUDGET}
         @pick=${() => Resources.SelectSound.play()}
@@ -351,7 +362,8 @@ export class StartScreenUi extends LitElement {
     const portraits: Record<GameMode, [UnitType, UnitType]> = {
       p1vscpu: ['FighterA', 'BarbarianB'],
       p1vsp2: ['ThiefA', 'ThiefB'],
-      cpuvscpu: ['MageA', 'ArcherB']
+      cpuvscpu: ['MageA', 'ArcherB'],
+      online: ['RangerA', 'AssassinB']
     }
     return html`
       <div class="screen mode-screen">
@@ -412,6 +424,15 @@ export class StartScreenUi extends LitElement {
       ></map-select>
     `
     case 'army': return this.renderArmy()
+    case 'online': return html`
+      <online-screen
+        class="screen"
+        .maps=${this.buildMapItems()}
+        .autoResume=${this.autoResume}
+        @launch=${(event: CustomEvent<MapDefinition>) => void this.launchOnline(event.detail)}
+        @back=${() => this.go('mode')}
+      ></online-screen>
+    `
     case 'howto': return this.renderPage('How to play', renderHowToPlay())
     case 'units': return this.renderPage('Units', renderUnits())
     case 'credits': return this.renderPage('Credits', renderCredits())

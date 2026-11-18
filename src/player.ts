@@ -12,8 +12,15 @@ export abstract class Player {
   public active: boolean = false
   /** The match was left: stop acting */
   public disposed = false
-  /** Controlled by a person (mouse/keyboard) rather than the AI */
+  /** Controlled by a person rather than the AI (here or, online, on another device) */
   public readonly isHuman: boolean = false
+  /** Online: the name the player typed (shown instead of "Player"/"CPU") */
+  public displayName: string | null = null
+
+  /** Plays on this device (mouse, touch, keyboard) */
+  get isLocal(): boolean {
+    return this.isHuman
+  }
   constructor(public name: string, public board: Board) {
     this.name = name
     this.board = board

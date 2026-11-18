@@ -390,6 +390,11 @@
   resolved "https://registry.yarnpkg.com/@msgpackr-extract/msgpackr-extract-win32-x64/-/msgpackr-extract-win32-x64-3.0.3.tgz#0aa5502d547b57abfc4ac492de68e2006e417242"
   integrity sha512-x0fWaQtYp4E6sktbsdAqnehxDgEc/VwM7uLsRCYWaiGu0ykYdZPiS8zCWdnjHwyiumousxfBm4SO31eXqwEZhQ==
 
+"@noble/secp256k1@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@noble/secp256k1/-/secp256k1-3.2.0.tgz#66d1f7857a223ef1416f4de988278a39aa57e816"
+  integrity sha512-Z3ZAWOTxJ0EuTuZTi7Y69iK7GgrLHh8sgm45lVDhg/b3Nk1TpAiKhick2KkZisHuupeepSkyIydN/J459SdX1w==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -1314,6 +1319,19 @@
   integrity sha512-iAoY/qRhNH8a/hBvm3zKj9qQ4oc2+3w1unPJa2XvTK3XjeLXtzcCingVPw/9e5mn1+0yPqxcBGp9Jf0pkfMb1g==
   dependencies:
     "@swc/counter" "^0.1.3"
+
+"@trystero-p2p/core@0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@trystero-p2p/core/-/core-0.26.0.tgz#681d5db45a84675318a73084ac1fca68bd1d9964"
+  integrity sha512-CZpeXPgfbDdFKrGxfD98F9tn/fTjya4mQ2o/Ax6H0qpBaJXCBz5+jyPtjsYEPAAcKRK/btOatCetFiQ5qIMCOA==
+
+"@trystero-p2p/nostr@0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@trystero-p2p/nostr/-/nostr-0.26.0.tgz#20ea197bb8c67cb042467b625609b90dcf82ed59"
+  integrity sha512-HArp9fonBkqFZgw3U2D823fCePQv7haKkvjtwbGRkWzy+Wo9G3cCDEnG/GENDWwzERHrhRcRacpFsFt4JpwRJQ==
+  dependencies:
+    "@noble/secp256k1" "^3.2.0"
+    "@trystero-p2p/core" "0.26.0"
 
 "@types/estree@^1.0.0", "@types/estree@^1.0.10":
   version "1.0.10"
@@ -3361,6 +3379,13 @@ tr46@^5.1.0:
   integrity sha512-hdF5ZgjTqgAntKkklYw0R03MG2x/bSzTtkxmIRw/sTNV8YXsCJ1tfLAX23lhxhHJlEf3CRCOCGGWw3vI3GaSPw==
   dependencies:
     punycode "^2.3.1"
+
+trystero@0.26.0:
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/trystero/-/trystero-0.26.0.tgz#40662fe4f5de16f09a92bae1801a2369c06fbb59"
+  integrity sha512-M6NsoGmAkAy72K4YiPj0iGbd9hyuAGJpIBm0wL6f0g6bP/nCsMtbJKM8VpcxexK61HaQ5q5KDVnqFZogXGIolQ==
+  dependencies:
+    "@trystero-p2p/nostr" "0.26.0"
 
 ts-api-utils@^2.4.0:
   version "2.4.0"

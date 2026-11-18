@@ -3,11 +3,14 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
 import { iconStyles } from './icons'
 import { HudView, TeamView, hpLevel } from './view-models'
+import { EMOTES, TURN_WARNING_SECONDS } from '../online/protocol'
 
 /**
  * Top bar: both teams (units left, total HP), round/phase and End Turn.
  * Fires `end-turn` when the current human player confirms, `pause` and
- * `speed` (cycle the game speed).
+ * `speed` (cycle the game speed). Online it also shows the turn timer (a
+ * countdown and a bar along the bottom of the center panel), the spectator
+ * count and the emotes; picking one fires `emote` (detail: the text).
  */
 @customElement('game-hud')
 export class GameHud extends LitElement {
@@ -93,6 +96,55 @@ export class GameHud extends LitElement {
       background: linear-gradient(90deg, currentColor 0 35%, transparent 35% 65%, currentColor 65%);
     }
     .end-turn.confirm { background: var(--orange); }
+
+    /* online: turn timer, emotes, spectators */
+    .center { position: relative; }
+    .clock { font-size: calc(22 * var(--t)); line-height: 1; min-width: calc(58 * var(--u)); text-align: center; text-shadow: calc(2 * var(--u)) calc(2 * var(--u)) 0 #000; }
+    .timer-bar {
+      position: absolute;
+      left: calc(3 * var(--u));
+      right: calc(3 * var(--u));
+      bottom: calc(3 * var(--u));
+      height: calc(4 * var(--u));
+      background: rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+    }
+    .timer-bar i { display: block; height: 100%; background: var(--team); transition: width 250ms linear; }
+    .warning .clock { color: var(--red); animation: blink 500ms steps(1) infinite; }
+    .warning .timer-bar i { background: var(--red); animation: blink 500ms steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0.35; } }
+    .watching { font-size: calc(16 * var(--t)); color: var(--muted); padding: 0 calc(6 * var(--u)); }
+    .spectators { color: var(--muted); white-space: nowrap; }
+    .emote-btn { --team: #2a2d3a; font-size: calc(16 * var(--t)); padding: calc(7 * var(--u)) calc(10 * var(--u)); }
+    .emote-list {
+      position: absolute;
+      top: calc(100% + 6 * var(--u));
+      left: 50%;
+      transform: translateX(-50%);
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: calc(6 * var(--u));
+      padding: calc(8 * var(--u));
+    }
+    .emote-list .btn { --team: #2a2d3a; font-size: calc(16 * var(--t)); padding: calc(6 * var(--u)) calc(10 * var(--u)); justify-content: center; white-space: nowrap; }
+    .emote-list small { font-size: calc(14 * var(--t)); color: var(--gold); margin-right: calc(4 * var(--u)); }
+    .team-slot { position: relative; }
+    .team-slot.right { justify-self: end; }
+    .bubble {
+      position: absolute;
+      top: calc(100% + 8 * var(--u));
+      padding: calc(6 * var(--u)) calc(12 * var(--u));
+      font-size: calc(20 * var(--t));
+      white-space: nowrap;
+      background: #fff;
+      color: #0b0d16;
+      border: calc(3 * var(--u)) solid var(--team);
+      box-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000;
+      animation: pop 200ms steps(3) both;
+    }
+    .team-slot.left .bubble { left: calc(20 * var(--u)); }
+    .team-slot.right .bubble { right: calc(20 * var(--u)); }
+    @keyframes pop { from { transform: scale(0.4); opacity: 0; } }
   `]
 
   @property({ attribute: false })
@@ -100,6 +152,9 @@ export class GameHud extends LitElement {
 
   @state()
   private confirming = false
+
+  @state()
+  private emotesOpen = false
 
   private confirmTimer = 0
 
@@ -122,11 +177,53 @@ export class GameHud extends LitElement {
 
   override updated() {
     if (this.confirming && !this.view?.canEndTurn) this.confirming = false
+    if (this.emotesOpen && !this.view?.online?.canEmote) this.emotesOpen = false
+  }
+
+  /** Keys 1-6 (GameUI): sends that emote */
+  sendEmote(index: number) {
+    const emote = EMOTES[index]
+    if (emote && this.view?.online?.canEmote) this.pickEmote(emote)
+  }
+
+  private pickEmote(emote: string) {
+    this.emotesOpen = false
+    this.dispatchEvent(new CustomEvent('emote', { detail: emote }))
+  }
+
+  private renderClock() {
+    const online = this.view?.online
+    if (!online || online.timeLeft === null) return nothing
+    const left = Math.max(0, Math.ceil(online.timeLeft))
+    return html`<span class="clock" title="Time left in this turn">${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}</span>`
+  }
+
+  private renderTimerBar() {
+    const online = this.view?.online
+    if (!online || online.timeLeft === null) return nothing
+    const ratio = Math.max(0, Math.min(1, online.timeLeft / online.timeTotal))
+    return html`<div class="timer-bar"><i style="width: ${ratio * 100}%"></i></div>`
+  }
+
+  private renderEmotes() {
+    const online = this.view?.online
+    if (!online?.canEmote) return nothing
+    return html`
+      <button class="btn btn-solid emote-btn" title="Send a quick message (1-6)" @click=${() => { this.emotesOpen = !this.emotesOpen }}>Say...</button>
+      ${this.emotesOpen ? html`
+        <div class="panel emote-list">
+          ${EMOTES.map((emote, i) => html`<button class="btn btn-solid" @click=${() => this.pickEmote(emote)}><small class="keys-only">${i + 1}</small>${emote}</button>`)}
+        </div>
+      ` : nothing}
+    `
   }
 
   private renderTeam(team: TeamView, side: 'left' | 'right', active: boolean) {
     const pips = Array.from({ length: team.total }, (_, i) => i < team.alive)
+    const emote = this.view?.online?.emotes[team.team]
     return html`
+      <div class="team-slot ${side} team-${team.team}">
+      ${emote ? html`<div class="bubble">${emote}</div>` : nothing}
       <div class="panel team team-${team.team} ${side} ${active ? 'active' : ''}">
         <div class="badge">${team.alive}</div>
         <div class="info">
@@ -134,6 +231,7 @@ export class GameHud extends LitElement {
           <div class="pips">${pips.map(alive => html`<span class="pip ${alive ? '' : 'dead'}"></span>`)}</div>
           <div class="bar hp ${hpLevel(team.hp, team.maxHp)}"><i style="width: ${(team.hp / Math.max(team.maxHp, 1)) * 100}%"></i></div>
         </div>
+      </div>
       </div>
     `
   }
@@ -143,23 +241,29 @@ export class GameHud extends LitElement {
     if (!view || view.teams.length < 2) return nothing
     const [left, right] = view.teams
     const active = view.teams.find(t => t.team === view.activeTeam) ?? left
+    const online = view.online
+    const warning = online && online.timeLeft !== null && online.timeLeft <= TURN_WARNING_SECONDS
 
     return html`
       ${this.renderTeam(left, 'left', view.activeTeam === left.team)}
-      <div class="panel center team-${active.team}">
+      <div class="panel center team-${active.team} ${warning ? 'warning' : ''}">
         ${view.canPause ? html`
           <button class="btn btn-solid pause" title="Pause (P)" @click=${() => this.dispatchEvent(new Event('pause'))}><i></i></button>
           <button class="btn btn-solid speed" title="Game speed" @click=${() => this.dispatchEvent(new Event('speed'))}>x${view.speed}</button>
         ` : nothing}
+        ${this.renderEmotes()}
         <div class="phase">
-          <small>Round ${view.round}</small>
-          <strong>${active.label} phase</strong>
+          <small>Round ${view.round}${online && online.spectators > 0 ? html` · <span class="spectators" title="People watching">${online.spectators} watching</span>` : nothing}</small>
+          <strong>${online ? active.controller : `${active.label} phase`}</strong>
         </div>
+        ${this.renderClock()}
+        ${online?.watching ? html`<span class="watching">Watching</span>` : nothing}
         ${view.canEndTurn ? html`
           <button class="btn btn-solid end-turn ${this.confirming ? 'confirm' : ''}" title="End turn (E)" @click=${this.onEndTurn}>
             ${this.confirming ? `${view.unitsWithActions} left - sure?` : 'End turn'}
           </button>
         ` : nothing}
+        ${this.renderTimerBar()}
       </div>
       ${this.renderTeam(right, 'right', view.activeTeam === right.team)}
     `

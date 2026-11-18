@@ -1,4 +1,4 @@
-import { Unit } from './unit'
+import { Unit, type StrikeRolls } from './unit'
 import { Board } from './board'
 import { Cell } from './cell'
 import { PathNodeComponent } from './path-finding/path-node-component'
@@ -64,11 +64,12 @@ export class SelectionManager {
     this.reset()
   }
 
-  async selectDestinationAndAttack(unit: Unit, destination: Cell) {
+  /** `rolls`: dice already rolled (online play sends them to the other side) */
+  async selectDestinationAndAttack(unit: Unit, destination: Cell, rolls?: StrikeRolls) {
     if (unit.player !== this.currentPlayer) return
     const range = this.findAttackRange(unit)
     if (destination.unit && range.includes(destination.pathNode)) {
-      await unit.attack(destination.unit)
+      await unit.attack(destination.unit, rolls)
     }
     this.reset()
   }

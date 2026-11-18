@@ -56,6 +56,7 @@ Roda também em celular/tablet (ver "Celular e toque").
 | [src/balance.ts](src/balance.ts) | Fórmula dos custos (`computeCosts`, `classPower`). Um teste garante que `CLASS_INFO` bate com ela |
 | [src/army-ai.ts](src/army-ai.ts) | `buildCpuArmy`: exército da CPU por papel (de longe, alcance 2, flanco, corpo a corpo, pesado) dentro do orçamento; `roleOf` (usado também pela IA de partida) |
 | [src/ai/](src/ai/) | IA de partida: pesos/dificuldades, mapa de ameaça, planejador e turno (ver seção "IA") |
+| [src/online/](src/online/) | Modo online (Trystero, P2P): protocolo, sala, histórico de jogadas, `RemotePlayer`, `OnlineMatch` (ver seção "Modo online") |
 | [src/speed.ts](src/speed.ts) | Velocidade do jogo (x1/x2/x3, salva): `engine.timescale` e `gameDelay(ms)` (use no lugar de `ex.Util.delay` em pausas da partida) |
 | [src/loader.ts](src/loader.ts) | Tela de carregamento (logo, botão PLAY!) e registro de todos os `Resources` |
 | [src/resources.ts](src/resources.ts) | Todos os assets (`Resources`), cursores/destaques, `buildUnitAnimations` e `UNIT_ANIMATIONS` (as 12 animações de cada `UnitType`, geradas da grade da spritesheet) |
@@ -220,7 +221,7 @@ Skills ([src/skills.ts](src/skills.ts)): toda classe tem Run, Special e uma pró
 
 ## IA ([src/ai/](src/ai/))
 
-Detalhes, diagnóstico e números em [CHECKLIST-IA.md](CHECKLIST-IA.md). Resumo:
+Resumo:
 - [weights.ts](src/ai/weights.ts): **todos os números** — `AI_WEIGHTS` (escala: unidade vale custo × `VALUE_PER_POINT`), `DIFFICULTIES` (Easy/Normal/Hard: ruído, erro, uso de skill, peso da ameaça, pesos próprios do Hard) e `PERSONALITIES`.
 - [threat.ts](src/ai/threat.ts): `ThreatMap` — quais inimigos atacam cada tile no próximo turno (movimento + ataque em linha pelas regras reais), `harmAt` (dano esperado dos 3 mais fortes, chance de morrer, ataque pelas costas se o inimigo chega atrás).
 - [planner.ts](src/ai/planner.ts): `planUnit` gera e pontua o turno inteiro de uma unidade (destino parado/andando/correndo × atacar antes ou depois de mover × skill), com `scoreAttack` (forecast, costas, contra-ataque, efeitos de skill, MP) e `scorePosition` (ameaça, distância por caminho até um tile **de onde dá para atacar** `distanceToEnemies` — inimigos bloqueiam, porta tampada obriga a dar a volta —, linha de tiro de aliado, suporte, porta). `aggressionOf`: vantagem de exército e rodada deixam a IA mais ousada; com 1–2 unidades e atrás, "última resistência" (não foge). Nada aqui muda o jogo.
@@ -272,9 +273,25 @@ UI de partida = `GameUI` ([src/game-ui.ts](src/game-ui.ts)) + componentes em `sr
 - No toque, o `unit-card` vai para a metade da tela oposta ao tile tocado (no desktop fica no lado do time) e o tile tocado é esquecido a cada fase. As dicas falam em "tap"; dicas só de teclado usam a classe `keys-only` (escondida com `hover: none` + `pointer: coarse`, em `theme.ts`).
 - Teste: Chrome headless com `Emulation.setDeviceMetricsOverride` (mobile, paisagem), `Emulation.setTouchEmulationEnabled` e `Input.dispatchTouchEvent`. Em `yarn dev` o engine fica em `window.__game` (só fora de produção), o que deixa o teste montar cenas (mover unidades, mudar HP) direto pela cena.
 
+## Modo online ([src/online/](src/online/))
+
+Sem servidor: o **Trystero** (estratégia Nostr, `trystero@0.26.0`) apresenta os navegadores por relays públicos e as mensagens vão direto por WebRTC. Plano e regras em [CHECKLIST-ONLINE.md](CHECKLIST-ONLINE.md). O pacote só publica pelo campo `exports`: por isso `tsconfig.json` usa `moduleResolution: bundler` e o `package.json` liga `@parcel/resolver-default.packageExports`.
+- [protocol.ts](src/online/protocol.ts): todas as mensagens (`NetMessage`, `GameAction`), constantes (`ONLINE_TURN_SECONDS` 120, `MAX_SPECTATORS` 8, `RECONNECT_SECONDS` 180...) e `PROTOCOL_VERSION` (**suba ao mudar o formato de uma mensagem**: versões diferentes se recusam).
+- [transport.ts](src/online/transport.ts): interface `Transport` (o resto do código só conhece ela), `LocalTransport` (BroadcastChannel entre abas; ligado com `?localnet` ou `localStorage['pixelfantasywar.localnet'] = '1'`) e `openTransport`. [trystero-transport.ts](src/online/trystero-transport.ts) é carregado só quando alguém entra no online.
+- [room.ts](src/online/room.ts): regras da sala como funções puras sobre `RoomState` (entrar, vaga de volta pelo token, sair, ready, mapa, kick, revanche com cores trocadas, exércitos escondidos em `publicRoom`). Quem aplica é a **autoridade** (`authorityToken`): o dono, ou o outro jogador enquanto o dono está fora.
+- [session.ts](src/online/session.ts): `OnlineSession`, a sala vista deste navegador (fica viva entre menu e partida, `activeSession()`). Guarda código/nome/token em `sessionStorage` (`pixelfantasywar.online`) para recarregar a página e voltar à mesma vaga. Anuncia salas abertas no "saguão" ([directory.ts](src/online/directory.ts): sala fixa do Trystero; quem só olha a lista entra **passivo**, então não conecta com os outros visitantes).
+- [feed.ts](src/online/feed.ts): `ActionFeed`, o histórico ordenado da partida. Ações locais entram com `recordLocal` (e são enviadas); recebidas com `receive` (fora de ordem esperam); `load` traz o histórico inteiro (espectador no meio, reconexão) e marca essas ações como **catch-up** (aplicadas na hora, sem animação e sem banner).
+- [actions.ts](src/online/actions.ts): `applyAction` confere e aplica uma `GameAction` (lança `ActionError` = dessincronia), `boardHash` (comparado no fim de cada turno). Unidades são identificadas pela célula `[x, y]`. **Dados:** quem ataca rola `rollAttackDice()` (2 pares: golpe e contra-ataque) e manda; todos usam `fixedRolls` → mesmo resultado.
+- `HumanPlayer` (com `feed`) grava cada ação **confirmada**: `move` (com Run), `attack` (com a skill de ataque e os dados), `self-skill`, `heal`, `undo`, `pass`, `end-turn`. Escolher/cancelar skill é local. Mudou o que uma ação faz? Ajuste `applyAction` e `tests/online-sync.test.ts`.
+- [remote-player.ts](src/online/remote-player.ts): joga as ações que chegam, com destaque e pausa como a CPU. `Player.isLocal` (falso para ele) separa "joga neste aparelho" de `isHuman`; `displayName` substitui "Player"/"CPU".
+- [online-match.ts](src/online/online-match.ts): `OnlineMatch`, criado pela `LevelBase` no modo `online`: cria os jogadores, liga os `TurnManager.hooks` (`skipBanner`, `phaseStarted`, `phaseEnded`, `ended`, `finished`), relógio do turno, emotes, avisos (`game-notice`: conexão perdida, sem resposta, revanche), hash por turno, desistência (`TurnManager.endWith`) e revanche.
+- Menus: [online-screen.ts](src/ui-components/online-screen.ts) (nome, dica do Wi-Fi, lista de salas, criar/entrar, lobby, mapa e exército do próprio time). A `start-screen-ui` abre direto nela ao voltar de uma partida online ou depois de recarregar a página dentro de uma sala.
+- Testes: `tests/online-room.test.ts` (regras da sala, `LocalTransport`) e `tests/online-sync.test.ts` (dois tabuleiros com as mesmas ações aleatórias ficam iguais em mapas reais; reaplicar o histórico dá o mesmo tabuleiro).
+- Teste no navegador: `yarn dev` e várias abas com `?localnet` (sem rede) ou sem ele (Trystero de verdade). No Chrome headless, `window.__game.currentScene.online` dá acesso ao `OnlineMatch`.
+
 ## Cuidados ao mexer
 
-- Melhorias e bugs conhecidos estão em [CHECKLIST.md](CHECKLIST.md); análise e melhorias da IA em [CHECKLIST-IA.md](CHECKLIST-IA.md). Ao concluir um item, marcar `[x]`.
+- Plano do modo online (Trystero) em [CHECKLIST-ONLINE.md](CHECKLIST-ONLINE.md). Ao concluir um item, marcar `[x]`.
 
 - Ao alterar regras de jogo, atualizar também o **README.md** (está em português e documenta regras e stats).
 - Mudanças de regra de alcance/movimento quase sempre afetam `HumanPlayer`, `SelectionManager` e `ComputerPlayer` juntos.

@@ -14,6 +14,8 @@ import { Resources } from '../resources'
 import { Tile } from '@excaliburjs/plugin-tiled'
 import { MapDefinition, getMapInfo, sceneNameOf, spawnsWithArmies } from '../maps'
 import type { GameMode, MatchSettings } from '../game-modes'
+import { OnlineMatch } from '../online/online-match'
+import { activeSession } from '../online/session'
 
 const DEFAULT_SETTINGS: MatchSettings = { mode: 'p1vscpu' }
 
@@ -33,6 +35,8 @@ export class LevelBase extends ex.Scene<MatchSettings> {
   players!: Player[]
   turnManager!: TurnManager
   cameraController!: CameraController
+  /** Online matches only */
+  online: OnlineMatch | null = null
 
   constructor(map: MapDefinition) {
     super()
@@ -76,6 +80,8 @@ export class LevelBase extends ex.Scene<MatchSettings> {
     this.ui?.destroy()
     this.players?.forEach(p => p.dispose())
     this.cameraController?.dispose()
+    this.online?.dispose()
+    this.online = null
   }
 
   /** Starts the same map and mode again from scratch */
@@ -112,7 +118,12 @@ export class LevelBase extends ex.Scene<MatchSettings> {
 
 
     Player.resetMasks()
-    this.players = this.createPlayers(this.settings.mode, board)
+    this.online?.dispose()
+    const session = this.settings.mode === 'online' ? activeSession() : null
+    this.online = session?.feed ? new OnlineMatch(session, this.engine) : null
+    this.players = this.online
+      ? this.online.createPlayers(board, this.selectionManager, this.ui, this.cameraController)
+      : this.createPlayers(this.settings.mode, board)
 
     this.ui.setPlayers(this.players)
     this.ui.onEndTurn = () => {
@@ -126,6 +137,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
     }
 
     this.turnManager = new TurnManager(this.engine, this, this.players, this.selectionManager, this.ui, this.map.maxTurns)
+    this.online?.attach(this.turnManager, this.ui)
 
     for (let y = 0; y < info.height; y++) {
       for (let x = 0; x < info.width; x++) {
