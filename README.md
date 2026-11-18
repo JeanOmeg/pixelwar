@@ -16,10 +16,10 @@ Elimine todas as unidades inimigas antes que eliminem as suas. Se o limite de 10
 
 | Modo | Descrição |
 |---|---|
+| **Online** | Jogue (ou assista) contra um amigo em outro aparelho, pela internet |
 | **Player vs CPU** | Você controla o time azul, a IA controla o time vermelho |
 | **Player vs Player** | Dois jogadores se alternam no mesmo computador |
 | **CPU vs CPU** | Assista dois times controlados pela IA se enfrentarem |
-| **Online** | Jogue (ou assista) contra um amigo em outro aparelho, pela internet |
 
 **Dificuldade da CPU** (na tela de modo, fica salva): **Easy** comete erros e quase não usa skills; **Normal** joga bem; **Hard** não erra e usa pesos ajustados por simulação. A IA planeja o turno inteiro de cada unidade (para onde ir, quem atacar, de que lado e com qual skill), prevê o que o seu exército pode fazer no turno seguinte para não deixar unidades expostas, recua arqueiros e magos depois de atirar, bate antes de recuar quando está colada num inimigo, procura ataques pelas costas age primeiro com quem pode matar, dá a volta quando um inimigo tampa uma porta e, com 1 ou 2 unidades sobrando, luta em vez de fugir. Cada CPU também ganha uma personalidade (equilibrada, agressiva ou defensiva). Em simulações nos 8 mapas, a IA Normal vence a IA anterior em ~85% das partidas, e a Hard vence a Normal em ~70%.
 
@@ -30,9 +30,9 @@ Dois jogadores, cada um no seu aparelho, mais até 8 espectadores. Não há serv
 > **Jogue no Wi-Fi.** Como a conexão é direta entre os aparelhos, algumas redes móveis (4G/5G) e redes de empresa bloqueiam a ligação. Se não conectar, troque para o Wi-Fi.
 
 - **Nome:** cada um digita o seu ao entrar em **Online** (fica salvo). Ele aparece no placar, no banner do turno ("Ana's turn") e no fim da partida.
-- **Salas:** toda sala tem um **código** de 5 letras/números (sem 0/O e 1/I/L, para não confundir). Uma sala **aberta** (padrão) aparece na lista **Open rooms** da tela Online, para jogar (se a vaga estiver livre) ou assistir. Uma sala **trancada** (cadeado) não aparece na lista: só entra quem tem o código, para jogar ou assistir (bom para torneio privado).
+- **Salas:** toda sala tem um **código** de 5 letras/números (sem 0/O e 1/I/L, para não confundir). Uma sala **aberta** (padrão) aparece na lista **Open rooms** da tela Online, para jogar (se a vaga estiver livre) ou assistir; se uma sala nova demorar a aparecer, clique em **Refresh**. Uma sala **trancada** (cadeado) não aparece na lista: só entra quem tem o código, para jogar ou assistir (bom para torneio privado).
 - **Lobby:** quem cria a sala é o dono: escolhe o mapa, tranca/destranca e pode remover alguém (Kick). O dono joga de **Azul** (começa). Cada jogador monta o próprio exército (100 pontos); o do outro fica escondido até os dois clicarem **Ready**.
-- **Turno de 2 minutos:** o relógio fica no painel central do topo (contagem + barra que esvazia, vermelha nos últimos 15 s). Acabou o tempo, o turno termina sozinho. Se do outro lado nada chegar 15 s depois, aparece "*Fulano* is not responding" com **Wait** ou **Leave** (sair dá a vitória a quem ficou).
+- **Turno de 5 minutos:** o relógio fica no painel central do topo (contagem + barra que esvazia, vermelha nos últimos 15 s). Acabou o tempo, o turno termina sozinho. Se do outro lado nada chegar 15 s depois, aparece "*Fulano* is not responding" com **Wait** ou **Leave** (sair dá a vitória a quem ficou).
 - **Pausa:** só para quem pausou; o jogo do outro continua. Sair pelo menu da pausa é desistir (o outro vence).
 - **Queda de conexão:** o relógio para e o outro vê "Connection lost". Recarregar a página volta para a mesma vaga e a partida continua de onde parou. Sem voltar em 3 minutos, o outro vence.
 - **Espectadores:** podem entrar no lobby ou no meio da partida (o jogo reaplica tudo o que já aconteceu). Veem os dois exércitos, passam o mouse/tocam para ver cards e alcances, mas não controlam nada.

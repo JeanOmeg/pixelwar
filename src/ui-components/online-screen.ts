@@ -36,6 +36,9 @@ const REJECT_TEXT: Record<string, string> = {
   closed: 'The room was closed by its owner.'
 }
 
+/** Rooms answer within a few seconds of joining the hall; after that an empty list really is empty */
+const SEARCH_MS = 8000
+
 const WIFI_TIP = 'Online matches connect the devices directly, with no game server in the middle. Some mobile networks (4G/5G) and office networks block direct connections. If you can\'t connect, switch to Wi-Fi.'
 
 /**
@@ -89,6 +92,7 @@ export class OnlineScreen extends LitElement {
     .room img { width: 100%; image-rendering: pixelated; }
     .room .who { font-size: calc(20 * var(--t)); }
     .room .what { font-size: calc(15 * var(--t)); color: var(--muted); }
+    .list-head { display: flex; align-items: center; justify-content: space-between; gap: calc(14 * var(--u)); }
     .empty { font-size: calc(18 * var(--t)); color: var(--muted); padding: calc(24 * var(--u)) 0; text-align: center; }
 
     .code-big { font-size: calc(44 * var(--t)); letter-spacing: calc(8 * var(--u)); color: var(--gold); text-shadow: calc(3 * var(--u)) calc(3 * var(--u)) 0 #000; }
@@ -124,12 +128,16 @@ export class OnlineScreen extends LitElement {
   @state() private locked = false
   @state() private error = ''
   @state() private rooms: RoomListing[] = []
+  /** Just joined the room list: still waiting for the rooms to answer */
+  @state() private searching = false
   @state() private copied = false
   /** Redraw when the session changes */
   @state() private revision = 0
 
   private session: OnlineSession | null = null
   private directory: RoomDirectory | null = null
+  /** Bumped on every open/close of the room list: a late open of an old one is dropped */
+  private directoryGen = 0
   private stopSession: (() => void) | null = null
   /** Match number already launched (so the same match doesn't start twice) */
   private launched = -1
@@ -169,21 +177,40 @@ export class OnlineScreen extends LitElement {
 
   private openDirectory() {
     if (this.directory) return
+    const gen = ++this.directoryGen
+    this.searching = true
     void RoomDirectory.open().then(directory => {
-      if (!this.isConnected || this.view !== 'browse') {
+      if (gen !== this.directoryGen || !this.isConnected || this.view !== 'browse') {
         directory.close()
         return
       }
       this.directory = directory
-      directory.changed.on(rooms => { this.rooms = rooms })
+      directory.changed.on(rooms => {
+        this.rooms = rooms
+        if (rooms.length > 0) this.searching = false
+      })
       this.rooms = directory.list()
+      window.setTimeout(() => { if (gen === this.directoryGen) this.searching = false }, SEARCH_MS)
     })
   }
 
   private closeDirectory() {
+    this.directoryGen++
     this.directory?.close()
     this.directory = null
     this.rooms = []
+    this.searching = false
+  }
+
+  /**
+   * Joins the room list again: open rooms announce themselves when someone
+   * arrives, so a fresh join gets them all right away (between arrivals they
+   * only repeat about once a minute).
+   */
+  private refreshRooms() {
+    Resources.SelectSound.play()
+    this.closeDirectory()
+    this.openDirectory()
   }
 
   // --- session ---
@@ -379,10 +406,13 @@ export class OnlineScreen extends LitElement {
           ${this.error ? html`<div class="error">${this.error}</div>` : nothing}
         </div>
         <div class="panel box">
-          <h3>Open rooms</h3>
+          <div class="list-head">
+            <h3>Open rooms</h3>
+            <button class="btn btn-solid small" ?disabled=${this.searching} @click=${() => this.refreshRooms()}>Refresh</button>
+          </div>
           <div class="rooms">
             ${this.rooms.length === 0
-              ? html`<div class="empty">No open rooms right now. Create one!</div>`
+              ? html`<div class="empty ${this.searching ? 'dots' : ''}">${this.searching ? 'Looking for rooms' : 'No open rooms right now. Create one!'}</div>`
               : this.rooms.map(room => this.renderListing(room))}
           </div>
         </div>

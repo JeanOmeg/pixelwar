@@ -7,10 +7,10 @@ import type { SkillId } from '../skills'
  */
 
 /** Raised when a message changes shape: peers on different versions refuse each other */
-export const PROTOCOL_VERSION = 1
+export const PROTOCOL_VERSION = 2
 export const APP_ID = 'pixelfantasywar'
 export const MAX_SPECTATORS = 8
-export const ONLINE_TURN_SECONDS = 120
+export const ONLINE_TURN_SECONDS = 300
 /** The turn timer turns red under this */
 export const TURN_WARNING_SECONDS = 15
 /** After the timer hits 0, the waiting side gives the active player this long to send `end-turn` */

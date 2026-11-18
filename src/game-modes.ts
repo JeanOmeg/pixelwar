@@ -13,6 +13,12 @@ export interface GameModeDefinition {
 
 export const GAME_MODES: GameModeDefinition[] = [
   {
+    id: 'online',
+    title: 'Online',
+    description: 'Play or watch a friend on another device.',
+    sides: ['You', 'Friend']
+  },
+  {
     id: 'p1vscpu',
     title: 'Player vs CPU',
     description: 'Command the blue army against the computer.',
@@ -29,12 +35,6 @@ export const GAME_MODES: GameModeDefinition[] = [
     title: 'CPU vs CPU',
     description: 'Sit back and watch two AI armies fight it out.',
     sides: ['CPU', 'CPU']
-  },
-  {
-    id: 'online',
-    title: 'Online',
-    description: 'Play or watch a friend on another device.',
-    sides: ['You', 'Friend']
   }
 ]
 
