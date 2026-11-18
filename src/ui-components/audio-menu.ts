@@ -14,11 +14,14 @@ import { canFullscreen, isFullscreen, isStandalone, needsHomeScreenForFullscreen
 export class AudioMenu extends LitElement {
   static styles = css`
     :host {
-        position: absolute;
+        /* fixed: with absolute, a taller page (canvas resize on fullscreen exit,
+           scene change) pushed the buttons below the visible area */
+        position: fixed;
         left: 0;
         bottom: 0;
         margin: 16px;
         margin-left: max(16px, env(safe-area-inset-left, 0px));
+        margin-bottom: max(16px, env(safe-area-inset-bottom, 0px));
         /* above the "rotate your device" hint (10000): always reachable */
         z-index: 10001;
         display: flex;
