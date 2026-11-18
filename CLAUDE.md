@@ -170,7 +170,7 @@ O custo é o poder escalado para que as 8 originais somem **100** (= `ARMY_BUDGE
 
 ### Escolha de exército
 
-Antes da partida, cada humano monta o exército na tela `<army-select>` (após o seletor de mapas; no PvP primeiro o Azul, depois o Vermelho; no CPU vs CPU a tela é pulada). A **CPU monta o dela** no `launch()` do `start-screen-ui` com `buildCpuArmy` (mesmos papéis do exército do mapa, até `ARMY_BUDGET`).
+Antes da partida, cada humano monta o exército na tela `<army-select>` (após o seletor de mapas; **sempre dois passos, Azul e depois Vermelho, em todos os modos**, inclusive CPU). Nos times da CPU a tela abre com uma sugestão de `buildCpuArmy` (sorteada uma vez por mapa em `chooseMap`, `cpuSuggestions`) e o botão **Random** (`randomize`) sorteia outra; o jogador pode editar a lista da CPU.
 - Os **slots** são os spawns do time no `.tmx`, na ordem dos objetos (`teamSpawns`). O jogador escolhe a classe de cada slot; posição continua a do mapa.
 - Orçamento `ARMY_BUDGET` (100). "Classic army" = exército desenhado no mapa (`defaultArmy`). Último exército usado por mapa/time fica em `localStorage` (`pixelfantasywar.army.<mapId>.<time>`).
 - O resultado vai em `MatchSettings.armies` (`[azul, vermelho]`, `null` = do mapa) e a `LevelBase` aplica com `spawnsWithArmies`. "Play again" reaproveita os mesmos exércitos.

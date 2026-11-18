@@ -139,6 +139,10 @@ export class ArmySelect extends LitElement {
   @property({ attribute: false })
     initialArmy: UnitClass[] = []
 
+  /** builds a random valid army ("Random" button) */
+  @property({ attribute: false })
+    randomize?: () => UnitClass[]
+
   @property({ type: Number })
     budget = 100
 
@@ -267,6 +271,7 @@ export class ArmySelect extends LitElement {
       <div class="actions">
         <span class="keys">Pick a slot, then a class<span class="keys-only"> · Enter confirm · Esc back</span></span>
         <button class="btn btn-solid" @click=${() => { this.army = [...this.defaultArmy]; this.selected = 0 }}>Classic army</button>
+        ${this.randomize ? html`<button class="btn btn-solid" @click=${() => { this.army = this.randomize?.() ?? this.army; this.selected = 0 }}>Random</button>` : nothing}
         <button class="btn btn-solid" @click=${() => this.dispatchEvent(new Event('back'))}>Back</button>
         <button class="btn btn-solid confirm" ?disabled=${!this.canConfirm()} @click=${() => this.confirm()}>Confirm</button>
       </div>

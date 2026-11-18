@@ -146,6 +146,8 @@ export class StartScreenUi extends LitElement {
   /** team building its army on the army screen */
   @state()
   private armyTeam = 0
+  /** random starting armies offered for the CPU teams (index = team) */
+  private cpuSuggestions: UnitClass[][] = []
 
   private armies: (UnitClass[] | null)[] = [null, null]
 
@@ -230,25 +232,33 @@ export class StartScreenUi extends LitElement {
     writePref(PREF_MAP, mapId)
     this.chosenMap = mapId === RANDOM_MAP_ID ? randomMap() : (findMap(mapId) ?? randomMap())
     this.armies = [null, null]
-    if (this.mode === 'cpuvscpu') {
-      this.launch()
-      return
-    }
+    // the CPU's starting suggestion is drawn once per map (the player can change it)
+    const info = getMapInfo(this.chosenMap)
+    this.cpuSuggestions = [0, 1].map(team => this.randomArmy(info, team))
     this.armyTeam = 0
     this.go('army')
   }
 
+  /** Every team (human or CPU) goes through the army builder, in order */
   private confirmArmy(army: UnitClass[]) {
     const map = this.chosenMap
     if (!map) return
     this.armies[this.armyTeam] = army
     writePref(prefArmy(map.id, this.armyTeam), army.join(','))
-    if (this.mode === 'p1vsp2' && this.armyTeam === 0) {
+    if (this.armyTeam === 0) {
       this.armyTeam = 1
       Resources.SelectSound.play()
       return
     }
     this.launch()
+  }
+
+  private isCpuTeam(team: number) {
+    return this.mode === 'cpuvscpu' || (this.mode === 'p1vscpu' && team === 1)
+  }
+
+  private randomArmy(info: ReturnType<typeof getMapInfo>, team: number) {
+    return buildCpuArmy(defaultArmy(info, team), ARMY_BUDGET)
   }
 
   private armyBack() {
@@ -264,10 +274,6 @@ export class StartScreenUi extends LitElement {
     // and turn to landscape (the browser only allows it during a user gesture)
     if (isTouchDevice()) void enterFullscreen()
     this.leaving = true
-    // the CPU builds its own army with the same budget (roles follow the map)
-    const info = getMapInfo(map)
-    const cpuTeams = this.mode === 'cpuvscpu' ? [0, 1] : this.mode === 'p1vscpu' ? [1] : []
-    for (const team of cpuTeams) this.armies[team] = buildCpuArmy(defaultArmy(info, team), ARMY_BUDGET)
     await new Promise(resolve => window.setTimeout(resolve, 650))
     const settings: MatchSettings = { mode: this.mode, armies: this.armies, difficulty: this.difficulty }
     this.engine.goToScene(sceneNameOf(map), { sceneActivationData: settings })
@@ -303,7 +309,9 @@ export class StartScreenUi extends LitElement {
         portrait: unitPortrait(unitTypeOf(unitClass, team), team === 1)
       }
     })
-    const player = this.mode === 'p1vsp2' ? `Player ${team + 1}` : 'You'
+    const cpu = this.isCpuTeam(team)
+    const player = cpu ? 'CPU' : this.mode === 'p1vsp2' ? `Player ${team + 1}` : 'You'
+    const suggestion = this.cpuSuggestions[team] ?? classic
     return html`
       <army-select
         class="screen"
@@ -316,7 +324,8 @@ export class StartScreenUi extends LitElement {
         .slots=${slots}
         .classes=${options}
         .defaultArmy=${classic}
-        .initialArmy=${this.savedArmy(map, team, slots.length) ?? classic}
+        .initialArmy=${this.savedArmy(map, team, slots.length) ?? (cpu ? suggestion : classic)}
+        .randomize=${() => this.randomArmy(info, team)}
         .budget=${ARMY_BUDGET}
         @pick=${() => Resources.SelectSound.play()}
         @confirm=${(event: CustomEvent<UnitClass[]>) => this.confirmArmy(event.detail)}

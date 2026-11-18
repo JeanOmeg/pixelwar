@@ -150,7 +150,7 @@ Cada ataque envolve três rolagens:
 
 ### Montando o exército
 
-Antes de cada partida você escolhe a classe de cada uma das 8 posições iniciais do seu time, gastando até **100 pontos** (custo na tabela acima). O botão **Classic army** volta para o exército desenhado no mapa, que custa exatamente 100. No modo Player vs Player, cada jogador monta o seu. A **CPU monta o próprio exército** com o mesmo orçamento: cada posição mantém o papel da classe desenhada no mapa (de longe, alcance 2, flanco, corpo a corpo ou pesado) e recebe uma classe sorteada desse papel.
+Antes de cada partida você escolhe a classe de cada uma das 8 posições iniciais do seu time, gastando até **100 pontos** (custo na tabela acima). O botão **Classic army** volta para o exército desenhado no mapa, que custa exatamente 100. Todos os times passam pela tela de montagem, na ordem Azul → Vermelho, inclusive a CPU (e no CPU vs CPU, para testar listas de exército em partidas IA vs IA). Para a CPU a tela já vem com uma sugestão sorteada: cada posição mantém o papel da classe desenhada no mapa (de longe, alcance 2, flanco, corpo a corpo ou pesado) e recebe uma classe sorteada desse papel. O botão **Random** sorteia outra lista válida.
 
 ---
 
