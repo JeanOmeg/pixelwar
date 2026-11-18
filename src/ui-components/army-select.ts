@@ -1,18 +1,13 @@
 import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
+import { classDetailStyles, renderClassDetails } from './class-details'
 import type { UnitClass } from '../path-finding/terrain-rules'
 
 export interface ArmyClassOption {
   unitClass: UnitClass
   role: string
   cost: number
-  hp: number
-  attack: number
-  defense: number
-  range: number
-  movement: number
-  traits: string[]
   /** data URL of the class in this team's colors */
   portrait: string
 }
@@ -30,7 +25,7 @@ export interface ArmySlot {
  */
 @customElement('army-select')
 export class ArmySelect extends LitElement {
-  static styles = [theme, css`
+  static styles = [theme, classDetailStyles, css`
     :host { display: block; width: calc(1680 * var(--u)); max-width: 97vw; }
     .header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: calc(12 * var(--u)); }
     h2 { margin: 0; font-weight: normal; font-size: calc(44 * var(--t)); text-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000; }
@@ -75,11 +70,10 @@ export class ArmySelect extends LitElement {
     .card {
       all: unset;
       box-sizing: border-box;
-      display: grid;
-      grid-template-columns: calc(64 * var(--u)) 1fr auto;
-      gap: calc(4 * var(--u)) calc(10 * var(--u));
-      align-items: center;
-      padding: calc(8 * var(--u));
+      display: flex;
+      flex-direction: column;
+      gap: calc(8 * var(--u));
+      padding: calc(10 * var(--u));
       background: rgba(255, 255, 255, 0.05);
       border: calc(3 * var(--u)) solid transparent;
       cursor: pointer;
@@ -87,15 +81,12 @@ export class ArmySelect extends LitElement {
     .card:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); }
     .card.current { border-color: var(--gold); }
     .card:disabled { opacity: 0.35; cursor: not-allowed; }
-    .card img { grid-row: span 2; width: calc(64 * var(--u)); height: calc(64 * var(--u)); image-rendering: pixelated; background: rgba(0, 0, 0, 0.3); }
-    .card .name { font-size: calc(20 * var(--t)); line-height: 1; }
+    .card .head { display: grid; grid-template-columns: calc(64 * var(--u)) 1fr auto; gap: calc(10 * var(--u)); align-items: center; }
+    .card img { width: calc(64 * var(--u)); height: calc(64 * var(--u)); image-rendering: pixelated; background: rgba(0, 0, 0, 0.3); }
+    .card .name { font-size: calc(22 * var(--t)); line-height: 1; }
     .card .name small { display: block; font-size: calc(14 * var(--t)); color: var(--gold); margin-top: calc(3 * var(--u)); }
-    .card .price { font-size: calc(22 * var(--t)); color: var(--gold); text-align: right; }
-    .card .price small { display: block; font-size: calc(12 * var(--t)); color: var(--muted); }
-    .card .stats { grid-column: 2 / span 2; display: flex; gap: calc(10 * var(--u)); font-size: calc(15 * var(--t)); color: var(--ink); }
-    .card .stats b { font-weight: normal; color: var(--muted); font-size: calc(12 * var(--t)); margin-right: calc(2 * var(--u)); }
-    .card .traits { grid-column: 1 / span 3; display: flex; flex-wrap: wrap; gap: calc(4 * var(--u)); }
-    .card .traits .chip { font-size: calc(12 * var(--t)); color: var(--mp); }
+    .card .price { font-size: calc(24 * var(--t)); color: var(--gold); text-align: right; }
+    .card .price small { display: block; font-size: calc(14 * var(--t)); color: var(--muted); }
 
     .actions { display: flex; align-items: center; gap: calc(14 * var(--u)); margin-top: calc(14 * var(--u)); }
     .actions .keys { flex: 1; font-size: calc(14 * var(--t)); color: var(--muted); }
@@ -225,14 +216,12 @@ export class ArmySelect extends LitElement {
     const current = this.army[this.selected] === option.unitClass
     return html`
       <button class="card ${current ? 'current' : ''}" ?disabled=${!this.fits(option.unitClass)} @click=${() => this.assign(option.unitClass)}>
-        <img src=${option.portrait} alt="" />
-        <div class="name">${option.unitClass}<small>${option.role}</small></div>
-        <div class="price">${option.cost}<small>pts</small></div>
-        <div class="stats">
-          <span><b>HP</b>${option.hp}</span><span><b>ATK</b>${option.attack}</span><span><b>DEF</b>${option.defense}</span>
-          <span><b>RNG</b>${option.range}</span><span><b>MOV</b>${option.movement}</span>
+        <div class="head">
+          <img src=${option.portrait} alt="" />
+          <div class="name">${option.unitClass}<small>${option.role}</small></div>
+          <div class="price">${option.cost}<small>pts</small></div>
         </div>
-        ${option.traits.length ? html`<div class="traits">${option.traits.map(t => html`<span class="chip">${t}</span>`)}</div>` : nothing}
+        ${renderClassDetails(option.unitClass)}
       </button>
     `
   }

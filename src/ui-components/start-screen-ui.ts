@@ -15,7 +15,7 @@ import { MAPS, MapDefinition, defaultArmy, findMap, getMapInfo, randomMap, scene
 import { mapPreview, unitPortrait } from '../ui-sprites'
 import { buildCpuArmy } from '../army-ai'
 import { DIFFICULTIES, DIFFICULTY_IDS, Difficulty, findDifficulty } from '../ai/weights'
-import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, armyCost, classStats, classTraits, unitTypeOf } from '../unit-classes'
+import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, armyCost, unitTypeOf } from '../unit-classes'
 import type { UnitClass } from '../path-finding/terrain-rules'
 import type { UnitType } from '../config'
 
@@ -291,21 +291,12 @@ export class StartScreenUi extends LitElement {
     const info = getMapInfo(map)
     const slots = teamSpawns(info, team).map(s => ({ x: s.x, y: s.y }))
     const classic = defaultArmy(info, team)
-    const options: ArmyClassOption[] = UNIT_CLASSES.map(unitClass => {
-      const stats = classStats(unitClass)
-      return {
-        unitClass,
-        role: CLASS_INFO[unitClass].role,
-        cost: CLASS_INFO[unitClass].cost,
-        hp: stats.health,
-        attack: stats.attack,
-        defense: stats.defense,
-        range: stats.range,
-        movement: stats.movement,
-        traits: classTraits(unitClass),
-        portrait: unitPortrait(unitTypeOf(unitClass, team), team === 1)
-      }
-    })
+    const options: ArmyClassOption[] = UNIT_CLASSES.map(unitClass => ({
+      unitClass,
+      role: CLASS_INFO[unitClass].role,
+      cost: CLASS_INFO[unitClass].cost,
+      portrait: unitPortrait(unitTypeOf(unitClass, team), team === 1)
+    }))
     const cpu = this.isCpuTeam(team)
     const player = cpu ? 'CPU' : this.mode === 'p1vsp2' ? `Player ${team + 1}` : 'You'
     const suggestion = this.cpuSuggestions[team] ?? classic

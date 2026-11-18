@@ -1,13 +1,13 @@
 /* eslint-disable indent -- nested lit templates read better with their own indentation */
 import { css, html } from 'lit'
-import { CLASS_INFO, UNIT_CLASSES, classStats, classTraits } from '../unit-classes'
-import { CLASS_SKILL, SKILLS } from '../skills'
+import { CLASS_INFO, UNIT_CLASSES } from '../unit-classes'
+import { classDetailStyles, renderClassDetails } from './class-details'
 import { unitPortrait } from '../ui-sprites'
 import type { UnitType } from '../config'
 
 /** Static pages of the start screen: How to play, Units and Credits */
 
-export const pageStyles = css`
+export const pageStyles = [classDetailStyles, css`
   .page { width: calc(1500 * var(--u)); max-width: 96vw; max-height: 90vh; display: flex; flex-direction: column; }
   .page .panel-title { font-size: calc(30 * var(--t)); padding: calc(12 * var(--u)) calc(18 * var(--u)); }
   .page-body { overflow-y: auto; padding: calc(20 * var(--u)); scrollbar-color: var(--edge) transparent; }
@@ -27,19 +27,11 @@ export const pageStyles = css`
   .unit-head img { width: calc(72 * var(--u)); height: calc(72 * var(--u)); image-rendering: pixelated; background: rgba(0, 0, 0, 0.35); }
   .unit-head h3 { margin: 0; font-weight: normal; font-size: calc(24 * var(--t)); }
   .unit-head small { font-size: calc(14 * var(--t)); color: var(--gold); }
-  .unit p { margin: 0; font-size: calc(14 * var(--t)); line-height: 1.35; color: var(--muted); min-height: calc(38 * var(--u)); }
-  .unit .stats { display: grid; grid-template-columns: repeat(5, 1fr); text-align: center; gap: calc(4 * var(--u)); }
-  .unit .stats div { background: rgba(0, 0, 0, 0.35); padding: calc(4 * var(--u)) 0; font-size: calc(18 * var(--t)); line-height: 1; }
-  .unit .stats small { display: block; font-size: calc(12 * var(--t)); color: var(--muted); margin-top: calc(3 * var(--u)); }
-  .unit .traits { display: flex; flex-wrap: wrap; gap: calc(5 * var(--u)); }
-  .unit .traits .chip { font-size: calc(13 * var(--t)); color: var(--mp); }
-  .unit .skill { font-size: calc(14 * var(--t)); line-height: 1.35; color: var(--muted); }
-  .unit .skill b { font-weight: normal; color: var(--gold); }
 
   .credits { display: flex; flex-direction: column; gap: calc(14 * var(--u)); font-size: calc(20 * var(--t)); line-height: 1.4; }
   .credits ul { margin: 0; padding-left: calc(24 * var(--u)); display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
   .credits a { color: var(--gold); }
-`
+`]
 
 export function renderHowToPlay() {
   return html`
@@ -132,25 +124,14 @@ export function renderUnits() {
   return html`
     <div class="units">
       ${UNIT_CLASSES.map(unitClass => {
-        const stats = classStats(unitClass)
         const info = CLASS_INFO[unitClass]
-        const traits = classTraits(unitClass)
         return html`
           <div class="unit">
             <div class="unit-head">
               <img src=${unitPortrait(`${unitClass}A` as UnitType)} alt="" />
               <div><h3>${unitClass}</h3><small>${info.role} · ${info.cost} pts</small></div>
             </div>
-            <p>${info.description}</p>
-            <div class="stats">
-              <div>${stats.health}<small>HP</small></div>
-              <div>${stats.attack}<small>ATK</small></div>
-              <div>${stats.defense}<small>DEF</small></div>
-              <div>${stats.range}<small>RNG</small></div>
-              <div>${stats.movement}<small>MOV</small></div>
-            </div>
-            <div class="skill"><b>${SKILLS[CLASS_SKILL[unitClass]].name}</b> (${SKILLS[CLASS_SKILL[unitClass]].cost} MP): ${SKILLS[CLASS_SKILL[unitClass]].description}</div>
-            ${traits.length ? html`<div class="traits">${traits.map(t => html`<span class="chip">${t}</span>`)}</div>` : ''}
+            ${renderClassDetails(unitClass)}
           </div>
         `
       })}
