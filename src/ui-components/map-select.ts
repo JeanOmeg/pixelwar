@@ -14,8 +14,6 @@ export interface MapListItem {
   rounds: number
   /** data URL of the rendered map */
   preview: string
-  /** data URLs of each team's units, in spawn order */
-  roster: string[][]
 }
 
 /**
@@ -76,20 +74,17 @@ export class MapSelect extends LitElement {
       border-bottom: calc(3 * var(--u)) solid var(--edge);
       overflow: hidden;
     }
-    .preview img { max-width: 100%; max-height: 100%; image-rendering: pixelated; display: block; }
+    /* the whole map always fits: scaled down to the box, never cropped */
+    .preview > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; display: block; }
     .mosaic { position: absolute; inset: 0; display: grid; gap: calc(6 * var(--u)); padding: calc(6 * var(--u)); opacity: 0.35; filter: grayscale(0.6); }
     .mosaic img { width: 100%; height: 100%; min-height: 0; object-fit: cover; image-rendering: pixelated; }
     .question { position: relative; font-size: calc(160 * var(--t)); color: var(--gold); text-shadow: calc(8 * var(--u)) calc(8 * var(--u)) 0 #000; }
 
-    .info { display: grid; grid-template-columns: 1fr auto; gap: calc(10 * var(--u)) calc(24 * var(--u)); padding: calc(16 * var(--u)) calc(20 * var(--u)); }
+    .info { display: flex; flex-direction: column; gap: calc(10 * var(--u)); padding: calc(16 * var(--u)) calc(20 * var(--u)); }
     .info h3 { margin: 0; font-weight: normal; font-size: calc(36 * var(--t)); line-height: 1; }
-    .info p { margin: 0; grid-column: 1; font-size: calc(17 * var(--t)); line-height: 1.35; color: var(--muted); }
-    .chips { grid-column: 1; display: flex; flex-wrap: wrap; gap: calc(8 * var(--u)); }
+    .info p { margin: 0; font-size: calc(17 * var(--t)); line-height: 1.35; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: calc(8 * var(--u)); }
     .chips .chip { color: var(--ink); font-size: calc(15 * var(--t)); }
-    .roster { grid-column: 2; grid-row: 1 / span 3; display: flex; flex-direction: column; gap: calc(6 * var(--u)); justify-content: center; }
-    .army { display: flex; align-items: center; gap: calc(2 * var(--u)); }
-    .army span { width: calc(46 * var(--u)); font-size: calc(14 * var(--t)); color: var(--team); }
-    .army img { width: calc(40 * var(--u)); height: calc(40 * var(--u)); image-rendering: pixelated; }
 
     .actions { display: flex; justify-content: flex-end; gap: calc(14 * var(--u)); padding: 0 calc(20 * var(--u)) calc(18 * var(--u)); }
     .actions .btn { font-size: calc(26 * var(--t)); padding: calc(10 * var(--u)) calc(26 * var(--u)); }
@@ -215,15 +210,10 @@ export class MapSelect extends LitElement {
         </div>
       `
     }
-    const [blue = [], red = []] = map.roster
     return html`
       <div class="preview"><img src=${map.preview} alt=${map.name} /></div>
       <div class="info">
         <h3>${map.name}</h3>
-        <div class="roster">
-          <div class="army team-blue"><span>Blue</span>${blue.map(src => html`<img src=${src} alt="" />`)}</div>
-          <div class="army team-red"><span>Red</span>${red.map(src => html`<img src=${src} alt="" />`)}</div>
-        </div>
         <p>${map.description}</p>
         <div class="chips">
           <span class="chip">${map.width}×${map.height} tiles</span>

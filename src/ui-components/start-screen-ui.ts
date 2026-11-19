@@ -249,9 +249,6 @@ export class StartScreenUi extends LitElement {
     if (!this.mapItems) {
       this.mapItems = MAPS.map(map => {
         const info = getMapInfo(map)
-        const roster = [0, 1].map(team => info.spawns
-          .filter(spawn => spawn.team === team)
-          .map(spawn => unitPortrait(spawn.unitType, team === 1)))
         return {
           id: map.id,
           name: map.name,
@@ -260,8 +257,7 @@ export class StartScreenUi extends LitElement {
           height: info.height,
           unitsPerTeam: info.unitsPerTeam,
           rounds: Math.floor(map.maxTurns / 2),
-          preview: mapPreview(map),
-          roster
+          preview: mapPreview(map)
         }
       })
     }
