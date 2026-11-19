@@ -270,16 +270,22 @@ export class Unit extends ex.Actor {
     return this.animationFor('idle')
   }
 
+  /** Plays once and holds the last frame (the shared animations loop) */
   selectAnimationAttack() {
-    return this.animationFor('attack')
+    const animation = this.animationFor('attack')
+    animation.strategy = ex.AnimationStrategy.Freeze
+    return animation
   }
 
   selectAnimationMove() {
     return this.animationFor('move')
   }
 
+  /** Plays once and holds the last frame while it fades out */
   selectAnimationDeath() {
-    return this.animationFor('death')
+    const animation = this.animationFor('death')
+    animation.strategy = ex.AnimationStrategy.Freeze
+    return animation
   }
 
   /** Start of the owner's turn: actions back, temporary effects gone */
@@ -613,15 +619,19 @@ export class Unit extends ex.Actor {
 
   /** Attack animation, then the damage and its number */
   private async playStrike(event: Extract<AttackEvent, { kind: 'strike' }>) {
+    // the animation starts when the sequence runs, not when it is queued: a
+    // counterattacker may still be blinking from the hit it just took
     const atkAnim = new ex.ActionSequence(this, (ctx) => {
-      this.setAnim(this.selectAnimationAttack())
+      ctx.callMethod(() => {
+        this.setAnim(this.selectAnimationAttack())
+        Resources.HitSound.play()
+      })
       ctx.moveTo({
         pos: this.pos,
         duration: 500,
         easing: ex.EasingFunctions.EaseInOutCubic
       })
     })
-    Resources.HitSound.play()
     await this.actions.runAction(atkAnim).toPromise()
     this.setAnim(this.selectAnimationIdle())
 
