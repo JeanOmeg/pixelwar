@@ -118,7 +118,7 @@ export class MapSelect extends LitElement {
       const ids = this.ids()
       const index = ids.indexOf(this.current())
       const next = (index + (event.key === 'ArrowDown' ? 1 : -1) + ids.length) % ids.length
-      this.select(ids[next])
+      this.select(ids[next], true)
     } else if (event.key === 'Enter') {
       event.preventDefault()
       this.start()
@@ -146,12 +146,27 @@ export class MapSelect extends LitElement {
     return this.ids().includes(id) ? id : this.ids()[0]
   }
 
-  private select(id: string) {
+  /**
+   * `focus`: ↑/↓ also move the focus to the item, so the controller's focus
+   * frame and the gold "selected" border stay on the same map
+   */
+  private select(id: string, focus = false) {
     this.selected = id
     this.dispatchEvent(new CustomEvent<string>('select', { detail: id }))
     this.updateComplete.then(() => {
-      this.shadowRoot?.querySelector('.item.selected')?.scrollIntoView({ block: 'nearest' })
+      const item = this.shadowRoot?.querySelector<HTMLElement>('.item.selected')
+      if (focus) item?.focus({ preventScroll: true })
+      item?.scrollIntoView({ block: 'nearest' })
     })
+  }
+
+  /**
+   * Click on an item: selects it. A click without a mouse (controller A,
+   * Space) on the map already selected starts it, like Enter.
+   */
+  private onItemClick(event: MouseEvent, id: string) {
+    if (event.detail === 0 && this.current() === id) this.start()
+    else this.select(id)
   }
 
   private start() {
@@ -160,7 +175,7 @@ export class MapSelect extends LitElement {
 
   private renderItem(map: MapListItem, selected: boolean) {
     return html`
-      <button class="item ${selected ? 'selected' : ''}" @click=${() => this.select(map.id)} @dblclick=${() => this.start()}>
+      <button class="item ${selected ? 'selected' : ''}" @click=${(e: MouseEvent) => this.onItemClick(e, map.id)} @dblclick=${() => this.start()}>
         <img class="thumb" src=${map.preview} alt="" />
         <div>
           <div class="name">${map.name}</div>
@@ -172,7 +187,7 @@ export class MapSelect extends LitElement {
 
   private renderRandomItem(selected: boolean) {
     return html`
-      <button class="item ${selected ? 'selected' : ''}" @click=${() => this.select(RANDOM_MAP_ID)} @dblclick=${() => this.start()}>
+      <button class="item ${selected ? 'selected' : ''}" @click=${(e: MouseEvent) => this.onItemClick(e, RANDOM_MAP_ID)} @dblclick=${() => this.start()}>
         <div class="thumb">?</div>
         <div>
           <div class="name">Random map</div>

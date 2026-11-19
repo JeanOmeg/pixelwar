@@ -99,7 +99,7 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, 
 
 ### Controle (gamepad)
 
-Funciona com controles de Xbox, PlayStation, Switch Pro e a maioria dos controles USB/Bluetooth, no computador e no celular/tablet. Basta apertar qualquer botão: as dicas passam a mostrar os botões do controle em uso (A/B/X/Y, ✕/◯/▢/△ ou os do Nintendo). Dá para jogar do menu ao fim da partida sem mouse; nos menus o direcional anda entre os botões (contorno dourado).
+Funciona com controles de Xbox, PlayStation, Switch Pro e a maioria dos controles USB/Bluetooth, no computador e no celular/tablet. Basta apertar qualquer botão: as dicas passam a mostrar os botões do controle em uso (A/B/X/Y, ✕/◯/▢/△ ou os do Nintendo). Dá para jogar do menu ao fim da partida sem mouse; nos menus o direcional anda entre os botões (contorno branco).
 
 | Botão (Xbox / PlayStation) | Na partida | Nos menus |
 |---|---|---|

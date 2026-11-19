@@ -181,6 +181,24 @@ function navBox(el: HTMLElement): Box {
   }
 }
 
+/**
+ * The part of an element that can be seen: cut by every scrolling list
+ * around it and by the window. null if nothing of it shows.
+ */
+export function visibleBox(el: HTMLElement): Box | null {
+  const rect = el.getBoundingClientRect()
+  const box: Box = { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom }
+  const cut = (area: Box) => {
+    box.left = Math.max(box.left, area.left)
+    box.top = Math.max(box.top, area.top)
+    box.right = Math.min(box.right, area.right)
+    box.bottom = Math.min(box.bottom, area.bottom)
+  }
+  for (let scroller = scrollParent(el); scroller; scroller = scrollParent(scroller)) cut(scroller.getBoundingClientRect())
+  cut({ left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight })
+  return box.right - box.left > 2 && box.bottom - box.top > 2 ? box : null
+}
+
 /** Its center is inside the visible part of its list */
 function inView(el: HTMLElement): boolean {
   const scroller = scrollParent(el)

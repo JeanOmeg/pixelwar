@@ -31,6 +31,8 @@ const PREF_MAP = 'pixelfantasywar.map'
 const MENU_TEXT_SCALE = 1.3
 /** Extra text size allowed on small screens (the layout itself doesn't grow) */
 const MENU_MAX_TEXT_BOOST = 1.4
+/** The title screen uses at most this share of the window height */
+const TITLE_FIT = 0.94
 
 function readPref(key: string): string | null {
   try { return localStorage.getItem(key) } catch { return null }
@@ -159,7 +161,29 @@ export class StartScreenUi extends LitElement {
 
   private mapItems: MapListItem[] | null = null
 
-  private onResize = () => this.updateScale()
+  private onResize = () => {
+    this.updateScale()
+    requestAnimationFrame(() => this.fitTitle())
+  }
+
+  override updated() {
+    this.fitTitle()
+  }
+
+  /**
+   * Phones: the text is enlarged to stay readable (readableBoost), and the
+   * title screen (logo, armies, 4 buttons) then grew taller than a phone
+   * held sideways, cutting off Credits. When it doesn't fit, shrink just
+   * that screen to the height available (with a small margin).
+   */
+  private fitTitle() {
+    const el = this.renderRoot.querySelector<HTMLElement>('.title-screen')
+    if (!el) return
+    el.style.zoom = ''
+    const height = el.getBoundingClientRect().height
+    const room = window.innerHeight * TITLE_FIT
+    if (height > room) el.style.zoom = (room / height).toFixed(3)
+  }
   private onKeyDown = (event: KeyboardEvent) => {
     // the map, army and online screens handle Esc themselves
     if (event.key === 'Escape' && !['title', 'map', 'army', 'online'].includes(this.screen)) this.go('title')

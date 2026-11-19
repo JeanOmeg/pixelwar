@@ -1,6 +1,6 @@
 import { isTouchDevice } from '../device'
 import { PadTracker, buttonLabel, controllerFamily, readAnalog, type ControllerFamily, type PadAnalog, type PadButton, type PadPress, type PadSnapshot } from './controller'
-import { deepActiveElement, focusDefault, isTextField, moveFocus, navigableElements, navigableFocus, scrollMenus } from './focus-nav'
+import { deepActiveElement, focusDefault, isTextField, moveFocus, navigableElements, navigableFocus, scrollMenus, visibleBox } from './focus-nav'
 
 /**
  * Controller support. Reads every connected controller once per frame (its
@@ -110,7 +110,7 @@ function snapshots(): { pads: PadSnapshot[], last: Gamepad | null } {
   return { pads, last }
 }
 
-/** Gold frame over the focused button while playing with a controller */
+/** White frame over the focused button while playing with a controller */
 function createFocusRing(): HTMLElement {
   const ring = document.createElement('div')
   ring.className = 'pad-focus'
@@ -118,9 +118,11 @@ function createFocusRing(): HTMLElement {
     position: 'fixed',
     pointerEvents: 'none',
     zIndex: '2147483000',
-    border: '3px solid #ffd447',
-    boxShadow: '0 0 0 3px #000, inset 0 0 0 2px #000',
-    transition: 'left 80ms, top 80ms, width 80ms, height 80ms',
+    boxSizing: 'border-box',
+    // white, not gold: gold already means "selected" (map, slot, current class)
+    border: '3px solid #ffffff',
+    boxShadow: 'inset 0 0 0 2px #000, 0 0 0 2px #000',
+    // no transition: while a list scrolls, an animated frame trails behind and looks doubled
     display: 'none'
   })
   document.body.appendChild(ring)
@@ -164,9 +166,12 @@ export function startGamepadInput(match: () => GamepadMatch | null) {
       lastScan = now
       if (navigableElements().length > 0 && focusDefault()) focused = navigableFocus()
     }
-    if (focused) {
-      const rect = focused.getBoundingClientRect()
-      Object.assign(ring.style, { display: 'block', left: `${rect.left - 4}px`, top: `${rect.top - 4}px`, width: `${rect.width + 8}px`, height: `${rect.height + 8}px`, boxSizing: 'border-box' })
+    // right on the element's edge (over its own gold border, if it has one),
+    // and only the part that shows: a button half scrolled out of its list
+    // must not draw a frame over the header or the panel next to it
+    const box = focused && visibleBox(focused)
+    if (box) {
+      Object.assign(ring.style, { display: 'block', left: `${box.left}px`, top: `${box.top}px`, width: `${box.right - box.left}px`, height: `${box.bottom - box.top}px` })
     } else {
       ring.style.display = 'none'
     }
