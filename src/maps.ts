@@ -80,6 +80,34 @@ export const MAPS: MapDefinition[] = [
     description: 'Broken walls and pillars surround an old altar. Watchtowers on each meadow shelter the archers.',
     tiledMap: Resources.TiledMap8,
     maxTurns: 100
+  },
+  {
+    id: 'desert-oasis',
+    name: 'Desert Oasis',
+    description: 'A sun-baked desert around a green oasis. The lake splits the field into two lanes, with only cacti and rocks for cover.',
+    tiledMap: Resources.TiledMap9,
+    maxTurns: 100
+  },
+  {
+    id: 'frozen-pass',
+    name: 'Frozen Pass',
+    description: 'A snowfield between two green valleys. The frozen lake can be crossed on foot; snowy pines and rocks narrow the way around it.',
+    tiledMap: Resources.TiledMap10,
+    maxTurns: 100
+  },
+  {
+    id: 'hamlet-ford',
+    name: 'Hamlet Ford',
+    description: 'Two farm hamlets on either side of a river. Two wooden bridges and a stone one are the only crossings.',
+    tiledMap: Resources.TiledMap11,
+    maxTurns: 100
+  },
+  {
+    id: 'fallen-citadel',
+    name: 'Fallen Citadel',
+    description: 'The broken walls of a citadel guard twin altars. Breaches on every side let both armies in, and watchtowers flank each camp.',
+    tiledMap: Resources.TiledMap12,
+    maxTurns: 100
   }
 ]
 

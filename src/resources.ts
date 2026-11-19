@@ -51,6 +51,10 @@ import Map5TmxPath from './assets/tiledMap/map_5.tmx'
 import Map6TmxPath from './assets/tiledMap/map_6.tmx'
 import Map7TmxPath from './assets/tiledMap/map_7.tmx'
 import Map8TmxPath from './assets/tiledMap/map_8.tmx'
+import Map9TmxPath from './assets/tiledMap/map_9.tmx'
+import Map10TmxPath from './assets/tiledMap/map_10.tmx'
+import Map11TmxPath from './assets/tiledMap/map_11.tmx'
+import Map12TmxPath from './assets/tiledMap/map_12.tmx'
 import TilesetTsxPath from './assets/tiledMap/NewFullTile.tsx'
 
 export const Resources = {
@@ -109,6 +113,34 @@ export const Resources = {
   TiledMap8:  new TiledResource(Map8TmxPath, {
     pathMap: [
       { path: 'map_8.tmx', output: Map8TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap9:  new TiledResource(Map9TmxPath, {
+    pathMap: [
+      { path: 'map_9.tmx', output: Map9TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap10:  new TiledResource(Map10TmxPath, {
+    pathMap: [
+      { path: 'map_10.tmx', output: Map10TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap11:  new TiledResource(Map11TmxPath, {
+    pathMap: [
+      { path: 'map_11.tmx', output: Map11TmxPath },
+      { path: 'NewFullTile.png', output: TilesetPath },
+      { path: 'NewFullTile.tsx', output: TilesetTsxPath }
+    ]
+  }),
+  TiledMap12:  new TiledResource(Map12TmxPath, {
+    pathMap: [
+      { path: 'map_12.tmx', output: Map12TmxPath },
       { path: 'NewFullTile.png', output: TilesetPath },
       { path: 'NewFullTile.tsx', output: TilesetTsxPath }
     ]

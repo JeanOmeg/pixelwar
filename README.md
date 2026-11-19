@@ -58,6 +58,10 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, 
 | **Old Fortress** | Uma fortaleza abandonada no meio do campo; as portas são a única entrada e o pátio com pilares é o prêmio |
 | **Riverside Village** | Uma vila cortada por um rio, com casas, jardins e praças de pedra nas duas pontes |
 | **Ruined Temple** | Muros quebrados e pilares em volta de um altar; torres de vigia protegem os arqueiros de cada lado |
+| **Desert Oasis** | Deserto em volta de um oásis; o lago divide o campo em duas rotas, com cactos e pedras como única cobertura |
+| **Frozen Pass** | Campo de neve entre dois vales verdes; o lago congelado dá para atravessar a pé e pinheiros nevados estreitam o caminho |
+| **Hamlet Ford** | Dois povoados de fazenda separados por um rio, com duas pontes de madeira e uma de pedra |
+| **Fallen Citadel** | Muralhas quebradas de uma cidadela em volta de altares gêmeos; brechas dos dois lados e torres de vigia em cada acampamento |
 
 ---
 

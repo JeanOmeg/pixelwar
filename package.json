@@ -15,7 +15,8 @@
     "ai:sim": "vitest run --config vitest.sim.config.ts tests/sim/ai.sim.ts",
     "ai:tune": "vitest run --config vitest.sim.config.ts tests/sim/tune.sim.ts",
     "ai:stall": "vitest run --config vitest.sim.config.ts tests/sim/stall.sim.ts",
-    "balance:sim": "vitest run --config vitest.sim.config.ts tests/sim/classes.sim.ts"
+    "balance:sim": "vitest run --config vitest.sim.config.ts tests/sim/classes.sim.ts",
+    "tileset": "vite-node scripts/tileset/extend-tileset.ts"
   },
   "author": "Jean Fernandes",
   "license": "BSD-2-Clause",
