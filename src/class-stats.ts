@@ -18,7 +18,7 @@ export interface ClassStats {
 export const CLASS_STATS: Record<UnitClass, ClassStats> = {
   Archer: { health: 10, attack: 2, defense: 2, range: 6, movement: 4 },
   Mage: { health: 10, attack: 2, defense: 2, range: 5, movement: 5 },
-  Spearman: { health: 10, attack: 4, defense: 2, range: 2, movement: 6 },
+  Spearman: { health: 10, attack: 4, defense: 2, range: 2, movement: 5 },
   Thief: { health: 10, attack: 5, defense: 2, range: 1, movement: 6 },
   Fighter: { health: 15, attack: 4, defense: 3, range: 1, movement: 6 },
   Cleric: { health: 20, attack: 3, defense: 4, range: 1, movement: 6 },

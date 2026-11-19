@@ -2,7 +2,7 @@
 import * as ex from 'excalibur'
 import { describe, expect, test } from 'vitest'
 import { FOREST_DEFENSE, PLAIN_ATTACK } from '../src/combat'
-import { GUARD_DEF, HEAL_HP, SKILLS, skillsOf } from '../src/skills'
+import { AIMED_SHOT_DAMAGE, FIREBALL_SPLASH, GUARD_DEF, HEAL_HP, SKILLS, skillsOf } from '../src/skills'
 import { UNIT_CLASSES } from '../src/unit-types'
 import { makeBoard, makePlayers, place } from './helpers'
 
@@ -83,6 +83,19 @@ describe('skills', () => {
     const target = place(board, 'FighterB', 2, 0, b)
     archer.startSkill('skill-aimed-shot')
     expect(archer.attackContext(target).guaranteedHit).toBe(true)
+    expect(archer.attackContext(target).bonusDamage).toBe(AIMED_SHOT_DAMAGE)
+  })
+
+  test('Fireball burns the target, hit or miss, and the enemies next to it', () => {
+    const board = makeBoard(['......'])
+    const [a, b] = makePlayers(board)
+    const mage = place(board, 'MageA', 0, 0, a)
+    const target = place(board, 'WarriorB', 3, 0, b)
+    const near = place(board, 'WarriorB', 4, 0, b)
+    mage.startSkill('skill-fireball')
+    mage.attackInstant(target, () => [1, 1]) // a miss: 1 damage
+    expect(target.health).toBe(25 - 1 - FIREBALL_SPLASH)
+    expect(near.health).toBe(25 - FIREBALL_SPLASH)
   })
 })
 

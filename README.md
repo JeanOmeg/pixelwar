@@ -170,24 +170,24 @@ Cada ataque envolve três rolagens:
 
 | Unidade | HP | ATK | DEF | Alcance | Movimento | Custo | Skill própria |
 |---|---|---|---|---|---|---|---|
-| **Archer** | 10 | 2 | 2 | 6 | 4 | 10 | Aimed Shot |
-| **Mage** | 10 | 2 | 2 | 5 | 5 | 9 | Fireball |
-| **Spearman** | 10 | 4 | 2 | 2 | 6 | 8 | Pierce |
-| **Thief** | 10 | 5 | 2 | 1 | 6 | 9 | Steal |
+| **Archer** | 10 | 2 | 2 | 6 | 4 | 9 | Aimed Shot |
+| **Mage** | 10 | 2 | 2 | 5 | 5 | 8 | Fireball |
+| **Spearman** | 10 | 4 | 2 | 2 | 5 | 8 | Pierce |
+| **Thief** | 10 | 5 | 2 | 1 | 6 | 10 | Steal |
 | **Fighter** | 15 | 4 | 3 | 1 | 6 | 12 | Second Wind |
 | **Cleric** | 20 | 3 | 4 | 1 | 6 | 15 | Heal |
-| **Barbarian** | 20 | 5 | 4 | 1 | 4 | 16 | Rage |
+| **Barbarian** | 20 | 5 | 4 | 1 | 4 | 17 | Rage |
 | **Warrior** | 25 | 4 | 5 | 1 | 4 | 21 | Guard |
 | **Paladin** | 18 | 4 | 4 | 1 | 5 | 15 | Shield Wall |
-| **Berserker** | 16 | 7 | 2 | 1 | 5 | 15 | Frenzy |
-| **Assassin** | 8 | 6 | 1 | 1 | 7 | 8 | Backstab |
-| **Ranger** | 10 | 3 | 2 | 5 | 5 | 12 | Pinning Shot |
+| **Berserker** | 16 | 7 | 2 | 1 | 5 | 17 | Frenzy |
+| **Assassin** | 8 | 6 | 1 | 1 | 7 | 9 | Backstab |
+| **Ranger** | 10 | 3 | 2 | 5 | 5 | 11 | Pinning Shot |
 | **Necromancer** | 8 | 4 | 2 | 4 | 4 | 8 | Drain |
 | **Halberdier** | 14 | 4 | 3 | 2 | 4 | 12 | Brace |
 
 > **Thief**, **Assassin** e **Ranger** pagam só 1 ponto de movimento na floresta (portas continuam custando 2). **Archer**, **Mage**, **Ranger** e **Necromancer** podem mirar em tiles de água. O **Halberdier** tem alcance 2 em qualquer terreno. As classes de alcance 1 contra-atacam.
 >
-> Os custos saem da matemática real de combate (dano médio causado e recebido, contra-ataques, floresta, mobilidade e alcance), escalados para que as 8 classes originais somem 100. Com o contra-ataque e a floresta, Archer, Berserker e Halberdier subiram 1 ponto e o Cleric caiu 1. `yarn balance` mostra a conta.
+> Os custos saem da matemática real de combate (dano médio causado e recebido, contra-ataques, floresta, mobilidade e alcance), escalados para que as 8 classes originais somem 100. Vida/defesa e mobilidade a mais rendem cada vez menos (retorno decrescente), medido em milhares de partidas CPU × CPU com exércitos aleatórios: `yarn balance` mostra a conta e `yarn balance:sim` confere em partidas.
 
 ### Montando o exército
 
@@ -203,22 +203,24 @@ Cada unidade possui **4 PM (Pontos de Magia)** e pode usar **uma skill por turno
 |---|---|---|---|
 | **Run** | Todas | 2 PM | Move o dobro da distância normal (sem ter movido nem atacado). Pode atacar depois. |
 | **Special** | Todas | 4 PM | O próximo ataque é sempre um golpe crítico. |
-| **Aimed Shot** | Archer | 2 PM | O próximo ataque não erra. |
-| **Fireball** | Mage | 3 PM | O próximo ataque também causa 3 de dano aos inimigos ao lado do alvo. |
+| **Aimed Shot** | Archer | 2 PM | O próximo ataque não erra e causa +3 de dano. |
+| **Fireball** | Mage | 2 PM | O próximo ataque também queima o alvo (acertando ou não) e cada inimigo ao lado dele em 2 de dano. |
 | **Pierce** | Spearman | 2 PM | O próximo ataque ignora a DEF do alvo (armadura e floresta). |
-| **Steal** | Thief | 1 PM | O próximo ataque, se acertar, rouba até 2 PM do alvo. |
+| **Steal** | Thief | 2 PM | O próximo ataque, se acertar, rouba até 2 PM do alvo. |
 | **Second Wind** | Fighter | 2 PM | Recupera 6 HP. |
-| **Heal** | Cleric | 3 PM | Recupera 8 HP dele ou de um aliado adjacente (escolha o alvo no mapa). |
-| **Rage** | Barbarian | 2 PM | O próximo ataque causa +3 de dano se acertar. |
-| **Guard** | Warrior | 2 PM | +3 DEF até o próximo turno dele. |
-| **Shield Wall** | Paladin | 3 PM | Ele e os aliados adjacentes ganham +2 DEF até o próximo turno dele. |
-| **Frenzy** | Berserker | 2 PM | +3 ATK e −2 DEF até o próximo turno dele. |
-| **Backstab** | Assassin | 3 PM | O próximo ataque conta como ataque pelas costas (acerto garantido, ATK dobrado, sem contra-ataque). |
-| **Pinning Shot** | Ranger | 2 PM | Se o próximo ataque acertar, o alvo não pode se mover no próximo turno dele. |
-| **Drain** | Necromancer | 2 PM | O próximo ataque cura o Necromancer pelo dano causado. |
-| **Brace** | Halberdier | 2 PM | +1 DEF e contra-ataca a até 2 tiles, até o próximo turno dele. |
+| **Heal** | Cleric | 2 PM | Recupera 6 HP dele ou de um aliado adjacente (escolha o alvo no mapa). |
+| **Rage** | Barbarian | 2 PM | O próximo ataque causa +5 de dano se acertar. |
+| **Guard** | Warrior | 2 PM | +4 DEF até o próximo turno dele. |
+| **Shield Wall** | Paladin | 2 PM | Ele e os aliados adjacentes ganham +2 DEF até o próximo turno dele. |
+| **Frenzy** | Berserker | 2 PM | +4 ATK e −1 DEF até o próximo turno dele. |
+| **Backstab** | Assassin | 4 PM | O próximo ataque conta como ataque pelas costas (acerto garantido, ATK dobrado, sem contra-ataque). |
+| **Pinning Shot** | Ranger | 2 PM | Se o próximo ataque acertar, causa +2 de dano e o alvo não pode se mover no próximo turno dele. |
+| **Drain** | Necromancer | 2 PM | O próximo ataque causa +2 de dano se acertar e cura o Necromancer pelo dano causado. |
+| **Brace** | Halberdier | 2 PM | +2 DEF e contra-ataca a até 2 tiles, até o próximo turno dele. |
 
 > PM não se regenera durante a batalha — use com estratégia.
+>
+> Toda skill custa **2 PM** (dá para usar duas vezes por partida) ou **4 PM** (uma vez). O Special (4 PM) é a régua: ele rende cerca de 7,5 de dano a mais, e cada skill de 2 PM foi ajustada para render perto da metade disso.
 
 ---
 

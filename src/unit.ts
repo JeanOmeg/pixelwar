@@ -9,8 +9,8 @@ import { DustParticles } from './dust-particles'
 import { DamageManager } from './damage-manager'
 import { AttackContext, AttackOutcome, CombatStats, FOREST_DEFENSE, Facing, PLAIN_ATTACK, facingBetween, resolveAttack, rollWithAdvantage } from './combat'
 import {
-  BRACE_DEF, BRACE_REACH, FIREBALL_SPLASH, FRENZY_ATK, FRENZY_DEF, GUARD_DEF, HEAL_HP, RAGE_DAMAGE,
-  SECOND_WIND_HP, SHIELD_WALL_DEF, SKILLS, STEAL_MP, SkillDefinition, SkillId
+  BRACE_DEF, BRACE_REACH, FIREBALL_SPLASH, FRENZY_ATK, FRENZY_DEF, GUARD_DEF, HEAL_HP,
+  SECOND_WIND_HP, SHIELD_WALL_DEF, SKILLS, STEAL_MP, SkillDefinition, SkillId, skillBonusDamage
 } from './skills'
 import { gameDelay } from './speed'
 
@@ -488,7 +488,7 @@ export class Unit extends ex.Actor {
       backAttack: this.isBehind(other) || skill === 'skill-backstab',
       guaranteedHit: skill === 'skill-aimed-shot',
       ignoreDefense: skill === 'skill-pierce',
-      bonusDamage: skill === 'skill-rage' ? RAGE_DAMAGE : 0
+      bonusDamage: skillBonusDamage(skill)
     }
   }
 
@@ -525,17 +525,22 @@ export class Unit extends ex.Actor {
     const [d20, d6] = rolls()
     const outcome = resolveAttack(this.combatStats(), other.combatStats(), context, d20, d6)
     const events: AttackEvent[] = [{ kind: 'strike', attacker: this, defender: other, outcome, counter: false }]
-    const healthAfter = other.health - outcome.damage
+    let healthAfter = other.health - outcome.damage
 
     // skill effects that follow the hit
     if (skill === 'skill-drain' && outcome.hit) events.push({ kind: 'heal', unit: this, amount: outcome.damage })
     if (skill === 'skill-steal' && outcome.hit) events.push({ kind: 'steal', from: other, to: this, amount: Math.min(STEAL_MP, other.mp) })
-    if (skill === 'skill-pinning-shot' && outcome.hit && healthAfter > 0) events.push({ kind: 'pin', unit: other })
     if (skill === 'skill-fireball' && other.cell) {
+      // the target burns too (hit or miss), unless the strike already killed it
+      if (healthAfter > 0) {
+        events.push({ kind: 'splash', unit: other, damage: FIREBALL_SPLASH })
+        healthAfter -= FIREBALL_SPLASH
+      }
       for (const cell of other.cell.getNeighbors()) {
         if (cell.unit && cell.unit.player !== this.player) events.push({ kind: 'splash', unit: cell.unit, damage: FIREBALL_SPLASH })
       }
     }
+    if (skill === 'skill-pinning-shot' && outcome.hit && healthAfter > 0) events.push({ kind: 'pin', unit: other })
 
     // a melee defender that survives strikes back (never after a back attack)
     if (healthAfter > 0 && other.canCounter(this, context)) {

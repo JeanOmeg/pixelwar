@@ -6,7 +6,7 @@ import type { PathNodeComponent } from '../path-finding/path-node-component'
 import { AttackContext, Facing, PLAIN_ATTACK, facingBetween, forecastAttack } from '../combat'
 import { getTerrainRules } from '../path-finding/terrain-rules'
 import {
-  CLASS_SKILL, FIREBALL_SPLASH, FRENZY_ATK, FRENZY_DEF, RAGE_DAMAGE, SKILLS, STEAL_MP, SkillId
+  CLASS_SKILL, FIREBALL_SPLASH, FRENZY_ATK, FRENZY_DEF, SKILLS, STEAL_MP, SkillId, skillBonusDamage
 } from '../skills'
 import { CLASS_INFO } from '../unit-classes'
 import { unitClassOf } from '../unit-types'
@@ -233,16 +233,18 @@ export function scoreAttack(unit: Unit, target: Unit, from: PathNodeComponent, s
     backAttack: facingBetween(from, targetCell) === target.miniDirection || skill === 'skill-backstab',
     guaranteedHit: skill === 'skill-aimed-shot',
     ignoreDefense: skill === 'skill-pierce',
-    bonusDamage: skill === 'skill-rage' ? RAGE_DAMAGE : 0
+    bonusDamage: skillBonusDamage(skill)
   }
   const value = unitValue(target)
   const selfValue = unitValue(unit)
-  const f = forecastAttack(attackStats, target.combatStats(), context, target.health)
+  // Fireball burns the target after the strike: it dies to strike + burn
+  const burn = skill === 'skill-fireball' ? FIREBALL_SPLASH : 0
+  const f = forecastAttack(attackStats, target.combatStats(), context, target.health - burn)
   const kill = f.killChance
   const parts: Record<string, number> = {}
 
   parts.kill = kill * (value + w.killBonus)
-  parts.damage = (1 - kill) * Math.min(f.expectedDamage, target.health) / target.unitConfig.health * value * w.damageShare * personality.damage
+  parts.damage = (1 - kill) * Math.min(f.expectedDamage + burn, target.health) / target.unitConfig.health * value * w.damageShare * personality.damage
   if (context.backAttack && roleOf(unitClassOf(unit.name)) === 'skirmisher') parts.back = value * w.skirmisherBackShare
 
   if (kill < 1 && target.canCounterFrom(from, context)) {

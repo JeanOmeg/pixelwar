@@ -13,18 +13,18 @@ export { UNIT_CLASSES, unitTypeOf } from './unit-types'
  * (the 8 original classes) costs exactly ARMY_BUDGET.
  */
 export const CLASS_INFO: Record<UnitClass, { role: string, description: string, cost: number }> = {
-  Archer: { role: 'Ranged', cost: 10, description: 'Picks off targets from far away. Fragile up close.' },
-  Mage: { role: 'Ranged', cost: 9, description: 'Strikes from a distance and moves a bit faster than the archer.' },
-  Spearman: { role: 'Reach', cost: 8, description: 'Hits two tiles away on open ground. Quick on its feet.' },
-  Thief: { role: 'Skirmisher', cost: 9, description: 'Hard hitter that crosses rough terrain at full speed. Perfect for back attacks.' },
+  Archer: { role: 'Ranged', cost: 9, description: 'Picks off targets from far away. Fragile up close.' },
+  Mage: { role: 'Ranged', cost: 8, description: 'Strikes from a distance and moves a bit faster than the archer.' },
+  Spearman: { role: 'Reach', cost: 8, description: 'Hits two tiles away on open ground, safe from counterattacks.' },
+  Thief: { role: 'Skirmisher', cost: 10, description: 'Hard hitter that crosses rough terrain at full speed. Perfect for back attacks.' },
   Fighter: { role: 'Melee', cost: 12, description: 'Solid all-rounder with good mobility.' },
   Cleric: { role: 'Support', cost: 15, description: 'Sturdy and mobile. Holds the line well.' },
-  Barbarian: { role: 'Bruiser', cost: 16, description: 'Strong attacker with thick hide, but slow.' },
+  Barbarian: { role: 'Bruiser', cost: 17, description: 'Strong attacker with thick hide, but slow.' },
   Warrior: { role: 'Tank', cost: 21, description: 'Highest HP and defense. Slow, built to block paths.' },
   Paladin: { role: 'Holy knight', cost: 15, description: 'Armored swordsman: almost as tough as a Barbarian and faster on its feet.' },
-  Berserker: { role: 'Berserker', cost: 15, description: 'The hardest hitter in the game. Light armor, so strike first.' },
-  Assassin: { role: 'Assassin', cost: 8, description: 'Fastest unit, crosses rough terrain freely. Deadly from behind, dies to a stiff breeze.' },
-  Ranger: { role: 'Ranged', cost: 12, description: 'Forest archer: shorter range than the Archer, but stronger and swift through the woods.' },
+  Berserker: { role: 'Berserker', cost: 17, description: 'The hardest hitter in the game. Light armor, so strike first.' },
+  Assassin: { role: 'Assassin', cost: 9, description: 'Fastest unit, crosses rough terrain freely. Deadly from behind, dies to a stiff breeze.' },
+  Ranger: { role: 'Ranged', cost: 11, description: 'Forest archer: shorter range than the Archer, but stronger and swift through the woods.' },
   Necromancer: { role: 'Dark mage', cost: 8, description: 'Dark magic that hits twice as hard as the Mage, at a shorter range.' },
   Halberdier: { role: 'Reach', cost: 12, description: 'Armored pikeman. Its reach of 2 works on any terrain.' }
 }

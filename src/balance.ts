@@ -14,15 +14,25 @@ import { UNIT_CLASSES, UnitClass } from './unit-types'
  *   melee classes, the counterattacks they take when attacking a melee enemy;
  * - threat: movement + range, where classes slowed by forest lose half of them
  *   on the FOREST_SHARE of the map that is forest;
- * - power = attack x resistance x threat / 6 x (1 + 0.12 per tile of range past 1).
+ * - power = attack x resistance^0.8 x threat^0.6 x (1 + 0.12 per tile of range past 1).
+ *
+ * The exponents come from `yarn balance:sim` (2000 CPU x CPU matches with random
+ * armies): with power linear in resistance and threat, tanks (Warrior) and long
+ * range (Ranger, Archer) won less than their cost and hard hitters (Berserker,
+ * Barbarian) more. Extra HP/DEF and extra tiles give diminishing returns.
  *
  * Costs are the power scaled so the 8 original classes (the army drawn in the
- * maps) add up to exactly ARMY_COST_TOTAL. Class skills are left out: every
- * class has one, paid from the same 4 MP.
+ * maps) add up to exactly ARMY_COST_TOTAL. Class skills are left out: they are
+ * balanced against Special per MP (tests/skills.test.ts).
  */
 
 /** Share of the walkable map that is forest (slow terrain) */
 export const FOREST_SHARE = 0.35
+/** Diminishing returns of resistance and threat (fitted to yarn balance:sim) */
+export const RESISTANCE_EXPONENT = 0.8
+export const THREAT_EXPONENT = 0.6
+/** Power bonus per tile of range past 1 */
+export const RANGE_BONUS = 0.12
 /** What the 8 original classes cost together (= ARMY_BUDGET) */
 export const ARMY_COST_TOTAL = 100
 
@@ -45,6 +55,15 @@ function expectedDamage(attacker: UnitClass, defender: UnitClass, rules: Balance
   const covered: CombatStats = { ...CLASS_STATS[defender], defense: CLASS_STATS[defender].defense + FOREST_DEFENSE }
   const forest = forecastAttack(CLASS_STATS[attacker], covered, context, Infinity).expectedDamage
   return (1 - FOREST_SHARE) * open + FOREST_SHARE * forest
+}
+
+/**
+ * Extra expected damage of one attack with `context` (an attack skill) over a
+ * plain attack, averaged over every class as the target (forest included).
+ * Special gives about 7.5 for 4 MP, so a 2 MP skill should give about half.
+ */
+export function skillGain(attacker: UnitClass, context: AttackContext, rules: BalanceRules = CURRENT_RULES): number {
+  return mean(UNIT_CLASSES.map(d => expectedDamage(attacker, d, rules, context) - expectedDamage(attacker, d, rules)))
 }
 
 export interface ClassPower {
@@ -71,7 +90,7 @@ export function classPower(c: UnitClass, rules: BalanceRules = CURRENT_RULES): C
   const move = stats.movement * (terrain.ignoresSlowTerrain ? 1 : slowed)
   const range = stats.range * (terrain.slowTerrainCostsRange ? slowed : 1)
   const threat = move + range
-  const power = dealt * resistance * threat / 6 * (1 + 0.12 * (range - 1))
+  const power = dealt * resistance ** RESISTANCE_EXPONENT * threat ** THREAT_EXPONENT * (1 + RANGE_BONUS * (range - 1))
   return { attack: dealt, resistance, threat, power }
 }
 
