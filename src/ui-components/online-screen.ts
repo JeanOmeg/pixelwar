@@ -4,15 +4,15 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
 import { MapListItem, RANDOM_MAP_ID } from './map-select'
 import './map-select'
-import { ArmyClassOption } from './army-select'
+import { ArmyChoice, ArmyClassOption } from './army-select'
 import './army-select'
-import { saveArmy, savedArmy } from './army-prefs'
+import { saveArmy, savePlacement, savedArmy, savedPlacement } from './army-prefs'
+import { defaultPlacement, deployCells } from '../deploy'
 import { Resources } from '../resources'
 import { MAPS, defaultArmy, findMap, getMapInfo, randomMap, teamSpawns, type MapDefinition } from '../maps'
 import { mapPreview, unitPortrait } from '../ui-sprites'
 import { buildCpuArmy } from '../army-ai'
 import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, unitTypeOf } from '../unit-classes'
-import type { UnitClass } from '../unit-types'
 import { RoomDirectory } from '../online/directory'
 import { OnlineSession, activeSession, forgetSavedSession, savedSession } from '../online/session'
 import { MAX_SPECTATORS, NAME_MAX_LENGTH, cleanName, normalizeRoomCode, type JoinIntent, type Member, type RoomListing, type Seat, type SeatState } from '../online/protocol'
@@ -349,13 +349,14 @@ export class OnlineScreen extends LitElement {
     this.view = 'lobby'
   }
 
-  private confirmArmy(army: UnitClass[]) {
+  private confirmArmy({ army, placement }: ArmyChoice) {
     const session = this.session
     const room = session?.room
     const seat = session?.seat
     if (!session || !room || seat === null || seat === undefined) return
     saveArmy(room.mapId, seat, army)
-    session.setReady(true, army, army.length)
+    savePlacement(room.mapId, seat, placement)
+    session.setReady(true, army, army.length, placement)
     Resources.SelectSound.play()
     this.view = 'lobby'
   }
@@ -593,13 +594,15 @@ export class OnlineScreen extends LitElement {
         .mapWidth=${info.width}
         .mapHeight=${info.height}
         .slots=${slots}
+        .zone=${deployCells(info, seat)}
+        .initialPlacement=${(savedPlacement(map.id, seat, info) ?? defaultPlacement(info, seat)).map(([x, y]) => ({ x, y }))}
         .classes=${options}
         .defaultArmy=${classic}
         .initialArmy=${savedArmy(map.id, seat, slots.length) ?? classic}
         .randomize=${() => buildCpuArmy(classic, ARMY_BUDGET)}
         .budget=${ARMY_BUDGET}
         @pick=${() => Resources.SelectSound.play()}
-        @confirm=${(event: CustomEvent<UnitClass[]>) => this.confirmArmy(event.detail)}
+        @confirm=${(event: CustomEvent<ArmyChoice>) => this.confirmArmy(event.detail)}
         @back=${() => { this.view = 'lobby' }}
       ></army-select>
     `

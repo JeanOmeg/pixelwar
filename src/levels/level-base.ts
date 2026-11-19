@@ -161,9 +161,9 @@ export class LevelBase extends ex.Scene<MatchSettings> {
       }
     }
 
-    // chosen armies replace the classes drawn in the map, slot by slot;
-    // row by row, so lower units are drawn over the ones above them
-    const spawns = spawnsWithArmies(info, this.settings.armies).sort((a, b) => a.y - b.y || a.x - b.x)
+    // chosen armies and placements replace the units drawn in the map, slot by
+    // slot; row by row, so lower units are drawn over the ones above them
+    const spawns = spawnsWithArmies(info, this.settings.armies, this.settings.placements).sort((a, b) => a.y - b.y || a.x - b.x)
     for (const spawn of spawns) {
       const unit = new Unit(spawn.x, spawn.y, spawn.unitType, board, this.players[spawn.team])
       // team A starts facing right, team B facing left (towards each other)

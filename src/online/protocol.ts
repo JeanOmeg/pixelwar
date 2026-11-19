@@ -1,5 +1,6 @@
 import type { UnitClass } from '../unit-types'
 import type { SkillId } from '../skills'
+import type { Placement } from '../deploy'
 
 /**
  * Online play: every message the game sends between browsers, and the room
@@ -7,7 +8,7 @@ import type { SkillId } from '../skills'
  */
 
 /** Raised when a message changes shape: peers on different versions refuse each other */
-export const PROTOCOL_VERSION = 3
+export const PROTOCOL_VERSION = 4
 export const APP_ID = 'pixelfantasywar'
 export const MAX_SPECTATORS = 8
 export const ONLINE_TURN_SECONDS = 300
@@ -98,6 +99,8 @@ export interface SeatState extends Member {
   ready: boolean
   /** The class of each spawn slot; hidden from everybody else until the match starts */
   army: UnitClass[] | null
+  /** Cell of each slot (deploy zone); hidden like the army */
+  placement: Placement | null
   wantsRematch: boolean
 }
 
@@ -136,7 +139,7 @@ export type NetMessage =
   | { t: 'hello', version: number, name: string, token: string, intent: JoinIntent }
   | { t: 'room', room: RoomState }
   | { t: 'reject', reason: RejectReason }
-  | { t: 'ready', ready: boolean, army: UnitClass[] | null }
+  | { t: 'ready', ready: boolean, army: UnitClass[] | null, placement: Placement | null }
   | { t: 'set-map', mapId: string }
   | { t: 'set-locked', locked: boolean }
   | { t: 'kick', token: string }

@@ -6,7 +6,7 @@ import { Resources } from '../resources'
 import { theme } from './theme'
 import { MapListItem, RANDOM_MAP_ID } from './map-select'
 import './map-select'
-import { ArmyClassOption } from './army-select'
+import { ArmyChoice, ArmyClassOption } from './army-select'
 import './army-select'
 import './online-screen'
 import { activeSession, savedSession } from '../online/session'
@@ -18,7 +18,8 @@ import { mapPreview, unitPortrait } from '../ui-sprites'
 import { buildCpuArmy } from '../army-ai'
 import { DIFFICULTIES, DIFFICULTY_IDS, Difficulty, findDifficulty } from '../ai/weights'
 import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, unitTypeOf } from '../unit-classes'
-import { saveArmy, savedArmy } from './army-prefs'
+import { saveArmy, savePlacement, savedArmy, savedPlacement } from './army-prefs'
+import { Placement, defaultPlacement, deployCells } from '../deploy'
 import type { UnitClass } from '../path-finding/terrain-rules'
 import type { UnitType } from '../config'
 
@@ -158,6 +159,7 @@ export class StartScreenUi extends LitElement {
   private cpuSuggestions: UnitClass[][] = []
 
   private armies: (UnitClass[] | null)[] = [null, null]
+  private placements: (Placement | null)[] = [null, null]
 
   private mapItems: MapListItem[] | null = null
 
@@ -240,7 +242,7 @@ export class StartScreenUi extends LitElement {
     if (!room || this.leaving) return
     this.leaving = true
     await new Promise(resolve => window.setTimeout(resolve, 400))
-    const settings: MatchSettings = { mode: 'online', armies: room.seats.map(s => s?.army ?? null) }
+    const settings: MatchSettings = { mode: 'online', armies: room.seats.map(s => s?.army ?? null), placements: room.seats.map(s => s?.placement ?? null) }
     this.engine.goToScene(sceneNameOf(map), { sceneActivationData: settings })
     this.remove()
   }
@@ -270,6 +272,7 @@ export class StartScreenUi extends LitElement {
     writePref(PREF_MAP, mapId)
     this.chosenMap = mapId === RANDOM_MAP_ID ? randomMap() : (findMap(mapId) ?? randomMap())
     this.armies = [null, null]
+    this.placements = [null, null]
     // the CPU's starting suggestion is drawn once per map (the player can change it)
     const info = getMapInfo(this.chosenMap)
     this.cpuSuggestions = [0, 1].map(team => this.randomArmy(info, team))
@@ -278,11 +281,13 @@ export class StartScreenUi extends LitElement {
   }
 
   /** Every team (human or CPU) goes through the army builder, in order */
-  private confirmArmy(army: UnitClass[]) {
+  private confirmArmy({ army, placement }: ArmyChoice) {
     const map = this.chosenMap
     if (!map) return
     this.armies[this.armyTeam] = army
+    this.placements[this.armyTeam] = placement
     saveArmy(map.id, this.armyTeam, army)
+    savePlacement(map.id, this.armyTeam, placement)
     if (this.armyTeam === 0) {
       this.armyTeam = 1
       Resources.SelectSound.play()
@@ -310,7 +315,7 @@ export class StartScreenUi extends LitElement {
     Resources.SelectSound.play()
     this.leaving = true
     await new Promise(resolve => window.setTimeout(resolve, 650))
-    const settings: MatchSettings = { mode: this.mode, armies: this.armies, difficulty: this.difficulty }
+    const settings: MatchSettings = { mode: this.mode, armies: this.armies, placements: this.placements, difficulty: this.difficulty }
     this.engine.goToScene(sceneNameOf(map), { sceneActivationData: settings })
     this.remove()
   }
@@ -341,13 +346,15 @@ export class StartScreenUi extends LitElement {
         .mapWidth=${info.width}
         .mapHeight=${info.height}
         .slots=${slots}
+        .zone=${deployCells(info, team)}
+        .initialPlacement=${(savedPlacement(map.id, team, info) ?? defaultPlacement(info, team)).map(([x, y]) => ({ x, y }))}
         .classes=${options}
         .defaultArmy=${classic}
         .initialArmy=${savedArmy(map.id, team, slots.length) ?? (cpu ? suggestion : classic)}
         .randomize=${() => this.randomArmy(info, team)}
         .budget=${ARMY_BUDGET}
         @pick=${() => Resources.SelectSound.play()}
-        @confirm=${(event: CustomEvent<UnitClass[]>) => this.confirmArmy(event.detail)}
+        @confirm=${(event: CustomEvent<ArmyChoice>) => this.confirmArmy(event.detail)}
         @back=${() => this.armyBack()}
       ></army-select>
     `

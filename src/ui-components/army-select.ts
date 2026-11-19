@@ -5,6 +5,7 @@ import { classDetailStyles, renderClassAbilities, renderClassStats } from './cla
 import { CLASS_INFO } from '../unit-classes'
 import { UNIT_FOOTPRINT } from '../ui-sprites'
 import type { UnitClass } from '../path-finding/terrain-rules'
+import type { Placement } from '../deploy'
 
 export interface ArmyClassOption {
   unitClass: UnitClass
@@ -15,15 +16,21 @@ export interface ArmyClassOption {
 }
 
 export interface ArmySlot {
-  /** spawn cell */
+  /** board cell */
   x: number
   y: number
 }
 
+/** What `confirm` sends: class and cell of each slot, in slot order */
+export interface ArmyChoice {
+  army: UnitClass[]
+  placement: Placement
+}
+
 /**
- * Army builder for one team: pick a class for each spawn slot of the map
- * within a point budget. Fires `confirm` (detail = UnitClass[] in slot order)
- * and `back`.
+ * Army builder for one team: pick a class for each slot of the map within a
+ * point budget, and where it starts inside the team's deploy zone. Fires
+ * `confirm` (detail = ArmyChoice) and `back`.
  */
 @customElement('army-select')
 export class ArmySelect extends LitElement {
@@ -51,6 +58,17 @@ export class ArmySelect extends LitElement {
       cursor: pointer;
       outline: calc(2 * var(--u)) solid transparent;
     }
+    /* deploy zone: free tiles where the selected slot's unit can be moved */
+    .zone {
+      all: unset;
+      box-sizing: border-box;
+      position: absolute;
+      cursor: pointer;
+      background: color-mix(in srgb, var(--team) 28%, transparent);
+      outline: calc(1 * var(--u)) solid color-mix(in srgb, var(--team) 45%, transparent);
+      outline-offset: calc(-1 * var(--u));
+    }
+    .zone:hover, .zone:focus-visible { background: rgba(255, 255, 255, 0.35); }
     .slot img { position: absolute; image-rendering: pixelated; pointer-events: none; max-width: none; }
     .slot:hover { outline-color: rgba(255, 255, 255, 0.6); }
     .slot.empty { outline: calc(2 * var(--u)) dashed rgba(255, 255, 255, 0.55); background: rgba(0, 0, 0, 0.35); }
@@ -136,8 +154,17 @@ export class ArmySelect extends LitElement {
   @property({ type: Number })
     mapHeight = 17
 
+  /** the map's position of each slot ("Classic army" puts the units back there) */
   @property({ attribute: false })
     slots: ArmySlot[] = []
+
+  /** cells of the team's deploy zone where a unit can start */
+  @property({ attribute: false })
+    zone: ArmySlot[] = []
+
+  /** positions shown when the screen opens (last choice or the map's) */
+  @property({ attribute: false })
+    initialPlacement: ArmySlot[] = []
 
   @property({ attribute: false })
     classes: ArmyClassOption[] = []
@@ -160,6 +187,10 @@ export class ArmySelect extends LitElement {
   /** one entry per slot; null = empty (removed) */
   @state()
   private army: (UnitClass | null)[] = []
+
+  /** cell of each slot */
+  @state()
+  private positions: ArmySlot[] = []
 
   @state()
   private selected = 0
@@ -199,8 +230,9 @@ export class ArmySelect extends LitElement {
 
   override willUpdate(changed: Map<string, unknown>) {
     // new team or new map: start from the initial army again
-    if (changed.has('team') || changed.has('initialArmy') || changed.has('slots')) {
+    if (changed.has('team') || changed.has('initialArmy') || changed.has('slots') || changed.has('initialPlacement')) {
       this.army = [...this.initialArmy]
+      this.positions = (this.initialPlacement.length === this.slots.length ? this.initialPlacement : this.slots).map(p => ({ ...p }))
       this.selected = 0
       this.expanded = null
     }
@@ -302,15 +334,52 @@ export class ArmySelect extends LitElement {
 
   private confirm() {
     if (!this.canConfirm()) return
-    this.dispatchEvent(new CustomEvent<UnitClass[]>('confirm', { detail: this.army.filter((c): c is UnitClass => c !== null) }))
+    const detail: ArmyChoice = {
+      army: this.army.filter((c): c is UnitClass => c !== null),
+      placement: this.positions.map(p => [p.x, p.y])
+    }
+    this.dispatchEvent(new CustomEvent<ArmyChoice>('confirm', { detail }))
   }
 
-  private renderSlot(slot: ArmySlot, index: number) {
+  /** Moves the selected slot's unit to a free cell of the zone */
+  private moveTo(cell: ArmySlot) {
+    if (this.positions.some(p => p.x === cell.x && p.y === cell.y)) return
+    const next = [...this.positions]
+    next[this.selected] = { ...cell }
+    this.positions = next
+    this.dispatchEvent(new Event('pick'))
+  }
+
+  /** Back to the map's classes and positions */
+  private classic() {
+    this.army = [...this.defaultArmy]
+    this.positions = this.slots.map(p => ({ ...p }))
+    this.selected = 0
+  }
+
+  private tileBox(cell: ArmySlot) {
+    return `left: ${(cell.x / this.mapWidth) * 100}%; top: ${(cell.y / this.mapHeight) * 100}%;`
+      + ` width: ${100 / this.mapWidth}%; height: ${100 / this.mapHeight}%`
+  }
+
+  private renderZoneCell(cell: ArmySlot) {
+    return html`
+      <button
+        class="zone"
+        style=${this.tileBox(cell)}
+        title="Move slot ${this.selected + 1} here"
+        aria-label="Move slot ${this.selected + 1} to ${cell.x}, ${cell.y}"
+        @click=${() => this.moveTo(cell)}
+      ></button>
+    `
+  }
+
+  private renderSlot(index: number) {
+    const slot = this.positions[index] ?? this.slots[index]
     const unitClass = this.army[index]
     const option = this.option(unitClass)
     const { left, top, size } = UNIT_FOOTPRINT
-    const box = `left: ${(slot.x / this.mapWidth) * 100}%; top: ${(slot.y / this.mapHeight) * 100}%;`
-      + ` width: ${100 / this.mapWidth}%; height: ${100 / this.mapHeight}%`
+    const box = this.tileBox(slot)
     // in % of the slot (one tile), so the mini scales with the map
     const mini = `left: ${left * 100}%; top: ${top * 100}%; width: ${size * 100}%; height: ${size * 100}%`
     return html`
@@ -386,7 +455,8 @@ export class ArmySelect extends LitElement {
           <div class="panel-title"><span>${this.mapName}</span><span>Slot ${this.selected + 1} of ${this.slots.length}</span></div>
           <div class="map">
             <img src=${this.preview} alt="" />
-            ${this.slots.map((slot, i) => this.renderSlot(slot, i))}
+            ${this.zone.map(cell => this.renderZoneCell(cell))}
+            ${this.slots.map((_, i) => this.renderSlot(i))}
           </div>
           <div class="roster">
             ${this.army.map((unitClass, i) => this.renderRosterRow(unitClass, i))}
@@ -398,9 +468,9 @@ export class ArmySelect extends LitElement {
         </div>
       </div>
       <div class="actions">
-        <span class="keys">${this.isFull() ? 'Pick a slot, then open a class to see it and pick it' : `${empty} empty slot${empty === 1 ? '' : 's'} left to fill`}<span class="keys-only"> · Del remove · Enter confirm · Esc back</span></span>
+        <span class="keys">${this.isFull() ? 'Pick a slot, then a class for it or a lit tile to move it' : `${empty} empty slot${empty === 1 ? '' : 's'} left to fill`}<span class="keys-only"> · Del remove · Enter confirm · Esc back</span></span>
         <button class="btn btn-solid" ?disabled=${this.army.every(c => c === null)} @click=${() => this.clearAll()}>Remove all</button>
-        <button class="btn btn-solid" @click=${() => { this.army = [...this.defaultArmy]; this.selected = 0 }}>Classic army</button>
+        <button class="btn btn-solid" @click=${() => this.classic()}>Classic army</button>
         ${this.randomize ? html`<button class="btn btn-solid" @click=${() => { this.army = this.randomize?.() ?? this.army; this.selected = 0 }}>Random</button>` : nothing}
         <button class="btn btn-solid" @click=${() => this.dispatchEvent(new Event('back'))}>Back</button>
         <button class="btn btn-solid confirm" ?disabled=${!this.canConfirm()} @click=${() => this.confirm()}>Confirm</button>

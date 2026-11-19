@@ -93,7 +93,8 @@ export function renderHowToPlay() {
         <ul>
           <li>Before the match, pick a class for each starting slot of the map.</li>
           <li>Every class has a cost in points. Your army can spend up to <b>100</b>.</li>
-          <li><b>Classic army</b> restores the units drawn in the map (exactly 100 points).</li>
+          <li>Place your units anywhere on the lit tiles: the first <b>6 columns</b> from your edge. Pick a unit, then a lit tile.</li>
+          <li><b>Classic army</b> restores the units drawn in the map (exactly 100 points) and their positions.</li>
         </ul>
       </section>
       <section>

@@ -1,5 +1,6 @@
 import type { UnitClass } from './path-finding/terrain-rules'
 import type { Difficulty } from './ai/weights'
+import type { Placement } from './deploy'
 
 export type GameMode = 'p1vscpu' | 'p1vsp2' | 'cpuvscpu' | 'online'
 
@@ -50,6 +51,11 @@ export interface MatchSettings {
    * null or missing = the army drawn in the map.
    */
   armies?: (UnitClass[] | null)[]
+  /**
+   * Cell of each slot, per team, inside the team's deploy zone (deploy.ts).
+   * null, missing or invalid = the positions drawn in the map.
+   */
+  placements?: (Placement | null)[]
   /** How well the CPU plays (missing = normal) */
   difficulty?: Difficulty
 }

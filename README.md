@@ -31,7 +31,7 @@ Dois jogadores, cada um no seu aparelho, mais até 8 espectadores. Não há serv
 
 - **Nome:** cada um digita o seu ao entrar em **Online** (fica salvo). Ele aparece no placar, no banner do turno ("Ana's turn") e no fim da partida.
 - **Salas:** toda sala tem um **código** de 5 letras/números (sem 0/O e 1/I/L, para não confundir). Uma sala **aberta** (padrão) aparece na lista **Open rooms** da tela Online, para jogar (se a vaga estiver livre) ou assistir; se uma sala nova demorar a aparecer, clique em **Refresh**. Uma sala **trancada** (cadeado) não aparece na lista: só entra quem tem o código, para jogar ou assistir (bom para torneio privado).
-- **Lobby:** quem cria a sala é o dono: escolhe o mapa, tranca/destranca e pode remover alguém (Kick). O dono joga de **Azul** (começa). Cada jogador monta o próprio exército (100 pontos); o do outro fica escondido até os dois clicarem **Ready**.
+- **Lobby:** quem cria a sala é o dono: escolhe o mapa, tranca/destranca e pode remover alguém (Kick). O dono joga de **Azul** (começa). Cada jogador monta e posiciona o próprio exército (100 pontos); o do outro fica escondido até os dois clicarem **Ready**.
 - **Turno de 5 minutos:** o relógio fica no painel central do topo (contagem + barra que esvazia, vermelha nos últimos 15 s). Acabou o tempo, o turno termina sozinho. Se do outro lado nada chegar 15 s depois, aparece "*Fulano* is not responding" com **Wait** ou **Leave** (sair dá a vitória a quem ficou).
 - **Pausa:** só para quem pausou; o jogo do outro continua. Sair pelo menu da pausa é desistir (o outro vence).
 - **Queda de conexão:** o relógio para e o outro vê "Connection lost". Recarregar a página volta para a mesma vaga e a partida continua de onde parou. Sem voltar em 3 minutos, o outro vence.
@@ -195,7 +195,7 @@ Cada ataque envolve três rolagens:
 
 ### Montando o exército
 
-Antes de cada partida você escolhe a classe de cada uma das 8 posições iniciais do seu time, gastando até **100 pontos** (custo na tabela acima). O botão **Classic army** volta para o exército desenhado no mapa, que custa exatamente 100. Todos os times passam pela tela de montagem, na ordem Azul → Vermelho, inclusive a CPU (e no CPU vs CPU, para testar listas de exército em partidas IA vs IA). Para a CPU a tela já vem com uma sugestão sorteada: cada posição mantém o papel da classe desenhada no mapa (de longe, alcance 2, flanco, corpo a corpo ou pesado) e recebe uma classe sorteada desse papel. O botão **Random** sorteia outra lista válida.
+Antes de cada partida você escolhe a classe de cada uma das 8 unidades do seu time, gastando até **100 pontos** (custo na tabela acima), e **onde cada uma começa**: em qualquer tile andável (sem porta) da sua **zona de posicionamento**, as **6 colunas** mais próximas da sua borda (Azul à esquerda, Vermelho à direita). Nos mapas em que o exército desenhado já começa mais à frente, a zona vai até ele. Para mover, selecione a unidade e clique num tile iluminado. O botão **Classic army** volta para o exército desenhado no mapa, que custa exatamente 100, nas posições originais. Todos os times passam pela tela de montagem, na ordem Azul → Vermelho, inclusive a CPU (e no CPU vs CPU, para testar listas de exército em partidas IA vs IA). Para a CPU a tela já vem com uma sugestão sorteada: cada posição mantém o papel da classe desenhada no mapa (de longe, alcance 2, flanco, corpo a corpo ou pesado) e recebe uma classe sorteada desse papel. O botão **Random** sorteia outra lista válida.
 
 ---
 

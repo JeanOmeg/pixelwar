@@ -114,6 +114,17 @@ describe('lobby', () => {
     expect(publicRoom(startMatch(room)).seats.map(s => s?.army)).toEqual([army, army])
   })
 
+  it('keeps a well-formed placement and hides it until the match starts', () => {
+    const placement: [number, number][] = [[0, 0], [1, 0], [2, 0], [3, 0]]
+    let room = setReady(lobbyWithGuest(), 't-owner', true, army, 4, placement)
+    room = setReady(room, 't-guest', true, army, 4, [[0, 0], [0, 0], [1, 1], [2, 2]]) // repeated cell: dropped
+    expect(room.seats.map(s => s?.placement)).toEqual([placement, null])
+    expect(canStart(room)).toBe(true)
+    expect(publicRoom(room).seats[0]?.placement).toBeNull()
+    expect(publicRoom(startMatch(room)).seats[0]?.placement).toEqual(placement)
+    expect(setMap(room, 'map_2').seats[0]?.placement).toBeNull()
+  })
+
   it('unchecks both players when the map changes', () => {
     const room = setMap(readyRoom(), 'map_2')
     expect(room.seats.map(s => s?.ready)).toEqual([false, false])

@@ -1,4 +1,5 @@
 import type { UnitClass } from '../unit-types'
+import type { Placement } from '../deploy'
 import { RoomAnnouncer } from './directory'
 import { ActionFeed } from './feed'
 import {
@@ -172,9 +173,9 @@ export class OnlineSession {
 
   // --- local actions ---
 
-  setReady(ready: boolean, army: UnitClass[] | null, slots: number) {
-    if (this.isAuthority) this.apply(room => setReady(room, this.token, ready, army, slots))
-    else this.toAuthority({ t: 'ready', ready, army })
+  setReady(ready: boolean, army: UnitClass[] | null, slots: number, placement: Placement | null = null) {
+    if (this.isAuthority) this.apply(room => setReady(room, this.token, ready, army, slots, placement))
+    else this.toAuthority({ t: 'ready', ready, army, placement })
   }
 
   setMap(mapId: string) {
@@ -317,7 +318,7 @@ export class OnlineSession {
 
     switch (msg.t) {
     case 'ready':
-      if (this.isAuthority) this.apply(room => setReady(room, sender.token, !!msg.ready, msg.army, msg.army?.length ?? 0))
+      if (this.isAuthority) this.apply(room => setReady(room, sender.token, !!msg.ready, msg.army, msg.army?.length ?? 0, msg.placement ?? null))
       break
     case 'rematch':
       if (this.isAuthority) this.apply(room => requestRematch(room, sender.token))

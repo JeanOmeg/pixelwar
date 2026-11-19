@@ -1,5 +1,6 @@
 import { UNIT_CLASSES, type UnitClass } from '../unit-types'
 import { ARMY_BUDGET, armyCost } from '../unit-classes'
+import { isPlacement, type Placement } from '../deploy'
 import {
   MAX_SPECTATORS, PROTOCOL_VERSION,
   type JoinIntent, type Member, type RejectReason, type RoomListing, type RoomState, type Seat, type SeatState
@@ -24,7 +25,7 @@ export type JoinResult =
   | { reject: RejectReason }
 
 function seatFor(member: Joiner): SeatState {
-  return { ...member, connected: true, ready: false, army: null, wantsRematch: false }
+  return { ...member, connected: true, ready: false, army: null, placement: null, wantsRematch: false }
 }
 
 export function createRoom(code: string, owner: Joiner, mapId: string, locked: boolean): RoomState {
@@ -134,12 +135,17 @@ export function isValidArmy(army: unknown, slots: number): army is UnitClass[] {
     && armyCost(army as UnitClass[]) <= ARMY_BUDGET
 }
 
-export function setReady(room: RoomState, token: string, ready: boolean, army: UnitClass[] | null, slots: number): RoomState {
+/**
+ * The placement is only checked for shape here (the room doesn't load maps);
+ * the level drops one outside the deploy zone and uses the map's positions.
+ */
+export function setReady(room: RoomState, token: string, ready: boolean, army: UnitClass[] | null, slots: number, placement: Placement | null = null): RoomState {
   const seat = seatOfToken(room, token)
   if (seat === null || room.phase !== 'lobby') return room
   if (ready && !isValidArmy(army, slots)) return room
   const current = room.seats[seat] as SeatState
-  return withSeat(room, seat, { ...current, ready, army: ready ? army : null })
+  const placed = ready && isPlacement(placement, slots) ? placement : null
+  return withSeat(room, seat, { ...current, ready, army: ready ? army : null, placement: placed })
 }
 
 /** Changing the map unchecks both players (the army slots change) */
@@ -148,7 +154,7 @@ export function setMap(room: RoomState, mapId: string): RoomState {
   let next: RoomState = { ...room, mapId }
   for (const seat of [0, 1] as Seat[]) {
     const s = next.seats[seat]
-    if (s) next = withSeat(next, seat, { ...s, ready: false, army: null })
+    if (s) next = withSeat(next, seat, { ...s, ready: false, army: null, placement: null })
   }
   return next
 }
@@ -192,15 +198,15 @@ export function requestRematch(room: RoomState, token: string): RoomState {
   if (seat === null || room.phase !== 'over') return room
   let next = withSeat(room, seat, { ...(room.seats[seat] as SeatState), wantsRematch: true })
   if (!next.seats.every(s => s?.wantsRematch && s.connected)) return next
-  const reset = (s: SeatState | null) => s && { ...s, ready: false, army: null, wantsRematch: false }
+  const reset = (s: SeatState | null) => s && { ...s, ready: false, army: null, placement: null, wantsRematch: false }
   next = { ...next, phase: 'lobby', matchNo: next.matchNo + 1, seats: [reset(next.seats[1]), reset(next.seats[0])] }
   return next
 }
 
-/** What the others may see: armies stay secret until the match starts */
+/** What the others may see: armies and placements stay secret until the match starts */
 export function publicRoom(room: RoomState): RoomState {
   if (room.phase !== 'lobby') return room
-  const seats = room.seats.map(s => s && { ...s, army: null }) as [SeatState | null, SeatState | null]
+  const seats = room.seats.map(s => s && { ...s, army: null, placement: null }) as [SeatState | null, SeatState | null]
   return { ...room, seats }
 }
 

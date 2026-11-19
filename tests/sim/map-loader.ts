@@ -13,7 +13,7 @@ interface TileFlags { walkable: boolean, attackable: boolean, fast: boolean, doo
 
 let tileset: Map<number, TileFlags> | null = null
 
-function loadTileset(): Map<number, TileFlags> {
+export function loadTileset(): Map<number, TileFlags> {
   if (tileset) return tileset
   const xml = readFileSync(join(MAP_DIR, 'NewFullTile.tsx'), 'utf8')
   tileset = new Map()

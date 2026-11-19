@@ -2,6 +2,7 @@ import { Layer, TiledResource } from '@excaliburjs/plugin-tiled'
 import { Resources } from './resources'
 import type { UnitType } from './config'
 import { UnitClass, unitClassOf } from './path-finding/terrain-rules'
+import { Placement, isValidPlacement } from './deploy'
 
 /**
  * Every playable map. This list is the single source of truth: scenes are
@@ -142,6 +143,8 @@ export interface MapInfo {
   spawns: MapSpawn[]
   /** Unit count per team index */
   unitsPerTeam: number[]
+  /** Per cell, row by row: a unit may start there (walkable, not a door; see deploy.ts) */
+  deployable: boolean[]
 }
 
 interface GidLayer extends Layer {
@@ -159,16 +162,24 @@ export function defaultArmy(info: MapInfo, team: number): UnitClass[] {
 }
 
 /**
- * Spawns with the chosen armies applied: slot i of a team gets armies[team][i].
- * Missing or mismatched armies keep the map's units.
+ * Spawns with the chosen armies applied: slot i of a team gets armies[team][i]
+ * at placements[team][i]. Missing or mismatched armies keep the map's units;
+ * a missing or invalid placement (outside the deploy zone...) keeps the map's
+ * positions.
  */
-export function spawnsWithArmies(info: MapInfo, armies?: (UnitClass[] | null)[]): MapSpawn[] {
+export function spawnsWithArmies(info: MapInfo, armies?: (UnitClass[] | null)[], placements?: (Placement | null)[]): MapSpawn[] {
   const next = [0, 0]
+  const valid = [0, 1].map(team => isValidPlacement(info, team, placements?.[team]))
   return info.spawns.map(spawn => {
     const army = armies?.[spawn.team]
     const slot = next[spawn.team]++
-    if (!army || army.length !== teamSpawns(info, spawn.team).length) return spawn
-    return { ...spawn, unitType: `${army[slot]}${spawn.team === 0 ? 'A' : 'B'}` as UnitType }
+    let placed = spawn
+    if (valid[spawn.team]) {
+      const [x, y] = (placements?.[spawn.team] as Placement)[slot]
+      placed = { ...placed, x, y }
+    }
+    if (!army || army.length !== teamSpawns(info, spawn.team).length) return placed
+    return { ...placed, unitType: `${army[slot]}${spawn.team === 0 ? 'A' : 'B'}` as UnitType }
   })
 }
 
@@ -189,5 +200,14 @@ export function getMapInfo(map: MapDefinition): MapInfo {
   const unitsPerTeam: number[] = []
   for (const spawn of spawns) unitsPerTeam[spawn.team] = (unitsPerTeam[spawn.team] ?? 0) + 1
 
-  return { width, height, tileWidth: tilewidth, tileHeight: tileheight, gids, spawns, unitsPerTeam: Array.from(unitsPerTeam, n => n ?? 0) }
+  const deployable = gids.map(gid => {
+    const tile = tiled.getTilesetForTileGid(gid)?.getTileByGid(gid)
+    return !!tile?.properties.get('iswalkable') && !tile?.properties.get('isdoor')
+  })
+
+  return {
+    width, height, tileWidth: tilewidth, tileHeight: tileheight, gids, spawns,
+    unitsPerTeam: Array.from(unitsPerTeam, n => n ?? 0),
+    deployable
+  }
 }
