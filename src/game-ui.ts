@@ -17,9 +17,9 @@ import type { CameraController } from './camera-controller'
 import { isTouchDevice, readableBoost } from './device'
 import { SKILLS, SkillId } from './skills'
 import { DIFFICULTIES, Difficulty } from './ai/weights'
-import { cycleSpeed, getSpeed } from './speed'
+import { cycleSpeed, getSpeed, isSpeedLocked } from './speed'
 import { rangeNote } from './unit-classes'
-import { ForecastView, GameResultView, HudView, MenuItem, OnlineHudView, Team, UnitView } from './ui-components/view-models'
+import { ForecastView, GameResultView, HudHighlight, HudView, MenuItem, OnlineHudView, Team, UnitView } from './ui-components/view-models'
 import { GameNotice, NoticeView } from './ui-components/game-notice'
 import { inputMode, onInputModeChange, padLabel, type GamepadMatch } from './gamepad/gamepad-input'
 import type { PadAnalog, PadButton } from './gamepad/controller'
@@ -30,6 +30,18 @@ export interface MenuOptions {
   pass: () => void
   undo: () => void
   skill: (id: SkillId) => void
+  /** Tutorial: only these items (ids: move, attack, undo, pass, skill ids) can be picked, and they are highlighted */
+  allows?: (id: string) => boolean
+}
+
+/** What the tutorial (TutorialMatch) changes in the match UI */
+export interface TutorialUiControl {
+  /** End turn can be pressed now */
+  endTurnAllowed(): boolean
+  /** Part of the top bar the current lesson talks about */
+  hudHighlight(): HudHighlight | null
+  /** The balloon waits for Next: the board ignores keys */
+  blocksInput(): boolean
 }
 
 const TEAMS: Team[] = ['blue', 'red']
@@ -63,6 +75,8 @@ export class GameUI implements GamepadMatch {
   onEmote: (emote: string) => void = () => {}
   /** Online: "Mute emotes" in the pause menu */
   onToggleEmotes: () => void = () => {}
+  /** Tutorial only (see TutorialMatch) */
+  tutorial: TutorialUiControl | null = null
 
   private engine: ex.Engine
   private board: Board
@@ -204,7 +218,15 @@ export class GameUI implements GamepadMatch {
 
   /** A dialog or banner is up: the board shouldn't react to keys */
   isBlockingInput(): boolean {
-    return this.menu.open || this.notice.open || this.hud.emotesOpen || this.isModalOpen()
+    return this.menu.open || this.notice.open || this.hud.emotesOpen || this.isModalOpen() || !!this.tutorial?.blocksInput()
+  }
+
+  /**
+   * Extra overlay of the match (the tutorial balloon): under the unit menu and
+   * the dialogs, removed with the rest of the UI
+   */
+  addOverlay(element: HTMLElement) {
+    this.root.insertBefore(element, this.menu)
   }
 
   /** Controller (gamepad-input.ts): right stick pans, triggers zoom towards the cursor */
@@ -294,23 +316,20 @@ export class GameUI implements GamepadMatch {
     this.menuOptions = options
 
     const skills = unit.unitConfig.skills
+    // tutorial: only the item the lesson asks for can be picked
+    const allows = options.allows
+    const item = (id: string, label: string, enabled: boolean, extra: Partial<MenuItem> = {}): MenuItem => {
+      const ok = enabled && (allows?.(id) ?? true)
+      return { id, label, enabled: ok, highlight: !!allows && ok, ...extra }
+    }
+    const skillItems = skills.map(skill => item(skill.id, skill.name, unit.canUseSkill(skill.id), { detail: `${skill.cost} MP`, description: skill.description }))
+    const anySkill = allows ? skillItems.some(s => s.enabled) : skills.length > 0
     const items: MenuItem[] = [
-      { id: 'move', label: 'Move', enabled: unit.canMove() },
-      { id: 'attack', label: 'Attack', enabled: unit.canAttack() },
-      {
-        id: 'skills',
-        label: 'Skills',
-        enabled: skills.length > 0,
-        children: skills.map(skill => ({
-          id: skill.id,
-          label: skill.name,
-          detail: `${skill.cost} MP`,
-          description: skill.description,
-          enabled: unit.canUseSkill(skill.id)
-        }))
-      },
-      ...(unit.canUndoMove() ? [{ id: 'undo', label: 'Undo move', enabled: true }] : []),
-      { id: 'pass', label: 'Wait', enabled: true }
+      item('move', 'Move', unit.canMove()),
+      item('attack', 'Attack', unit.canAttack()),
+      { id: 'skills', label: 'Skills', enabled: anySkill, highlight: !!allows && anySkill, children: skillItems },
+      ...(unit.canUndoMove() ? [item('undo', 'Undo move', true)] : []),
+      item('pass', 'Wait', true)
     ]
 
     this.menu.title = this.className(unit)
@@ -319,6 +338,11 @@ export class GameUI implements GamepadMatch {
     this.menu.anchor = this.cellPageRect(unit.cell)
     this.menu.open = true
     this.refresh()
+  }
+
+  /** Unit whose action menu is open */
+  get openMenuUnit(): Unit | null {
+    return this.menu.open ? this.menuUnit : null
   }
 
   dismissAll() {
@@ -500,6 +524,10 @@ export class GameUI implements GamepadMatch {
       unitsWithActions: units.filter(u => u.player === current && u.hasActions()).length,
       canPause: !this.matchOver,
       speed: getSpeed(),
+      speedLocked: isSpeedLocked(),
+      endTurnLocked: this.tutorial ? !this.tutorial.endTurnAllowed() : false,
+      confirmEndTurn: !this.tutorial,
+      highlight: this.tutorial?.hudHighlight() ?? null,
       online: this.onlineView?.() ?? undefined
     }
   }

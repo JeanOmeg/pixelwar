@@ -20,6 +20,26 @@ const ARROWS: Record<string, [number, number]> = {
   w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0]
 }
 
+/**
+ * Tutorial: keeps the player to the scripted action (see TutorialMatch).
+ * Without a gate everything works as usual.
+ */
+export interface ActionGate {
+  /** Own unit that can be selected now */
+  allowsUnit(unit: Unit): boolean
+  /** Menu item of `unit` that can be picked: move, attack, undo, pass or a skill id */
+  allowsMenu(unit: Unit, id: string): boolean
+  /** Cell `unit` may move to, attack or heal in its current mode */
+  allowsTarget(unit: Unit, cell: Cell): boolean
+  allowsEndTurn(): boolean
+  /** Dice of the attack about to happen */
+  attackRolls(): [number, number][]
+  /** An action was confirmed and has finished playing */
+  done(action: GameAction): void
+  /** The player tried something the lesson doesn't ask for */
+  refused(): void
+}
+
 export class HumanPlayer extends Player {
   override readonly isHuman = true
   private humanMove = new ex.Future<void>()
@@ -34,6 +54,8 @@ export class HumanPlayer extends Player {
   feed: ActionFeed | null = null
   /** Online: a replayed action broke the rules (the match went out of sync) */
   onOutOfSync: (error: unknown) => void = () => {}
+  /** Tutorial: only the scripted action is allowed */
+  gate: ActionGate | null = null
 
   constructor(name: string, engine: ex.Engine, private selectionManager: SelectionManager, public ui: GameUI, board: Board, private camera: CameraController) {
     super(name, board)
@@ -73,6 +95,11 @@ export class HumanPlayer extends Player {
     // Touch has no hover to preview the path or the attack: the first tap on a
     // valid target previews it, a second tap on the same cell confirms
     const selected = this.selectionManager.currentUnitSelection
+    // tutorial: a valid target that isn't the one the lesson asks for does nothing
+    if (this.gate && button === 'left' && selected && cell && this.isValidTarget(selected, cell) && !this.gate.allowsTarget(selected, cell)) {
+      this.gate.refused()
+      return
+    }
     if (confirmTwice && selected && cell && cell !== this.pendingTarget && this.isValidTarget(selected, cell)) {
       this.pendingTarget = cell
       this.selectionManager.showCursor(cell.x, cell.y)
@@ -95,7 +122,7 @@ export class HumanPlayer extends Player {
         } else {
           this.maybeHeal(unit, cell)
         }
-        if (!this.hasWon()) this.maybeSelectUnit(unit.cell)
+        if (!this.hasWon()) this.maybeSelectUnit(unit.cell, true)
       } else if (cell?.unit && !this.isOwnSelectableUnit(cell)) {
         this.inspectUnit(cell.unit)
       } else {
@@ -249,11 +276,15 @@ export class HumanPlayer extends Player {
     }
     if (!unit.startSkill(id)) return
     // move/attack skills are sent with the move/attack that uses them
-    if (skill.kind === 'self' && unit.cell) this.record({ a: 'self-skill', unit: posOf(unit.cell), skill: id })
+    if (skill.kind === 'self' && unit.cell) {
+      const action: GameAction = { a: 'self-skill', unit: posOf(unit.cell), skill: id }
+      this.record(action)
+      this.gate?.done(action)
+    }
     Resources.SelectSound.play()
     if (skill.kind === 'move') this.selectMode(unit, 'move')
     else if (skill.kind === 'attack') this.selectMode(unit, 'attack')
-    else this.maybeSelectUnit(unit.cell)
+    else this.maybeSelectUnit(unit.cell, true)
   }
 
   /** Esc: leaves move/attack/heal mode, refunding a pending skill */
@@ -271,12 +302,15 @@ export class HumanPlayer extends Player {
       this.active = false
       Resources.TargetSelectSound.play()
       const path = this.selectionManager.findPath(destination, unit)
+      let action: GameAction | null = null
       if (path.length > 1 && unit.cell) {
         const skill = unit.pendingSkill?.kind === 'move' ? unit.pendingSkill.id : undefined
-        this.record({ a: 'move', unit: posOf(unit.cell), path: path.map(node => [node.x, node.y]), ...(skill ? { skill } : {}) })
+        action = { a: 'move', unit: posOf(unit.cell), path: path.map(node => [node.x, node.y]), ...(skill ? { skill } : {}) }
+        this.record(action)
       }
       await this.selectionManager.selectDestinationAndMove(unit, destination, path)
       unit.settlePendingSkill()
+      if (action) this.gate?.done(action)
       this.humanMove.resolve()
     } else {
       unit.settlePendingSkill()
@@ -287,16 +321,20 @@ export class HumanPlayer extends Player {
   async maybeAttack(attacker: Unit, destination: Cell | null) {
     if (destination && attacker.canAttack() && this.hasNonPlayerUnit(destination)) {
       this.active = false
-      // online: roll here and send the dice, so every board plays the same attack
+      // online: roll here and send the dice, so every board plays the same attack;
+      // tutorial: the dice come from the script
       let rolls: StrikeRolls | undefined
-      if (this.feed && attacker.cell && this.selectionManager.findAttackRange(attacker).includes(destination.pathNode)) {
-        const dice = rollAttackDice()
+      let action: GameAction | null = null
+      if ((this.feed || this.gate) && attacker.cell && this.selectionManager.findAttackRange(attacker).includes(destination.pathNode)) {
+        const dice = this.gate ? this.gate.attackRolls() : rollAttackDice()
         const skill = attacker.pendingSkill?.kind === 'attack' ? attacker.pendingSkill.id : undefined
-        this.record({ a: 'attack', unit: posOf(attacker.cell), target: posOf(destination), rolls: dice, ...(skill ? { skill } : {}) })
+        action = { a: 'attack', unit: posOf(attacker.cell), target: posOf(destination), rolls: dice, ...(skill ? { skill } : {}) }
+        this.record(action)
         rolls = fixedRolls(dice)
       }
       await this.selectionManager.selectDestinationAndAttack(attacker, destination, rolls)
       attacker.settlePendingSkill()
+      if (action) this.gate?.done(action)
       this.humanMove.resolve()
     } else {
       attacker.settlePendingSkill()
@@ -311,8 +349,10 @@ export class HumanPlayer extends Player {
 
   private maybeHeal(unit: Unit, cell: Cell | null) {
     if (cell?.unit && unit.cell && unit.useSkillOn('skill-heal', cell.unit)) {
-      this.record({ a: 'heal', unit: posOf(unit.cell), target: posOf(cell) })
+      const action: GameAction = { a: 'heal', unit: posOf(unit.cell), target: posOf(cell) }
+      this.record(action)
       Resources.SelectSound.play()
+      this.gate?.done(action)
     }
     this.selectionManager.reset()
   }
@@ -334,9 +374,16 @@ export class HumanPlayer extends Player {
     }
   }
 
-  maybeSelectUnit(cell: Cell | null) {
+  /** Opens the menu of the own unit on `cell`; `quiet`: reopened after an action (the tutorial doesn't complain) */
+  maybeSelectUnit(cell: Cell | null, quiet = false) {
     if (cell?.unit && this.isOwnSelectableUnit(cell)) {
       const unit = cell.unit
+      const gate = this.gate
+      if (gate && !gate.allowsUnit(unit)) {
+        if (!quiet) gate.refused()
+        this.selectionManager.reset()
+        return
+      }
       unit.setAnim(unit.selectAnimationMove())
       this.selectionManager.showCursor(cell.x, cell.y)
       Resources.SelectSound.play()
@@ -347,18 +394,23 @@ export class HumanPlayer extends Player {
         skill: id => this.useSkill(unit, id),
         undo: () => {
           if (!unit.canUndoMove() || !unit.cell) return
-          this.record({ a: 'undo', unit: posOf(unit.cell) })
+          const action: GameAction = { a: 'undo', unit: posOf(unit.cell) }
+          this.record(action)
           unit.undoMove()
           this.selectionManager.reset()
-          this.maybeSelectUnit(unit.cell)
+          gate?.done(action)
+          this.maybeSelectUnit(unit.cell, true)
         },
         pass: async () => {
-          if (unit.cell) this.record({ a: 'pass', unit: posOf(unit.cell) })
+          const action: GameAction | null = unit.cell ? { a: 'pass', unit: posOf(unit.cell) } : null
+          if (action) this.record(action)
           unit.setAnim(unit.selectAnimationIdle())
           await unit.pass()
           this.selectionManager.reset()
+          if (action) gate?.done(action)
           this.humanMove.resolve()
-        }
+        },
+        ...(gate ? { allows: (id: string) => gate.allowsMenu(unit, id) } : {})
       })
     } else {
       this.selectionManager.reset()
@@ -372,15 +424,21 @@ export class HumanPlayer extends Player {
    */
   async endTurn(reason: 'button' | 'timeout' = 'button'): Promise<boolean> {
     if (!this.active) return false
+    if (this.gate && !this.gate.allowsEndTurn()) {
+      this.gate.refused()
+      return false
+    }
     this.active = false
     this.pendingTarget = null
     this.selectionManager.currentUnitSelection?.settlePendingSkill()
-    this.record({ a: 'end-turn', reason })
+    const action: GameAction = { a: 'end-turn', reason }
+    this.record(action)
     this.ui.dismissAll()
     const units = this.board.getUnits().filter(u => u.player === this)
     units.forEach(u => u.setAnim(u.selectAnimationIdle()))
     for (const u of units) await u.pass()
     this.selectionManager.reset()
+    this.gate?.done(action)
     this.humanMove.resolve()
     return true
   }

@@ -17,7 +17,7 @@ export interface MatchResult {
   reason: 'elimination' | 'turn-limit' | 'forfeit' | 'abandoned' | 'out-of-sync'
 }
 
-/** Online play hooks into the turn loop (see OnlineMatch) */
+/** Online play and the tutorial hook into the turn loop (see OnlineMatch, TutorialMatch) */
 export interface TurnHooks {
   /** Catching up on a match already going: no phase banner */
   skipBanner?: () => boolean
@@ -29,6 +29,8 @@ export interface TurnHooks {
   ended?: (result: MatchResult) => void
   /** Replaces "Play again"/"Main menu" after the game over screen */
   finished?: (result: MatchResult, choice: GameOverChoice) => Promise<void>
+  /** Replaces the title/subtitle of the game over screen (tutorial) */
+  describe?: (result: MatchResult) => GameResultView | null
 }
 
 export class TurnManager {
@@ -179,7 +181,7 @@ export class TurnManager {
     this.finished = true
     this.hooks.ended?.(result)
     this.selectionManager.reset()
-    const choice = await this.ui.showGameOver(this.describe(result))
+    const choice = await this.ui.showGameOver(this.hooks.describe?.(result) ?? this.describe(result))
     Resources.LevelMusic2.stop()
     if (this.hooks.finished) {
       await this.hooks.finished(result, choice)

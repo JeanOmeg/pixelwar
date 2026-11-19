@@ -15,6 +15,7 @@ import { pageStyles, renderCredits, renderHowToPlay, renderUnits } from './start
 import { GAME_MODES, GameMode, MatchSettings, findGameMode } from '../game-modes'
 import { MAPS, MapDefinition, defaultArmy, findMap, getMapInfo, randomMap, sceneNameOf, teamSpawns } from '../maps'
 import { mapPreview, unitPortrait } from '../ui-sprites'
+import { TUTORIAL_MAP_ID, isTutorialDone, tutorialSettings } from '../tutorial/tutorial-mode'
 import { buildCpuArmy } from '../army-ai'
 import { DIFFICULTIES, DIFFICULTY_IDS, Difficulty, findDifficulty } from '../ai/weights'
 import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, unitTypeOf } from '../unit-classes'
@@ -91,8 +92,9 @@ export class StartScreenUi extends LitElement {
     /* Mode */
     .mode-screen { display: flex; flex-direction: column; align-items: center; gap: calc(28 * var(--u)); }
     .heading { margin: 0; font-weight: normal; font-size: calc(56 * var(--t)); text-shadow: calc(5 * var(--u)) calc(5 * var(--u)) 0 #000; }
-    .modes { display: grid; grid-template-columns: repeat(4, calc(400 * var(--u))); gap: calc(22 * var(--u)); }
+    .modes { display: grid; grid-template-columns: repeat(5, calc(336 * var(--u))); gap: calc(20 * var(--u)); }
     .mode {
+      position: relative;
       appearance: none;
       font: inherit;
       color: inherit;
@@ -108,6 +110,18 @@ export class StartScreenUi extends LitElement {
     }
     .mode:hover, .mode:focus-visible { transform: translateY(calc(-6 * var(--u))); border-color: var(--gold); }
     .mode.last { border-color: var(--gold); }
+    .mode .badge {
+      position: absolute;
+      top: calc(-16 * var(--u));
+      left: 50%;
+      transform: translateX(-50%);
+      padding: calc(4 * var(--u)) calc(12 * var(--u));
+      font-size: calc(16 * var(--t));
+      white-space: nowrap;
+      background: var(--gold);
+      color: #14172a;
+      box-shadow: calc(3 * var(--u)) calc(3 * var(--u)) 0 #000;
+    }
     .sides { display: flex; align-items: center; gap: calc(14 * var(--u)); }
     .side { display: flex; flex-direction: column; align-items: center; gap: calc(6 * var(--u)); font-size: calc(18 * var(--t)); }
     .side img { width: calc(96 * var(--u)); height: calc(96 * var(--u)); image-rendering: pixelated; background: rgba(255, 255, 255, 0.05); }
@@ -231,9 +245,25 @@ export class StartScreenUi extends LitElement {
   }
 
   private chooseMode(mode: GameMode) {
+    // the tutorial has no map or army to choose, and isn't remembered as the last mode
+    if (mode === 'tutorial') {
+      void this.launchTutorial()
+      return
+    }
     this.mode = mode
     writePref(PREF_MODE, mode)
     this.go(mode === 'online' ? 'online' : 'map')
+  }
+
+  /** Learn to play: straight into the guided match on Twin Keeps */
+  private async launchTutorial() {
+    const map = findMap(TUTORIAL_MAP_ID)
+    if (!map || this.leaving) return
+    Resources.SelectSound.play()
+    this.leaving = true
+    await new Promise(resolve => window.setTimeout(resolve, 650))
+    this.engine.goToScene(sceneNameOf(map), { sceneActivationData: tutorialSettings() })
+    this.remove()
   }
 
   /** The online room's match starts: armies and seats come from the room */
@@ -387,11 +417,13 @@ export class StartScreenUi extends LitElement {
 
   private renderModes() {
     const portraits: Record<GameMode, [UnitType, UnitType]> = {
+      tutorial: ['WarriorA', 'ThiefB'],
       p1vscpu: ['FighterA', 'BarbarianB'],
       p1vsp2: ['ThiefA', 'ThiefB'],
       cpuvscpu: ['MageA', 'ArcherB'],
       online: ['RangerA', 'AssassinB']
     }
+    const tutorialDone = isTutorialDone()
     return html`
       <div class="screen mode-screen">
         <h2 class="heading">Choose mode</h2>
@@ -400,6 +432,7 @@ export class StartScreenUi extends LitElement {
             const [blue, red] = portraits[mode.id]
             return html`
               <button class="panel mode ${mode.id === this.mode ? 'last' : ''}" @click=${() => this.chooseMode(mode.id)}>
+                ${mode.id === 'tutorial' && !tutorialDone ? html`<span class="badge">New here?</span>` : ''}
                 <div class="sides">
                   <div class="side blue"><img src=${unitPortrait(blue)} alt="" /><span>${mode.sides[0]}</span></div>
                   <span class="vs">VS</span>

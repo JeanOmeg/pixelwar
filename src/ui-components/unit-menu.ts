@@ -55,6 +55,9 @@ export class UnitMenu extends LitElement {
     }
     .sub .btn:hover:not(:disabled) .desc { color: #fff; }
     .sep { height: calc(3 * var(--u)); margin: calc(4 * var(--u)) 0; background: rgba(255, 255, 255, 0.12); }
+    /* tutorial: the item the lesson asks for */
+    .btn.lit { color: var(--gold); box-shadow: inset calc(4 * var(--u)) 0 0 var(--gold); animation: lit 700ms steps(2) infinite; }
+    @keyframes lit { 50% { box-shadow: inset calc(4 * var(--u)) 0 0 transparent; } }
   `]
 
   @property({ type: Boolean, reflect: true })
@@ -138,7 +141,7 @@ export class UnitMenu extends LitElement {
 
   private renderItem(item: MenuItem): TemplateResult {
     return html`
-      <button class="btn" ?disabled=${!item.enabled} @click=${() => this.choose(item)}>
+      <button class="btn ${item.highlight ? 'lit' : ''}" ?disabled=${!item.enabled} @click=${() => this.choose(item)}>
         <span>${item.label}</span>
         ${item.children ? html`<span class="arrow">${this.expanded === item.id ? '▾' : '▸'}</span>` : nothing}
         ${item.detail ? html`<span class="detail">${item.detail}</span>` : nothing}

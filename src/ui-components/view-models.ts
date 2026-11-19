@@ -29,9 +29,19 @@ export interface HudView {
   canPause: boolean
   /** Game speed: 1, 2 or 3 */
   speed: number
+  /** Tutorial: the speed can't change */
+  speedLocked?: boolean
+  /** Tutorial: End turn shows but can't be pressed yet */
+  endTurnLocked?: boolean
+  /** false: End turn doesn't ask "N left - sure?" (tutorial) */
+  confirmEndTurn?: boolean
+  /** Tutorial: part of the bar the lesson talks about */
+  highlight?: HudHighlight | null
   /** Online only (missing offline) */
   online?: OnlineHudView
 }
+
+export type HudHighlight = 'teams' | 'round' | 'pause' | 'end-turn'
 
 export interface OnlineHudView {
   /** Seconds left in the current turn (null: no timer, e.g. catching up) */
@@ -85,6 +95,8 @@ export interface MenuItem {
   /** Longer description shown under the label */
   description?: string
   children?: MenuItem[]
+  /** Tutorial: the item the lesson asks for */
+  highlight?: boolean
 }
 
 export interface GameResultView {

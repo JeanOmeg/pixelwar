@@ -16,6 +16,7 @@ Elimine todas as unidades inimigas antes que eliminem as suas. Se o limite de 10
 
 | Modo | Descrição |
 |---|---|
+| **Learn to play** | Tutorial guiado: uma partida curta no Twin Keeps, com o exército clássico, que ensina tudo passo a passo (mover, terreno, ataque, contra-ataque, ataque pelas costas, skills). No fim, oferece uma partida de verdade no mesmo mapa contra a CPU no Easy |
 | **Online** | Jogue (ou assista) contra um amigo em outro aparelho, pela internet |
 | **Player vs CPU** | Você controla o time azul, a IA controla o time vermelho |
 | **Player vs Player** | Dois jogadores se alternam no mesmo computador |
@@ -42,7 +43,9 @@ Dois jogadores, cada um no seu aparelho, mais até 8 espectadores. Não há serv
 
 ### Menu inicial
 
-**Play** → escolha o modo → escolha o mapa (ou **Random map**) → **Start**. O seletor mostra uma prévia de cada mapa com as posições iniciais das unidades, o tamanho, quantas unidades cada time tem e o limite de rodadas. Use ↑/↓ e Enter, ou o mouse. O jogo lembra o último modo e mapa escolhidos.
+**Play** → escolha o modo → escolha o mapa (ou **Random map**) → **Start**. O seletor mostra uma prévia de cada mapa com as posições iniciais das unidades, o tamanho, quantas unidades cada time tem e o limite de rodadas. Use ↑/↓ e Enter, ou o mouse. O jogo lembra o último modo e mapa escolhidos. O **Learn to play** pula o mapa e o exército e começa direto.
+
+**Tutorial:** cada passo aparece num balão embaixo da tela, com a unidade e o tile marcados em dourado; só a ação pedida funciona (o item certo do menu fica destacado). Passos só de texto avançam com **Next** (ou Enter). Tudo é roteirizado, inclusive os dados e as jogadas da CPU, então a partida é sempre a mesma (5 rodadas). A velocidade fica em x1 e o End turn não pede confirmação. **Skip tutorial** (ou Main menu na pausa) volta ao menu.
 
 O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, com atributos e habilidades especiais) e **Credits**.
 

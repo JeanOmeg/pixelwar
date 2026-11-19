@@ -2,7 +2,7 @@ import type { UnitClass } from './path-finding/terrain-rules'
 import type { Difficulty } from './ai/weights'
 import type { Placement } from './deploy'
 
-export type GameMode = 'p1vscpu' | 'p1vsp2' | 'cpuvscpu' | 'online'
+export type GameMode = 'tutorial' | 'p1vscpu' | 'p1vsp2' | 'cpuvscpu' | 'online'
 
 export interface GameModeDefinition {
   id: GameMode
@@ -13,6 +13,12 @@ export interface GameModeDefinition {
 }
 
 export const GAME_MODES: GameModeDefinition[] = [
+  {
+    id: 'tutorial',
+    title: 'Learn to play',
+    description: 'New here? A guided match teaches you the basics.',
+    sides: ['You', 'CPU']
+  },
   {
     id: 'online',
     title: 'Online',

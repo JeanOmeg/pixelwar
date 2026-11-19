@@ -16,6 +16,7 @@ import { MapDefinition, getMapInfo, sceneNameOf, spawnsWithArmies } from '../map
 import type { GameMode, MatchSettings } from '../game-modes'
 import { OnlineMatch } from '../online/online-match'
 import { activeSession } from '../online/session'
+import { TutorialMatch } from '../tutorial/tutorial-match'
 
 const DEFAULT_SETTINGS: MatchSettings = { mode: 'p1vscpu' }
 
@@ -37,6 +38,8 @@ export class LevelBase extends ex.Scene<MatchSettings> {
   cameraController!: CameraController
   /** Online matches only */
   online: OnlineMatch | null = null
+  /** "Learn to play" only */
+  tutorial: TutorialMatch | null = null
 
   constructor(map: MapDefinition) {
     super()
@@ -82,12 +85,14 @@ export class LevelBase extends ex.Scene<MatchSettings> {
     this.cameraController?.dispose()
     this.online?.dispose()
     this.online = null
+    this.tutorial?.dispose()
+    this.tutorial = null
   }
 
-  /** Starts the same map and mode again from scratch */
-  async restart() {
+  /** Starts a new match on this map from scratch: the same mode, or `settings` (after the tutorial) */
+  async restart(settings: MatchSettings = this.settings) {
     await this.engine.goToScene('menu-shell')
-    await this.engine.goToScene(this.name, { sceneActivationData: this.settings })
+    await this.engine.goToScene(this.name, { sceneActivationData: settings })
   }
 
   private createPlayers(mode: GameMode, board: Board): Player[] {
@@ -123,9 +128,13 @@ export class LevelBase extends ex.Scene<MatchSettings> {
     this.online?.dispose()
     const session = this.settings.mode === 'online' ? activeSession() : null
     this.online = session?.feed ? new OnlineMatch(session, this.engine) : null
+    this.tutorial?.dispose()
+    this.tutorial = this.settings.mode === 'tutorial' ? new TutorialMatch(this.engine, this, board, this.selectionManager, this.ui) : null
     this.players = this.online
       ? this.online.createPlayers(board, this.selectionManager, this.ui, this.cameraController)
-      : this.createPlayers(this.settings.mode, board)
+      : this.tutorial
+        ? this.tutorial.createPlayers(this.cameraController)
+        : this.createPlayers(this.settings.mode, board)
 
     this.ui.setPlayers(this.players)
     this.ui.onEndTurn = () => {
@@ -140,6 +149,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
 
     this.turnManager = new TurnManager(this.engine, this, this.players, this.selectionManager, this.ui, this.map.maxTurns)
     this.online?.attach(this.turnManager, this.ui)
+    this.tutorial?.attach(this.turnManager)
 
     for (let y = 0; y < info.height; y++) {
       for (let x = 0; x < info.width; x++) {

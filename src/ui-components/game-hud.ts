@@ -2,7 +2,7 @@ import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
 import { iconStyles } from './icons'
-import { HudView, TeamView, hpLevel } from './view-models'
+import { HudHighlight, HudView, TeamView, hpLevel } from './view-models'
 import { EMOTES, TURN_WARNING_SECONDS, emoteLabel } from '../online/protocol'
 
 /**
@@ -96,6 +96,11 @@ export class GameHud extends LitElement {
       background: linear-gradient(90deg, currentColor 0 35%, transparent 35% 65%, currentColor 65%);
     }
     .end-turn.confirm { background: var(--orange); }
+    /* tutorial: End turn before its step, speed locked */
+    .btn-solid:disabled { filter: grayscale(1) brightness(0.6); box-shadow: none; }
+    /* tutorial: the part of the bar the lesson talks about */
+    .tutorial-lit { outline: calc(3 * var(--u)) solid var(--gold); outline-offset: calc(3 * var(--u)); animation: lit 700ms steps(2) infinite; }
+    @keyframes lit { 50% { outline-color: transparent; } }
 
     /* online: turn timer, emotes, spectators */
     .center { position: relative; }
@@ -173,8 +178,8 @@ export class GameHud extends LitElement {
   }
 
   private onEndTurn() {
-    if (!this.view?.canEndTurn) return
-    if (this.view.unitsWithActions > 0 && !this.confirming) {
+    if (!this.view?.canEndTurn || this.view.endTurnLocked) return
+    if (this.view.unitsWithActions > 0 && this.view.confirmEndTurn !== false && !this.confirming) {
       this.confirming = true
       window.clearTimeout(this.confirmTimer)
       this.confirmTimer = window.setTimeout(() => { this.confirming = false }, 2500)
@@ -227,13 +232,18 @@ export class GameHud extends LitElement {
     `
   }
 
+  /** Tutorial: class for the part of the bar the current lesson points at */
+  private lit(part: HudHighlight): string {
+    return this.view?.highlight === part ? 'tutorial-lit' : ''
+  }
+
   private renderTeam(team: TeamView, side: 'left' | 'right', active: boolean) {
     const pips = Array.from({ length: team.total }, (_, i) => i < team.alive)
     const emote = this.view?.online?.emotes[team.team]
     return html`
       <div class="team-slot ${side} team-${team.team}">
       ${emote ? html`<div class="bubble">${emoteLabel(emote)}</div>` : nothing}
-      <div class="panel team team-${team.team} ${side} ${active ? 'active' : ''}">
+      <div class="panel team team-${team.team} ${side} ${active ? 'active' : ''} ${this.lit('teams')}">
         <div class="badge">${team.alive}</div>
         <div class="info">
           <div class="name">${team.label}<small class="muted">${team.controller}</small></div>
@@ -257,18 +267,18 @@ export class GameHud extends LitElement {
       ${this.renderTeam(left, 'left', view.activeTeam === left.team)}
       <div class="panel center team-${active.team} ${warning ? 'warning' : ''}">
         ${view.canPause ? html`
-          <button class="btn btn-solid pause" title="Pause (P)" @click=${() => this.dispatchEvent(new Event('pause'))}><i></i></button>
-          <button class="btn btn-solid speed" title="Game speed" @click=${() => this.dispatchEvent(new Event('speed'))}>x${view.speed}</button>
+          <button class="btn btn-solid pause ${this.lit('pause')}" title="Pause (P)" @click=${() => this.dispatchEvent(new Event('pause'))}><i></i></button>
+          <button class="btn btn-solid speed" title=${view.speedLocked ? 'Game speed (fixed in the tutorial)' : 'Game speed'} ?disabled=${view.speedLocked} @click=${() => this.dispatchEvent(new Event('speed'))}>x${view.speed}</button>
         ` : nothing}
         ${this.renderEmotes()}
-        <div class="phase">
+        <div class="phase ${this.lit('round')}">
           <small>Round ${view.round}${online && online.spectators > 0 ? html` · <span class="spectators" title="People watching">${online.spectators} watching</span>` : nothing}</small>
           <strong>${online ? active.controller : `${active.label} phase`}</strong>
         </div>
         ${this.renderClock()}
         ${online?.watching ? html`<span class="watching">Watching</span>` : nothing}
         ${view.canEndTurn ? html`
-          <button class="btn btn-solid end-turn ${this.confirming ? 'confirm' : ''}" title="End turn (E)" @click=${this.onEndTurn}>
+          <button class="btn btn-solid end-turn ${this.confirming ? 'confirm' : ''} ${this.lit('end-turn')}" title="End turn (E)" ?disabled=${view.endTurnLocked} @click=${this.onEndTurn}>
             ${this.confirming ? `${view.unitsWithActions} left - sure?` : 'End turn'}
           </button>
         ` : nothing}
