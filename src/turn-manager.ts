@@ -7,6 +7,9 @@ import type { GameUI } from './game-ui'
 import type { GameResultView } from './ui-components/view-models'
 import type { GameOverChoice } from './ui-components/game-over'
 
+/** From the last unit's death to the game over screen (its death animation takes ~0.8 s) */
+const GAME_OVER_DELAY_MS = 2000
+
 export interface MatchResult {
   /** null when the match ended in a draw */
   winner: Player | null
@@ -31,6 +34,8 @@ export interface TurnHooks {
 export class TurnManager {
   /** Full rounds (every player played once) */
   public round = 1
+  /** Round of the last phase that started (the game over screen shows it) */
+  private playedRound = 1
   public currentPlayer: Player
   private currentPlayerIndex = 0
   /** Player phases left before the match ends in a draw */
@@ -39,6 +44,8 @@ export class TurnManager {
   private aborted = false
   /** The game over screen was shown (once per match) */
   private finished = false
+  /** A side was wiped out: the game over screen comes after a short pause */
+  private ending = false
   hooks: TurnHooks = {}
 
   constructor(public engine: ex.Engine, public level: LevelBase, public players: Player[], public selectionManager: SelectionManager, public ui: GameUI, maxTurns: number) {
@@ -50,6 +57,31 @@ export class TurnManager {
     this.ui = ui
     this.currentPlayer = players[0]
     this.phasesLeft = maxTurns
+    // a side may be wiped out in the middle of a phase: don't wait for it to end
+    level.board.onUnitDown = () => {
+      const result = this.checkResult()
+      if (result) void this.endAfterPause(result)
+    }
+  }
+
+  /**
+   * Elimination: everybody stops acting now (the CPU doesn't keep moving its
+   * units, the human doesn't have to end the turn) and the game over screen
+   * comes after the death animation and a short pause.
+   */
+  private async endAfterPause(result: MatchResult) {
+    if (this.ending || this.finished || this.aborted) return
+    this.ending = true
+    this.players.forEach(p => {
+      p.active = false
+      p.disposed = true
+    })
+    this.ui.dismissAll()
+    // the engine clock stops while paused, and so does this wait
+    await ex.Util.delay(GAME_OVER_DELAY_MS, this.engine.clock)
+    if (this.aborted) return
+    this.aborted = true
+    await this.finish(result)
   }
 
   /** Winner when only one player still has units */
@@ -61,14 +93,19 @@ export class TurnManager {
 
   async start() {
     for (;;) {
-      if (this.aborted) return
-      const result = this.checkResult() ?? (this.phasesLeft <= 0 ? { winner: null, reason: 'turn-limit' } as MatchResult : null)
-      if (result) {
-        await this.finish(result)
+      if (this.aborted || this.ending) return
+      const eliminated = this.checkResult()
+      if (eliminated) {
+        await this.endAfterPause(eliminated)
+        return
+      }
+      if (this.phasesLeft <= 0) {
+        await this.finish({ winner: null, reason: 'turn-limit' })
         return
       }
 
       this.selectionManager.selectPlayer(this.currentPlayer)
+      this.playedRound = this.round
       this.ui.setTurn(this.currentPlayer, this.round, this.phasesLeft)
       if (!this.hooks.skipBanner?.()) await this.ui.playPhaseBanner(this.currentPlayer, this.round)
       if (this.aborted) return
@@ -77,10 +114,10 @@ export class TurnManager {
 
       let done = false
       while (!done) {
-        if (this.aborted) return
+        if (this.aborted || this.ending) return
         done = await this.currentPlayer.makeMove()
       }
-      if (this.aborted) return
+      if (this.aborted || this.ending) return
 
       await this.currentPlayer.turnEnd()
       this.hooks.phaseEnded?.(this.currentPlayer)
@@ -98,8 +135,7 @@ export class TurnManager {
   }
 
   private describe(result: MatchResult): GameResultView {
-    // the result is checked after nextTurn(), so a new round may have just been counted
-    const lastRound = this.currentPlayerIndex === 0 ? Math.max(this.round - 1, 1) : this.round
+    const lastRound = this.playedRound
     const winner = result.winner
     if (!winner) {
       if (result.reason === 'out-of-sync') return { title: 'Match ended', subtitle: 'The two games went out of sync', team: null }

@@ -102,7 +102,7 @@ export class Unit extends ex.Actor {
     return this.dying || this.health <= 0
   }
 
-  constructor(x: number, y: number, unitType: UnitType, board: Board, public player: Player) {
+  constructor(x: number, y: number, unitType: UnitType, private readonly board: Board, public player: Player) {
     super({
       name: unitType,
       anchor: ex.vec(0, 0),
@@ -162,6 +162,7 @@ export class Unit extends ex.Actor {
     if (this.dying) return
     this.dying = true
     this.cell?.removeUnit(this)
+    this.board.onUnitDown?.(this)
     this.hpBar.kill()
     this.setAnim(this.selectAnimationDeath())
     await this.actions.delay(500).toPromise()

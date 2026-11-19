@@ -14,6 +14,8 @@ export class Board {
 
   pathFinder: PathFinder
   scene: ex.Scene
+  /** Called when a unit drops to 0 HP (TurnManager checks whether the match is over) */
+  onUnitDown: ((unit: Unit) => void) | null = null
 
   /**
    * @param mirrored draws column x at cols - 1 - x (online: the red player
