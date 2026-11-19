@@ -1,6 +1,22 @@
 import * as ex from 'excalibur'
-import { UNIT_CONFIG, UnitType } from './config'
+import { SCALE, SCALE_UNIT, UNIT_CONFIG, UNIT_OFFSET, UnitType } from './config'
 import { MapDefinition, getMapInfo } from './maps'
+
+/** Size of a mini's 32x32 frame on the board, in world pixels */
+const FRAME_PX = 32
+const TILE_WORLD = FRAME_PX * SCALE.x
+
+/**
+ * Where a unit's frame sits relative to its cell, in tiles, exactly as in a
+ * match: the Unit actor is placed at `cell.pos - UNIT_OFFSET` and drawn at
+ * SCALE_UNIT × SCALE (the Cell scales the actor too), so the frame is wider
+ * than a tile and the mini inside it stands on the cell.
+ */
+export const UNIT_FOOTPRINT = {
+  left: -UNIT_OFFSET.x / TILE_WORLD,
+  top: -UNIT_OFFSET.y / TILE_WORLD,
+  size: (FRAME_PX * SCALE_UNIT.x * SCALE.x) / TILE_WORLD
+}
 
 /**
  * Renders game graphics (tiles, unit minis) into data URLs so the HTML menus
@@ -77,10 +93,13 @@ export function mapPreview(map: MapDefinition, withUnits = true): string {
     }
   }
 
-  for (const spawn of withUnits ? info.spawns : []) {
+  // same size and place as in a match; lower rows drawn last, on top
+  const spawns = withUnits ? [...info.spawns].sort((a, b) => a.y - b.y) : []
+  for (const spawn of spawns) {
     const sprite = unitSprite(spawn.unitType)
-    // minis are drawn a bit higher than their cell in the game as well
-    if (sprite) drawSprite(ctx, sprite, spawn.x * tileWidth, spawn.y * tileHeight - tileHeight * 0.3, tileWidth, tileHeight, spawn.team === 1)
+    if (!sprite) continue
+    const { left, top, size } = UNIT_FOOTPRINT
+    drawSprite(ctx, sprite, (spawn.x + left) * tileWidth, (spawn.y + top) * tileHeight, size * tileWidth, size * tileHeight, spawn.team === 1)
   }
 
   const url = canvas.toDataURL()

@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
 import { classDetailStyles, renderClassAbilities, renderClassStats } from './class-details'
 import { CLASS_INFO } from '../unit-classes'
+import { UNIT_FOOTPRINT } from '../ui-sprites'
 import type { UnitClass } from '../path-finding/terrain-rules'
 
 export interface ArmyClassOption {
@@ -40,30 +41,35 @@ export class ArmySelect extends LitElement {
     .field { display: flex; flex-direction: column; min-height: 0; }
     .field .panel-title { font-size: calc(18 * var(--t)); justify-content: space-between; }
     .map { position: relative; margin: calc(12 * var(--u)); background: #000; }
-    .map img { display: block; width: 100%; image-rendering: pixelated; opacity: 0.85; }
+    .map > img { display: block; width: 100%; image-rendering: pixelated; opacity: 0.85; }
+    /* one tile per slot (the click area); the mini inside is drawn at its
+       real size and place on the board (UNIT_FOOTPRINT), spilling out of it */
     .slot {
       all: unset;
+      box-sizing: border-box;
       position: absolute;
-      transform: translate(-50%, -62%);
-      width: calc(46 * var(--u));
-      height: calc(46 * var(--u));
-      display: grid;
-      place-items: center;
       cursor: pointer;
-      border: calc(3 * var(--u)) solid transparent;
+      outline: calc(2 * var(--u)) solid transparent;
     }
-    .slot img { width: 100%; height: 100%; image-rendering: pixelated; }
-    .slot:hover { border-color: rgba(255, 255, 255, 0.6); }
-    .slot.selected { border-color: var(--gold); background: rgba(255, 210, 63, 0.25); animation: pulse 900ms steps(2) infinite; }
-    @keyframes pulse { 50% { border-color: #fff; } }
+    .slot img { position: absolute; image-rendering: pixelated; pointer-events: none; max-width: none; }
+    .slot:hover { outline-color: rgba(255, 255, 255, 0.6); }
+    .slot.empty { outline: calc(2 * var(--u)) dashed rgba(255, 255, 255, 0.55); background: rgba(0, 0, 0, 0.35); }
+    .slot.selected { outline: calc(3 * var(--u)) solid var(--gold); background: rgba(255, 210, 63, 0.3); animation: pulse 900ms steps(2) infinite; z-index: 1; }
+    @keyframes pulse { 50% { outline-color: #fff; } }
 
     .roster { display: flex; flex-direction: column; gap: calc(4 * var(--u)); padding: 0 calc(14 * var(--u)) calc(14 * var(--u)); overflow-y: auto; }
-    .row { all: unset; display: grid; grid-template-columns: calc(26 * var(--u)) calc(40 * var(--u)) 1fr auto; align-items: center; gap: calc(8 * var(--u)); padding: calc(3 * var(--u)) calc(6 * var(--u)); cursor: pointer; font-size: calc(16 * var(--t)); }
+    .row { display: grid; grid-template-columns: 1fr auto; align-items: center; }
     .row:hover { background: rgba(255, 255, 255, 0.06); }
     .row.selected { background: rgba(255, 210, 63, 0.15); outline: calc(2 * var(--u)) solid var(--gold); }
+    .row .pick-slot { all: unset; display: grid; grid-template-columns: calc(26 * var(--u)) calc(40 * var(--u)) 1fr auto; align-items: center; gap: calc(8 * var(--u)); padding: calc(3 * var(--u)) calc(6 * var(--u)); cursor: pointer; font-size: calc(16 * var(--t)); }
     .row img { width: calc(40 * var(--u)); height: calc(40 * var(--u)); image-rendering: pixelated; }
     .row .num { color: var(--muted); }
     .row .cost { color: var(--gold); }
+    .row.empty .label { color: var(--muted); }
+    .row .placeholder { width: calc(32 * var(--u)); height: calc(32 * var(--u)); margin: calc(4 * var(--u)); box-sizing: border-box; border: calc(2 * var(--u)) dashed rgba(255, 255, 255, 0.35); }
+    .row .remove { all: unset; cursor: pointer; width: calc(36 * var(--u)); height: calc(36 * var(--u)); margin-right: calc(4 * var(--u)); display: grid; place-items: center; font-size: calc(18 * var(--t)); color: var(--muted); }
+    .row .remove:hover { color: var(--red); background: rgba(255, 77, 77, 0.15); }
+    .row .remove[hidden] { display: none; }
 
     .classes { display: flex; flex-direction: column; min-height: 0; }
     .classes .panel-title { font-size: calc(18 * var(--t)); justify-content: space-between; }
@@ -151,8 +157,9 @@ export class ArmySelect extends LitElement {
   @property({ type: Number })
     budget = 100
 
+  /** one entry per slot; null = empty (removed) */
   @state()
-  private army: UnitClass[] = []
+  private army: (UnitClass | null)[] = []
 
   @state()
   private selected = 0
@@ -173,6 +180,10 @@ export class ArmySelect extends LitElement {
       const target = event.composedPath()[0]
       if (target instanceof HTMLElement && target.closest('button') && !target.classList.contains('confirm')) return
       this.confirm()
+    } else if (event.key === 'Delete' || event.key === 'Backspace') {
+      const target = event.composedPath()[0]
+      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return
+      this.removeAt(this.selected)
     }
   }
 
@@ -222,16 +233,54 @@ export class ArmySelect extends LitElement {
     this.expanded = null
   }
 
-  private option(unitClass: UnitClass) {
-    return this.classes.find(c => c.unitClass === unitClass)
+  private option(unitClass: UnitClass | null) {
+    return unitClass ? this.classes.find(c => c.unitClass === unitClass) : undefined
   }
 
   private total(army = this.army) {
     return army.reduce((sum, c) => sum + (this.option(c)?.cost ?? 0), 0)
   }
 
+  private isFull() {
+    return this.army.length === this.slots.length && this.army.every(c => c !== null)
+  }
+
   private canConfirm() {
-    return this.army.length === this.slots.length && this.total() <= this.budget
+    return this.isFull() && this.total() <= this.budget
+  }
+
+  /** Cheapest first (ties keep the class order), to find what fits the points left */
+  private sortedClasses() {
+    return this.classes
+      .map((option, order) => ({ option, order }))
+      .sort((a, b) => a.option.cost - b.option.cost || a.order - b.order)
+      .map(({ option }) => option)
+  }
+
+  /** Empties one slot (its points go back to the budget) */
+  private removeAt(index: number) {
+    if (!this.army[index]) return
+    const next = [...this.army]
+    next[index] = null
+    this.army = next
+    this.selected = index
+  }
+
+  /** Empties every slot, to build the army from scratch */
+  private clearAll() {
+    this.army = this.slots.map(() => null)
+    this.selected = 0
+    this.expanded = null
+  }
+
+  /** After a pick: the next empty slot, or simply the next one when all are filled */
+  private nextSlot(from: number) {
+    const count = this.slots.length
+    for (let step = 1; step <= count; step++) {
+      const index = (from + step) % count
+      if (!this.army[index]) return index
+    }
+    return (from + 1) % count
   }
 
   /** Points left if the selected slot became `unitClass` */
@@ -246,26 +295,46 @@ export class ArmySelect extends LitElement {
     const next = [...this.army]
     next[this.selected] = unitClass
     this.army = next
-    this.selected = (this.selected + 1) % this.slots.length
+    this.selected = this.nextSlot(this.selected)
     this.collapse()
     this.dispatchEvent(new Event('pick'))
   }
 
   private confirm() {
-    this.dispatchEvent(new CustomEvent<UnitClass[]>('confirm', { detail: [...this.army] }))
+    if (!this.canConfirm()) return
+    this.dispatchEvent(new CustomEvent<UnitClass[]>('confirm', { detail: this.army.filter((c): c is UnitClass => c !== null) }))
   }
 
   private renderSlot(slot: ArmySlot, index: number) {
     const unitClass = this.army[index]
-    const left = ((slot.x + 0.5) / this.mapWidth) * 100
-    const top = ((slot.y + 0.5) / this.mapHeight) * 100
+    const option = this.option(unitClass)
+    const { left, top, size } = UNIT_FOOTPRINT
+    const box = `left: ${(slot.x / this.mapWidth) * 100}%; top: ${(slot.y / this.mapHeight) * 100}%;`
+      + ` width: ${100 / this.mapWidth}%; height: ${100 / this.mapHeight}%`
+    // in % of the slot (one tile), so the mini scales with the map
+    const mini = `left: ${left * 100}%; top: ${top * 100}%; width: ${size * 100}%; height: ${size * 100}%`
     return html`
       <button
-        class="slot ${index === this.selected ? 'selected' : ''}"
-        style="left: ${left}%; top: ${top}%"
-        title="Slot ${index + 1}: ${unitClass}"
+        class="slot ${index === this.selected ? 'selected' : ''} ${option ? '' : 'empty'}"
+        style=${box}
+        title="Slot ${index + 1}: ${unitClass ?? 'empty'}"
         @click=${() => { this.selected = index }}
-      ><img src=${this.option(unitClass)?.portrait ?? ''} alt=${unitClass} /></button>
+      >${option ? html`<img src=${option.portrait} alt=${option.unitClass} style=${mini} />` : nothing}</button>
+    `
+  }
+
+  private renderRosterRow(unitClass: UnitClass | null, index: number) {
+    const option = this.option(unitClass)
+    return html`
+      <div class="row ${index === this.selected ? 'selected' : ''} ${option ? '' : 'empty'}">
+        <button class="pick-slot" @click=${() => { this.selected = index }}>
+          <span class="num">${index + 1}</span>
+          ${option ? html`<img src=${option.portrait} alt="" />` : html`<span class="placeholder"></span>`}
+          <span class="label">${option ? option.unitClass : 'Empty'}</span>
+          <span class="cost">${option ? option.cost : ''}</span>
+        </button>
+        <button class="remove" title="Remove" aria-label="Remove ${unitClass ?? ''}" ?hidden=${!option} @click=${() => this.removeAt(index)}>✕</button>
+      </div>
     `
   }
 
@@ -305,6 +374,7 @@ export class ArmySelect extends LitElement {
 
   override render() {
     const total = this.total()
+    const empty = this.army.filter(c => c === null).length
     const teamClass = this.team === 0 ? 'team-blue' : 'team-red'
     return html`
       <div class="header ${teamClass}">
@@ -319,23 +389,17 @@ export class ArmySelect extends LitElement {
             ${this.slots.map((slot, i) => this.renderSlot(slot, i))}
           </div>
           <div class="roster">
-            ${this.army.map((unitClass, i) => html`
-              <button class="row ${i === this.selected ? 'selected' : ''}" @click=${() => { this.selected = i }}>
-                <span class="num">${i + 1}</span>
-                <img src=${this.option(unitClass)?.portrait ?? ''} alt="" />
-                <span>${unitClass}</span>
-                <span class="cost">${this.option(unitClass)?.cost ?? 0}</span>
-              </button>
-            `)}
+            ${this.army.map((unitClass, i) => this.renderRosterRow(unitClass, i))}
           </div>
         </div>
         <div class="panel classes ${teamClass}">
           <div class="panel-title"><span>Pick a class for slot ${this.selected + 1}</span><span>${this.budget - total} left</span></div>
-          <div class="grid">${this.classes.map(option => this.renderCard(option))}</div>
+          <div class="grid">${this.sortedClasses().map(option => this.renderCard(option))}</div>
         </div>
       </div>
       <div class="actions">
-        <span class="keys">Pick a slot, then open a class to see it and pick it<span class="keys-only"> · Enter confirm · Esc back</span></span>
+        <span class="keys">${this.isFull() ? 'Pick a slot, then open a class to see it and pick it' : `${empty} empty slot${empty === 1 ? '' : 's'} left to fill`}<span class="keys-only"> · Del remove · Enter confirm · Esc back</span></span>
+        <button class="btn btn-solid" ?disabled=${this.army.every(c => c === null)} @click=${() => this.clearAll()}>Remove all</button>
         <button class="btn btn-solid" @click=${() => { this.army = [...this.defaultArmy]; this.selected = 0 }}>Classic army</button>
         ${this.randomize ? html`<button class="btn btn-solid" @click=${() => { this.army = this.randomize?.() ?? this.army; this.selected = 0 }}>Random</button>` : nothing}
         <button class="btn btn-solid" @click=${() => this.dispatchEvent(new Event('back'))}>Back</button>
