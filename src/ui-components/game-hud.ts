@@ -3,7 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
 import { iconStyles } from './icons'
 import { HudView, TeamView, hpLevel } from './view-models'
-import { EMOTES, TURN_WARNING_SECONDS } from '../online/protocol'
+import { EMOTES, TURN_WARNING_SECONDS, emoteLabel } from '../online/protocol'
 
 /**
  * Top bar: both teams (units left, total HP), round/phase and End Turn.
@@ -125,6 +125,9 @@ export class GameHud extends LitElement {
       grid-template-columns: repeat(3, auto);
       gap: calc(6 * var(--u));
       padding: calc(8 * var(--u));
+      max-height: calc(420 * var(--u));
+      overflow-y: auto;
+      pointer-events: auto;
     }
     .emote-list .btn { --team: #2a2d3a; font-size: calc(16 * var(--t)); padding: calc(6 * var(--u)) calc(10 * var(--u)); justify-content: center; white-space: nowrap; }
     .emote-list small { font-size: calc(14 * var(--t)); color: var(--gold); margin-right: calc(4 * var(--u)); }
@@ -186,7 +189,7 @@ export class GameHud extends LitElement {
     if (this.emotesOpen && !this.view?.online?.canEmote) this.emotesOpen = false
   }
 
-  /** Keys 1-6 (GameUI): sends that emote */
+  /** Keys 1-9 (GameUI): sends that emote */
   sendEmote(index: number) {
     const emote = EMOTES[index]
     if (emote && this.view?.online?.canEmote) this.pickEmote(emote)
@@ -215,10 +218,10 @@ export class GameHud extends LitElement {
     const online = this.view?.online
     if (!online?.canEmote) return nothing
     return html`
-      <button class="btn btn-solid emote-btn" title="Send a quick message (1-6)" @click=${() => { this.emotesOpen = !this.emotesOpen }}>Say...</button>
+      <button class="btn btn-solid emote-btn" title="Send a quick message (T, 1-9)" @click=${() => { this.emotesOpen = !this.emotesOpen }}>Say...</button>
       ${this.emotesOpen ? html`
         <div class="panel emote-list">
-          ${EMOTES.map((emote, i) => html`<button class="btn btn-solid" @click=${() => this.pickEmote(emote)}><small class="keys-only">${i + 1}</small>${emote}</button>`)}
+          ${EMOTES.map((emote, i) => html`<button class="btn btn-solid" @click=${() => this.pickEmote(emote)}>${i < 9 ? html`<small class="keys-only">${i + 1}</small>` : nothing}${emoteLabel(emote)}</button>`)}
         </div>
       ` : nothing}
     `
@@ -229,7 +232,7 @@ export class GameHud extends LitElement {
     const emote = this.view?.online?.emotes[team.team]
     return html`
       <div class="team-slot ${side} team-${team.team}">
-      ${emote ? html`<div class="bubble">${emote}</div>` : nothing}
+      ${emote ? html`<div class="bubble">${emoteLabel(emote)}</div>` : nothing}
       <div class="panel team team-${team.team} ${side} ${active ? 'active' : ''}">
         <div class="badge">${team.alive}</div>
         <div class="info">

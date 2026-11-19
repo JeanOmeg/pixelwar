@@ -7,7 +7,7 @@ import type { SkillId } from '../skills'
  */
 
 /** Raised when a message changes shape: peers on different versions refuse each other */
-export const PROTOCOL_VERSION = 2
+export const PROTOCOL_VERSION = 3
 export const APP_ID = 'pixelfantasywar'
 export const MAX_SPECTATORS = 8
 export const ONLINE_TURN_SECONDS = 300
@@ -22,8 +22,63 @@ export const CONNECT_TIMEOUT_SECONDS = 20
 export const NAME_MAX_LENGTH = 16
 export const EMOTE_COOLDOWN_MS = 3000
 
-export const EMOTES = ['Nice!', 'Oops', 'Good luck', 'GG', 'Hmm...', 'Hurry up!'] as const
+/** Keys 1-9 send the first nine (keep the order: players learn the numbers) */
+export const EMOTES = [
+  'Nice!', 'Oops', 'Good luck', 'GG', 'Hmm...', 'Hurry up!',
+  'Too easy', 'Is that all?', 'Watch your back',
+  'Big brain', 'Lucky!', 'Noooo!',
+  'Run!', 'Bring it on', 'I meant that',
+  'Hahaha', 'Wow', 'Oh no',
+  'Hello?', 'Calculated', 'Sorry not sorry',
+  'EZ', 'Skill issue', 'Cry about it',
+  'Uninstall', 'Get rekt', 'Too slow',
+  'Free kill', 'Was that a plan?', 'Rage quit?',
+  'Nerf this!', 'Grandma plays better', 'Read the rules',
+] as const
 export type Emote = typeof EMOTES[number]
+
+/** Emoji shown after each emote (display only: the message still carries the plain text) */
+const EMOTE_EMOJI: Record<Emote, string> = {
+  'Nice!': '👍',
+  'Oops': '😅',
+  'Good luck': '🍀',
+  'GG': '🤝',
+  'Hmm...': '🤔',
+  'Hurry up!': '⏳',
+  'Too easy': '😎',
+  'Is that all?': '🥱',
+  'Watch your back': '🗡️',
+  'Big brain': '🧠',
+  'Lucky!': '🎲',
+  'Noooo!': '😭',
+  'Run!': '🏃',
+  'Bring it on': '💪',
+  'I meant that': '🙃',
+  'Hahaha': '🤣',
+  'Wow': '😮',
+  'Oh no': '😱',
+  'Hello?': '👋',
+  'Calculated': '🧮',
+  'Sorry not sorry': '😇',
+  'EZ': '😏',
+  'Skill issue': '🤡',
+  'Cry about it': '😢',
+  'Uninstall': '🗑️',
+  'Get rekt': '💀',
+  'Too slow': '🐢',
+  'Free kill': '🎁',
+  'Was that a plan?': '🤨',
+  'Rage quit?': '😡',
+  'Nerf this!': '🔨',
+  'Grandma plays better': '👵',
+  'Read the rules': '📖',
+}
+
+/** Text shown for an emote: the text plus its emoji */
+export function emoteLabel(emote: string): string {
+  const emoji = EMOTE_EMOJI[emote as Emote]
+  return emoji ? `${emote} ${emoji}` : emote
+}
 
 /** 0 = Blue (plays first), 1 = Red */
 export type Seat = 0 | 1

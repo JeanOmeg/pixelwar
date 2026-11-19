@@ -402,7 +402,7 @@ export class GameUI implements GamepadMatch {
     if (key === 'enter' && this.bannerActive) { this.banner.stop(); return }
     if (!this.pauseMenu.open && !this.matchOver && !this.menu.open && !event.ctrlKey && !event.metaKey) {
       if (key === 'e' && this.hud.view?.canEndTurn) { this.hud.requestEndTurn(); return }
-      if (/^[1-6]$/.test(key) && this.hud.view?.online?.canEmote) { this.hud.sendEmote(Number(key) - 1); return }
+      if (/^[1-9]$/.test(key) && this.hud.view?.online?.canEmote) { this.hud.sendEmote(Number(key) - 1); return }
       if (key === 't' && this.hud.view?.online?.canEmote) { this.hud.toggleEmotes(); this.refresh(); return }
       if (key === 'p') { void this.pause(); return }
       if (key === 'h') { this.toggleOverlays(); return }

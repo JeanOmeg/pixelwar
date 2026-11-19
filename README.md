@@ -36,7 +36,7 @@ Dois jogadores, cada um no seu aparelho, mais até 8 espectadores. Não há serv
 - **Pausa:** só para quem pausou; o jogo do outro continua. Sair pelo menu da pausa é desistir (o outro vence).
 - **Queda de conexão:** o relógio para e o outro vê "Connection lost". Recarregar a página volta para a mesma vaga e a partida continua de onde parou. Sem voltar em 3 minutos, o outro vence.
 - **Espectadores:** podem entrar no lobby ou no meio da partida (o jogo reaplica tudo o que já aconteceu). Veem os dois exércitos, passam o mouse/tocam para ver cards e alcances, mas não controlam nada.
-- **Emotes:** botão **Say...** no topo (ou teclas 1–6): "Nice!", "Oops", "Good luck", "GG", "Hmm...", "Hurry up!". Um a cada 3 s; dá para silenciar no menu da pausa.
+- **Emotes:** botão **Say...** no topo (ou T para abrir a lista; teclas 1–9 mandam os nove primeiros): "Nice! 👍", "Oops 😅", "Good luck 🍀", "GG 🤝", "Hmm... 🤔", "Hurry up! ⏳", "Too easy 😎", "Is that all? 🥱", "Watch your back 🗡️", "Big brain 🧠", "Lucky! 🎲", "Noooo! 😭", "Run! 🏃", "Bring it on 💪", "I meant that 🙃", e mais 18 de zoeira e provocação ("EZ 😏", "Skill issue 🤡", "Uninstall 🗑️", "Grandma plays better 👵"...; lista completa em `EMOTES`, `src/online/protocol.ts`). Um a cada 3 s; dá para silenciar no menu da pausa.
 - **Revanche:** **Rematch** no fim; começa quando os dois pedirem. Volta ao lobby com as cores trocadas.
 - **Dados:** quem ataca sorteia os dados e manda o resultado; os outros calculam o mesmo ataque. No fim de cada turno os aparelhos comparam o tabuleiro; se divergir, a partida acaba sem resultado.
 
