@@ -1,7 +1,8 @@
 import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
-import { classDetailStyles, renderClassDetails } from './class-details'
+import { classDetailStyles, renderClassAbilities, renderClassStats } from './class-details'
+import { CLASS_INFO } from '../unit-classes'
 import type { UnitClass } from '../path-finding/terrain-rules'
 
 export interface ArmyClassOption {
@@ -66,27 +67,40 @@ export class ArmySelect extends LitElement {
 
     .classes { display: flex; flex-direction: column; min-height: 0; }
     .classes .panel-title { font-size: calc(18 * var(--t)); justify-content: space-between; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: calc(8 * var(--u)); padding: calc(10 * var(--u)); overflow-y: auto; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: calc(8 * var(--u)); padding: calc(10 * var(--u)); overflow-y: auto; align-items: start; }
     .card {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.05);
+      border: calc(3 * var(--u)) solid transparent;
+    }
+    .card:hover { background: rgba(255, 255, 255, 0.1); }
+    .card.current { border-color: var(--gold); }
+    .card.open { border-color: var(--edge); background: rgba(255, 255, 255, 0.08); }
+    .card.open.current { border-color: var(--gold); }
+    .card.unaffordable:not(.open) { opacity: 0.4; }
+    .card .toggle {
       all: unset;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       gap: calc(8 * var(--u));
       padding: calc(10 * var(--u));
-      background: rgba(255, 255, 255, 0.05);
-      border: calc(3 * var(--u)) solid transparent;
       cursor: pointer;
     }
-    .card:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); }
-    .card.current { border-color: var(--gold); }
-    .card:disabled { opacity: 0.35; cursor: not-allowed; }
-    .card .head { display: grid; grid-template-columns: calc(64 * var(--u)) 1fr auto; gap: calc(10 * var(--u)); align-items: center; }
+    .card .head { display: grid; grid-template-columns: calc(64 * var(--u)) 1fr auto auto; gap: calc(10 * var(--u)); align-items: center; }
     .card img { width: calc(64 * var(--u)); height: calc(64 * var(--u)); image-rendering: pixelated; background: rgba(0, 0, 0, 0.3); }
     .card .name { font-size: calc(22 * var(--t)); line-height: 1; }
     .card .name small { display: block; font-size: calc(14 * var(--t)); color: var(--gold); margin-top: calc(3 * var(--u)); }
     .card .price { font-size: calc(24 * var(--t)); color: var(--gold); text-align: right; }
     .card .price small { display: block; font-size: calc(14 * var(--t)); color: var(--muted); }
+    .card .chevron { font-size: calc(16 * var(--t)); color: var(--muted); width: calc(16 * var(--u)); text-align: center; }
+    .card.open .chevron { color: var(--ink); }
+    .card .more { display: flex; flex-direction: column; gap: calc(10 * var(--u)); padding: 0 calc(10 * var(--u)) calc(10 * var(--u)); }
+    .card .pick-row { display: flex; align-items: center; justify-content: flex-end; gap: calc(12 * var(--u)); }
+    .card .pick-row .note { font-size: calc(14 * var(--t)); color: var(--red); }
+    .card .pick { font-size: calc(20 * var(--t)); padding: calc(8 * var(--u)) calc(20 * var(--u)); }
 
     .actions { display: flex; align-items: center; gap: calc(14 * var(--u)); margin-top: calc(14 * var(--u)); }
     .actions .keys { flex: 1; font-size: calc(14 * var(--t)); color: var(--muted); }
@@ -143,9 +157,23 @@ export class ArmySelect extends LitElement {
   @state()
   private selected = 0
 
+  /** class card opened to show everything about it */
+  @state()
+  private expanded: UnitClass | null = null
+
+  /** element to focus after the next render (keyboard / gamepad flow) */
+  private focusAfterRender: string | null = null
+
   private onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') this.dispatchEvent(new Event('back'))
-    else if (event.key === 'Enter' && this.canConfirm()) this.confirm()
+    if (event.key === 'Escape') {
+      if (this.expanded) this.collapse()
+      else this.dispatchEvent(new Event('back'))
+    } else if (event.key === 'Enter' && this.canConfirm()) {
+      // Enter on a focused button is that button's click, not "confirm army"
+      const target = event.composedPath()[0]
+      if (target instanceof HTMLElement && target.closest('button') && !target.classList.contains('confirm')) return
+      this.confirm()
+    }
   }
 
   override connectedCallback() {
@@ -163,7 +191,35 @@ export class ArmySelect extends LitElement {
     if (changed.has('team') || changed.has('initialArmy') || changed.has('slots')) {
       this.army = [...this.initialArmy]
       this.selected = 0
+      this.expanded = null
     }
+  }
+
+  override updated() {
+    if (!this.focusAfterRender) return
+    const element = this.renderRoot.querySelector<HTMLElement>(this.focusAfterRender)
+    this.focusAfterRender = null
+    if (!element) return
+    element.focus({ preventScroll: true })
+    element.closest('.card')?.scrollIntoView({ block: 'nearest' })
+  }
+
+  private toggle(unitClass: UnitClass) {
+    if (this.expanded === unitClass) {
+      this.collapse()
+      return
+    }
+    this.expanded = unitClass
+    // straight to "Pick" when it can be picked, so A / Enter twice recruits
+    this.focusAfterRender = this.fits(unitClass)
+      ? `.card[data-class="${unitClass}"] .pick`
+      : `.card[data-class="${unitClass}"] .toggle`
+  }
+
+  private collapse() {
+    if (!this.expanded) return
+    this.focusAfterRender = `.card[data-class="${this.expanded}"] .toggle`
+    this.expanded = null
   }
 
   private option(unitClass: UnitClass) {
@@ -191,6 +247,7 @@ export class ArmySelect extends LitElement {
     next[this.selected] = unitClass
     this.army = next
     this.selected = (this.selected + 1) % this.slots.length
+    this.collapse()
     this.dispatchEvent(new Event('pick'))
   }
 
@@ -212,17 +269,37 @@ export class ArmySelect extends LitElement {
     `
   }
 
+  /** Compact card (portrait, role, cost, stats); click opens the rest and the Pick button */
   private renderCard(option: ArmyClassOption) {
-    const current = this.army[this.selected] === option.unitClass
+    const { unitClass } = option
+    const current = this.army[this.selected] === unitClass
+    const open = this.expanded === unitClass
+    const fits = this.fits(unitClass)
+    const classes = ['card', current ? 'current' : '', open ? 'open' : '', fits ? '' : 'unaffordable'].join(' ')
     return html`
-      <button class="card ${current ? 'current' : ''}" ?disabled=${!this.fits(option.unitClass)} @click=${() => this.assign(option.unitClass)}>
-        <div class="head">
-          <img src=${option.portrait} alt="" />
-          <div class="name">${option.unitClass}<small>${option.role}</small></div>
-          <div class="price">${option.cost}<small>pts</small></div>
-        </div>
-        ${renderClassDetails(option.unitClass)}
-      </button>
+      <div class=${classes} data-class=${unitClass}>
+        <button class="toggle" aria-expanded=${open} @click=${() => this.toggle(unitClass)}>
+          <div class="head">
+            <img src=${option.portrait} alt="" />
+            <div class="name">${unitClass}<small>${option.role}</small></div>
+            <div class="price">${option.cost}<small>pts</small></div>
+            <span class="chevron">${open ? '▾' : '▸'}</span>
+          </div>
+          ${renderClassStats(unitClass, { mp: false })}
+        </button>
+        ${open ? html`
+          <div class="more details">
+            <p class="desc">${CLASS_INFO[unitClass].description}</p>
+            ${renderClassAbilities(unitClass)}
+            <div class="pick-row">
+              ${fits ? nothing : html`<span class="note">Not enough points</span>`}
+              <button class="btn btn-solid pick" ?disabled=${!fits} @click=${() => this.assign(unitClass)}>
+                Pick for slot ${this.selected + 1}
+              </button>
+            </div>
+          </div>
+        ` : nothing}
+      </div>
     `
   }
 
@@ -258,7 +335,7 @@ export class ArmySelect extends LitElement {
         </div>
       </div>
       <div class="actions">
-        <span class="keys">Pick a slot, then a class<span class="keys-only"> · Enter confirm · Esc back</span></span>
+        <span class="keys">Pick a slot, then open a class to see it and pick it<span class="keys-only"> · Enter confirm · Esc back</span></span>
         <button class="btn btn-solid" @click=${() => { this.army = [...this.defaultArmy]; this.selected = 0 }}>Classic army</button>
         ${this.randomize ? html`<button class="btn btn-solid" @click=${() => { this.army = this.randomize?.() ?? this.army; this.selected = 0 }}>Random</button>` : nothing}
         <button class="btn btn-solid" @click=${() => this.dispatchEvent(new Event('back'))}>Back</button>

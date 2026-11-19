@@ -1216,9 +1216,9 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
     `}constructor(...t){super(...t),this.maps=[],this.modeLabel="",this.initial=m4,this.selected=null,this.onKeyDown=t=>{if("ArrowDown"===t.key||"ArrowUp"===t.key){t.preventDefault();let e=this.ids(),i=(e.indexOf(this.current())+("ArrowDown"===t.key?1:-1)+e.length)%e.length;this.select(e[i],!0)}else"Enter"===t.key?(t.preventDefault(),this.start()):"Escape"===t.key&&this.dispatchEvent(new Event("back"))}}}gW([pV({attribute:!1})],m6.prototype,"maps",void 0),gW([pV()],m6.prototype,"modeLabel",void 0),gW([pV()],m6.prototype,"initial",void 0),gW([pY()],m6.prototype,"selected",void 0),m6=gW([pW("map-select")],m6);let m8=gJ`
   .details { display: flex; flex-direction: column; gap: calc(8 * var(--u)); text-align: left; }
   .details .desc { margin: 0; font-size: calc(14 * var(--t)); line-height: 1.35; color: var(--muted); }
-  .details .stats { display: grid; grid-template-columns: repeat(6, 1fr); text-align: center; gap: calc(4 * var(--u)); }
-  .details .stats div { background: rgba(0, 0, 0, 0.35); padding: calc(4 * var(--u)) 0; font-size: calc(18 * var(--t)); line-height: 1; color: var(--ink); }
-  .details .stats small { display: block; font-size: calc(12 * var(--t)); color: var(--muted); margin-top: calc(3 * var(--u)); }
+  .stats { display: grid; grid-template-columns: repeat(var(--stat-count, 6), 1fr); text-align: center; gap: calc(4 * var(--u)); }
+  .stats div { background: rgba(0, 0, 0, 0.35); padding: calc(4 * var(--u)) 0; font-size: calc(18 * var(--t)); line-height: 1; color: var(--ink); }
+  .stats small { display: block; font-size: calc(12 * var(--t)); color: var(--muted); margin-top: calc(3 * var(--u)); }
   .details .range { font-size: calc(14 * var(--t)); line-height: 1.3; color: var(--muted); }
   .details .range b { font-weight: normal; color: var(--ink); }
   .details .skills { display: flex; flex-direction: column; gap: calc(4 * var(--u)); }
@@ -1226,30 +1226,31 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
   .details .skill b { font-weight: normal; color: var(--ink); }
   .details .skill.own b { color: var(--gold); }
   .details .skill .mp { color: var(--mp); }
-  .details .traits { display: flex; flex-wrap: wrap; gap: calc(5 * var(--u)); }
-  .details .traits .chip { font-size: calc(13 * var(--t)); color: var(--mp); }
-`;function m9(t){let e,i,s=u9[t],r=(e=gd[t],i=[],e.ignoresSlowTerrain&&i.push("Full speed in forest"),e.targetsWater&&i.push("Can target across water"),e.slowTerrainCostsRange?i.push("Range halves over forest/water"):u9[t].range>1&&i.push("Full range on any terrain"),1===u9[t].range&&i.push("Counterattacks"),i),n=u6[t],a=u8(t).sort((t,e)=>Number(e.id===n)-Number(t.id===n));return pI`
-    <div class="details">
-      <p class="desc">${Af[t].description}</p>
-      <div class="stats">
-        <div>${s.health}<small>HP</small></div>
-        <div>${s.attack}<small>ATK</small></div>
-        <div>${s.defense}<small>DEF</small></div>
-        <div>${s.range}<small>RNG</small></div>
-        <div>${s.movement}<small>MOV</small></div>
-        <div>${4}<small>MP</small></div>
-      </div>
-      <div class="range"><b>Range:</b> ${Ay(t,s.range)}</div>
-      <div class="skills">
-        ${a.map(t=>pI`
-          <div class="skill ${t.id===n?"own":""}">
-            <b>${t.name}</b> <span class="mp">${t.cost} MP</span>: ${t.description}
-          </div>
-        `)}
-      </div>
-      ${r.length?pI`<div class="traits">${r.map(t=>pI`<span class="chip">${t}</span>`)}</div>`:""}
+  .details .skill .passive { color: var(--hp); }
+`;function m9(t,{mp:e=!0}={}){let i=u9[t];return pI`
+    <div class="stats" style="--stat-count: ${e?6:5}">
+      <div>${i.health}<small>HP</small></div>
+      <div>${i.attack}<small>ATK</small></div>
+      <div>${i.defense}<small>DEF</small></div>
+      <div>${i.range}<small>RNG</small></div>
+      <div>${i.movement}<small>MOV</small></div>
+      ${e?pI`<div>${4}<small>MP</small></div>`:pS}
     </div>
-  `}class m7 extends pG{static{this.styles=[pZ,m8,gJ`
+  `}function m7(t){let e,i,s=u6[t],r=u8(t).sort((t,e)=>Number(e.id===s)-Number(t.id===s));return pI`
+    <div class="range"><b>Range:</b> ${Ay(t,u9[t].range)}</div>
+    <div class="skills">
+      ${r.map(t=>pI`
+        <div class="skill ${t.id===s?"own":""}">
+          <b>${t.name}</b> <span class="mp">${t.cost} MP</span>: ${t.description}
+        </div>
+      `)}
+      ${(e=gd[t],i=[],e.ignoresSlowTerrain&&i.push({name:"Pathfinder",description:"Moves at full speed through forest."}),e.targetsWater&&i.push({name:"Over water",description:"Can target enemies across water."}),1===u9[t].range&&i.push({name:"Counterattack",description:"Strikes back once when an adjacent enemy attacks it and it survives."}),i).map(t=>pI`
+        <div class="skill">
+          <b>${t.name}</b> <span class="passive">Passive</span>: ${t.description}
+        </div>
+      `)}
+    </div>
+  `}class ft extends pG{static{this.styles=[pZ,m8,gJ`
     :host { display: block; width: calc(1680 * var(--u)); max-width: 97vw; }
     .header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: calc(12 * var(--u)); }
     h2 { margin: 0; font-weight: normal; font-size: calc(44 * var(--t)); text-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000; }
@@ -1290,49 +1291,77 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
 
     .classes { display: flex; flex-direction: column; min-height: 0; }
     .classes .panel-title { font-size: calc(18 * var(--t)); justify-content: space-between; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: calc(8 * var(--u)); padding: calc(10 * var(--u)); overflow-y: auto; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: calc(8 * var(--u)); padding: calc(10 * var(--u)); overflow-y: auto; align-items: start; }
     .card {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.05);
+      border: calc(3 * var(--u)) solid transparent;
+    }
+    .card:hover { background: rgba(255, 255, 255, 0.1); }
+    .card.current { border-color: var(--gold); }
+    .card.open { border-color: var(--edge); background: rgba(255, 255, 255, 0.08); }
+    .card.open.current { border-color: var(--gold); }
+    .card.unaffordable:not(.open) { opacity: 0.4; }
+    .card .toggle {
       all: unset;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       gap: calc(8 * var(--u));
       padding: calc(10 * var(--u));
-      background: rgba(255, 255, 255, 0.05);
-      border: calc(3 * var(--u)) solid transparent;
       cursor: pointer;
     }
-    .card:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); }
-    .card.current { border-color: var(--gold); }
-    .card:disabled { opacity: 0.35; cursor: not-allowed; }
-    .card .head { display: grid; grid-template-columns: calc(64 * var(--u)) 1fr auto; gap: calc(10 * var(--u)); align-items: center; }
+    .card .head { display: grid; grid-template-columns: calc(64 * var(--u)) 1fr auto auto; gap: calc(10 * var(--u)); align-items: center; }
     .card img { width: calc(64 * var(--u)); height: calc(64 * var(--u)); image-rendering: pixelated; background: rgba(0, 0, 0, 0.3); }
     .card .name { font-size: calc(22 * var(--t)); line-height: 1; }
     .card .name small { display: block; font-size: calc(14 * var(--t)); color: var(--gold); margin-top: calc(3 * var(--u)); }
     .card .price { font-size: calc(24 * var(--t)); color: var(--gold); text-align: right; }
     .card .price small { display: block; font-size: calc(14 * var(--t)); color: var(--muted); }
+    .card .chevron { font-size: calc(16 * var(--t)); color: var(--muted); width: calc(16 * var(--u)); text-align: center; }
+    .card.open .chevron { color: var(--ink); }
+    .card .more { display: flex; flex-direction: column; gap: calc(10 * var(--u)); padding: 0 calc(10 * var(--u)) calc(10 * var(--u)); }
+    .card .pick-row { display: flex; align-items: center; justify-content: flex-end; gap: calc(12 * var(--u)); }
+    .card .pick-row .note { font-size: calc(14 * var(--t)); color: var(--red); }
+    .card .pick { font-size: calc(20 * var(--t)); padding: calc(8 * var(--u)) calc(20 * var(--u)); }
 
     .actions { display: flex; align-items: center; gap: calc(14 * var(--u)); margin-top: calc(14 * var(--u)); }
     .actions .keys { flex: 1; font-size: calc(14 * var(--t)); color: var(--muted); }
     .actions .btn { font-size: calc(24 * var(--t)); padding: calc(10 * var(--u)) calc(24 * var(--u)); --team: #2a2d3a; }
     .actions .confirm { --team: var(--red); min-width: calc(220 * var(--u)); }
     .actions .confirm:disabled { opacity: 0.4; }
-  `]}connectedCallback(){super.connectedCallback(),window.addEventListener("keydown",this.onKeyDown)}disconnectedCallback(){window.removeEventListener("keydown",this.onKeyDown),super.disconnectedCallback()}willUpdate(t){(t.has("team")||t.has("initialArmy")||t.has("slots"))&&(this.army=[...this.initialArmy],this.selected=0)}option(t){return this.classes.find(e=>e.unitClass===t)}total(t=this.army){return t.reduce((t,e)=>t+(this.option(e)?.cost??0),0)}canConfirm(){return this.army.length===this.slots.length&&this.total()<=this.budget}fits(t){let e=[...this.army];return e[this.selected]=t,this.total(e)<=this.budget}assign(t){if(!this.fits(t))return;let e=[...this.army];e[this.selected]=t,this.army=e,this.selected=(this.selected+1)%this.slots.length,this.dispatchEvent(new Event("pick"))}confirm(){this.dispatchEvent(new CustomEvent("confirm",{detail:[...this.army]}))}renderSlot(t,e){let i=this.army[e],s=(t.x+.5)/this.mapWidth*100,r=(t.y+.5)/this.mapHeight*100;return pI`
+  `]}connectedCallback(){super.connectedCallback(),window.addEventListener("keydown",this.onKeyDown)}disconnectedCallback(){window.removeEventListener("keydown",this.onKeyDown),super.disconnectedCallback()}willUpdate(t){(t.has("team")||t.has("initialArmy")||t.has("slots"))&&(this.army=[...this.initialArmy],this.selected=0,this.expanded=null)}updated(){if(!this.focusAfterRender)return;let t=this.renderRoot.querySelector(this.focusAfterRender);this.focusAfterRender=null,t&&(t.focus({preventScroll:!0}),t.closest(".card")?.scrollIntoView({block:"nearest"}))}toggle(t){this.expanded===t?this.collapse():(this.expanded=t,this.focusAfterRender=this.fits(t)?`.card[data-class="${t}"] .pick`:`.card[data-class="${t}"] .toggle`)}collapse(){this.expanded&&(this.focusAfterRender=`.card[data-class="${this.expanded}"] .toggle`,this.expanded=null)}option(t){return this.classes.find(e=>e.unitClass===t)}total(t=this.army){return t.reduce((t,e)=>t+(this.option(e)?.cost??0),0)}canConfirm(){return this.army.length===this.slots.length&&this.total()<=this.budget}fits(t){let e=[...this.army];return e[this.selected]=t,this.total(e)<=this.budget}assign(t){if(!this.fits(t))return;let e=[...this.army];e[this.selected]=t,this.army=e,this.selected=(this.selected+1)%this.slots.length,this.collapse(),this.dispatchEvent(new Event("pick"))}confirm(){this.dispatchEvent(new CustomEvent("confirm",{detail:[...this.army]}))}renderSlot(t,e){let i=this.army[e],s=(t.x+.5)/this.mapWidth*100,r=(t.y+.5)/this.mapHeight*100;return pI`
       <button
         class="slot ${e===this.selected?"selected":""}"
         style="left: ${s}%; top: ${r}%"
         title="Slot ${e+1}: ${i}"
         @click=${()=>{this.selected=e}}
       ><img src=${this.option(i)?.portrait??""} alt=${i} /></button>
-    `}renderCard(t){let e=this.army[this.selected]===t.unitClass;return pI`
-      <button class="card ${e?"current":""}" ?disabled=${!this.fits(t.unitClass)} @click=${()=>this.assign(t.unitClass)}>
-        <div class="head">
-          <img src=${t.portrait} alt="" />
-          <div class="name">${t.unitClass}<small>${t.role}</small></div>
-          <div class="price">${t.cost}<small>pts</small></div>
-        </div>
-        ${m9(t.unitClass)}
-      </button>
+    `}renderCard(t){let{unitClass:e}=t,i=this.army[this.selected]===e,s=this.expanded===e,r=this.fits(e),n=["card",i?"current":"",s?"open":"",r?"":"unaffordable"].join(" ");return pI`
+      <div class=${n} data-class=${e}>
+        <button class="toggle" aria-expanded=${s} @click=${()=>this.toggle(e)}>
+          <div class="head">
+            <img src=${t.portrait} alt="" />
+            <div class="name">${e}<small>${t.role}</small></div>
+            <div class="price">${t.cost}<small>pts</small></div>
+            <span class="chevron">${s?"▾":"▸"}</span>
+          </div>
+          ${m9(e,{mp:!1})}
+        </button>
+        ${s?pI`
+          <div class="more details">
+            <p class="desc">${Af[e].description}</p>
+            ${m7(e)}
+            <div class="pick-row">
+              ${r?pS:pI`<span class="note">Not enough points</span>`}
+              <button class="btn btn-solid pick" ?disabled=${!r} @click=${()=>this.assign(e)}>
+                Pick for slot ${this.selected+1}
+              </button>
+            </div>
+          </div>
+        `:pS}
+      </div>
     `}render(){let t=this.total(),e=0===this.team?"team-blue":"team-red";return pI`
       <div class="header ${e}">
         <h2>Build your army <span>· ${this.playerLabel}</span></h2>
@@ -1362,13 +1391,13 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
         </div>
       </div>
       <div class="actions">
-        <span class="keys">Pick a slot, then a class<span class="keys-only"> · Enter confirm · Esc back</span></span>
+        <span class="keys">Pick a slot, then open a class to see it and pick it<span class="keys-only"> · Enter confirm · Esc back</span></span>
         <button class="btn btn-solid" @click=${()=>{this.army=[...this.defaultArmy],this.selected=0}}>Classic army</button>
         ${this.randomize?pI`<button class="btn btn-solid" @click=${()=>{this.army=this.randomize?.()??this.army,this.selected=0}}>Random</button>`:pS}
         <button class="btn btn-solid" @click=${()=>this.dispatchEvent(new Event("back"))}>Back</button>
         <button class="btn btn-solid confirm" ?disabled=${!this.canConfirm()} @click=${()=>this.confirm()}>Confirm</button>
       </div>
-    `}constructor(...t){super(...t),this.team=0,this.playerLabel="",this.mapName="",this.preview="",this.mapWidth=28,this.mapHeight=17,this.slots=[],this.classes=[],this.defaultArmy=[],this.initialArmy=[],this.budget=100,this.army=[],this.selected=0,this.onKeyDown=t=>{"Escape"===t.key?this.dispatchEvent(new Event("back")):"Enter"===t.key&&this.canConfirm()&&this.confirm()}}}gW([pV({type:Number})],m7.prototype,"team",void 0),gW([pV()],m7.prototype,"playerLabel",void 0),gW([pV()],m7.prototype,"mapName",void 0),gW([pV()],m7.prototype,"preview",void 0),gW([pV({type:Number})],m7.prototype,"mapWidth",void 0),gW([pV({type:Number})],m7.prototype,"mapHeight",void 0),gW([pV({attribute:!1})],m7.prototype,"slots",void 0),gW([pV({attribute:!1})],m7.prototype,"classes",void 0),gW([pV({attribute:!1})],m7.prototype,"defaultArmy",void 0),gW([pV({attribute:!1})],m7.prototype,"initialArmy",void 0),gW([pV({attribute:!1})],m7.prototype,"randomize",void 0),gW([pV({type:Number})],m7.prototype,"budget",void 0),gW([pY()],m7.prototype,"army",void 0),gW([pY()],m7.prototype,"selected",void 0),m7=gW([pW("army-select")],m7);let ft=(t,e)=>`pixelfantasywar.army.${t}.${e}`;function fe(t,e,i){let s;try{s=localStorage.getItem(ft(t,e))?.split(",")}catch{return null}return!s||s.length!==i||s.some(t=>!d3.includes(t))?null:100>=Av(s)?s:null}function fi(t,e,i){try{localStorage.setItem(ft(t,e),i.join(","))}catch{}}let fs=new Map,fr=new Map;function fn(t,e,i,s,r,n,a=!1){let o=e.image.image,l=e.sourceView;t.save(),a&&(t.translate(i+r,s),t.scale(-1,1),i=0,s=0),t.drawImage(o,l.x,l.y,l.width,l.height,i,s,r,n),t.restore()}function fa(t){let e=gs[t]?.graphics.idle.frames[0]?.graphic;return e instanceof aE?e:null}function fo(t,e){let i=document.createElement("canvas");i.width=t,i.height=e;let s=i.getContext("2d");return s.imageSmoothingEnabled=!1,{canvas:i,ctx:s}}function fl(t,e=!1){let i=`${t}:${e}`,s=fs.get(i);if(s)return s;let r=fa(t);if(!r)return"";let{canvas:n,ctx:a}=fo(32,32);fn(a,r,0,0,32,32,e);let o=n.toDataURL();return fs.set(i,o),o}function fh(t,e=!0){let i=t.id+(e?"":":empty"),s=fr.get(i);if(s)return s;let r=mk(t),{width:n,height:a,tileWidth:o,tileHeight:l}=r,{canvas:h,ctx:c}=fo(n*o,a*l);for(let e=0;e<a;e++)for(let i=0;i<n;i++){let s=r.gids[i+e*n];if(!s)continue;let a=t.tiledMap.getTilesetForTileGid(s)?.getSpriteForGid(s);a&&fn(c,a,i*o,e*l,o,l)}for(let t of e?r.spawns:[]){let e=fa(t.unitType);e&&fn(c,e,t.x*o,t.y*l-.3*l,o,l,1===t.team)}let d=h.toDataURL();return fr.set(i,d),d}var p1=_("6eM5R");let fc="pixelfantasywar.name",fd="pixelfantasywar.onlineMap";function fu(t){try{return localStorage.getItem(t)}catch{return null}}function fg(t,e){try{localStorage.setItem(t,e)}catch{}}let fp={full:"The room is full.",version:"Your game versions differ. Reload the page (Ctrl+F5) and try again.",kicked:"You were removed from this room.",closed:"The room was closed by its owner."},fA="Online matches connect the devices directly, with no game server in the middle. Some mobile networks (4G/5G) and office networks block direct connections. If you can't connect, switch to Wi-Fi.";class fm extends pG{static{this.styles=[pZ,gJ`
+    `}constructor(...t){super(...t),this.team=0,this.playerLabel="",this.mapName="",this.preview="",this.mapWidth=28,this.mapHeight=17,this.slots=[],this.classes=[],this.defaultArmy=[],this.initialArmy=[],this.budget=100,this.army=[],this.selected=0,this.expanded=null,this.focusAfterRender=null,this.onKeyDown=t=>{if("Escape"===t.key)this.expanded?this.collapse():this.dispatchEvent(new Event("back"));else if("Enter"===t.key&&this.canConfirm()){let e=t.composedPath()[0];if(e instanceof HTMLElement&&e.closest("button")&&!e.classList.contains("confirm"))return;this.confirm()}}}}gW([pV({type:Number})],ft.prototype,"team",void 0),gW([pV()],ft.prototype,"playerLabel",void 0),gW([pV()],ft.prototype,"mapName",void 0),gW([pV()],ft.prototype,"preview",void 0),gW([pV({type:Number})],ft.prototype,"mapWidth",void 0),gW([pV({type:Number})],ft.prototype,"mapHeight",void 0),gW([pV({attribute:!1})],ft.prototype,"slots",void 0),gW([pV({attribute:!1})],ft.prototype,"classes",void 0),gW([pV({attribute:!1})],ft.prototype,"defaultArmy",void 0),gW([pV({attribute:!1})],ft.prototype,"initialArmy",void 0),gW([pV({attribute:!1})],ft.prototype,"randomize",void 0),gW([pV({type:Number})],ft.prototype,"budget",void 0),gW([pY()],ft.prototype,"army",void 0),gW([pY()],ft.prototype,"selected",void 0),gW([pY()],ft.prototype,"expanded",void 0),ft=gW([pW("army-select")],ft);let fe=(t,e)=>`pixelfantasywar.army.${t}.${e}`;function fi(t,e,i){let s;try{s=localStorage.getItem(fe(t,e))?.split(",")}catch{return null}return!s||s.length!==i||s.some(t=>!d3.includes(t))?null:100>=Av(s)?s:null}function fs(t,e,i){try{localStorage.setItem(fe(t,e),i.join(","))}catch{}}let fr=new Map,fn=new Map;function fa(t,e,i,s,r,n,a=!1){let o=e.image.image,l=e.sourceView;t.save(),a&&(t.translate(i+r,s),t.scale(-1,1),i=0,s=0),t.drawImage(o,l.x,l.y,l.width,l.height,i,s,r,n),t.restore()}function fo(t){let e=gs[t]?.graphics.idle.frames[0]?.graphic;return e instanceof aE?e:null}function fl(t,e){let i=document.createElement("canvas");i.width=t,i.height=e;let s=i.getContext("2d");return s.imageSmoothingEnabled=!1,{canvas:i,ctx:s}}function fh(t,e=!1){let i=`${t}:${e}`,s=fr.get(i);if(s)return s;let r=fo(t);if(!r)return"";let{canvas:n,ctx:a}=fl(32,32);fa(a,r,0,0,32,32,e);let o=n.toDataURL();return fr.set(i,o),o}function fc(t,e=!0){let i=t.id+(e?"":":empty"),s=fn.get(i);if(s)return s;let r=mk(t),{width:n,height:a,tileWidth:o,tileHeight:l}=r,{canvas:h,ctx:c}=fl(n*o,a*l);for(let e=0;e<a;e++)for(let i=0;i<n;i++){let s=r.gids[i+e*n];if(!s)continue;let a=t.tiledMap.getTilesetForTileGid(s)?.getSpriteForGid(s);a&&fa(c,a,i*o,e*l,o,l)}for(let t of e?r.spawns:[]){let e=fo(t.unitType);e&&fa(c,e,t.x*o,t.y*l-.3*l,o,l,1===t.team)}let d=h.toDataURL();return fn.set(i,d),d}var p1=_("6eM5R");let fd="pixelfantasywar.name",fu="pixelfantasywar.onlineMap";function fg(t){try{return localStorage.getItem(t)}catch{return null}}function fp(t,e){try{localStorage.setItem(t,e)}catch{}}let fA={full:"The room is full.",version:"Your game versions differ. Reload the page (Ctrl+F5) and try again.",kicked:"You were removed from this room.",closed:"The room was closed by its owner."},fm="Online matches connect the devices directly, with no game server in the middle. Some mobile networks (4G/5G) and office networks block direct connections. If you can't connect, switch to Wi-Fi.";class ff extends pG{static{this.styles=[pZ,gJ`
     :host { display: block; width: calc(1640 * var(--u)); max-width: 97vw; }
     h2 { margin: 0 0 calc(14 * var(--u)); font-weight: normal; font-size: calc(48 * var(--t)); text-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000; }
     h3 { margin: 0; font-weight: normal; font-size: calc(24 * var(--t)); }
@@ -1431,7 +1460,7 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
     .center { display: flex; flex-direction: column; align-items: center; gap: calc(18 * var(--u)); padding: calc(40 * var(--u)); text-align: center; }
     .dots::after { content: '...'; animation: dots 1200ms steps(4) infinite; display: inline-block; width: 1.5em; text-align: left; overflow: hidden; vertical-align: bottom; }
     @keyframes dots { from { width: 0; } }
-  `]}connectedCallback(){super.connectedCallback(),window.addEventListener("keydown",this.onKeyDown);let t=mK;t&&"joined"===t.status?(this.watch(t),this.launched=t.room?.phase==="lobby"?-1:t.room?.matchNo??-1,this.view="lobby"):this.autoResume&&mX()?this.resume():this.openDirectory()}disconnectedCallback(){window.removeEventListener("keydown",this.onKeyDown),this.closeDirectory(),this.stopSession?.(),this.stopSession=null,super.disconnectedCallback()}openDirectory(){if(this.directory)return;let t=++this.directoryGen;this.searching=!0,mF.open().then(e=>{t===this.directoryGen&&this.isConnected&&"browse"===this.view?(this.directory=e,e.changed.on(t=>{this.rooms=t,t.length>0&&(this.searching=!1)}),this.rooms=e.list(),window.setTimeout(()=>{t===this.directoryGen&&(this.searching=!1)},8e3)):e.close()})}closeDirectory(){this.directoryGen++,this.directory?.close(),this.directory=null,this.rooms=[],this.searching=!1}refreshRooms(){uj.SelectSound.play(),this.closeDirectory(),this.openDirectory()}validName(){let t=(0,p1.cleanName)(this.name);return t?(fg(fc,t),this.name=t,t):(this.error="Type your name first.",this.shadowRoot?.querySelector("input.name")?.focus(),null)}watch(t){this.stopSession?.(),this.session=t,this.stopSession=t.changed.on(()=>this.sessionChanged())}sessionChanged(){let t=this.session;if(!t)return;if(this.revision++,"joined"===t.status&&"connecting"===this.view&&(this.view="lobby"),"rejected"===t.status||"closed"===t.status){this.error=fp[t.rejectReason??""]??"The connection to the room was closed.",this.dropSession();return}let e=t.room;if(("army"===this.view||"map"===this.view)&&e&&"lobby"!==e.phase&&(this.view="lobby"),e&&"match"===e.phase&&this.launched!==e.matchNo&&t.feed){this.launched=e.matchNo;let t=mC(e.mapId);t&&this.dispatchEvent(new CustomEvent("launch",{detail:t}))}}dropSession(){this.stopSession?.(),this.stopSession=null,this.session?.close(),this.session=null,this.view="browse",this.openDirectory()}async create(){let t=this.validName();if(!t)return;uj.SelectSound.play(),this.error="",this.closeDirectory(),this.view="connecting";let e=mC(fu(fd))?.id??mb[0].id;this.watch(await mJ.create(t,e,this.locked)),this.view="lobby"}async join(t,e){let i=this.validName();i&&(uj.SelectSound.play(),this.error="",this.lastJoin={code:t,intent:e},this.closeDirectory(),this.view="connecting",this.watch(await mJ.join(t,i,e)),this.sessionChanged())}joinWithCode(t){let e=(0,p1.normalizeRoomCode)(this.codeInput);if(!e){this.error="Room codes have 5 letters and numbers.";return}this.join(e,t)}async resume(){let t=mX();t&&(uj.SelectSound.play(),this.error="",this.closeDirectory(),this.view="connecting",this.lastJoin={code:t.code,intent:t.intent},this.watch(await mJ.resume(t)),this.sessionChanged())}cancelConnecting(){uj.SelectSound.play(),this.error="",mZ(null),this.dropSession()}leaveRoom(){uj.SelectSound.play(),this.stopSession?.(),this.stopSession=null,this.session?.leave(),this.session=null,this.error="",this.view="browse",this.openDirectory()}back(){this.closeDirectory(),this.dispatchEvent(new Event("back"))}async copyCode(t){try{await navigator.clipboard.writeText(t),this.copied=!0,window.setTimeout(()=>{this.copied=!1},1500)}catch{}}chooseMap(t){let e=t===m4?mE():mC(t);e&&(fg(fd,e.id),this.session?.setMap(e.id)),this.view="lobby"}confirmArmy(t){let e=this.session,i=e?.room,s=e?.seat;e&&i&&null!=s&&(fi(i.mapId,s,t),e.setReady(!0,t,t.length),uj.SelectSound.play(),this.view="lobby")}unready(){uj.SelectSound.play(),this.session?.setReady(!1,null,0),this.view="army"}renderBrowse(){let t=mX();return pI`
+  `]}connectedCallback(){super.connectedCallback(),window.addEventListener("keydown",this.onKeyDown);let t=mK;t&&"joined"===t.status?(this.watch(t),this.launched=t.room?.phase==="lobby"?-1:t.room?.matchNo??-1,this.view="lobby"):this.autoResume&&mX()?this.resume():this.openDirectory()}disconnectedCallback(){window.removeEventListener("keydown",this.onKeyDown),this.closeDirectory(),this.stopSession?.(),this.stopSession=null,super.disconnectedCallback()}openDirectory(){if(this.directory)return;let t=++this.directoryGen;this.searching=!0,mF.open().then(e=>{t===this.directoryGen&&this.isConnected&&"browse"===this.view?(this.directory=e,e.changed.on(t=>{this.rooms=t,t.length>0&&(this.searching=!1)}),this.rooms=e.list(),window.setTimeout(()=>{t===this.directoryGen&&(this.searching=!1)},8e3)):e.close()})}closeDirectory(){this.directoryGen++,this.directory?.close(),this.directory=null,this.rooms=[],this.searching=!1}refreshRooms(){uj.SelectSound.play(),this.closeDirectory(),this.openDirectory()}validName(){let t=(0,p1.cleanName)(this.name);return t?(fp(fd,t),this.name=t,t):(this.error="Type your name first.",this.shadowRoot?.querySelector("input.name")?.focus(),null)}watch(t){this.stopSession?.(),this.session=t,this.stopSession=t.changed.on(()=>this.sessionChanged())}sessionChanged(){let t=this.session;if(!t)return;if(this.revision++,"joined"===t.status&&"connecting"===this.view&&(this.view="lobby"),"rejected"===t.status||"closed"===t.status){this.error=fA[t.rejectReason??""]??"The connection to the room was closed.",this.dropSession();return}let e=t.room;if(("army"===this.view||"map"===this.view)&&e&&"lobby"!==e.phase&&(this.view="lobby"),e&&"match"===e.phase&&this.launched!==e.matchNo&&t.feed){this.launched=e.matchNo;let t=mC(e.mapId);t&&this.dispatchEvent(new CustomEvent("launch",{detail:t}))}}dropSession(){this.stopSession?.(),this.stopSession=null,this.session?.close(),this.session=null,this.view="browse",this.openDirectory()}async create(){let t=this.validName();if(!t)return;uj.SelectSound.play(),this.error="",this.closeDirectory(),this.view="connecting";let e=mC(fg(fu))?.id??mb[0].id;this.watch(await mJ.create(t,e,this.locked)),this.view="lobby"}async join(t,e){let i=this.validName();i&&(uj.SelectSound.play(),this.error="",this.lastJoin={code:t,intent:e},this.closeDirectory(),this.view="connecting",this.watch(await mJ.join(t,i,e)),this.sessionChanged())}joinWithCode(t){let e=(0,p1.normalizeRoomCode)(this.codeInput);if(!e){this.error="Room codes have 5 letters and numbers.";return}this.join(e,t)}async resume(){let t=mX();t&&(uj.SelectSound.play(),this.error="",this.closeDirectory(),this.view="connecting",this.lastJoin={code:t.code,intent:t.intent},this.watch(await mJ.resume(t)),this.sessionChanged())}cancelConnecting(){uj.SelectSound.play(),this.error="",mZ(null),this.dropSession()}leaveRoom(){uj.SelectSound.play(),this.stopSession?.(),this.stopSession=null,this.session?.leave(),this.session=null,this.error="",this.view="browse",this.openDirectory()}back(){this.closeDirectory(),this.dispatchEvent(new Event("back"))}async copyCode(t){try{await navigator.clipboard.writeText(t),this.copied=!0,window.setTimeout(()=>{this.copied=!1},1500)}catch{}}chooseMap(t){let e=t===m4?mE():mC(t);e&&(fp(fu,e.id),this.session?.setMap(e.id)),this.view="lobby"}confirmArmy(t){let e=this.session,i=e?.room,s=e?.seat;e&&i&&null!=s&&(fs(i.mapId,s,t),e.setReady(!0,t,t.length),uj.SelectSound.play(),this.view="lobby")}unready(){uj.SelectSound.play(),this.session?.setReady(!1,null,0),this.view="army"}renderBrowse(){let t=mX();return pI`
       <h2>Online</h2>
       <div class="grid">
         <div class="panel box">
@@ -1440,7 +1469,7 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
             <input class="name" maxlength=${p1.NAME_MAX_LENGTH} .value=${this.name} placeholder="Name"
               @input=${t=>{this.name=t.target.value,this.error=""}} />
           </div>
-          <div class="tip"><b>Tip: play on Wi-Fi.</b> ${fA}</div>
+          <div class="tip"><b>Tip: play on Wi-Fi.</b> ${fm}</div>
           ${t?pI`
             <div class="row">
               <span class="note">You were in room ${t.code}.</span>
@@ -1496,7 +1525,7 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
         ${e?pI`
           <h3>Couldn't connect to room ${t?.code}</h3>
           <div class="error">The room may be closed, or your network blocks direct connections.</div>
-          <div class="tip"><b>Tip: play on Wi-Fi.</b> ${fA}</div>
+          <div class="tip"><b>Tip: play on Wi-Fi.</b> ${fm}</div>
           <div class="row">
             ${this.lastJoin?pI`<button class="btn btn-solid primary" @click=${()=>{let t=this.lastJoin;this.dropSession(),this.join(t.code,t.intent)}}>Try again</button>`:pS}
             <button class="btn btn-solid" @click=${()=>this.cancelConnecting()}>Back</button>
@@ -1567,25 +1596,25 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
         @start=${t=>this.chooseMap(t.detail)}
         @back=${()=>{this.view="lobby"}}
       ></map-select>
-    `}renderArmy(){let t=this.session,e=t?.room,i=t?.seat,s=e&&mC(e.mapId);if(!t||!e||!s||null==i)return this.renderLobby();let r=mk(s),n=mI(r,i).map(t=>({x:t.x,y:t.y})),a=mB(r,i),o=d3.map(t=>({unitClass:t,role:Af[t].role,cost:Af[t].cost,portrait:fl(d8(t,i),1===i)}));return pI`
+    `}renderArmy(){let t=this.session,e=t?.room,i=t?.seat,s=e&&mC(e.mapId);if(!t||!e||!s||null==i)return this.renderLobby();let r=mk(s),n=mI(r,i).map(t=>({x:t.x,y:t.y})),a=mB(r,i),o=d3.map(t=>({unitClass:t,role:Af[t].role,cost:Af[t].cost,portrait:fh(d8(t,i),1===i)}));return pI`
       <army-select
         .team=${i}
         .playerLabel=${`${t.name} (${0===i?"Blue":"Red"})`}
         .mapName=${s.name}
-        .preview=${fh(s,!1)}
+        .preview=${fc(s,!1)}
         .mapWidth=${r.width}
         .mapHeight=${r.height}
         .slots=${n}
         .classes=${o}
         .defaultArmy=${a}
-        .initialArmy=${fe(s.id,i,n.length)??a}
+        .initialArmy=${fi(s.id,i,n.length)??a}
         .randomize=${()=>A3(a,100)}
         .budget=${100}
         @pick=${()=>uj.SelectSound.play()}
         @confirm=${t=>this.confirmArmy(t.detail)}
         @back=${()=>{this.view="lobby"}}
       ></army-select>
-    `}render(){switch(this.revision,this.view){case"browse":return this.renderBrowse();case"connecting":return this.renderConnecting();case"lobby":return this.renderLobby();case"map":return this.renderMapSelect();case"army":return this.renderArmy()}}constructor(...t){super(...t),this.maps=[],this.autoResume=!1,this.view="browse",this.name=fu(fc)??"",this.codeInput="",this.locked=!1,this.error="",this.rooms=[],this.searching=!1,this.copied=!1,this.revision=0,this.session=null,this.directory=null,this.directoryGen=0,this.stopSession=null,this.launched=-1,this.lastJoin=null,this.onKeyDown=t=>{"Escape"!==t.key||"map"===this.view||"army"===this.view||t.target instanceof HTMLInputElement||"browse"===this.view&&this.back()}}}gW([pV({attribute:!1})],fm.prototype,"maps",void 0),gW([pV({type:Boolean})],fm.prototype,"autoResume",void 0),gW([pY()],fm.prototype,"view",void 0),gW([pY()],fm.prototype,"name",void 0),gW([pY()],fm.prototype,"codeInput",void 0),gW([pY()],fm.prototype,"locked",void 0),gW([pY()],fm.prototype,"error",void 0),gW([pY()],fm.prototype,"rooms",void 0),gW([pY()],fm.prototype,"searching",void 0),gW([pY()],fm.prototype,"copied",void 0),gW([pY()],fm.prototype,"revision",void 0),fm=gW([pW("online-screen")],fm);let ff=[m8,gJ`
+    `}render(){switch(this.revision,this.view){case"browse":return this.renderBrowse();case"connecting":return this.renderConnecting();case"lobby":return this.renderLobby();case"map":return this.renderMapSelect();case"army":return this.renderArmy()}}constructor(...t){super(...t),this.maps=[],this.autoResume=!1,this.view="browse",this.name=fg(fd)??"",this.codeInput="",this.locked=!1,this.error="",this.rooms=[],this.searching=!1,this.copied=!1,this.revision=0,this.session=null,this.directory=null,this.directoryGen=0,this.stopSession=null,this.launched=-1,this.lastJoin=null,this.onKeyDown=t=>{"Escape"!==t.key||"map"===this.view||"army"===this.view||t.target instanceof HTMLInputElement||"browse"===this.view&&this.back()}}}gW([pV({attribute:!1})],ff.prototype,"maps",void 0),gW([pV({type:Boolean})],ff.prototype,"autoResume",void 0),gW([pY()],ff.prototype,"view",void 0),gW([pY()],ff.prototype,"name",void 0),gW([pY()],ff.prototype,"codeInput",void 0),gW([pY()],ff.prototype,"locked",void 0),gW([pY()],ff.prototype,"error",void 0),gW([pY()],ff.prototype,"rooms",void 0),gW([pY()],ff.prototype,"searching",void 0),gW([pY()],ff.prototype,"copied",void 0),gW([pY()],ff.prototype,"revision",void 0),ff=gW([pW("online-screen")],ff);let f_=[m8,gJ`
   .page { width: calc(1500 * var(--u)); max-width: 96vw; max-height: 90vh; display: flex; flex-direction: column; }
   .page .panel-title { font-size: calc(30 * var(--t)); padding: calc(12 * var(--u)) calc(18 * var(--u)); }
   .page-body { overflow-y: auto; padding: calc(20 * var(--u)); scrollbar-color: var(--edge) transparent; }
@@ -1612,7 +1641,7 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
   .creator { display: flex; flex-direction: column; gap: calc(4 * var(--u)); padding-bottom: calc(14 * var(--u)); border-bottom: calc(2 * var(--u)) solid rgba(255, 255, 255, 0.15); }
   .creator small { font-size: calc(16 * var(--t)); color: var(--gold); text-transform: uppercase; letter-spacing: calc(2 * var(--u)); }
   .creator strong { font-weight: normal; font-size: calc(32 * var(--t)); color: #fff; }
-`],f_=[{id:"online",title:"Online",description:"Play or watch a friend on another device.",sides:["You","Friend"]},{id:"p1vscpu",title:"Player vs CPU",description:"Command the blue army against the computer.",sides:["You","CPU"]},{id:"p1vsp2",title:"Player vs Player",description:"Two players take turns on the same computer.",sides:["P1","P2"]},{id:"cpuvscpu",title:"CPU vs CPU",description:"Sit back and watch two AI armies fight it out.",sides:["CPU","CPU"]}];function fv(t){return f_.find(e=>e.id===t)}let fy="pixelfantasywar.mode",fw="pixelfantasywar.difficulty",fb="pixelfantasywar.map";function fx(t){try{return localStorage.getItem(t)}catch{return null}}function fC(t,e){try{localStorage.setItem(t,e)}catch{}}class fE extends pG{static{this.styles=[pZ,ff,gJ`
+`],fv=[{id:"online",title:"Online",description:"Play or watch a friend on another device.",sides:["You","Friend"]},{id:"p1vscpu",title:"Player vs CPU",description:"Command the blue army against the computer.",sides:["You","CPU"]},{id:"p1vsp2",title:"Player vs Player",description:"Two players take turns on the same computer.",sides:["P1","P2"]},{id:"cpuvscpu",title:"CPU vs CPU",description:"Sit back and watch two AI armies fight it out.",sides:["CPU","CPU"]}];function fy(t){return fv.find(e=>e.id===t)}let fw="pixelfantasywar.mode",fb="pixelfantasywar.difficulty",fx="pixelfantasywar.map";function fC(t){try{return localStorage.getItem(t)}catch{return null}}function fE(t,e){try{localStorage.setItem(t,e)}catch{}}class fI extends pG{static{this.styles=[pZ,f_,gJ`
     :host {
       position: fixed;
       inset: 0;
@@ -1690,26 +1719,26 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
 
     .fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity 600ms steps(6); }
     .fade.visible { opacity: 1; pointer-events: auto; }
-  `]}updated(){this.fitTitle()}fitTitle(){let t=this.renderRoot.querySelector(".title-screen");if(!t)return;t.style.zoom="";let e=t.getBoundingClientRect().height,i=.94*window.innerHeight;e>i&&(t.style.zoom=(i/e).toFixed(3))}connectedCallback(){super.connectedCallback(),this.updateScale(),window.addEventListener("resize",this.onResize),window.addEventListener("keydown",this.onKeyDown),uj.TitleMusic.loop=!0,uj.TitleMusic.play()}disconnectedCallback(){window.removeEventListener("resize",this.onResize),window.removeEventListener("keydown",this.onKeyDown),uj.TitleMusic.stop(),super.disconnectedCallback()}updateScale(){let t=Math.min(window.innerWidth/1920,window.innerHeight/1080),e=Math.min(1.4,Ae(1.3*t));this.style.setProperty("--s",t.toFixed(4)),this.style.setProperty("--text-scale",(1.3*e).toFixed(4))}go(t){uj.SelectSound.play(),this.screen=t}chooseDifficulty(t){uj.SelectSound.play(),this.difficulty=t,fC(fw,t)}chooseMode(t){this.mode=t,fC(fy,t),this.go("online"===t?"online":"map")}async launchOnline(t){let e=mK?.room;if(!e||this.leaving)return;this.leaving=!0,await new Promise(t=>window.setTimeout(t,400));let i={mode:"online",armies:e.seats.map(t=>t?.army??null)};this.engine.goToScene(mx(t),{sceneActivationData:i}),this.remove()}buildMapItems(){return this.mapItems||(this.mapItems=mb.map(t=>{let e=mk(t),i=[0,1].map(t=>e.spawns.filter(e=>e.team===t).map(e=>fl(e.unitType,1===t)));return{id:t.id,name:t.name,description:t.description,width:e.width,height:e.height,unitsPerTeam:e.unitsPerTeam,rounds:Math.floor(t.maxTurns/2),preview:fh(t),roster:i}})),this.mapItems}chooseMap(t){if(this.leaving)return;fC(fb,t),this.chosenMap=t===m4?mE():mC(t)??mE(),this.armies=[null,null];let e=mk(this.chosenMap);this.cpuSuggestions=[0,1].map(t=>this.randomArmy(e,t)),this.armyTeam=0,this.go("army")}confirmArmy(t){let e=this.chosenMap;if(e){if(this.armies[this.armyTeam]=t,fi(e.id,this.armyTeam,t),0===this.armyTeam){this.armyTeam=1,uj.SelectSound.play();return}this.launch()}}isCpuTeam(t){return"cpuvscpu"===this.mode||"p1vscpu"===this.mode&&1===t}randomArmy(t,e){return A3(mB(t,e),100)}armyBack(){1===this.armyTeam?this.armyTeam=0:this.go("map")}async launch(){let t=this.chosenMap;if(!t||this.leaving)return;uj.SelectSound.play(),this.leaving=!0,await new Promise(t=>window.setTimeout(t,650));let e={mode:this.mode,armies:this.armies,difficulty:this.difficulty};this.engine.goToScene(mx(t),{sceneActivationData:e}),this.remove()}renderArmy(){let t=this.chosenMap;if(!t)return pI``;let e=this.armyTeam,i=mk(t),s=mI(i,e).map(t=>({x:t.x,y:t.y})),r=mB(i,e),n=d3.map(t=>({unitClass:t,role:Af[t].role,cost:Af[t].cost,portrait:fl(d8(t,e),1===e)})),a=this.isCpuTeam(e),o=a?"CPU":"p1vsp2"===this.mode?`Player ${e+1}`:"You",l=this.cpuSuggestions[e]??r;return pI`
+  `]}updated(){this.fitTitle()}fitTitle(){let t=this.renderRoot.querySelector(".title-screen");if(!t)return;t.style.zoom="";let e=t.getBoundingClientRect().height,i=.94*window.innerHeight;e>i&&(t.style.zoom=(i/e).toFixed(3))}connectedCallback(){super.connectedCallback(),this.updateScale(),window.addEventListener("resize",this.onResize),window.addEventListener("keydown",this.onKeyDown),uj.TitleMusic.loop=!0,uj.TitleMusic.play()}disconnectedCallback(){window.removeEventListener("resize",this.onResize),window.removeEventListener("keydown",this.onKeyDown),uj.TitleMusic.stop(),super.disconnectedCallback()}updateScale(){let t=Math.min(window.innerWidth/1920,window.innerHeight/1080),e=Math.min(1.4,Ae(1.3*t));this.style.setProperty("--s",t.toFixed(4)),this.style.setProperty("--text-scale",(1.3*e).toFixed(4))}go(t){uj.SelectSound.play(),this.screen=t}chooseDifficulty(t){uj.SelectSound.play(),this.difficulty=t,fE(fb,t)}chooseMode(t){this.mode=t,fE(fw,t),this.go("online"===t?"online":"map")}async launchOnline(t){let e=mK?.room;if(!e||this.leaving)return;this.leaving=!0,await new Promise(t=>window.setTimeout(t,400));let i={mode:"online",armies:e.seats.map(t=>t?.army??null)};this.engine.goToScene(mx(t),{sceneActivationData:i}),this.remove()}buildMapItems(){return this.mapItems||(this.mapItems=mb.map(t=>{let e=mk(t),i=[0,1].map(t=>e.spawns.filter(e=>e.team===t).map(e=>fh(e.unitType,1===t)));return{id:t.id,name:t.name,description:t.description,width:e.width,height:e.height,unitsPerTeam:e.unitsPerTeam,rounds:Math.floor(t.maxTurns/2),preview:fc(t),roster:i}})),this.mapItems}chooseMap(t){if(this.leaving)return;fE(fx,t),this.chosenMap=t===m4?mE():mC(t)??mE(),this.armies=[null,null];let e=mk(this.chosenMap);this.cpuSuggestions=[0,1].map(t=>this.randomArmy(e,t)),this.armyTeam=0,this.go("army")}confirmArmy(t){let e=this.chosenMap;if(e){if(this.armies[this.armyTeam]=t,fs(e.id,this.armyTeam,t),0===this.armyTeam){this.armyTeam=1,uj.SelectSound.play();return}this.launch()}}isCpuTeam(t){return"cpuvscpu"===this.mode||"p1vscpu"===this.mode&&1===t}randomArmy(t,e){return A3(mB(t,e),100)}armyBack(){1===this.armyTeam?this.armyTeam=0:this.go("map")}async launch(){let t=this.chosenMap;if(!t||this.leaving)return;uj.SelectSound.play(),this.leaving=!0,await new Promise(t=>window.setTimeout(t,650));let e={mode:this.mode,armies:this.armies,difficulty:this.difficulty};this.engine.goToScene(mx(t),{sceneActivationData:e}),this.remove()}renderArmy(){let t=this.chosenMap;if(!t)return pI``;let e=this.armyTeam,i=mk(t),s=mI(i,e).map(t=>({x:t.x,y:t.y})),r=mB(i,e),n=d3.map(t=>({unitClass:t,role:Af[t].role,cost:Af[t].cost,portrait:fh(d8(t,e),1===e)})),a=this.isCpuTeam(e),o=a?"CPU":"p1vsp2"===this.mode?`Player ${e+1}`:"You",l=this.cpuSuggestions[e]??r;return pI`
       <army-select
         class="screen"
         .team=${e}
         .playerLabel=${`${o} (${0===e?"Blue":"Red"})`}
         .mapName=${t.name}
-        .preview=${fh(t,!1)}
+        .preview=${fc(t,!1)}
         .mapWidth=${i.width}
         .mapHeight=${i.height}
         .slots=${s}
         .classes=${n}
         .defaultArmy=${r}
-        .initialArmy=${fe(t.id,e,s.length)??(a?l:r)}
+        .initialArmy=${fi(t.id,e,s.length)??(a?l:r)}
         .randomize=${()=>this.randomArmy(i,e)}
         .budget=${100}
         @pick=${()=>uj.SelectSound.play()}
         @confirm=${t=>this.confirmArmy(t.detail)}
         @back=${()=>this.armyBack()}
       ></army-select>
-    `}renderTitle(){let t=["Paladin","Archer","Mage","Warrior","Thief"].map(t=>fl(d8(t,0))),e=["Berserker","Necromancer","Assassin","Ranger","Halberdier"].map(t=>fl(d8(t,1),!0));return pI`
+    `}renderTitle(){let t=["Paladin","Archer","Mage","Warrior","Thief"].map(t=>fh(d8(t,0))),e=["Berserker","Necromancer","Assassin","Ranger","Halberdier"].map(t=>fh(d8(t,1),!0));return pI`
       <div class="screen title-screen">
         <div class="logo">
           <span class="top">Pixel Fantasy</span>
@@ -1732,12 +1761,12 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
       <div class="screen mode-screen">
         <h2 class="heading">Choose mode</h2>
         <div class="modes">
-          ${f_.map(e=>{let[i,s]=t[e.id];return pI`
+          ${fv.map(e=>{let[i,s]=t[e.id];return pI`
               <button class="panel mode ${e.id===this.mode?"last":""}" @click=${()=>this.chooseMode(e.id)}>
                 <div class="sides">
-                  <div class="side blue"><img src=${fl(i)} alt="" /><span>${e.sides[0]}</span></div>
+                  <div class="side blue"><img src=${fh(i)} alt="" /><span>${e.sides[0]}</span></div>
                   <span class="vs">VS</span>
-                  <div class="side red"><img src=${fl(s,!0)} alt="" /><span>${e.sides[1]}</span></div>
+                  <div class="side red"><img src=${fh(s,!0)} alt="" /><span>${e.sides[1]}</span></div>
                 </div>
                 <h3>${e.title}</h3>
                 <p>${e.description}</p>
@@ -1765,8 +1794,8 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
       <map-select
         class="screen"
         .maps=${this.buildMapItems()}
-        .initial=${fx(fb)??m4}
-        .modeLabel=${fv(this.mode)?.title??""}
+        .initial=${fC(fx)??m4}
+        .modeLabel=${fy(this.mode)?.title??""}
         @select=${()=>uj.SelectSound.play()}
         @start=${t=>this.chooseMap(t.detail)}
         @back=${()=>this.go("mode")}
@@ -1888,10 +1917,16 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
       ${d3.map(t=>{let e=Af[t];return pI`
           <div class="unit">
             <div class="unit-head">
-              <img src=${fl(`${t}A`)} alt="" />
+              <img src=${fh(`${t}A`)} alt="" />
               <div><h3>${t}</h3><small>${e.role} · ${e.cost} pts</small></div>
             </div>
-            ${m9(t)}
+            ${pI`
+    <div class="details">
+      <p class="desc">${Af[t].description}</p>
+      ${m9(t)}
+      ${m7(t)}
+    </div>
+  `}
           </div>
         `})}
     </div>
@@ -1914,5 +1949,5 @@ If they don't, you win.`}async showLost(t){if(!this.ui)return;this.ui.closeNotic
         ${this.renderScreen()}
         <div class="fade ${this.leaving?"visible":""}"></div>
       </div>
-    `}constructor(...t){var e;super(...t),this.screen=mK?.status==="joined"||mX()?"online":"title",this.autoResume=!mK&&!!mX(),this.mode=fv(fx(fy))?.id??"p1vscpu",this.difficulty=(e=fx(fw),AA.find(t=>t===e)??"normal"),this.leaving=!1,this.chosenMap=null,this.armyTeam=0,this.cpuSuggestions=[],this.armies=[null,null],this.mapItems=null,this.onResize=()=>{this.updateScale(),requestAnimationFrame(()=>this.fitTitle())},this.onKeyDown=t=>{"Escape"!==t.key||["title","map","army","online"].includes(this.screen)||this.go("title")}}}gW([pV({attribute:!1})],fE.prototype,"engine",void 0),gW([pY()],fE.prototype,"screen",void 0),gW([pY()],fE.prototype,"mode",void 0),gW([pY()],fE.prototype,"difficulty",void 0),gW([pY()],fE.prototype,"leaving",void 0),gW([pY()],fE.prototype,"chosenMap",void 0),gW([pY()],fE.prototype,"armyTeam",void 0),fE=gW([pW("start-screen-ui")],fE);let fI=new ar({resolution:{width:1920,height:1080},displayMode:At()?ae.FitScreen:ae.FitScreenAndFill,antialiasing:!1,pixelRatio:1,uvPadding:.5,suppressConsoleBootMessage:!0,suppressHiDPIScaling:!0,backgroundColor:n7.Black,maxFps:60,configurePerformanceCanvas2DFallback:{allow:!1}});if(m5.init(),(gk=fI).timescale=gB,At()){let t,e,i;document.documentElement.classList.add("touch"),t=[100,300,700,1200],e=[],i=()=>{Al||(e.forEach(t=>window.clearTimeout(t)),e=t.map(t=>window.setTimeout(Ah,t)))},window.addEventListener("resize",i),window.addEventListener("orientationchange",i),document.addEventListener("fullscreenchange",i),document.addEventListener("webkitfullscreenchange",i),screen.orientation?.addEventListener?.("change",i),window.visualViewport?.addEventListener("resize",i)}for(let t of(!function(t){let e;if(!("getGamepads"in navigator))return;let i=new AI,s=((e=document.createElement("div")).className="pad-focus",Object.assign(e.style,{position:"fixed",pointerEvents:"none",zIndex:"2147483000",boxSizing:"border-box",border:"3px solid #ffffff",boxShadow:"inset 0 0 0 2px #000, 0 0 0 2px #000",display:"none"}),document.body.appendChild(e),e),r=0,n=performance.now(),a=0,o=e=>{var l;let h;r=requestAnimationFrame(o);let c=Math.min(e-n,100);n=e;let{pads:d,last:u}=function(){let t=[],e=null;for(let i of navigator.getGamepads?.()??[])i&&i.connected&&(t.push({buttons:i.buttons.map(t=>t.pressed?Math.max(t.value,.5):t.value),axes:[...i.axes]}),(!e||i.timestamp>e.timestamp)&&(e=i));return{pads:t,last:e}}(),g=i.update(d,e);g.length>0&&AV("gamepad",u?(h=u.id.toLowerCase(),/045e|xbox|xinput|microsoft/.test(h)?"xbox":/054c|dualshock|dualsense|playstation|wireless controller/.test(h)?"playstation":/057e|nintendo|pro controller|joy-con/.test(h)?"nintendo":"generic"):AW);let p=t();for(let t of g)!function({button:t},e){let i=AU();switch(t){case"up":case"down":case"left":case"right":AZ(AY[t])||function(t){var e,i;let s,r,n,a,o,l,h=AU();if(!h)return AO();let c=AR(h),d=AL().filter(t=>t!==h&&(function(t){let e=AR(t);if(!e)return!0;let i=t.getBoundingClientRect(),s=e.getBoundingClientRect(),r=(i.left+i.right)/2,n=(i.top+i.bottom)/2;return r>=s.left&&r<=s.right&&n>=s.top&&n<=s.bottom}(t)||AR(t)===c)),u=(e=Az(h),i=d.map(Az),s="left"===t||"right"===t,r="right"===t||"down"===t?1:-1,n=t=>s?(t.left+t.right)/2:(t.top+t.bottom)/2,a=t=>s?(t.top+t.bottom)/2:(t.left+t.right)/2,o=-1,l=1/0,i.forEach((t,i)=>{if((n(t)-n(e))*r<=1)return;let h=(s?Math.max(0,r>0?t.left-e.right:e.left-t.right):Math.max(0,r>0?t.top-e.bottom:e.top-t.bottom))+3*(s?Math.max(0,t.top-e.bottom,e.top-t.bottom):Math.max(0,t.left-e.right,e.left-t.right))+.2*Math.abs(a(t)-a(e))+.05*Math.abs(n(t)-n(e));h<l&&(l=h,o=i)}),o);u<0||AN(d[u])}(t);return;case"a":i?AG(i)||i.click():(e||!AO())&&AZ("Enter");return;case"b":i&&AG(i)?i.blur():AZ("Escape");return;case"start":AZ(e?"p":"Enter");return}if(e)switch(t){case"x":AZ("f");return;case"y":AZ("r");return;case"lb":AZ("Tab",!0);return;case"rb":AZ("Tab");return;case"select":AZ("e");return;case"l3":AZ("h");return;case"r3":AZ("t");return}}(t,p);if("gamepad"!==Aq){s.style.display="none";return}let A=function(t){let e={panX:0,panY:0,zoomOut:0,zoomIn:0};for(let i of t){let[,,t=0,s=0]=i.axes;Math.hypot(t,s)>.2&&(e.panX+=t,e.panY+=s);let r=i.buttons[Ab.lt]??0,n=i.buttons[Ab.rt]??0;r>.2&&(e.zoomOut=Math.max(e.zoomOut,r)),n>.2&&(e.zoomIn=Math.max(e.zoomIn,n))}return e.panX=Math.max(-1,Math.min(1,e.panX)),e.panY=Math.max(-1,Math.min(1,e.panY)),e}(d);p&&(A.panX||A.panY||A.zoomIn||A.zoomOut)&&p.padCamera(A,c),!p&&A.panY&&(l=1400*A.panY*c/1e3,(function(){let t=AU(),e=t&&AR(t);if(e&&A$(e))return e;if(AH&&performance.now()-AH.at<500&&AH.el.isConnected)return AH.el;let i=[],s=t=>{for(let e of t.querySelectorAll("*"))A$(e)&&i.push(e),e.shadowRoot&&s(e.shadowRoot)};s(document);let r=i.filter(t=>{let e=t.getBoundingClientRect(),i=AM((e.left+e.right)/2,(e.top+e.bottom)/2);return e.width>0&&e.height>0&&AD(t)&&AP(t,i)}),n=t=>{let e=t.getBoundingClientRect();return e.width*e.height},a=r.sort((t,e)=>n(e)-n(t))[0]??null;return AH=a?{el:a,at:performance.now()}:null,a})()?.scrollBy({top:l}));let m=AU();!m&&e-a>200&&(a=e,AL().length>0&&AO()&&(m=AU()));let f=m&&function(t){let e=t.getBoundingClientRect(),i={left:e.left,top:e.top,right:e.right,bottom:e.bottom},s=t=>{i.left=Math.max(i.left,t.left),i.top=Math.max(i.top,t.top),i.right=Math.min(i.right,t.right),i.bottom=Math.min(i.bottom,t.bottom)};for(let e=AR(t);e;e=AR(e))s(e.getBoundingClientRect());return s({left:0,top:0,right:window.innerWidth,bottom:window.innerHeight}),i.right-i.left>2&&i.bottom-i.top>2?i:null}(m);f?Object.assign(s.style,{display:"block",left:`${f.left}px`,top:`${f.top}px`,width:`${f.right-f.left}px`,height:`${f.bottom-f.top}px`}):s.style.display="none"},l=()=>{r||(n=performance.now(),r=requestAnimationFrame(o))};window.addEventListener("gamepadconnected",l),window.addEventListener("gamepaddisconnected",()=>{navigator.getGamepads().some(t=>t?.connected)||(cancelAnimationFrame(r),r=0,i.reset(),s.style.display="none","gamepad"===Aq&&AV(At()?"touch":"mouse"))}),navigator.getGamepads().some(t=>t?.connected)&&l(),window.addEventListener("pointerdown",t=>AV("touch"===t.pointerType?"touch":"mouse"),!0),window.addEventListener("pointermove",t=>{"mouse"===t.pointerType&&(t.movementX||t.movementY)&&AV("mouse")},!0),window.addEventListener("keydown",t=>{t.isTrusted&&AV("keyboard")},!0)}(()=>fI.currentScene instanceof m1?fI.currentScene.ui??null:null),fI.addScene("menu-shell",new ab),mb)){let e=new m1(t);fI.addScene(e.name,e)}fI.start(u5).then(()=>{let t;Ah(),u5.startButtonFactory=()=>{let t=document.createElement("button");return t.hidden=!0,t.tabIndex=-1,t},document.querySelector("start-screen-ui")?.remove(),(t=document.createElement("start-screen-ui")).engine=fI,document.body.appendChild(t),document.querySelector("audio-menu")?.setAttribute("fullscreen-ready","");let e=document.querySelector("start-screen-ui");e&&(e.style.pointerEvents="none",window.setTimeout(()=>{e.style.pointerEvents=""},400))});
-//# sourceMappingURL=index.ff8b7263.js.map
+    `}constructor(...t){var e;super(...t),this.screen=mK?.status==="joined"||mX()?"online":"title",this.autoResume=!mK&&!!mX(),this.mode=fy(fC(fw))?.id??"p1vscpu",this.difficulty=(e=fC(fb),AA.find(t=>t===e)??"normal"),this.leaving=!1,this.chosenMap=null,this.armyTeam=0,this.cpuSuggestions=[],this.armies=[null,null],this.mapItems=null,this.onResize=()=>{this.updateScale(),requestAnimationFrame(()=>this.fitTitle())},this.onKeyDown=t=>{"Escape"!==t.key||["title","map","army","online"].includes(this.screen)||this.go("title")}}}gW([pV({attribute:!1})],fI.prototype,"engine",void 0),gW([pY()],fI.prototype,"screen",void 0),gW([pY()],fI.prototype,"mode",void 0),gW([pY()],fI.prototype,"difficulty",void 0),gW([pY()],fI.prototype,"leaving",void 0),gW([pY()],fI.prototype,"chosenMap",void 0),gW([pY()],fI.prototype,"armyTeam",void 0),fI=gW([pW("start-screen-ui")],fI);let fB=new ar({resolution:{width:1920,height:1080},displayMode:At()?ae.FitScreen:ae.FitScreenAndFill,antialiasing:!1,pixelRatio:1,uvPadding:.5,suppressConsoleBootMessage:!0,suppressHiDPIScaling:!0,backgroundColor:n7.Black,maxFps:60,configurePerformanceCanvas2DFallback:{allow:!1}});if(m5.init(),(gk=fB).timescale=gB,At()){let t,e,i;document.documentElement.classList.add("touch"),t=[100,300,700,1200],e=[],i=()=>{Al||(e.forEach(t=>window.clearTimeout(t)),e=t.map(t=>window.setTimeout(Ah,t)))},window.addEventListener("resize",i),window.addEventListener("orientationchange",i),document.addEventListener("fullscreenchange",i),document.addEventListener("webkitfullscreenchange",i),screen.orientation?.addEventListener?.("change",i),window.visualViewport?.addEventListener("resize",i)}for(let t of(!function(t){let e;if(!("getGamepads"in navigator))return;let i=new AI,s=((e=document.createElement("div")).className="pad-focus",Object.assign(e.style,{position:"fixed",pointerEvents:"none",zIndex:"2147483000",boxSizing:"border-box",border:"3px solid #ffffff",boxShadow:"inset 0 0 0 2px #000, 0 0 0 2px #000",display:"none"}),document.body.appendChild(e),e),r=0,n=performance.now(),a=0,o=e=>{var l;let h;r=requestAnimationFrame(o);let c=Math.min(e-n,100);n=e;let{pads:d,last:u}=function(){let t=[],e=null;for(let i of navigator.getGamepads?.()??[])i&&i.connected&&(t.push({buttons:i.buttons.map(t=>t.pressed?Math.max(t.value,.5):t.value),axes:[...i.axes]}),(!e||i.timestamp>e.timestamp)&&(e=i));return{pads:t,last:e}}(),g=i.update(d,e);g.length>0&&AV("gamepad",u?(h=u.id.toLowerCase(),/045e|xbox|xinput|microsoft/.test(h)?"xbox":/054c|dualshock|dualsense|playstation|wireless controller/.test(h)?"playstation":/057e|nintendo|pro controller|joy-con/.test(h)?"nintendo":"generic"):AW);let p=t();for(let t of g)!function({button:t},e){let i=AU();switch(t){case"up":case"down":case"left":case"right":AZ(AY[t])||function(t){var e,i;let s,r,n,a,o,l,h=AU();if(!h)return AO();let c=AR(h),d=AL().filter(t=>t!==h&&(function(t){let e=AR(t);if(!e)return!0;let i=t.getBoundingClientRect(),s=e.getBoundingClientRect(),r=(i.left+i.right)/2,n=(i.top+i.bottom)/2;return r>=s.left&&r<=s.right&&n>=s.top&&n<=s.bottom}(t)||AR(t)===c)),u=(e=Az(h),i=d.map(Az),s="left"===t||"right"===t,r="right"===t||"down"===t?1:-1,n=t=>s?(t.left+t.right)/2:(t.top+t.bottom)/2,a=t=>s?(t.top+t.bottom)/2:(t.left+t.right)/2,o=-1,l=1/0,i.forEach((t,i)=>{if((n(t)-n(e))*r<=1)return;let h=(s?Math.max(0,r>0?t.left-e.right:e.left-t.right):Math.max(0,r>0?t.top-e.bottom:e.top-t.bottom))+3*(s?Math.max(0,t.top-e.bottom,e.top-t.bottom):Math.max(0,t.left-e.right,e.left-t.right))+.2*Math.abs(a(t)-a(e))+.05*Math.abs(n(t)-n(e));h<l&&(l=h,o=i)}),o);u<0||AN(d[u])}(t);return;case"a":i?AG(i)||i.click():(e||!AO())&&AZ("Enter");return;case"b":i&&AG(i)?i.blur():AZ("Escape");return;case"start":AZ(e?"p":"Enter");return}if(e)switch(t){case"x":AZ("f");return;case"y":AZ("r");return;case"lb":AZ("Tab",!0);return;case"rb":AZ("Tab");return;case"select":AZ("e");return;case"l3":AZ("h");return;case"r3":AZ("t");return}}(t,p);if("gamepad"!==Aq){s.style.display="none";return}let A=function(t){let e={panX:0,panY:0,zoomOut:0,zoomIn:0};for(let i of t){let[,,t=0,s=0]=i.axes;Math.hypot(t,s)>.2&&(e.panX+=t,e.panY+=s);let r=i.buttons[Ab.lt]??0,n=i.buttons[Ab.rt]??0;r>.2&&(e.zoomOut=Math.max(e.zoomOut,r)),n>.2&&(e.zoomIn=Math.max(e.zoomIn,n))}return e.panX=Math.max(-1,Math.min(1,e.panX)),e.panY=Math.max(-1,Math.min(1,e.panY)),e}(d);p&&(A.panX||A.panY||A.zoomIn||A.zoomOut)&&p.padCamera(A,c),!p&&A.panY&&(l=1400*A.panY*c/1e3,(function(){let t=AU(),e=t&&AR(t);if(e&&A$(e))return e;if(AH&&performance.now()-AH.at<500&&AH.el.isConnected)return AH.el;let i=[],s=t=>{for(let e of t.querySelectorAll("*"))A$(e)&&i.push(e),e.shadowRoot&&s(e.shadowRoot)};s(document);let r=i.filter(t=>{let e=t.getBoundingClientRect(),i=AM((e.left+e.right)/2,(e.top+e.bottom)/2);return e.width>0&&e.height>0&&AD(t)&&AP(t,i)}),n=t=>{let e=t.getBoundingClientRect();return e.width*e.height},a=r.sort((t,e)=>n(e)-n(t))[0]??null;return AH=a?{el:a,at:performance.now()}:null,a})()?.scrollBy({top:l}));let m=AU();!m&&e-a>200&&(a=e,AL().length>0&&AO()&&(m=AU()));let f=m&&function(t){let e=t.getBoundingClientRect(),i={left:e.left,top:e.top,right:e.right,bottom:e.bottom},s=t=>{i.left=Math.max(i.left,t.left),i.top=Math.max(i.top,t.top),i.right=Math.min(i.right,t.right),i.bottom=Math.min(i.bottom,t.bottom)};for(let e=AR(t);e;e=AR(e))s(e.getBoundingClientRect());return s({left:0,top:0,right:window.innerWidth,bottom:window.innerHeight}),i.right-i.left>2&&i.bottom-i.top>2?i:null}(m);f?Object.assign(s.style,{display:"block",left:`${f.left}px`,top:`${f.top}px`,width:`${f.right-f.left}px`,height:`${f.bottom-f.top}px`}):s.style.display="none"},l=()=>{r||(n=performance.now(),r=requestAnimationFrame(o))};window.addEventListener("gamepadconnected",l),window.addEventListener("gamepaddisconnected",()=>{navigator.getGamepads().some(t=>t?.connected)||(cancelAnimationFrame(r),r=0,i.reset(),s.style.display="none","gamepad"===Aq&&AV(At()?"touch":"mouse"))}),navigator.getGamepads().some(t=>t?.connected)&&l(),window.addEventListener("pointerdown",t=>AV("touch"===t.pointerType?"touch":"mouse"),!0),window.addEventListener("pointermove",t=>{"mouse"===t.pointerType&&(t.movementX||t.movementY)&&AV("mouse")},!0),window.addEventListener("keydown",t=>{t.isTrusted&&AV("keyboard")},!0)}(()=>fB.currentScene instanceof m1?fB.currentScene.ui??null:null),fB.addScene("menu-shell",new ab),mb)){let e=new m1(t);fB.addScene(e.name,e)}fB.start(u5).then(()=>{let t;Ah(),u5.startButtonFactory=()=>{let t=document.createElement("button");return t.hidden=!0,t.tabIndex=-1,t},document.querySelector("start-screen-ui")?.remove(),(t=document.createElement("start-screen-ui")).engine=fB,document.body.appendChild(t),document.querySelector("audio-menu")?.setAttribute("fullscreen-ready","");let e=document.querySelector("start-screen-ui");e&&(e.style.pointerEvents="none",window.setTimeout(()=>{e.style.pointerEvents=""},400))});
+//# sourceMappingURL=index.3e7185bd.js.map

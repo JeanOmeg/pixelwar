@@ -44,14 +44,21 @@ export function armyCost(army: UnitClass[]): number {
 }
 
 /** Readable special rules, derived from the pathfinder rules */
-export function classTraits(unitClass: UnitClass): string[] {
+export interface ClassTrait {
+  name: string
+  description: string
+}
+
+/**
+ * Passive rules of a class, shown next to its skills. How range behaves on
+ * forest/water is left to `rangeNote`, which already says it.
+ */
+export function classTraits(unitClass: UnitClass): ClassTrait[] {
   const rules = TERRAIN_RULES[unitClass]
-  const traits: string[] = []
-  if (rules.ignoresSlowTerrain) traits.push('Full speed in forest')
-  if (rules.targetsWater) traits.push('Can target across water')
-  if (rules.slowTerrainCostsRange) traits.push('Range halves over forest/water')
-  else if (classStats(unitClass).range > 1) traits.push('Full range on any terrain')
-  if (classStats(unitClass).range === 1) traits.push('Counterattacks')
+  const traits: ClassTrait[] = []
+  if (rules.ignoresSlowTerrain) traits.push({ name: 'Pathfinder', description: 'Moves at full speed through forest.' })
+  if (rules.targetsWater) traits.push({ name: 'Over water', description: 'Can target enemies across water.' })
+  if (classStats(unitClass).range === 1) traits.push({ name: 'Counterattack', description: 'Strikes back once when an adjacent enemy attacks it and it survives.' })
   return traits
 }
 
