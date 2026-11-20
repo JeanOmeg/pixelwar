@@ -58,7 +58,7 @@ function menuItemOf(action: TutorialAction): string | null {
  * through TUTORIAL_STEPS: shows each lesson in the balloon, lets the player do
  * only the scripted action (ActionGate on the HumanPlayer, with the script's
  * dice), plays the red side's actions itself (ScriptedPlayer) and, at the end,
- * offers a real match on the same map against the CPU on Easy.
+ * offers a real match on the same map.
  */
 export class TutorialMatch {
   private index = 0
@@ -124,7 +124,7 @@ export class TutorialMatch {
         if (result.winner !== this.human) return null
         // the dialog takes over from the balloon
         this.show('', false)
-        return { title: 'Tutorial complete!', subtitle: 'Ready for a real match? Same map and armies, against the CPU on Easy.', team: 'blue' }
+        return { title: 'Tutorial complete!', subtitle: 'Ready for a real match? Same map, same armies, no help this time.', team: 'blue' }
       },
       finished: async (result, choice) => {
         if (choice === 'menu') await turnManager.returnToMainMenu()

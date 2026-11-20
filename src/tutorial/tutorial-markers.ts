@@ -1,18 +1,18 @@
 import * as ex from 'excalibur'
 import type { Cell } from '../cell'
-import { SCALE } from '../config'
+import { SCALE_CURSOR } from '../config'
+import { CursorAnimation } from '../resources'
 
-const GOLD = ex.Color.fromHex('#ffd23f')
-/** Border width in world pixels */
-const LINE = 2 * SCALE.x
-
-/** Blinking gold frames on the cells the current lesson points at */
+/**
+ * Marks the cells the current lesson points at with the game's own yellow
+ * cursor (the one of a move's path), drawn over the units so it can't be missed.
+ */
 export class TutorialMarkers {
   private actors = new Map<Cell, ex.Actor>()
 
   constructor(private scene: ex.Scene) {}
 
-  /** Frames exactly these cells (keeps the ones already shown, so they don't restart blinking) */
+  /** Marks exactly these cells (keeps the ones already shown, so their animation doesn't restart) */
   show(cells: Cell[]) {
     for (const [cell, actor] of this.actors) {
       if (cells.includes(cell)) continue
@@ -21,7 +21,7 @@ export class TutorialMarkers {
     }
     for (const cell of cells) {
       if (this.actors.has(cell)) continue
-      const actor = this.frame(cell)
+      const actor = this.marker(cell)
       this.scene.add(actor)
       this.actors.set(cell, actor)
     }
@@ -31,20 +31,13 @@ export class TutorialMarkers {
     this.show([])
   }
 
-  private frame(cell: Cell): ex.Actor {
-    const width = cell.board.tileWidth * SCALE.x
-    const height = cell.board.tileHeight * SCALE.y
-    // over the units (z 2) and their HP bars (z 3); only the border is drawn
+  private marker(cell: Cell): ex.Actor {
+    // over the units (z 2) and their HP bars (z 3), same size and offset as the cell's cursor
     const actor = new ex.Actor({ pos: cell.pos.clone(), anchor: ex.Vector.Zero, z: 4 })
-    actor.graphics.use(new ex.Rectangle({
-      width: width - LINE,
-      height: height - LINE,
-      color: ex.Color.Transparent,
-      strokeColor: GOLD,
-      lineWidth: LINE
-    }))
-    actor.graphics.offset = ex.vec(LINE / 2, LINE / 2)
-    actor.actions.repeatForever(ctx => ctx.fade(0.2, 350).fade(1, 350))
+    const animation = CursorAnimation.clone()
+    animation.scale = SCALE_CURSOR
+    actor.graphics.use(animation)
+    actor.graphics.offset = ex.vec(-4, -4)
     return actor
   }
 }

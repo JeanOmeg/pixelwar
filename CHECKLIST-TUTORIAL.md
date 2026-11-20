@@ -71,7 +71,7 @@ Cortes (de 49 para 41 ações): o Thief não corre na rodada 1 (corre direto par
 
 - [x] `<tutorial-panel>` ([src/ui-components/tutorial-panel.ts](src/ui-components/tutorial-panel.ts)): texto, barra de progresso, `Next` (Enter/Espaço também; no controle, A) e `Skip tutorial` (segundo clique confirma). Entra pelo `GameUI.addOverlay`, abaixo do menu e dos diálogos.
 - [x] Fica embaixo, acima do `game-hint` (que continua: ele explica o controle de cada modo).
-- [x] Marcadores no mapa: molduras douradas piscando (`TutorialMarkers`), seguem câmera e zoom.
+- [x] Marcadores no mapa: o mesmo cursor amarelo animado do caminho de movimento (`TutorialMarkers`), por cima das unidades; seguem câmera e zoom.
 - [x] Destaque na HUD (`HudView.highlight`: times, rodada, pausa, End turn) e no item do menu.
 - [x] O olho (H) não esconde o balão.
 - [x] Toque: `Next` ignora cliques nos primeiros 350 ms.
@@ -81,7 +81,7 @@ Cortes (de 49 para 41 ações): o Thief não corre na rodada 1 (corre direto par
 
 ## 6. Fim do tutorial
 
-- [x] Na vitória: "Tutorial complete!" + texto final + "Ready for a real match against the CPU (Easy)?", botões **Play a match** e **Main menu** (`hooks.describe`).
+- [x] Na vitória: "Tutorial complete!" + "Ready for a real match? Same map, same armies, no help this time." (sem citar a dificuldade), botões **Play a match** e **Main menu** (`hooks.describe`).
 - [x] Grava `pixelfantasywar.tutorial.done = '1'`.
 - [x] Play a match → `LevelBase.restart(afterTutorialSettings())`: Twin Keeps, clássico, Easy, `p1vscpu`. "Play again" dessa partida repete a partida de verdade.
 - [x] Main menu → `returnToMainMenu()`.

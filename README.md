@@ -16,7 +16,7 @@ Elimine todas as unidades inimigas antes que eliminem as suas. Se o limite de 10
 
 | Modo | Descrição |
 |---|---|
-| **Learn to play** | Tutorial guiado: uma partida curta no Twin Keeps, com o exército clássico, que ensina tudo passo a passo (mover, terreno, ataque, contra-ataque, ataque pelas costas, skills). No fim, oferece uma partida de verdade no mesmo mapa contra a CPU no Easy |
+| **Learn to play** | Tutorial guiado: uma partida curta no Twin Keeps, com o exército clássico, que ensina tudo passo a passo (mover, terreno, ataque, contra-ataque, ataque pelas costas, skills). No fim, oferece uma partida de verdade no mesmo mapa (a CPU joga no Easy, sem isso ser dito na tela) |
 | **Online** | Jogue (ou assista) contra um amigo em outro aparelho, pela internet |
 | **Player vs CPU** | Você controla o time azul, a IA controla o time vermelho |
 | **Player vs Player** | Dois jogadores se alternam no mesmo computador |
