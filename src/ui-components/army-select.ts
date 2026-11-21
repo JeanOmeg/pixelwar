@@ -38,15 +38,18 @@ export interface ArmyChoice {
 @customElement('army-select')
 export class ArmySelect extends LitElement {
   static styles = [theme, classDetailStyles, css`
-    :host { display: block; width: calc(1680 * var(--u)); max-width: 97vw; }
-    .header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: calc(12 * var(--u)); }
+    /* fixed height: when the header or the buttons take more room (longer
+       labels in Portuguese, bigger text on phones) the panels shrink and
+       scroll instead of the screen running past the bottom of the window */
+    :host { display: flex; flex-direction: column; width: calc(1680 * var(--u)); max-width: 97vw; height: calc(960 * var(--u)); max-height: 96vh; max-height: 96dvh; }
+    .header { flex-shrink: 0; display: flex; align-items: baseline; justify-content: space-between; gap: calc(20 * var(--u)); margin-bottom: calc(12 * var(--u)); }
     h2 { margin: 0; font-weight: normal; font-size: calc(44 * var(--t)); text-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000; }
     h2 span { color: var(--team); }
-    .points { font-size: calc(26 * var(--t)); }
+    .points { font-size: calc(26 * var(--t)); white-space: nowrap; }
     .points.over { color: var(--red); }
     .points small { color: var(--muted); font-size: calc(16 * var(--t)); }
 
-    .layout { display: grid; grid-template-columns: calc(760 * var(--u)) 1fr; gap: calc(20 * var(--u)); height: calc(800 * var(--u)); }
+    .layout { display: grid; grid-template-columns: calc(760 * var(--u)) 1fr; grid-template-rows: minmax(0, 1fr); gap: calc(20 * var(--u)); flex: 1; min-height: 0; }
 
     .field { display: flex; flex-direction: column; min-height: 0; }
     .field .panel-title { font-size: calc(18 * var(--t)); justify-content: space-between; }
@@ -132,7 +135,7 @@ export class ArmySelect extends LitElement {
     /* the hint takes what the buttons leave; when that is too little (longer
        labels in Portuguese, bigger text on phones) the buttons drop to a line
        of their own instead of squeezing the hint into a narrow column */
-    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: calc(10 * var(--u)) calc(14 * var(--u)); margin-top: calc(14 * var(--u)); }
+    .actions { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; gap: calc(10 * var(--u)) calc(14 * var(--u)); margin-top: calc(14 * var(--u)); }
     .actions .keys { flex: 1 1 calc(260 * var(--u)); font-size: calc(14 * var(--t)); color: var(--muted); }
     .actions .buttons { display: flex; gap: calc(14 * var(--u)); margin-left: auto; }
     .actions .btn { font-size: calc(22 * var(--t)); padding: calc(10 * var(--u)) calc(20 * var(--u)); white-space: nowrap; --team: #2a2d3a; }
