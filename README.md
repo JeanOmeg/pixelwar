@@ -171,7 +171,7 @@ Cada ataque envolve três rolagens:
 
 > Todo ataque é em **linha reta** (mesma linha ou coluna) e para na primeira unidade do caminho; aliados bloqueiam a linha de tiro. Paredes, árvores e portas também bloqueiam. Uma unidade parada em uma porta não pode atacar.
 >
-> O alcance é medido em pontos: cada tile custa 1 ponto. Para **Archer, Mage, Spearman, Ranger e Necromancer**, tiles de floresta e de água custam 2 pontos. Por exemplo, o Arqueiro (alcance 6) atinge 6 tiles em campo aberto, mas só 3 sobre floresta ou água. O card da unidade mostra isso em tiles.
+> O alcance é medido em pontos: cada tile custa 1 ponto. Para **Archer, Mage, Spearman, Ranger e Necromancer**, tiles de floresta custam 2 pontos (água custa 1, como campo aberto). Por exemplo, o Arqueiro (alcance 6) atinge 6 tiles em campo aberto ou sobre água, mas só 3 sobre floresta. O card da unidade mostra isso em tiles.
 
 ---
 

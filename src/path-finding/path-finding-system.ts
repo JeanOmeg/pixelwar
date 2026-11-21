@@ -125,10 +125,11 @@ export class PathFinder {
 
   /**
    * Range points spent when an attack crosses `node`: 1, or 2 on slow terrain
-   * for units with `slowTerrainCostsRange` (Archer, Mage, Spearman).
+   * (forest) for units with `slowTerrainCostsRange` (Archer, Mage, Spearman...).
+   * Attacks fly over water freely: it always costs 1.
    */
   attackCost(node: PathNodeComponent, rules: TerrainRules): number {
-    return !node.isFast && rules.slowTerrainCostsRange ? 2 : 1
+    return !node.isFast && !node.isWater && rules.slowTerrainCostsRange ? 2 : 1
   }
 
   /**

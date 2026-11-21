@@ -79,6 +79,14 @@ describe('attack range', () => {
     expect(halberdier).toContain(at(board, 4, 0))
   })
 
+  test('water costs 1 point of range, even for archers', () => {
+    const board = makeBoard(['.~~~..'])
+    const [a] = makePlayers(board)
+    const archer = board.pathFinder.getRangeAttack(at(board, 0, 0), ~a.mask, 4, 'ArcherA')
+    expect(archer).toContain(at(board, 4, 0))
+    expect(archer).not.toContain(at(board, 5, 0))
+  })
+
   test('only some classes target water; attacks pass over it', () => {
     const board = makeBoard(['.~.'])
     const [a] = makePlayers(board)

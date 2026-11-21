@@ -6,7 +6,7 @@ export { unitClassOf } from '../unit-types'
 export interface TerrainRules {
   /** Pays 1 movement point on slow terrain (doors still cost 2) */
   ignoresSlowTerrain: boolean
-  /** Attack range pays 2 points per slow tile instead of 1 */
+  /** Attack range pays 2 points per slow (forest) tile instead of 1; water costs 1 */
   slowTerrainCostsRange: boolean
   /** Water tiles are valid attack targets */
   targetsWater: boolean

@@ -187,7 +187,7 @@ export const en = {
     range: 'Range:',
     passive: 'Passive',
     melee: 'Melee: adjacent tiles',
-    rangeSlow: (range: number, slow: number) => `${range} tiles in the open, ${slow} over forest or water`,
+    rangeSlow: (range: number, slow: number) => `${range} tiles in the open, ${slow} over forest`,
     rangeAny: (range: number) => `${range} tiles on any terrain`
   },
 
@@ -215,7 +215,7 @@ export const en = {
     { title: 'Terrain', items: [
       'Open ground costs 1 move. Forest costs 2.',
       'Units in the <b>forest</b> get +2 DEF.',
-      'Archers, mages and spearmen pay 2 points of range per forest or water tile.',
+      'Archers, mages and spearmen pay 2 points of range per forest tile.',
       'Walls and trees block moves and attacks.',
       'Water blocks moves, but attacks fly over it.',
       'Doors can be crossed, but block attacks. Units on a door can\'t attack or be attacked.'

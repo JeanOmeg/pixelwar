@@ -86,8 +86,8 @@ export function classStats(unitClass: UnitClass): ClassStats {
 
 /**
  * How the range works on the map. Range is counted in points: 1 per tile, but
- * some classes pay 2 per forest or water tile, so "range 6" is 6 tiles in the
- * open and 3 over forest or water.
+ * some classes pay 2 per forest tile, so "range 6" is 6 tiles in the open (or
+ * over water) and 3 over forest.
  */
 export function rangeNote(unitName: string, range: number): string {
   if (range <= 1) return t().details.melee

@@ -181,7 +181,7 @@ export const ptBR: Strings = {
     range: 'Alcance:',
     passive: 'Passiva',
     melee: 'Corpo a corpo: casas ao lado',
-    rangeSlow: (range, slow) => `${range} casas em campo aberto, ${slow} sobre floresta ou água`,
+    rangeSlow: (range, slow) => `${range} casas em campo aberto, ${slow} sobre floresta`,
     rangeAny: range => `${range} casas em qualquer terreno`
   },
 
@@ -209,7 +209,7 @@ export const ptBR: Strings = {
     { title: 'Terreno', items: [
       'Campo aberto custa 1 de movimento. Floresta custa 2.',
       'Unidades na <b>floresta</b> ganham +2 DEF.',
-      'Arqueiros, magos e lanceiros pagam 2 pontos de alcance por casa de floresta ou água.',
+      'Arqueiros, magos e lanceiros pagam 2 pontos de alcance por casa de floresta.',
       'Muros e árvores bloqueiam movimento e ataques.',
       'Água bloqueia o movimento, mas ataques passam por cima dela.',
       'Portas podem ser atravessadas, mas bloqueiam ataques. Unidades numa porta não atacam nem podem ser atacadas.'
