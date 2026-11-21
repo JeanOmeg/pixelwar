@@ -461,22 +461,29 @@ Excalibur only supports the latest version of Tiled formats as of the plugin's r
       left: calc(14 * var(--u));
       right: calc(14 * var(--u));
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      /* minmax(0, ...): a wider center (longer labels in Portuguese, bigger
+         text on phones) shrinks the team panels instead of pushing the right
+         one off the screen */
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: start;
       gap: calc(16 * var(--u));
       pointer-events: none;
     }
 
+    .team-slot { display: flex; min-width: 0; }
+    .team-slot.right { justify-content: flex-end; }
     .team {
+      box-sizing: border-box;
       display: flex;
       align-items: center;
       gap: calc(10 * var(--u));
-      width: calc(330 * var(--u));
+      flex: 0 1 calc(330 * var(--u));
+      min-width: 0;
       padding: calc(5 * var(--u)) calc(10 * var(--u));
       opacity: 0.8;
       transition: opacity 200ms;
     }
-    .team.right { justify-self: end; flex-direction: row-reverse; text-align: right; }
+    .team.right { flex-direction: row-reverse; text-align: right; }
     .team.active { opacity: 1; border-color: var(--team); }
 
     .badge {
@@ -494,7 +501,8 @@ Excalibur only supports the latest version of Tiled formats as of the plugin's r
     @keyframes pulse { 50% { filter: brightness(1.5); } }
 
     .info { flex: 1; display: flex; flex-direction: column; gap: calc(5 * var(--u)); min-width: 0; }
-    .name { display: flex; gap: calc(8 * var(--u)); align-items: baseline; font-size: calc(17 * var(--t)); line-height: 1; }
+    .name { display: flex; gap: calc(8 * var(--u)); align-items: baseline; font-size: calc(17 * var(--t)); line-height: 1; white-space: nowrap; overflow: hidden; }
+    .name small { overflow: hidden; text-overflow: ellipsis; }
     .right .name { flex-direction: row-reverse; }
     .name small { font-size: calc(14 * var(--t)); }
 
@@ -576,11 +584,20 @@ Excalibur only supports the latest version of Tiled formats as of the plugin's r
     }
     .emote-list .btn { --team: #2a2d3a; font-size: calc(16 * var(--t)); padding: calc(6 * var(--u)) calc(10 * var(--u)); justify-content: center; white-space: nowrap; }
     .emote-list small { font-size: calc(14 * var(--t)); color: var(--gold); margin-right: calc(4 * var(--u)); }
-    .team-slot { position: relative; }
-    .team-slot.right { justify-self: end; }
-    .bubble {
+    /* emotes: centered under the round panel (by a team's corner they ran
+       off the screen on phones) */
+    .bubbles {
       position: absolute;
       top: calc(100% + 8 * var(--u));
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: calc(6 * var(--u));
+      pointer-events: none;
+    }
+    .bubble {
       padding: calc(6 * var(--u)) calc(12 * var(--u));
       font-size: calc(20 * var(--t));
       white-space: nowrap;
@@ -590,8 +607,6 @@ Excalibur only supports the latest version of Tiled formats as of the plugin's r
       box-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000;
       animation: pop 200ms steps(3) both;
     }
-    .team-slot.left .bubble { left: calc(20 * var(--u)); }
-    .team-slot.right .bubble { right: calc(20 * var(--u)); }
     @keyframes pop { from { transform: scale(0.4); opacity: 0; } }
   `]}toggleEmotes(){this.emotesOpen=!!this.view?.online?.canEmote&&!this.emotesOpen}requestEndTurn(){this.onEndTurn()}onEndTurn(){if(this.view?.canEndTurn&&!this.view.endTurnLocked){if(this.view.unitsWithActions>0&&!1!==this.view.confirmEndTurn&&!this.confirming){this.confirming=!0,window.clearTimeout(this.confirmTimer),this.confirmTimer=window.setTimeout(()=>{this.confirming=!1},2500);return}this.confirming=!1,this.dispatchEvent(new Event("end-turn"))}}updated(){this.confirming&&!this.view?.canEndTurn&&(this.confirming=!1),this.emotesOpen&&!this.view?.online?.canEmote&&(this.emotesOpen=!1)}sendEmote(t){let e=Al.EMOTES[t];e&&this.view?.online?.canEmote&&this.pickEmote(e)}pickEmote(t){this.emotesOpen=!1,this.dispatchEvent(new CustomEvent("emote",{detail:t}))}renderClock(){let t=this.view?.online;if(!t||null===t.timeLeft)return pW;let e=Math.max(0,Math.ceil(t.timeLeft));return pH`<span class="clock" title=${(0,u9.t)().hud.timeLeft}>${Math.floor(e/60)}:${String(e%60).padStart(2,"0")}</span>`}renderTimerBar(){let t=this.view?.online;if(!t||null===t.timeLeft)return pW;let e=Math.max(0,Math.min(1,t.timeLeft/t.timeTotal));return pH`<div class="timer-bar"><i style="width: ${100*e}%"></i></div>`}renderEmotes(){let t=this.view?.online;return t?.canEmote?pH`
       <button class="btn btn-solid emote-btn" title=${(0,u9.t)().hud.sayTitle} @click=${()=>{this.emotesOpen=!this.emotesOpen}}>${(0,u9.t)().hud.say}</button>
@@ -600,9 +615,12 @@ Excalibur only supports the latest version of Tiled formats as of the plugin's r
           ${Al.EMOTES.map((t,e)=>pH`<button class="btn btn-solid" @click=${()=>this.pickEmote(t)}>${e<9?pH`<small class="keys-only">${e+1}</small>`:pW}${(0,Al.emoteLabel)(t)}</button>`)}
         </div>
       `:pW}
-    `:pW}lit(t){return this.view?.highlight===t?"tutorial-lit":""}renderTeam(t,e,i){let s=Array.from({length:t.total},(e,i)=>i<t.alive),r=this.view?.online?.emotes[t.team];return pH`
+    `:pW}renderBubbles(t){let e=this.view?.online?.emotes,i=t.filter(t=>e?.[t.team]);return e&&0!==i.length?pH`
+      <div class="bubbles">
+        ${i.map(t=>pH`<div class="bubble team-${t.team}">${(0,Al.emoteLabel)(e[t.team]??"")}</div>`)}
+      </div>
+    `:pW}lit(t){return this.view?.highlight===t?"tutorial-lit":""}renderTeam(t,e,i){let s=Array.from({length:t.total},(e,i)=>i<t.alive);return pH`
       <div class="team-slot ${e} team-${t.team}">
-      ${r?pH`<div class="bubble">${(0,Al.emoteLabel)(r)}</div>`:pW}
       <div class="panel team team-${t.team} ${e} ${i?"active":""} ${this.lit("teams")}">
         <div class="badge">${t.alive}</div>
         <div class="info">
@@ -632,6 +650,7 @@ Excalibur only supports the latest version of Tiled formats as of the plugin's r
           </button>
         `:pW}
         ${this.renderTimerBar()}
+        ${this.emotesOpen?pW:this.renderBubbles([e,i])}
       </div>
       ${this.renderTeam(i,"right",t.activeTeam===i.team)}
     `}constructor(...t){super(...t),this.view=null,this.confirming=!1,this.emotesOpen=!1,this.confirmTimer=0}}g7([Ae({attribute:!1})],Ah.prototype,"view",void 0),g7([Ai()],Ah.prototype,"confirming",void 0),g7([Ai()],Ah.prototype,"emotesOpen",void 0),Ah=g7([p7("game-hud")],Ah);let Ac={"✕":"ps-cross","◯":"ps-circle","▢":"ps-square","△":"ps-triangle"};class Ad extends p8{static{this.styles=[As,pn`
@@ -1391,9 +1410,13 @@ Excalibur only supports the latest version of Tiled formats as of the plugin's r
     .card .pick-row .note { font-size: calc(14 * var(--t)); color: var(--red); }
     .card .pick { font-size: calc(20 * var(--t)); padding: calc(8 * var(--u)) calc(20 * var(--u)); }
 
-    .actions { display: flex; align-items: center; gap: calc(14 * var(--u)); margin-top: calc(14 * var(--u)); }
-    .actions .keys { flex: 1; font-size: calc(14 * var(--t)); color: var(--muted); }
-    .actions .btn { font-size: calc(24 * var(--t)); padding: calc(10 * var(--u)) calc(24 * var(--u)); --team: #2a2d3a; }
+    /* the hint takes what the buttons leave; when that is too little (longer
+       labels in Portuguese, bigger text on phones) the buttons drop to a line
+       of their own instead of squeezing the hint into a narrow column */
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: calc(10 * var(--u)) calc(14 * var(--u)); margin-top: calc(14 * var(--u)); }
+    .actions .keys { flex: 1 1 calc(260 * var(--u)); font-size: calc(14 * var(--t)); color: var(--muted); }
+    .actions .buttons { display: flex; gap: calc(14 * var(--u)); margin-left: auto; }
+    .actions .btn { font-size: calc(22 * var(--t)); padding: calc(10 * var(--u)) calc(20 * var(--u)); white-space: nowrap; --team: #2a2d3a; }
     .actions .confirm { --team: var(--red); min-width: calc(220 * var(--u)); }
     .actions .confirm:disabled { opacity: 0.4; }
   `]}connectedCallback(){super.connectedCallback(),window.addEventListener("keydown",this.onKeyDown)}disconnectedCallback(){window.removeEventListener("keydown",this.onKeyDown),super.disconnectedCallback()}willUpdate(t){(t.has("team")||t.has("initialArmy")||t.has("slots")||t.has("initialPlacement"))&&(this.army=[...this.initialArmy],this.positions=(this.initialPlacement.length===this.slots.length?this.initialPlacement:this.slots).map(t=>({...t})),this.selected=0,this.expanded=null)}updated(){if(!this.focusAfterRender)return;let t=this.renderRoot.querySelector(this.focusAfterRender);this.focusAfterRender=null,t&&(t.focus({preventScroll:!0}),t.closest(".card")?.scrollIntoView({block:"nearest"}))}toggle(t){this.expanded===t?this.collapse():(this.expanded=t,this.focusAfterRender=this.fits(t)?`.card[data-class="${t}"] .pick`:`.card[data-class="${t}"] .toggle`)}collapse(){this.expanded&&(this.focusAfterRender=`.card[data-class="${this.expanded}"] .toggle`,this.expanded=null)}option(t){return t?this.classes.find(e=>e.unitClass===t):void 0}total(t=this.army){return t.reduce((t,e)=>t+(this.option(e)?.cost??0),0)}isFull(){return this.army.length===this.slots.length&&this.army.every(t=>null!==t)}canConfirm(){return this.isFull()&&this.total()<=this.budget}sortedClasses(){return this.classes.map((t,e)=>({option:t,order:e})).sort((t,e)=>t.option.cost-e.option.cost||t.order-e.order).map(({option:t})=>t)}removeAt(t){if(!this.army[t])return;let e=[...this.army];e[t]=null,this.army=e,this.selected=t}clearAll(){this.army=this.slots.map(()=>null),this.selected=0,this.expanded=null}nextSlot(t){let e=this.slots.length;for(let i=1;i<=e;i++){let s=(t+i)%e;if(!this.army[s])return s}return(t+1)%e}fits(t){let e=[...this.army];return e[this.selected]=t,this.total(e)<=this.budget}assign(t){if(!this.fits(t))return;let e=[...this.army];e[this.selected]=t,this.army=e,this.selected=this.nextSlot(this.selected),this.collapse(),this.dispatchEvent(new Event("pick"))}confirm(){if(!this.canConfirm())return;let t={army:this.army.filter(t=>null!==t),placement:this.positions.map(t=>[t.x,t.y])};this.dispatchEvent(new CustomEvent("confirm",{detail:t}))}moveTo(t){if(this.positions.some(e=>e.x===t.x&&e.y===t.y))return;let e=[...this.positions];e[this.selected]={...t},this.positions=e,this.dispatchEvent(new Event("pick"))}classic(){this.army=[...this.defaultArmy],this.positions=this.slots.map(t=>({...t})),this.selected=0}tileBox(t){return`left: ${t.x/this.mapWidth*100}%; top: ${t.y/this.mapHeight*100}%; width: ${100/this.mapWidth}%; height: ${100/this.mapHeight}%`}renderZoneCell(t){return pH`
@@ -1469,11 +1492,13 @@ Excalibur only supports the latest version of Tiled formats as of the plugin's r
       </div>
       <div class="actions">
         <span class="keys">${this.isFull()?(0,u9.t)().army.fullHint:(0,u9.t)().army.emptyHint(e)}<span class="keys-only">${(0,u9.t)().army.keys}</span></span>
+        <div class="buttons">
         <button class="btn btn-solid" ?disabled=${this.army.every(t=>null===t)} @click=${()=>this.clearAll()}>${(0,u9.t)().army.removeAll}</button>
         <button class="btn btn-solid" @click=${()=>this.classic()}>${(0,u9.t)().army.classic}</button>
         ${this.randomize?pH`<button class="btn btn-solid" @click=${()=>{this.army=this.randomize?.()??this.army,this.selected=0}}>${(0,u9.t)().common.random}</button>`:pW}
         <button class="btn btn-solid" @click=${()=>this.dispatchEvent(new Event("back"))}>${(0,u9.t)().common.back}</button>
         <button class="btn btn-solid confirm" ?disabled=${!this.canConfirm()} @click=${()=>this.confirm()}>${(0,u9.t)().common.confirm}</button>
+        </div>
       </div>
     `}constructor(...t){super(...t),this.team=0,this.playerLabel="",this.mapName="",this.preview="",this.mapWidth=28,this.mapHeight=17,this.slots=[],this.zone=[],this.initialPlacement=[],this.classes=[],this.defaultArmy=[],this.initialArmy=[],this.budget=100,this.army=[],this.positions=[],this.selected=0,this.expanded=null,this.focusAfterRender=null,this.onKeyDown=t=>{if("Escape"===t.key)this.expanded?this.collapse():this.dispatchEvent(new Event("back"));else if("Enter"===t.key&&this.canConfirm()){let e=t.composedPath()[0];if(e instanceof HTMLElement&&e.closest("button")&&!e.classList.contains("confirm"))return;this.confirm()}else if("Delete"===t.key||"Backspace"===t.key){let e=t.composedPath()[0];if(e instanceof HTMLInputElement||e instanceof HTMLTextAreaElement)return;this.removeAt(this.selected)}}}}g7([Ae({type:Number})],fY.prototype,"team",void 0),g7([Ae()],fY.prototype,"playerLabel",void 0),g7([Ae()],fY.prototype,"mapName",void 0),g7([Ae()],fY.prototype,"preview",void 0),g7([Ae({type:Number})],fY.prototype,"mapWidth",void 0),g7([Ae({type:Number})],fY.prototype,"mapHeight",void 0),g7([Ae({attribute:!1})],fY.prototype,"slots",void 0),g7([Ae({attribute:!1})],fY.prototype,"zone",void 0),g7([Ae({attribute:!1})],fY.prototype,"initialPlacement",void 0),g7([Ae({attribute:!1})],fY.prototype,"classes",void 0),g7([Ae({attribute:!1})],fY.prototype,"defaultArmy",void 0),g7([Ae({attribute:!1})],fY.prototype,"initialArmy",void 0),g7([Ae({attribute:!1})],fY.prototype,"randomize",void 0),g7([Ae({type:Number})],fY.prototype,"budget",void 0),g7([Ai()],fY.prototype,"army",void 0),g7([Ai()],fY.prototype,"positions",void 0),g7([Ai()],fY.prototype,"selected",void 0),g7([Ai()],fY.prototype,"expanded",void 0),fY=g7([p7("army-select")],fY);let fK=(t,e)=>`pixelfantasywar.army.${t}.${e}`,fZ=(t,e)=>`pixelfantasywar.placement.${t}.${e}`;function fX(t,e,i){let s;try{s=localStorage.getItem(fK(t,e))?.split(",")}catch{return null}return!s||s.length!==i||s.some(t=>!d4.includes(t))?null:100>=AL(s)?s:null}function fJ(t,e,i){try{localStorage.setItem(fK(t,e),i.join(","))}catch{}}function f0(t,e,i){let s;try{s=localStorage.getItem(fZ(t,e))?.split(",").map(t=>t.split(":").map(Number))}catch{return null}return mW(i,e,s)?s:null}function f1(t,e,i){try{localStorage.setItem(fZ(t,e),i.map(([t,e])=>`${t}:${e}`).join(","))}catch{}}var Al=_("6eM5R"),u9=_("76051");let f2="pixelfantasywar.name",f5="pixelfantasywar.onlineMap";function f3(t){try{return localStorage.getItem(t)}catch{return null}}function f4(t,e){try{localStorage.setItem(t,e)}catch{}}class f6 extends p8{static{this.styles=[As,pn`
     :host { display: block; width: calc(1640 * var(--u)); max-width: 97vw; }
@@ -1987,4 +2012,4 @@ Excalibur only supports the latest version of Tiled formats as of the plugin's r
         <div class="fade ${this.leaving?"visible":""}"></div>
       </div>
     `}constructor(...t){var e;super(...t),this.screen=fg?.status==="joined"||fp()?"online":"title",this.autoResume=!fg&&!!fp(),this.mode=_i(_d(_l))?.id??"p1vscpu",this.difficulty=(e=_d(_h),AQ.find(t=>t===e)??"normal"),this.leaving=!1,this.chosenMap=null,this.armyTeam=0,this.cpuSuggestions=[],this.armies=[null,null],this.placements=[null,null],this.mapItems=null,this.onResize=()=>{this.updateScale(),requestAnimationFrame(()=>this.fitTitle())},this.onKeyDown=t=>{"Escape"!==t.key||["title","map","army","online"].includes(this.screen)||this.go("title")},this.stopLanguage=null}}g7([Ae({attribute:!1})],_g.prototype,"engine",void 0),g7([Ai()],_g.prototype,"screen",void 0),g7([Ai()],_g.prototype,"mode",void 0),g7([Ai()],_g.prototype,"difficulty",void 0),g7([Ai()],_g.prototype,"leaving",void 0),g7([Ai()],_g.prototype,"chosenMap",void 0),g7([Ai()],_g.prototype,"armyTeam",void 0),_g=g7([p7("start-screen-ui")],_g);var u9=_("76051");let _p=new na({resolution:{width:1920,height:1080},displayMode:Af()?ni.FitScreen:ni.FitScreenAndFill,antialiasing:!1,pixelRatio:1,uvPadding:.5,suppressConsoleBootMessage:!0,suppressHiDPIScaling:!0,backgroundColor:nt.Black,maxFps:60,configurePerformanceCanvas2DFallback:{allow:!1}});if(fP.init(),(gG=_p).timescale=gH??gz,Af()){let t,e,i;document.documentElement.classList.add("touch"),t=[100,300,700,1200],e=[],i=()=>{AE||(e.forEach(t=>window.clearTimeout(t)),e=t.map(t=>window.setTimeout(AI,t)))},window.addEventListener("resize",i),window.addEventListener("orientationchange",i),document.addEventListener("fullscreenchange",i),document.addEventListener("webkitfullscreenchange",i),screen.orientation?.addEventListener?.("change",i),window.visualViewport?.addEventListener("resize",i)}for(let t of(_A(),(0,u9.onLanguageChange)(_A),function(t){let e;if(!("getGamepads"in navigator))return;let i=new Aq,s=((e=document.createElement("div")).className="pad-focus",Object.assign(e.style,{position:"fixed",pointerEvents:"none",zIndex:"2147483000",boxSizing:"border-box",border:"3px solid #ffffff",boxShadow:"inset 0 0 0 2px #000, 0 0 0 2px #000",display:"none"}),document.body.appendChild(e),e),r=0,a=performance.now(),n=0,o=e=>{var l;let h;r=requestAnimationFrame(o);let c=Math.min(e-a,100);a=e;let{pads:d,last:u}=function(){let t=[],e=null;for(let i of navigator.getGamepads?.()??[])i&&i.connected&&(t.push({buttons:i.buttons.map(t=>t.pressed?Math.max(t.value,.5):t.value),axes:[...i.axes]}),(!e||i.timestamp>e.timestamp)&&(e=i));return{pads:t,last:e}}(),g=i.update(d,e);g.length>0&&ms("gamepad",u?(h=u.id.toLowerCase(),/045e|xbox|xinput|microsoft/.test(h)?"xbox":/054c|dualshock|dualsense|playstation|wireless controller/.test(h)?"playstation":/057e|nintendo|pro controller|joy-con/.test(h)?"nintendo":"generic"):me);let p=t();for(let t of g)!function({button:t},e){let i=A5();switch(t){case"up":case"down":case"left":case"right":ma(mr[t])||function(t){var e,i;let s,r,a,n,o,l,h=A5();if(!h)return A4();let c=A0(h),d=A2().filter(t=>t!==h&&(function(t){let e=A0(t);if(!e)return!0;let i=t.getBoundingClientRect(),s=e.getBoundingClientRect(),r=(i.left+i.right)/2,a=(i.top+i.bottom)/2;return r>=s.left&&r<=s.right&&a>=s.top&&a<=s.bottom}(t)||A0(t)===c)),u=(e=A6(h),i=d.map(A6),s="left"===t||"right"===t,r="right"===t||"down"===t?1:-1,a=t=>s?(t.left+t.right)/2:(t.top+t.bottom)/2,n=t=>s?(t.top+t.bottom)/2:(t.left+t.right)/2,o=-1,l=1/0,i.forEach((t,i)=>{if((a(t)-a(e))*r<=1)return;let h=(s?Math.max(0,r>0?t.left-e.right:e.left-t.right):Math.max(0,r>0?t.top-e.bottom:e.top-t.bottom))+3*(s?Math.max(0,t.top-e.bottom,e.top-t.bottom):Math.max(0,t.left-e.right,e.left-t.right))+.2*Math.abs(n(t)-n(e))+.05*Math.abs(a(t)-a(e));h<l&&(l=h,o=i)}),o);u<0||A3(d[u])}(t);return;case"a":i?A7(i)||i.click():(e||!A4())&&ma("Enter");return;case"b":i&&A7(i)?i.blur():ma("Escape");return;case"start":ma(e?"p":"Enter");return}if(e)switch(t){case"x":ma("f");return;case"y":ma("r");return;case"lb":ma("Tab",!0);return;case"rb":ma("Tab");return;case"select":ma("e");return;case"l3":ma("h");return;case"r3":ma("t");return}}(t,p);if("gamepad"!==mt){s.style.display="none";return}let A=function(t){let e={panX:0,panY:0,zoomOut:0,zoomIn:0};for(let i of t){let[,,t=0,s=0]=i.axes;Math.hypot(t,s)>.2&&(e.panX+=t,e.panY+=s);let r=i.buttons[A$.lt]??0,a=i.buttons[A$.rt]??0;r>.2&&(e.zoomOut=Math.max(e.zoomOut,r)),a>.2&&(e.zoomIn=Math.max(e.zoomIn,a))}return e.panX=Math.max(-1,Math.min(1,e.panX)),e.panY=Math.max(-1,Math.min(1,e.panY)),e}(d);p&&(A.panX||A.panY||A.zoomIn||A.zoomOut)&&p.padCamera(A,c),!p&&A.panY&&(l=1400*A.panY*c/1e3,(function(){let t=A5(),e=t&&A0(t);if(e&&A9(e))return e;if(A8&&performance.now()-A8.at<500&&A8.el.isConnected)return A8.el;let i=[],s=t=>{for(let e of t.querySelectorAll("*"))A9(e)&&i.push(e),e.shadowRoot&&s(e.shadowRoot)};s(document);let r=i.filter(t=>{let e=t.getBoundingClientRect(),i=AZ((e.left+e.right)/2,(e.top+e.bottom)/2);return e.width>0&&e.height>0&&AJ(t)&&AX(t,i)}),a=t=>{let e=t.getBoundingClientRect();return e.width*e.height},n=r.sort((t,e)=>a(e)-a(t))[0]??null;return A8=n?{el:n,at:performance.now()}:null,n})()?.scrollBy({top:l}));let m=A5();!m&&e-n>200&&(n=e,A2().length>0&&A4()&&(m=A5()));let f=m&&function(t){let e=t.getBoundingClientRect(),i={left:e.left,top:e.top,right:e.right,bottom:e.bottom},s=t=>{i.left=Math.max(i.left,t.left),i.top=Math.max(i.top,t.top),i.right=Math.min(i.right,t.right),i.bottom=Math.min(i.bottom,t.bottom)};for(let e=A0(t);e;e=A0(e))s(e.getBoundingClientRect());return s({left:0,top:0,right:window.innerWidth,bottom:window.innerHeight}),i.right-i.left>2&&i.bottom-i.top>2?i:null}(m);f?Object.assign(s.style,{display:"block",left:`${f.left}px`,top:`${f.top}px`,width:`${f.right-f.left}px`,height:`${f.bottom-f.top}px`}):s.style.display="none"},l=()=>{r||(a=performance.now(),r=requestAnimationFrame(o))};window.addEventListener("gamepadconnected",l),window.addEventListener("gamepaddisconnected",()=>{navigator.getGamepads().some(t=>t?.connected)||(cancelAnimationFrame(r),r=0,i.reset(),s.style.display="none","gamepad"===mt&&ms(Af()?"touch":"mouse"))}),navigator.getGamepads().some(t=>t?.connected)&&l(),window.addEventListener("pointerdown",t=>ms("touch"===t.pointerType?"touch":"mouse"),!0),window.addEventListener("pointermove",t=>{"mouse"===t.pointerType&&(t.movementX||t.movementY)&&ms("mouse")},!0),window.addEventListener("keydown",t=>{t.isTrusted&&ms("keyboard")},!0)}(()=>_p.currentScene instanceof fM?_p.currentScene.ui??null:null),_p.addScene("menu-shell",new nx),mV)){let e=new fM(t);_p.addScene(e.name,e)}function _A(){let t=document.querySelector(".rotate-hint-box"),e=t?.querySelector("p"),i=t?.querySelector("small");e&&(e.textContent=(0,u9.t)().rotate.title),i&&(i.textContent=(0,u9.t)().rotate.text)}_p.start(u7).then(()=>{let t;AI(),u7.startButtonFactory=()=>{let t=document.createElement("button");return t.hidden=!0,t.tabIndex=-1,t},document.querySelector("start-screen-ui")?.remove(),(t=document.createElement("start-screen-ui")).engine=_p,document.body.appendChild(t),document.querySelector("audio-menu")?.setAttribute("fullscreen-ready","");let e=document.querySelector("start-screen-ui");e&&(e.style.pointerEvents="none",window.setTimeout(()=>{e.style.pointerEvents=""},400))});
-//# sourceMappingURL=index.c74b95e3.js.map
+//# sourceMappingURL=index.ab286f2d.js.map

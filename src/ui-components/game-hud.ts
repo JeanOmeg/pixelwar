@@ -22,22 +22,29 @@ export class GameHud extends LitElement {
       left: calc(14 * var(--u));
       right: calc(14 * var(--u));
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      /* minmax(0, ...): a wider center (longer labels in Portuguese, bigger
+         text on phones) shrinks the team panels instead of pushing the right
+         one off the screen */
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: start;
       gap: calc(16 * var(--u));
       pointer-events: none;
     }
 
+    .team-slot { display: flex; min-width: 0; }
+    .team-slot.right { justify-content: flex-end; }
     .team {
+      box-sizing: border-box;
       display: flex;
       align-items: center;
       gap: calc(10 * var(--u));
-      width: calc(330 * var(--u));
+      flex: 0 1 calc(330 * var(--u));
+      min-width: 0;
       padding: calc(5 * var(--u)) calc(10 * var(--u));
       opacity: 0.8;
       transition: opacity 200ms;
     }
-    .team.right { justify-self: end; flex-direction: row-reverse; text-align: right; }
+    .team.right { flex-direction: row-reverse; text-align: right; }
     .team.active { opacity: 1; border-color: var(--team); }
 
     .badge {
@@ -55,7 +62,8 @@ export class GameHud extends LitElement {
     @keyframes pulse { 50% { filter: brightness(1.5); } }
 
     .info { flex: 1; display: flex; flex-direction: column; gap: calc(5 * var(--u)); min-width: 0; }
-    .name { display: flex; gap: calc(8 * var(--u)); align-items: baseline; font-size: calc(17 * var(--t)); line-height: 1; }
+    .name { display: flex; gap: calc(8 * var(--u)); align-items: baseline; font-size: calc(17 * var(--t)); line-height: 1; white-space: nowrap; overflow: hidden; }
+    .name small { overflow: hidden; text-overflow: ellipsis; }
     .right .name { flex-direction: row-reverse; }
     .name small { font-size: calc(14 * var(--t)); }
 
@@ -137,11 +145,20 @@ export class GameHud extends LitElement {
     }
     .emote-list .btn { --team: #2a2d3a; font-size: calc(16 * var(--t)); padding: calc(6 * var(--u)) calc(10 * var(--u)); justify-content: center; white-space: nowrap; }
     .emote-list small { font-size: calc(14 * var(--t)); color: var(--gold); margin-right: calc(4 * var(--u)); }
-    .team-slot { position: relative; }
-    .team-slot.right { justify-self: end; }
-    .bubble {
+    /* emotes: centered under the round panel (by a team's corner they ran
+       off the screen on phones) */
+    .bubbles {
       position: absolute;
       top: calc(100% + 8 * var(--u));
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: calc(6 * var(--u));
+      pointer-events: none;
+    }
+    .bubble {
       padding: calc(6 * var(--u)) calc(12 * var(--u));
       font-size: calc(20 * var(--t));
       white-space: nowrap;
@@ -151,8 +168,6 @@ export class GameHud extends LitElement {
       box-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000;
       animation: pop 200ms steps(3) both;
     }
-    .team-slot.left .bubble { left: calc(20 * var(--u)); }
-    .team-slot.right .bubble { right: calc(20 * var(--u)); }
     @keyframes pop { from { transform: scale(0.4); opacity: 0; } }
   `]
 
@@ -233,6 +248,18 @@ export class GameHud extends LitElement {
     `
   }
 
+  /** Online: the emotes being shown, one bubble per team in its color */
+  private renderBubbles(teams: TeamView[]) {
+    const emotes = this.view?.online?.emotes
+    const shown = teams.filter(team => emotes?.[team.team])
+    if (!emotes || shown.length === 0) return nothing
+    return html`
+      <div class="bubbles">
+        ${shown.map(team => html`<div class="bubble team-${team.team}">${emoteLabel(emotes[team.team] ?? '')}</div>`)}
+      </div>
+    `
+  }
+
   /** Tutorial: class for the part of the bar the current lesson points at */
   private lit(part: HudHighlight): string {
     return this.view?.highlight === part ? 'tutorial-lit' : ''
@@ -240,10 +267,8 @@ export class GameHud extends LitElement {
 
   private renderTeam(team: TeamView, side: 'left' | 'right', active: boolean) {
     const pips = Array.from({ length: team.total }, (_, i) => i < team.alive)
-    const emote = this.view?.online?.emotes[team.team]
     return html`
       <div class="team-slot ${side} team-${team.team}">
-      ${emote ? html`<div class="bubble">${emoteLabel(emote)}</div>` : nothing}
       <div class="panel team team-${team.team} ${side} ${active ? 'active' : ''} ${this.lit('teams')}">
         <div class="badge">${team.alive}</div>
         <div class="info">
@@ -284,6 +309,7 @@ export class GameHud extends LitElement {
           </button>
         ` : nothing}
         ${this.renderTimerBar()}
+        ${this.emotesOpen ? nothing : this.renderBubbles([left, right])}
       </div>
       ${this.renderTeam(right, 'right', view.activeTeam === right.team)}
     `

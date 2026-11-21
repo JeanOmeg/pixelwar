@@ -129,9 +129,13 @@ export class ArmySelect extends LitElement {
     .card .pick-row .note { font-size: calc(14 * var(--t)); color: var(--red); }
     .card .pick { font-size: calc(20 * var(--t)); padding: calc(8 * var(--u)) calc(20 * var(--u)); }
 
-    .actions { display: flex; align-items: center; gap: calc(14 * var(--u)); margin-top: calc(14 * var(--u)); }
-    .actions .keys { flex: 1; font-size: calc(14 * var(--t)); color: var(--muted); }
-    .actions .btn { font-size: calc(24 * var(--t)); padding: calc(10 * var(--u)) calc(24 * var(--u)); --team: #2a2d3a; }
+    /* the hint takes what the buttons leave; when that is too little (longer
+       labels in Portuguese, bigger text on phones) the buttons drop to a line
+       of their own instead of squeezing the hint into a narrow column */
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: calc(10 * var(--u)) calc(14 * var(--u)); margin-top: calc(14 * var(--u)); }
+    .actions .keys { flex: 1 1 calc(260 * var(--u)); font-size: calc(14 * var(--t)); color: var(--muted); }
+    .actions .buttons { display: flex; gap: calc(14 * var(--u)); margin-left: auto; }
+    .actions .btn { font-size: calc(22 * var(--t)); padding: calc(10 * var(--u)) calc(20 * var(--u)); white-space: nowrap; --team: #2a2d3a; }
     .actions .confirm { --team: var(--red); min-width: calc(220 * var(--u)); }
     .actions .confirm:disabled { opacity: 0.4; }
   `]
@@ -472,11 +476,13 @@ export class ArmySelect extends LitElement {
       </div>
       <div class="actions">
         <span class="keys">${this.isFull() ? t().army.fullHint : t().army.emptyHint(empty)}<span class="keys-only">${t().army.keys}</span></span>
+        <div class="buttons">
         <button class="btn btn-solid" ?disabled=${this.army.every(c => c === null)} @click=${() => this.clearAll()}>${t().army.removeAll}</button>
         <button class="btn btn-solid" @click=${() => this.classic()}>${t().army.classic}</button>
         ${this.randomize ? html`<button class="btn btn-solid" @click=${() => { this.army = this.randomize?.() ?? this.army; this.selected = 0 }}>${t().common.random}</button>` : nothing}
         <button class="btn btn-solid" @click=${() => this.dispatchEvent(new Event('back'))}>${t().common.back}</button>
         <button class="btn btn-solid confirm" ?disabled=${!this.canConfirm()} @click=${() => this.confirm()}>${t().common.confirm}</button>
+        </div>
       </div>
     `
   }
