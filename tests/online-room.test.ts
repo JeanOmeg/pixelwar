@@ -42,8 +42,9 @@ describe('room codes and names', () => {
   })
 
   it('cleans names', () => {
-    expect(cleanName('  Jean   Fernandes  ')).toBe('Jean Fernandes')
-    expect(cleanName('a'.repeat(30))).toHaveLength(16)
+    expect(cleanName('  Jean   Silva  ')).toBe('Jean Silva')
+    expect(cleanName('a'.repeat(30))).toHaveLength(10)
+    expect(cleanName('Jean Fernandes')).toBe('Jean Ferna')
     expect(cleanName('   ')).toBe('')
   })
 })

@@ -21,7 +21,7 @@ export const TURN_GRACE_SECONDS = 15
 export const RECONNECT_SECONDS = 180
 /** No connection after this long: show the failure and the Wi-Fi tip */
 export const CONNECT_TIMEOUT_SECONDS = 20
-export const NAME_MAX_LENGTH = 16
+export const NAME_MAX_LENGTH = 10
 export const EMOTE_COOLDOWN_MS = 3000
 
 /** Keys 1-9 send the first nine (keep the order: players learn the numbers) */

@@ -42,9 +42,12 @@ export class ArmySelect extends LitElement {
        labels in Portuguese, bigger text on phones) the panels shrink and
        scroll instead of the screen running past the bottom of the window */
     :host { display: flex; flex-direction: column; width: calc(1680 * var(--u)); max-width: 97vw; height: calc(960 * var(--u)); max-height: 96vh; max-height: 96dvh; }
+    /* always one line: the heading keeps its words, the player label (an
+       online name can be long) is cut with "…" when there is no room left */
     .header { flex-shrink: 0; display: flex; align-items: baseline; justify-content: space-between; gap: calc(20 * var(--u)); margin-bottom: calc(12 * var(--u)); }
-    h2 { margin: 0; font-weight: normal; font-size: calc(44 * var(--t)); text-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000; }
-    h2 span { color: var(--team); }
+    h2 { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; gap: calc(10 * var(--u)); margin: 0; font-weight: normal; font-size: calc(34 * var(--t)); white-space: nowrap; text-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000; }
+    h2 .label { flex-shrink: 0; }
+    h2 .player { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--team); }
     .points { font-size: calc(26 * var(--t)); white-space: nowrap; }
     .points.over { color: var(--red); }
     .points small { color: var(--muted); font-size: calc(16 * var(--t)); }
@@ -457,7 +460,7 @@ export class ArmySelect extends LitElement {
     const teamClass = this.team === 0 ? 'team-blue' : 'team-red'
     return html`
       <div class="header ${teamClass}">
-        <h2>${t().army.heading} <span>· ${this.playerLabel}</span></h2>
+        <h2><span class="label">${t().army.heading}</span><span class="player">· ${this.playerLabel}</span></h2>
         <div class="points ${total > this.budget ? 'over' : ''}">${total} / ${this.budget} <small>${t().army.points}</small></div>
       </div>
       <div class="layout">

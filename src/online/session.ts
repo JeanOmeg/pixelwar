@@ -4,7 +4,7 @@ import type { Placement } from '../deploy'
 import { RoomAnnouncer } from './directory'
 import { ActionFeed } from './feed'
 import {
-  CONNECT_TIMEOUT_SECONDS, EMOTES, EMOTE_COOLDOWN_MS, PROTOCOL_VERSION, RECONNECT_SECONDS, newRoomCode, newToken,
+  CONNECT_TIMEOUT_SECONDS, EMOTES, EMOTE_COOLDOWN_MS, PROTOCOL_VERSION, RECONNECT_SECONDS, cleanName, newRoomCode, newToken,
   type Emote, type GameAction, type JoinIntent, type Member, type NetMessage, type RejectReason, type RoomState, type Seat
 } from './protocol'
 import {
@@ -358,7 +358,7 @@ export class OnlineSession {
 
   private onHello(msg: Extract<NetMessage, { t: 'hello' }>, from: string) {
     if (!this.room || !this.isAuthority || typeof msg.token !== 'string') return
-    const name = typeof msg.name === 'string' && msg.name.trim() ? msg.name.trim().slice(0, 16) : 'Player'
+    const name = (typeof msg.name === 'string' && cleanName(msg.name)) || 'Player'
     const result = joinRoomState(this.room, { version: msg.version, name, token: msg.token, intent: msg.intent === 'watch' ? 'watch' : 'play' }, from)
     if ('reject' in result) {
       this.transport?.send({ t: 'reject', reason: result.reject }, from)
