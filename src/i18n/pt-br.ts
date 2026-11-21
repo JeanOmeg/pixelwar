@@ -209,7 +209,7 @@ export const ptBR: Strings = {
     { title: 'Terreno', items: [
       'Campo aberto custa 1 de movimento. Floresta custa 2.',
       'Unidades na <b>floresta</b> ganham +2 DEF.',
-      'Arqueiros, magos e lanceiros pagam 2 pontos de alcance por casa de floresta.',
+      'Arqueiros, magos, lanceiros, patrulheiros e necromantes pagam 2 pontos de alcance por casa de floresta.',
       'Muros e árvores bloqueiam movimento e ataques.',
       'Água bloqueia o movimento, mas ataques passam por cima dela.',
       'Portas podem ser atravessadas, mas bloqueiam ataques. Unidades numa porta não atacam nem podem ser atacadas.'

@@ -4,6 +4,8 @@ import { CursorAnimation, HighlightAnimation, RedHighlightAnimation } from './re
 import { SCALE, SCALE_CURSOR } from './config'
 import { PathNodeComponent } from './path-finding/path-node-component'
 import { Unit } from './unit'
+import { Facing } from './combat'
+import { backAttackMarker, destinationFacingArrow, screenFacing } from './board-markers'
 
 const RangeHighlightAnimation = HighlightAnimation.clone()
 const PathHighlightAnimation = CursorAnimation.clone()
@@ -17,6 +19,10 @@ export class Cell extends ex.Actor {
   decoration: ex.Actor
   /** Pointer cursor: its own actor, so moving it doesn't erase highlights */
   cursor: ex.Actor
+  /** Move preview: the way the unit will face when it stops here */
+  private facingMarker: ex.Actor
+  /** Move preview: this enemy would be attacked from behind */
+  private backMarker: ex.Actor
   sprite!: ex.Sprite
   pathNode: PathNodeComponent
   unit: Unit | null = null
@@ -43,6 +49,15 @@ export class Cell extends ex.Actor {
     this.addChild(this.decoration)
     this.cursor = new ex.Actor({ anchor: ex.vec(0, 0), z: 1 })
     this.addChild(this.cursor)
+    // above the units (z 2) and their HP bars (z 3)
+    const tileWidth = board.tileWidth * SCALE.x
+    const tileHeight = board.tileHeight * SCALE.y
+    this.facingMarker = new ex.Actor({ pos: ex.vec(tileWidth / 2, tileHeight / 2), z: 4 })
+    this.addChild(this.facingMarker)
+    // over the unit's head; on the top row, inside the tile (the map ends there)
+    const backPos = y === 0 ? ex.vec(tileWidth * 0.85, tileHeight * 0.3) : ex.vec(tileWidth / 2, -tileHeight * 0.55)
+    this.backMarker = new ex.Actor({ pos: backPos, z: 4 })
+    this.addChild(this.backMarker)
 
     this.pathNode = new PathNodeComponent(this.pos, x, y)
     this.addComponent(this.pathNode)
@@ -86,6 +101,18 @@ export class Cell extends ex.Actor {
       this.decoration.graphics.hide()
       this.highlight = null
     }
+  }
+
+  /** Arrow of the way a unit moving here ends up facing (null hides it) */
+  showFacingPreview(facing: Facing | null) {
+    if (facing) this.facingMarker.graphics.use(destinationFacingArrow(screenFacing(facing, this.board.mirrored)))
+    else this.facingMarker.graphics.hide()
+  }
+
+  /** Sword over an enemy that the previewed move would attack from behind */
+  toggleBackMarker(show: boolean) {
+    if (show) this.backMarker.graphics.use(backAttackMarker())
+    else this.backMarker.graphics.hide()
   }
 
   toggleCursor(show: boolean) {

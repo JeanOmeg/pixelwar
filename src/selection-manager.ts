@@ -4,6 +4,7 @@ import { Cell } from './cell'
 import { PathNodeComponent } from './path-finding/path-node-component'
 import { Player } from './player'
 import * as ex from 'excalibur'
+import { facingBetween } from './combat'
 
 /**
  * Manages current unit selection
@@ -15,6 +16,8 @@ export class SelectionManager {
   currentSelectionMode: 'move' | 'attack' | 'heal' = 'move'
   currentUnitSelection: Unit | null = null
   currentCursor: { x: number, y: number } = { x: 0, y: 0 }
+  /** Cells showing a move preview marker (facing arrow, back attack) */
+  private previewCells: Cell[] = []
 
   constructor(private board: Board, private engine: ex.Engine) {
     this.board = board
@@ -98,6 +101,35 @@ export class SelectionManager {
     this.board.cells.forEach(cell => {
       if (cell.highlight) cell.toggleHighlight(false, cell.highlight)
     })
+    this.clearMovePreview()
+  }
+
+  /**
+   * Move mode, hovering a destination: the way `unit` ends up facing there and
+   * the enemies it could attack from there (marked when from behind).
+   */
+  showMovePreview(unit: Unit, path: PathNodeComponent[]) {
+    this.clearMovePreview()
+    if (path.length < 2) return
+    const destination = path[path.length - 1].owner as Cell
+    destination.showFacingPreview(facingBetween(path[path.length - 2], path[path.length - 1]))
+    this.previewCells.push(destination)
+    for (const target of unit.targetsFrom(destination)) {
+      const cell = target.unit.cell!
+      cell.toggleHighlight(true, 'attack')
+      if (target.back) {
+        cell.toggleBackMarker(true)
+        this.previewCells.push(cell)
+      }
+    }
+  }
+
+  private clearMovePreview() {
+    this.previewCells.forEach(cell => {
+      cell.showFacingPreview(null)
+      cell.toggleBackMarker(false)
+    })
+    this.previewCells = []
   }
 
   showHighlight(path: PathNodeComponent[], type: 'path' | 'range' | 'attack'): void {

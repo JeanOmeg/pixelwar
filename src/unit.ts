@@ -14,6 +14,7 @@ import {
   SECOND_WIND_HP, SHIELD_WALL_DEF, SKILLS, STEAL_MP, SkillDefinition, SkillId, skillBonusDamage
 } from './skills'
 import { gameDelay } from './speed'
+import { screenFacing, unitFacingArrow } from './board-markers'
 
 /**
  * What an attack does, in order: the strike, the effects of the attack skill,
@@ -86,6 +87,9 @@ export class Unit extends ex.Actor {
   private dying = false
   private hpBar = new ex.Actor({ anchor: ex.Vector.Zero, z: 3 })
   private shownHealth = -1
+  /** Arrow next to the HP bar: the way the unit faces (back attacks) */
+  private facingArrow = new ex.Actor({ anchor: ex.vec(0.5, 0.5), z: 3 })
+  private shownFacing: Facing | null = null
 
   get isRunning(): boolean {
     return this.pendingSkill?.id === 'skill-run'
@@ -130,11 +134,13 @@ export class Unit extends ex.Actor {
   onInitialize(engine: ex.Engine): void {
     this.damageManager = new DamageManager(engine.currentScene)
     engine.currentScene.add(this.hpBar)
+    engine.currentScene.add(this.facingArrow)
   }
 
   onPostUpdate(): void {
     this.anim.tint = this.hasActions() ? ex.Color.White : ex.Color.Gray
     this.updateHpBar()
+    this.updateFacingArrow()
     if (this.health <= 0) void this.die()
   }
 
@@ -158,6 +164,15 @@ export class Unit extends ex.Actor {
     }))
   }
 
+  /** Arrow on the left of the HP bar, pointing the way the unit faces on screen */
+  private updateFacingArrow() {
+    this.facingArrow.pos = this.pos.add(this.unitConfig.graphics.offset).add(ex.vec(3.5 * SCALE.x, 29 * SCALE.y))
+    const facing = screenFacing(this.facing, this.mirrored)
+    if (facing === this.shownFacing) return
+    this.shownFacing = facing
+    this.facingArrow.graphics.use(unitFacingArrow(facing))
+  }
+
   /** Death animation, once (onPostUpdate keeps calling while health <= 0) */
   private async die() {
     if (this.dying) return
@@ -165,6 +180,7 @@ export class Unit extends ex.Actor {
     this.cell?.removeUnit(this)
     this.board.onUnitDown?.(this)
     this.hpBar.kill()
+    this.facingArrow.kill()
     this.setAnim(this.selectAnimationDeath())
     await this.actions.delay(500).toPromise()
     Resources.ExplosionSound.play()
@@ -657,6 +673,21 @@ export class Unit extends ex.Actor {
   isBehind(other: Unit): boolean {
     if (!this.cell || !other.cell) return false
     return facingBetween(this.cell, other.cell) === other.miniDirection
+  }
+
+  /**
+   * Enemies this unit could attack after moving to `cell` (its current cell
+   * counts as empty), and which of them from behind. None once it has attacked.
+   */
+  targetsFrom(cell: Cell): { unit: Unit, back: boolean }[] {
+    if (!this.cell || this.attacked || this.passed) return []
+    const nodes = this.board.pathFinder.getRangeAttack(cell.pathNode, ~this.player.mask, this.unitConfig.range, this.name, this.cell.pathNode)
+    const backstab = this.pendingSkill?.id === 'skill-backstab'
+    return nodes.flatMap(node => {
+      const unit = (node.owner as Cell).unit
+      if (!unit || unit.player === this.player || unit.isDying) return []
+      return [{ unit, back: backstab || facingBetween(cell, node) === unit.miniDirection }]
+    })
   }
 }
 

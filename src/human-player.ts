@@ -218,7 +218,10 @@ export class HumanPlayer extends Player {
 
       if (hovered) {
         const path = movementMap.pathTo(hovered.pathNode)
-        if (path.length > 1) this.selectionManager.showHighlight(path, 'path')
+        if (path.length > 1) {
+          this.selectionManager.showHighlight(path, 'path')
+          this.selectionManager.showMovePreview(unit, path)
+        }
       }
     } else if (mode === 'attack') {
       const currentRange = this.selectionManager.findAttackRange(unit)

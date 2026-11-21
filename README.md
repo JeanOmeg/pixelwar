@@ -24,7 +24,7 @@ Elimine todas as unidades inimigas antes que eliminem as suas. Se o limite de 10
 | **Player vs Player** | Dois jogadores se alternam no mesmo computador |
 | **CPU vs CPU** | Assista dois times controlados pela IA se enfrentarem |
 
-**Dificuldade da CPU** (na tela de modo, fica salva): **Easy** comete erros e quase não usa skills; **Normal** joga bem; **Hard** não erra e usa pesos ajustados por simulação. A IA planeja o turno inteiro de cada unidade (para onde ir, quem atacar, de que lado e com qual skill), prevê o que o seu exército pode fazer no turno seguinte para não deixar unidades expostas, recua arqueiros e magos depois de atirar, bate antes de recuar quando está colada num inimigo, procura ataques pelas costas age primeiro com quem pode matar, dá a volta quando um inimigo tampa uma porta e, com 1 ou 2 unidades sobrando, luta em vez de fugir. Cada CPU também ganha uma personalidade (equilibrada, agressiva ou defensiva). Em simulações nos 8 mapas, a IA Normal vence a IA anterior em ~85% das partidas, e a Hard vence a Normal em ~70%.
+**Dificuldade da CPU** (na tela de modo, fica salva): **Easy** comete erros e quase não usa skills; **Normal** joga bem; **Hard** não erra e usa pesos ajustados por simulação. A IA planeja o turno inteiro de cada unidade (para onde ir, quem atacar, de que lado e com qual skill), prevê o que o seu exército pode fazer no turno seguinte para não deixar unidades expostas, recua arqueiros e magos depois de atirar, bate antes de recuar quando está colada num inimigo, procura ataques pelas costas age primeiro com quem pode matar, dá a volta quando um inimigo tampa uma porta e, com 1 ou 2 unidades sobrando, luta em vez de fugir. Cada CPU também ganha uma personalidade (equilibrada, agressiva ou defensiva). Em simulações nos mapas do jogo, a IA Normal vence a IA anterior em ~85% das partidas, e a Hard vence a Normal em ~70%.
 
 ### Modo online
 
@@ -49,7 +49,7 @@ Dois jogadores, cada um no seu aparelho, mais até 8 espectadores. Não há serv
 
 **Tutorial:** cada passo aparece num balão embaixo da tela, com a unidade e o tile marcados em dourado; só a ação pedida funciona (o item certo do menu fica destacado). Passos só de texto avançam com **Next** (ou Enter). Tudo é roteirizado, inclusive os dados e as jogadas da CPU, então a partida é sempre a mesma (5 rodadas). A velocidade fica em x1 e o End turn não pede confirmação. **Skip tutorial** (ou Main menu na pausa) volta ao menu.
 
-O menu também tem **How to play** (regras resumidas), **Units** (as 8 classes, com atributos e habilidades especiais) e **Credits**.
+O menu também tem **How to play** (regras resumidas), **Units** (as 14 classes, com atributos, custo e habilidades) e **Credits**.
 
 ### Mapas
 
@@ -143,7 +143,8 @@ O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece 
 
 - **Topo:** os dois times (unidades vivas e HP total), pausa, velocidade (x1/x2/x3), a rodada, de quem é a vez e o botão **End turn**.
 - **Skill usada:** quando uma unidade (sua ou da CPU) usa uma skill, o nome e o custo aparecem em cima dela (ex.: "Guard -2 MP"). Só aparece se a skill for de fato executada: escolher e cancelar não mostra nada.
-- **Barra de HP** embaixo de cada unidade no mapa (verde, amarela abaixo de 50%, vermelha abaixo de 25%).
+- **Barra de HP** embaixo de cada unidade no mapa (verde, amarela abaixo de 50%, vermelha abaixo de 25%). A **seta** à esquerda da barra mostra para onde a unidade está virada: atacar vindo desse lado é ataque pelas costas.
+- **Prévia do movimento:** no modo mover, passe o mouse (ou o cursor, ou toque uma vez) sobre um destino. Aparece a seta da direção em que a unidade vai parar, os inimigos que ela poderá atacar dali ficam marcados em vermelho, e uma **espada dourada** aparece sobre os que seriam atacados pelas costas.
 - **Card da unidade:** passe o mouse sobre qualquer unidade para ver HP, MP, atributos (em verde/vermelho quando uma skill ou a floresta os altera), o alcance em tiles, para onde ela está virada e o estado no turno.
 - **Prévia de combate:** no modo de ataque, passe o mouse sobre um inimigo ao alcance para ver a chance de acerto, a faixa de dano, a chance de matar, se o ataque é pelas costas e o contra-ataque que você vai levar se ele sobreviver.
 - **Rodapé:** dica do que fazer no momento.

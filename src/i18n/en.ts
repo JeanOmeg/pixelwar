@@ -215,7 +215,7 @@ export const en = {
     { title: 'Terrain', items: [
       'Open ground costs 1 move. Forest costs 2.',
       'Units in the <b>forest</b> get +2 DEF.',
-      'Archers, mages and spearmen pay 2 points of range per forest tile.',
+      'Archers, mages, spearmen, rangers and necromancers pay 2 points of range per forest tile.',
       'Walls and trees block moves and attacks.',
       'Water blocks moves, but attacks fly over it.',
       'Doors can be crossed, but block attacks. Units on a door can\'t attack or be attacked.'

@@ -161,3 +161,53 @@ describe('mirrored board (online, red player)', () => {
     }
   })
 })
+
+describe('move preview (targets from a destination)', () => {
+  test('lists the enemies in reach from the destination, and which ones from behind', () => {
+    const board = makeBoard([
+      '.....',
+      '.....',
+      '.....'
+    ])
+    const [a, b] = makePlayers(board)
+    const spearman = place(board, 'SpearmanA', 0, 1, a)
+    const facingLeft = place(board, 'FighterB', 4, 1, b)
+    const facingRight = place(board, 'FighterB', 2, 0, b)
+    facingLeft.miniDirection = 'left'
+    facingRight.miniDirection = 'right'
+
+    // from (2, 1): the one at (4, 1) is 2 tiles to the right, facing us; the one at (2, 0) is above, facing right
+    const targets = spearman.targetsFrom(board.getCell(2, 1)!)
+    expect(targets.map(t => [t.unit === facingLeft, t.back])).toEqual(expect.arrayContaining([[true, false], [false, false]]))
+    expect(targets).toHaveLength(2)
+
+    // from (1, 0): the one at (2, 0) is right next to it, looking away
+    expect(spearman.targetsFrom(board.getCell(1, 0)!)).toEqual([{ unit: facingRight, back: true }])
+  })
+
+  test('its own cell counts as empty, and nothing once it has attacked', () => {
+    const board = makeBoard(['....'])
+    const [a, b] = makePlayers(board)
+    const spearman = place(board, 'SpearmanA', 1, 0, a)
+    const enemy = place(board, 'FighterB', 3, 0, b)
+    enemy.miniDirection = 'left'
+    // moving back to (0, 0): the line passes over the spearman's old cell; 3 tiles is out of reach
+    expect(spearman.targetsFrom(board.getCell(0, 0)!)).toEqual([])
+    expect(spearman.targetsFrom(board.getCell(2, 0)!)).toEqual([{ unit: enemy, back: false }])
+    spearman.attacked = true
+    expect(spearman.targetsFrom(board.getCell(2, 0)!)).toEqual([])
+  })
+
+  test('Backstab ready: every target counts as from behind', () => {
+    const board = makeBoard(['...', '...'])
+    const [a, b] = makePlayers(board)
+    // Backstab needs a target in reach to be readied
+    const assassin = place(board, 'AssassinA', 1, 0, a)
+    const enemy = place(board, 'FighterB', 2, 0, b)
+    enemy.miniDirection = 'left'
+    // from below the enemy (it faces left): not from behind
+    expect(assassin.targetsFrom(board.getCell(2, 1)!)).toEqual([{ unit: enemy, back: false }])
+    expect(assassin.startSkill('skill-backstab')).toBe(true)
+    expect(assassin.targetsFrom(board.getCell(2, 1)!)).toEqual([{ unit: enemy, back: true }])
+  })
+})
