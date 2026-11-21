@@ -8,17 +8,18 @@ import type { UnitType } from '../src/unit-types'
  * Board from a small ASCII map:
  *   .  open ground (fast)     f  forest (slow)
  *   #  wall / tree            ~  water (attack passes over it)
- *   D  door
+ *   D  door                   i  ice (slow, -2 DEF, open for attacks)
  */
 export function makeBoard(rows: string[], mirrored = false): Board {
   const board = new Board(rows.length, rows[0].length, new ex.Scene(), mirrored)
   rows.forEach((row, y) => [...row].forEach((tile, x) => {
     const node = board.getCell(x, y)!.pathNode
-    node.isWalkable = tile === '.' || tile === 'f' || tile === 'D'
+    node.isWalkable = tile === '.' || tile === 'f' || tile === 'D' || tile === 'i'
     node.isFast = tile === '.'
-    node.isAttackable = tile === '.' || tile === 'f' || tile === '~'
+    node.isAttackable = tile === '.' || tile === 'f' || tile === '~' || tile === 'i'
     node.isWater = tile === '~'
     node.isDoor = tile === 'D'
+    node.isIce = tile === 'i'
   }))
   return board
 }

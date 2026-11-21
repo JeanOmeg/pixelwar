@@ -27,6 +27,17 @@ describe('movement', () => {
     expect(fighter.canStopAt(at(board, 4, 0))).toBe(false)
   })
 
+  test('ice costs 2; only the Thief and the Assassin cross it at full speed', () => {
+    const board = makeBoard(['.iii.'])
+    const [a] = makePlayers(board)
+    const reach = (unit: string) => board.pathFinder.getMovementMap(at(board, 0, 0), a.mask, 4, unit).canStopAt(at(board, 4, 0))
+    expect(reach('ThiefA')).toBe(true)
+    expect(reach('AssassinA')).toBe(true)
+    expect(reach('RangerA')).toBe(false) // fast in the forest, not on ice
+    expect(reach('FighterA')).toBe(false)
+    expect(board.pathFinder.getMovementMap(at(board, 0, 0), a.mask, 6, 'RangerA').costTo(at(board, 2, 0))).toBe(4)
+  })
+
   test('allies can be crossed but not stood on; enemies block', () => {
     const board = makeBoard(['.....'])
     const [a, b] = makePlayers(board)
@@ -77,6 +88,14 @@ describe('attack range', () => {
     expect(archer).toContain(at(board, 2, 0))
     expect(archer).not.toContain(at(board, 3, 0))
     expect(halberdier).toContain(at(board, 4, 0))
+  })
+
+  test('ice is open ground for attacks: 1 point of range, even for archers', () => {
+    const board = makeBoard(['.iii..'])
+    const [a] = makePlayers(board)
+    const archer = board.pathFinder.getRangeAttack(at(board, 0, 0), ~a.mask, 4, 'ArcherA')
+    expect(archer).toContain(at(board, 4, 0))
+    expect(archer).not.toContain(at(board, 5, 0))
   })
 
   test('water costs 1 point of range, even for archers', () => {

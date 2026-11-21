@@ -478,6 +478,7 @@ export class GameUI implements GamepadMatch {
     if (unit.pendingSkill) status.push({ label: text.skillReady(unit.pendingSkill.name), hot: true })
     else if (unit.usedSkill) status.push({ label: text.skillUsed })
     if (unit.isInForest()) status.push({ label: text.forest })
+    if (unit.isOnIce()) status.push({ label: text.ice })
     if (unit.braced) status.push({ label: text.braced })
     if (unit.pinned) status.push({ label: text.pinned })
     const stats = unit.combatStats()

@@ -74,6 +74,7 @@ export function classTraits(unitClass: UnitClass): ClassTrait[] {
   const rules = TERRAIN_RULES[unitClass]
   const traits: ClassTrait[] = []
   if (rules.ignoresSlowTerrain) traits.push(t().traits.pathfinder)
+  if (rules.ignoresIce) traits.push(t().traits.sureFooted)
   if (rules.targetsWater) traits.push(t().traits.overWater)
   if (classStats(unitClass).range === 1) traits.push(t().traits.counterattack)
   return traits

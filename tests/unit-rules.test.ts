@@ -1,7 +1,8 @@
 // @vitest-environment happy-dom
 import * as ex from 'excalibur'
 import { describe, expect, test } from 'vitest'
-import { FOREST_DEFENSE, PLAIN_ATTACK } from '../src/combat'
+import { FOREST_DEFENSE, ICE_DEFENSE, PLAIN_ATTACK } from '../src/combat'
+import { defenseAt } from '../src/ai/threat'
 import { AIMED_SHOT_DAMAGE, FIREBALL_SPLASH, GUARD_DEF, HEAL_HP, SKILLS, skillsOf } from '../src/skills'
 import { UNIT_CLASSES } from '../src/unit-types'
 import { makeBoard, makePlayers, place } from './helpers'
@@ -105,6 +106,18 @@ describe('forest and counterattacks', () => {
     const [a] = makePlayers(board)
     expect(place(board, 'FighterA', 0, 0, a).combatStats().defense).toBe(3)
     expect(place(board, 'FighterA', 1, 0, a).combatStats().defense).toBe(3 + FOREST_DEFENSE)
+  })
+
+  test('ice gives -2 DEF and is not forest', () => {
+    const board = makeBoard(['.i'])
+    const [a] = makePlayers(board)
+    const onIce = place(board, 'FighterA', 1, 0, a)
+    expect(onIce.combatStats().defense).toBe(3 - ICE_DEFENSE)
+    expect(onIce.isInForest()).toBe(false)
+    expect(onIce.isOnIce()).toBe(true)
+    // the AI sees the same defense for a tile it is thinking of moving to
+    const fighter = place(board, 'FighterA', 0, 0, a)
+    expect(defenseAt(fighter, board.getCell(1, 0)!.pathNode)).toBe(3 - ICE_DEFENSE)
   })
 
   test('melee units strike back at adjacent attackers, not at ranged ones', () => {

@@ -12,17 +12,17 @@ import { loadMap, mapFiles } from './map-loader'
 /**
  * yarn ai:stall — CPU x CPU of the same level: how often matches stall.
  * Draws, phases, attack-less streaks, unit turns ended on/next to a door,
- * and the endgame (a side with 1-2 units left): phases until it ends.
+ * unit turns ended on ice, and the endgame (a side with 1-2 units left): phases until it ends.
  */
 
 interface Stats {
   games: number, draws: number, phases: number, longestQuiet: number,
-  doorTurns: number, nearDoorTurns: number, unitTurns: number,
+  doorTurns: number, nearDoorTurns: number, iceTurns: number, unitTurns: number,
   endgamePhases: number, endgameAttacks: number, endgames: number, endgameDraws: number
 }
 
 async function measure(a: Contender, b: Contender): Promise<Stats> {
-  const s: Stats = { games: 0, draws: 0, phases: 0, longestQuiet: 0, doorTurns: 0, nearDoorTurns: 0, unitTurns: 0, endgamePhases: 0, endgameAttacks: 0, endgames: 0, endgameDraws: 0 }
+  const s: Stats = { games: 0, draws: 0, phases: 0, longestQuiet: 0, doorTurns: 0, nearDoorTurns: 0, iceTurns: 0, unitTurns: 0, endgamePhases: 0, endgameAttacks: 0, endgames: 0, endgameDraws: 0 }
   let attacks = 0
   const original = Unit.prototype.attackInstant
   Unit.prototype.attackInstant = function (this: Unit, target: Unit) { attacks++; return original.call(this, target) }
@@ -34,6 +34,7 @@ async function measure(a: Contender, b: Contender): Promise<Stats> {
     const mine = units.filter(u => u.player === this)
     for (const u of mine) {
       s.unitTurns++
+      if (u.cell!.pathNode.isIce) s.iceTurns++
       if (u.cell!.pathNode.isDoor) s.doorTurns++
       else if (u.cell!.pathNode.connections.some(n => n.isDoor)) s.nearDoorTurns++
     }
@@ -92,7 +93,7 @@ test('matches between CPUs of the same level', async () => {
   for (const [a, b] of runs) {
     const s = await measure(a, b)
     console.log(`${a.label} x ${b.label}: ${s.games} games, draws ${pct(s.draws, s.games)}, ${(s.phases / s.games).toFixed(0)} phases/game,` +
-      ` longest quiet streak ${s.longestQuiet}, door ${pct(s.doorTurns, s.unitTurns)} / next to door ${pct(s.nearDoorTurns, s.unitTurns)} of unit turns,` +
+      ` longest quiet streak ${s.longestQuiet}, door ${pct(s.doorTurns, s.unitTurns)} / next to door ${pct(s.nearDoorTurns, s.unitTurns)} of unit turns, ice ${pct(s.iceTurns, s.unitTurns)},` +
       ` endgame ${(s.endgamePhases / Math.max(1, s.endgames)).toFixed(0)} phases (attacks in ${pct(s.endgameAttacks, s.endgamePhases)}), endgame draws ${s.endgameDraws}`)
   }
 })

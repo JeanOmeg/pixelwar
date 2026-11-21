@@ -64,7 +64,7 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 14 classes,
 | **Riverside Village** | Uma vila cortada por um rio, com casas, jardins e praças de pedra nas duas pontes |
 | **Ruined Temple** | Muros quebrados e pilares em volta de um altar; torres de vigia protegem os arqueiros de cada lado |
 | **Desert Oasis** | Deserto em volta de um oásis; o lago divide o campo em duas rotas, com cactos e pedras como única cobertura |
-| **Frozen Pass** | Campo de neve entre dois vales verdes; o lago congelado dá para atravessar a pé e pinheiros nevados estreitam o caminho |
+| **Frozen Pass** | Campo de neve entre dois vales verdes; o lago congelado dá para atravessar a pé, mas é lento e escorregadio (−2 DEF), e pinheiros nevados estreitam o caminho |
 | **Hamlet Ford** | Dois povoados de fazenda separados por um rio, com duas pontes de madeira e uma de pedra |
 | **Fallen Citadel** | Muralhas quebradas de uma cidadela em volta de altares gêmeos; brechas dos dois lados e torres de vigia em cada acampamento |
 
@@ -145,7 +145,7 @@ O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece 
 - **Skill usada:** quando uma unidade (sua ou da CPU) usa uma skill, o nome e o custo aparecem em cima dela (ex.: "Guard -2 MP"). Só aparece se a skill for de fato executada: escolher e cancelar não mostra nada.
 - **Barra de HP** embaixo de cada unidade no mapa (verde, amarela abaixo de 50%, vermelha abaixo de 25%). A **seta** à esquerda da barra mostra para onde a unidade está virada: atacar vindo desse lado é ataque pelas costas.
 - **Prévia do movimento:** no modo mover, passe o mouse (ou o cursor, ou toque uma vez) sobre um destino. Aparece a seta da direção em que a unidade vai parar, os inimigos que ela poderá atacar dali ficam marcados em vermelho, e uma **espada dourada** aparece sobre os que seriam atacados pelas costas.
-- **Card da unidade:** passe o mouse sobre qualquer unidade para ver HP, MP, atributos (em verde/vermelho quando uma skill ou a floresta os altera), o alcance em tiles, para onde ela está virada e o estado no turno.
+- **Card da unidade:** passe o mouse sobre qualquer unidade para ver HP, MP, atributos (em verde/vermelho quando uma skill, a floresta ou o gelo os altera), o alcance em tiles, para onde ela está virada e o estado no turno.
 - **Prévia de combate:** no modo de ataque, passe o mouse sobre um inimigo ao alcance para ver a chance de acerto, a faixa de dano, a chance de matar, se o ataque é pelas costas e o contra-ataque que você vai levar se ele sobreviver.
 - **Rodapé:** dica do que fazer no momento.
 
@@ -169,10 +169,11 @@ Cada ataque envolve três rolagens:
 | **Erro** | Um ataque que erra ainda causa **1 de dano** |
 | **Contra-ataque** | Uma unidade corpo a corpo (alcance 1) que sobrevive contra-ataca uma vez um atacante adjacente, com um ataque normal, e se vira para ele. **Não há contra-ataque depois de um ataque pelas costas**, nem de unidades de alcance 2 ou mais (exceto o Halberdier com Brace) |
 | **Floresta** | Quem está num tile de floresta recebe **+2 DEF** |
+| **Gelo** | Quem está no gelo fica com **−2 DEF** (é difícil se defender escorregando) |
 
 > Todo ataque é em **linha reta** (mesma linha ou coluna) e para na primeira unidade do caminho; aliados bloqueiam a linha de tiro. Paredes, árvores e portas também bloqueiam. Uma unidade parada em uma porta não pode atacar.
 >
-> O alcance é medido em pontos: cada tile custa 1 ponto. Para **Archer, Mage, Spearman, Ranger e Necromancer**, tiles de floresta custam 2 pontos (água custa 1, como campo aberto). Por exemplo, o Arqueiro (alcance 6) atinge 6 tiles em campo aberto ou sobre água, mas só 3 sobre floresta. O card da unidade mostra isso em tiles.
+> O alcance é medido em pontos: cada tile custa 1 ponto. Para **Archer, Mage, Spearman, Ranger e Necromancer**, tiles de floresta custam 2 pontos (água e gelo custam 1, como campo aberto). Por exemplo, o Arqueiro (alcance 6) atinge 6 tiles em campo aberto ou sobre água, mas só 3 sobre floresta. O card da unidade mostra isso em tiles.
 
 ---
 
@@ -195,7 +196,7 @@ Cada ataque envolve três rolagens:
 | **Necromancer** | 8 | 4 | 2 | 4 | 4 | 8 | Drain |
 | **Halberdier** | 14 | 4 | 3 | 2 | 4 | 12 | Brace |
 
-> **Thief**, **Assassin** e **Ranger** pagam só 1 ponto de movimento na floresta (portas continuam custando 2). **Archer**, **Mage**, **Ranger** e **Necromancer** podem mirar em tiles de água. O **Halberdier** tem alcance 2 em qualquer terreno. As classes de alcance 1 contra-atacam.
+> **Thief**, **Assassin** e **Ranger** pagam só 1 ponto de movimento na floresta (portas continuam custando 2). No gelo, só **Thief** e **Assassin** pagam 1. **Archer**, **Mage**, **Ranger** e **Necromancer** podem mirar em tiles de água. O **Halberdier** tem alcance 2 em qualquer terreno. As classes de alcance 1 contra-atacam.
 >
 > Os custos saem da matemática real de combate (dano médio causado e recebido, contra-ataques, floresta, mobilidade e alcance), escalados para que as 8 classes originais somem 100. Vida/defesa e mobilidade a mais rendem cada vez menos (retorno decrescente), medido em milhares de partidas CPU × CPU com exércitos aleatórios: `yarn balance` mostra a conta e `yarn balance:sim` confere em partidas.
 
@@ -240,6 +241,7 @@ Cada unidade possui **4 PM (Pontos de Magia)** e pode usar **uma skill por turno
 |---|---|
 | **Campo aberto** (grama, terra, pedra) | Custa 1 ponto de movimento |
 | **Floresta** | Custa 2 pontos de movimento (1 para Thief, Assassin e Ranger) e dá **+2 DEF** a quem está nela |
+| **Gelo** (Frozen Pass) | Custa 2 pontos de movimento (1 para Thief e Assassin; o Ranger paga 2) e dá **−2 DEF** a quem está nele. Para ataques é campo aberto (custa 1 de alcance para todos) |
 | **Água** | Ninguém atravessa andando. Ataques passam por cima dela. |
 | **Porta** | Todos passam, com custo 2. Bloqueia a linha de ataque, e quem está sobre ela não pode atacar nem ser atacado. |
 | **Árvores / Paredes** | Bloqueiam movimento e linha de ataque |

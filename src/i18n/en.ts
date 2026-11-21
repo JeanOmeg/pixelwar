@@ -101,7 +101,7 @@ export const en = {
     'riverside-village': { name: 'Riverside Village', description: 'A village split by a river. Fight between houses and gardens, and hold the stone squares at both bridges.' },
     'ruined-temple': { name: 'Ruined Temple', description: 'Broken walls and pillars surround an old altar. Watchtowers on each meadow shelter the archers.' },
     'desert-oasis': { name: 'Desert Oasis', description: 'A sun-baked desert around a green oasis. The lake splits the field into two lanes, with only cacti and rocks for cover.' },
-    'frozen-pass': { name: 'Frozen Pass', description: 'A snowfield between two green valleys. The frozen lake can be crossed on foot; snowy pines and rocks narrow the way around it.' },
+    'frozen-pass': { name: 'Frozen Pass', description: 'A snowfield between two green valleys. The frozen lake can be crossed on foot, but it is slow and slippery; snowy pines and rocks narrow the way around it.' },
     'hamlet-ford': { name: 'Hamlet Ford', description: 'Two farm hamlets on either side of a river. Two wooden bridges and a stone one are the only crossings.' },
     'fallen-citadel': { name: 'Fallen Citadel', description: 'The broken walls of a citadel guard twin altars. Breaches on every side let both armies in, and watchtowers flank each camp.' }
   } as Record<string, { name: string, description: string }>,
@@ -183,6 +183,7 @@ export const en = {
 
   traits: {
     pathfinder: { name: 'Pathfinder', description: 'Moves at full speed through forest.' },
+    sureFooted: { name: 'Sure-footed', description: 'Moves at full speed over ice.' },
     overWater: { name: 'Over water', description: 'Can target enemies across water.' },
     counterattack: { name: 'Counterattack', description: 'Strikes back once when an adjacent enemy attacks it and it survives.' }
   },
@@ -222,6 +223,7 @@ export const en = {
       'Archers, mages, spearmen, rangers and necromancers pay 2 points of range per forest tile.',
       'Walls and trees block moves and attacks.',
       'Water blocks moves, but attacks fly over it.',
+      '<b>Ice</b> costs 2 moves (thieves and assassins pay 1) and units on it get −2 DEF. Attacks cross it like open ground.',
       'Doors can be crossed, but block attacks. Units on a door can\'t attack or be attacked.'
     ] },
     { title: 'Skills', items: [
@@ -319,6 +321,7 @@ export const en = {
     skillReady: (skill: string) => `${skill} ready`,
     skillUsed: 'Skill used',
     forest: 'Forest DEF +2',
+    ice: 'Ice DEF -2',
     braced: 'Braced',
     pinned: 'Pinned',
     waitingFor: (name: string) => `Waiting for ${name}...`,

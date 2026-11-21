@@ -9,8 +9,9 @@
  * - Back attack (attacker faces the same way as the target): d6 + 2*ATK - DEF.
  * - Normal: d6 + ATK - DEF.
  * - Minimum damage on hit is 1. A miss also deals 1 damage (MISS_DAMAGE).
- * - Forest: a unit standing on a forest tile gets +FOREST_DEFENSE (applied by
- *   the caller to the defender's stats, see Unit.combatStats).
+ * - Forest: a unit standing on a forest tile gets +FOREST_DEFENSE; on ice it
+ *   gets -ICE_DEFENSE (applied by the caller to the defender's stats, see
+ *   Unit.combatStats and terrainDefense).
  * - Counterattack: a melee defender that survives strikes back once, unless it
  *   was hit in the back (rules in Unit.counterReach / Unit.attack).
  * - Skills add the optional modifiers of AttackContext.
@@ -63,6 +64,8 @@ export const MISS_DAMAGE = 1
 export const CRITICAL_BASE_DAMAGE = 12
 /** Extra defense of a unit standing on a forest tile */
 export const FOREST_DEFENSE = 2
+/** Defense lost by a unit standing on ice (slipping) */
+export const ICE_DEFENSE = 2
 
 /** A plain attack: no back attack, no skill */
 export const PLAIN_ATTACK: AttackContext = { forcesCritical: false, backAttack: false }

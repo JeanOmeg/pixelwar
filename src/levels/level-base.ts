@@ -162,6 +162,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
         cell.pathNode.isFast = (tile.properties.get('isfast') ?? false) as boolean
         cell.pathNode.isDoor = (tile.properties.get('isdoor') ?? false) as boolean
         cell.pathNode.isWater = (tile.properties.get('iswater') ?? false) as boolean
+        cell.pathNode.isIce = (tile.properties.get('isice') ?? false) as boolean
         cell.sprite = tileset.getSpriteForGid(gid).clone()
         cell.sprite.scale = SCALE
         cell.sprite.flipHorizontal = board.mirrored

@@ -115,10 +115,12 @@ export class MovementMap {
 export class PathFinder {
   /**
    * Movement cost of entering `node`: fast terrain 1, otherwise 2.
-   * Units that ignore slow terrain (Thief) pay 1 anywhere except doors.
+   * Units that ignore slow terrain (Thief) pay 1 anywhere except doors and ice;
+   * ice costs 1 only for sure-footed units (Thief, Assassin).
    */
   movementCost(node: PathNodeComponent, rules: TerrainRules): number {
     if (node.isFast) return 1
+    if (node.isIce) return rules.ignoresIce ? 1 : 2
     if (rules.ignoresSlowTerrain && !node.isDoor) return 1
     return 2
   }
@@ -126,10 +128,10 @@ export class PathFinder {
   /**
    * Range points spent when an attack crosses `node`: 1, or 2 on slow terrain
    * (forest) for units with `slowTerrainCostsRange` (Archer, Mage, Spearman...).
-   * Attacks fly over water freely: it always costs 1.
+   * Attacks fly over water and ice (open terrain) freely: they always cost 1.
    */
   attackCost(node: PathNodeComponent, rules: TerrainRules): number {
-    return !node.isFast && !node.isWater && rules.slowTerrainCostsRange ? 2 : 1
+    return !node.isFast && !node.isWater && !node.isIce && rules.slowTerrainCostsRange ? 2 : 1
   }
 
   /**

@@ -24,15 +24,18 @@ interface Props {
   isAttackable: boolean
   isDoor: boolean
   isFast: boolean
+  isIce: boolean
   isWalkable: boolean
   isWater: boolean
 }
 
-const GROUND: Props = { isAttackable: true, isDoor: false, isFast: true, isWalkable: true, isWater: false }
+const GROUND: Props = { isAttackable: true, isDoor: false, isFast: true, isIce: false, isWalkable: true, isWater: false }
 // walkable but slow: counts as forest (+2 DEF), like the tree tiles
 const SLOW: Props = { ...GROUND, isFast: false }
-const BLOCK: Props = { isAttackable: false, isDoor: false, isFast: false, isWalkable: false, isWater: false }
-const DOOR: Props = { isAttackable: false, isDoor: true, isFast: false, isWalkable: true, isWater: false }
+// slippery: costs 2 to cross (1 for Thief/Assassin) and -2 DEF, but open for attacks
+const ICE: Props = { ...GROUND, isFast: false, isIce: true }
+const BLOCK: Props = { isAttackable: false, isDoor: false, isFast: false, isIce: false, isWalkable: false, isWater: false }
+const DOOR: Props = { isAttackable: false, isDoor: true, isFast: false, isIce: false, isWalkable: true, isWater: false }
 
 // ---------------------------------------------------------------- source tiles
 
@@ -59,6 +62,7 @@ for (const match of tsxText.matchAll(/<tile id="(\d+)">([\s\S]*?)<\/tile>/g)) {
     isAttackable: get('isAttackable'),
     isDoor: get('isDoor'),
     isFast: get('isFast'),
+    isIce: get('isIce'),
     isWalkable: get('isWalkable'),
     isWater: get('isWater')
   })
@@ -297,8 +301,8 @@ put(at(9, 19), on(SAND, S.PEBBLES), GROUND)
 // row 20: snow and ice
 block([[20, 21, 22, 23, 24, 25, 26]], 0, 20, GRASS_TO_SNOW)
 put(at(7, 20), snowyTree(), BLOCK)
-put(at(8, 20), paint(recolor(source(40), WATER_TO_ICE), S.ICE_A, C.d), GROUND)
-put(at(9, 20), paint(recolor(source(41), WATER_TO_ICE), S.ICE_B, C.d), GROUND)
+put(at(8, 20), paint(recolor(source(40), WATER_TO_ICE), S.ICE_A, C.d), ICE)
+put(at(9, 20), paint(recolor(source(41), WATER_TO_ICE), S.ICE_B, C.d), ICE)
 
 // rows 21-29: transitions (same shapes as the originals) and shores
 block(transitionSet(110), 0, 21, DIRT_TO_SAND)
@@ -306,7 +310,7 @@ block(ISLAND, 7, 21, DIRT_TO_SAND)
 block(transitionSet(110), 0, 24, { '56b439': C.l, '2da236': C.m, b08840: C.g, a87629: C.t })
 block(LAKE, 7, 24, DIRT_TO_SAND)
 block(transitionSet(140), 0, 27, { '9b9774': C.g, '777562': C.h })
-block(LAKE, 7, 27, { ...WATER_TO_ICE, ...DIRT_TO_SNOW, cbd8b9: C.l }, GROUND)
+block(LAKE, 7, 27, { ...WATER_TO_ICE, ...DIRT_TO_SNOW, cbd8b9: C.l }, ICE)
 
 // row 30: decorations
 put(at(0, 30), on(GRASS, S.BUSH), SLOW)
@@ -399,6 +403,7 @@ const tileXml = (id: number, p: Props) => [
   bool('isAttackable', p.isAttackable),
   bool('isDoor', p.isDoor),
   bool('isFast', p.isFast),
+  bool('isIce', p.isIce),
   bool('isWalkable', p.isWalkable),
   bool('isWater', p.isWater),
   '   <property name="walkableMask" type="int" value="-1"/>',

@@ -9,7 +9,7 @@ import { unitClassOf } from '../../src/unit-types'
 
 const MAP_DIR = join(__dirname, '../../src/assets/tiledMap')
 
-interface TileFlags { walkable: boolean, attackable: boolean, fast: boolean, door: boolean, water: boolean }
+interface TileFlags { walkable: boolean, attackable: boolean, fast: boolean, door: boolean, water: boolean, ice: boolean }
 
 let tileset: Map<number, TileFlags> | null = null
 
@@ -20,7 +20,7 @@ export function loadTileset(): Map<number, TileFlags> {
   for (const [, id, body] of xml.matchAll(/<tile id="(\d+)"[^>]*>([\s\S]*?)<\/tile>/g)) {
     const flag = (name: string) => new RegExp(`name="${name}"[^>]*value="true"`, 'i').test(body)
     tileset.set(Number(id), {
-      walkable: flag('iswalkable'), attackable: flag('isattackable'), fast: flag('isfast'), door: flag('isdoor'), water: flag('iswater')
+      walkable: flag('iswalkable'), attackable: flag('isattackable'), fast: flag('isfast'), door: flag('isdoor'), water: flag('iswater'), ice: flag('isice')
     })
   }
   return tileset
@@ -35,8 +35,10 @@ export interface SimMap {
   spawns: { x: number, y: number, unitClass: UnitClass, team: number }[]
 }
 
+/** Every .tmx, or only the ones named in SIM_MAP (env, comma-separated: 'map_10') */
 export function mapFiles(): string[] {
-  return readdirSync(MAP_DIR).filter(f => f.endsWith('.tmx')).sort()
+  const only = process.env.SIM_MAP?.split(',').map(name => name.trim().replace(/.tmx$/, '') + '.tmx')
+  return readdirSync(MAP_DIR).filter(f => f.endsWith('.tmx') && (!only || only.includes(f))).sort()
 }
 
 export function loadMap(file: string): SimMap {
@@ -77,6 +79,7 @@ export function boardOf(map: SimMap): Board {
       node.isFast = tile?.fast ?? false
       node.isDoor = tile?.door ?? false
       node.isWater = tile?.water ?? false
+      node.isIce = tile?.ice ?? false
     }
   }
   boards.set(map.name, board)

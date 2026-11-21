@@ -1906,6 +1906,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -1916,6 +1917,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -1926,6 +1928,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -1936,6 +1939,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -1946,6 +1950,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -1956,6 +1961,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -1966,6 +1972,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -1976,6 +1983,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -1986,6 +1994,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -1996,6 +2005,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2006,6 +2016,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2016,6 +2027,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2026,6 +2038,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2036,6 +2049,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2046,6 +2060,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2056,6 +2071,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2066,6 +2082,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2076,6 +2093,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2085,7 +2103,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2095,7 +2114,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2106,6 +2126,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2116,6 +2137,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2126,6 +2148,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2136,6 +2159,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2146,6 +2170,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2156,6 +2181,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2166,6 +2192,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2176,6 +2203,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2186,6 +2214,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2196,6 +2225,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2206,6 +2236,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2216,6 +2247,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2226,6 +2258,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2236,6 +2269,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2246,6 +2280,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2256,6 +2291,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2266,6 +2302,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2276,6 +2313,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2286,6 +2324,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2296,6 +2335,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2306,6 +2346,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2316,6 +2357,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2326,6 +2368,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2336,6 +2379,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2346,6 +2390,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2356,6 +2401,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2366,6 +2412,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2376,6 +2423,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2386,6 +2434,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2396,6 +2445,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2406,6 +2456,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2416,6 +2467,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2426,6 +2478,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2436,6 +2489,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2446,6 +2500,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2456,6 +2511,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2466,6 +2522,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2476,6 +2533,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2486,6 +2544,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2496,6 +2555,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2506,6 +2566,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2516,6 +2577,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2526,6 +2588,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2536,6 +2599,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2546,6 +2610,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2556,6 +2621,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2566,6 +2632,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2576,6 +2643,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2586,6 +2654,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2596,6 +2665,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2606,6 +2676,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2616,6 +2687,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2626,6 +2698,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2636,6 +2709,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2646,6 +2720,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2656,6 +2731,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2666,6 +2742,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2676,6 +2753,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2686,6 +2764,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2696,6 +2775,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="true"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2706,6 +2786,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2716,6 +2797,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2726,6 +2808,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2736,6 +2819,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2746,6 +2830,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2756,6 +2841,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2766,6 +2852,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2775,7 +2862,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2785,7 +2873,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2795,7 +2884,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2806,6 +2896,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2816,6 +2907,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2826,6 +2918,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2836,6 +2929,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2846,6 +2940,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2856,6 +2951,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2866,6 +2962,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2875,7 +2972,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2885,7 +2983,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2895,7 +2994,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2906,6 +3006,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2916,6 +3017,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2926,6 +3028,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2936,6 +3039,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2946,6 +3050,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2956,6 +3061,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2966,6 +3072,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2975,7 +3082,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2985,7 +3093,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -2995,7 +3104,8 @@
   <properties>
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
-   <property name="isFast" type="bool" value="true"/>
+   <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="true"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3006,6 +3116,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3016,6 +3127,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3026,6 +3138,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3036,6 +3149,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3046,6 +3160,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3056,6 +3171,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3066,6 +3182,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3076,6 +3193,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3086,6 +3204,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3096,6 +3215,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3106,6 +3226,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3116,6 +3237,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3126,6 +3248,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3136,6 +3259,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3146,6 +3270,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3156,6 +3281,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3166,6 +3292,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3176,6 +3303,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3186,6 +3314,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3196,6 +3325,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3206,6 +3336,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3216,6 +3347,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3226,6 +3358,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3236,6 +3369,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3246,6 +3380,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3256,6 +3391,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3266,6 +3402,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3276,6 +3413,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="true"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3286,6 +3424,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="true"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3296,6 +3435,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3306,6 +3446,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3316,6 +3457,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3326,6 +3468,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3336,6 +3479,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3346,6 +3490,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3356,6 +3501,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3366,6 +3512,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3376,6 +3523,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3386,6 +3534,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3396,6 +3545,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3406,6 +3556,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3416,6 +3567,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3426,6 +3578,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3436,6 +3589,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3446,6 +3600,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3456,6 +3611,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3466,6 +3622,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3476,6 +3633,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3486,6 +3644,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3496,6 +3655,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3506,6 +3666,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3516,6 +3677,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="true"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3526,6 +3688,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3536,6 +3699,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3546,6 +3710,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3556,6 +3721,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3566,6 +3732,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3576,6 +3743,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="true"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3586,6 +3754,7 @@
    <property name="isAttackable" type="bool" value="true"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="true"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>
@@ -3596,6 +3765,7 @@
    <property name="isAttackable" type="bool" value="false"/>
    <property name="isDoor" type="bool" value="false"/>
    <property name="isFast" type="bool" value="false"/>
+   <property name="isIce" type="bool" value="false"/>
    <property name="isWalkable" type="bool" value="false"/>
    <property name="isWater" type="bool" value="false"/>
    <property name="walkableMask" type="int" value="-1"/>

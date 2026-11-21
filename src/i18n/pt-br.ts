@@ -95,7 +95,7 @@ export const ptBR: Strings = {
     'riverside-village': { name: 'Vila do Rio', description: 'Uma vila cortada por um rio. Lute entre casas e jardins e segure as praças de pedra nas duas pontes.' },
     'ruined-temple': { name: 'Templo em Ruínas', description: 'Muros e pilares quebrados cercam um antigo altar. Torres de vigia em cada prado protegem os arqueiros.' },
     'desert-oasis': { name: 'Oásis do Deserto', description: 'Um deserto escaldante em volta de um oásis verde. O lago divide o campo em duas trilhas, com só cactos e pedras como cobertura.' },
-    'frozen-pass': { name: 'Passo Gelado', description: 'Um campo de neve entre dois vales verdes. O lago congelado pode ser cruzado a pé; pinheiros nevados e pedras estreitam o caminho em volta.' },
+    'frozen-pass': { name: 'Passo Gelado', description: 'Um campo de neve entre dois vales verdes. O lago congelado pode ser cruzado a pé, mas é lento e escorregadio; pinheiros nevados e pedras estreitam o caminho em volta.' },
     'hamlet-ford': { name: 'Vau dos Povoados', description: 'Dois povoados de fazenda, um de cada lado do rio. Duas pontes de madeira e uma de pedra são as únicas travessias.' },
     'fallen-citadel': { name: 'Cidadela Caída', description: 'Os muros quebrados de uma cidadela guardam altares gêmeos. Brechas em todos os lados deixam os dois exércitos entrar, e torres de vigia ladeiam cada acampamento.' }
   },
@@ -177,6 +177,7 @@ export const ptBR: Strings = {
 
   traits: {
     pathfinder: { name: 'Desbravador', description: 'Anda a toda velocidade pela floresta.' },
+    sureFooted: { name: 'Pé firme', description: 'Anda a toda velocidade sobre o gelo.' },
     overWater: { name: 'Sobre a água', description: 'Pode mirar inimigos do outro lado da água.' },
     counterattack: { name: 'Contra-ataque', description: 'Contra-ataca uma vez quando um inimigo ao lado o ataca e ele sobrevive.' }
   },
@@ -216,6 +217,7 @@ export const ptBR: Strings = {
       'Arqueiros, magos, lanceiros, patrulheiros e necromantes pagam 2 pontos de alcance por casa de floresta.',
       'Muros e árvores bloqueiam movimento e ataques.',
       'Água bloqueia o movimento, mas ataques passam por cima dela.',
+      'O <b>gelo</b> custa 2 de movimento (ladrões e assassinos pagam 1) e quem está nele fica com −2 DEF. Ataques passam por ele como em campo aberto.',
       'Portas podem ser atravessadas, mas bloqueiam ataques. Unidades numa porta não atacam nem podem ser atacadas.'
     ] },
     { title: 'Habilidades', items: [
@@ -313,6 +315,7 @@ export const ptBR: Strings = {
     skillReady: skill => `${skill} pronta`,
     skillUsed: 'Habilidade usada',
     forest: 'Floresta DEF +2',
+    ice: 'Gelo DEF -2',
     braced: 'Firme',
     pinned: 'Imobilizada',
     waitingFor: name => `Aguardando ${name}...`,

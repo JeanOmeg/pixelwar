@@ -22,13 +22,14 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
 - [ ] ⭐ **Objetivos além de eliminar** (G): Comandante (perde quem perder o líder), Capturar ponto (altares do Ruined Temple / Fallen Citadel), Sobreviver N rodadas. Dá vida nova aos 12 mapas.
 - [ ] **Desafios / puzzles** (M): "vença em 1 turno" com exército e posições fixas. O motor do tutorial (`script.ts`, `ActionGate`) e o `applyAction` ajudam muito.
 - [ ] **Campanha curta** (G): sequência de mapas com exército que evolui (desbloqueia classes, mantém sobreviventes).
-- [ ] ⭐ **Gelo escorregadio** (M, muda regra): hoje o gelo (tiles 208–209 e o lago congelado 277–299, só no Frozen Pass) é marcado como chão rápido (`isFast`), igual à grama. Proposta: custa **2 de movimento**, como a floresta, e quem está nele fica com **−2 DEF** (é difícil se defender escorregando).
+- [x] ⭐ **Gelo escorregadio** (M, muda regra): hoje o gelo (tiles 208–209 e o lago congelado 277–299, só no Frozen Pass) é marcado como chão rápido (`isFast`), igual à grama. Proposta: custa **2 de movimento**, como a floresta, e quem está nele fica com **−2 DEF** (é difícil se defender escorregando).
   - **Nova flag:** precisa de uma flag nova (`isIce`) no tileset, gerada por `yarn tileset` (`scripts/tileset/`). Só tirar o `isFast` não basta, porque o jogo trataria o gelo como floresta (+2 DEF e custo de alcance).
   - **Onde mexer:** custo no `PathFinder`, −2 DEF em `Unit.combatStats()` (ao lado do bônus da floresta) e uma constante `ICE_DEFENSE` em `combat.ts`.
   - **Decidido — movimento:** Thief e Assassin andam no gelo pagando 1. O Ranger paga 2, como as outras classes. Ou seja, o gelo **não** segue a regra da floresta em `TERRAIN_RULES`: o Ranger é rápido na floresta, mas não no gelo.
   - **Decidido — alcance:** o gelo não custa alcance a mais para ninguém, porque é terreno aberto. O `slowTerrainCostsRange` precisa tratar o gelo como tile rápido.
   - **IA:** confirmar que o `ThreatMap` e o `scorePosition` usam `combatStats()`. Assim a IA evita parar no gelo sozinha. Rodar `yarn ai:sim` no Frozen Pass.
   - **Mapa e tutorial:** o lago congelado deixa de ser atalho e vira uma travessia arriscada; rever o Frozen Pass. O tutorial não é afetado (Twin Keeps não tem gelo).
+  - **Feito:** flag `isIce` (tiles 208, 209, 277–279, 287–289, 297–299), `terrainDefense` em `terrain-rules.ts` (usado por `combatStats` e pelo `defenseAt` da IA), `ignoresIce` em `TERRAIN_RULES` (Thief/Assassin, traço "Sure-footed"), status "Ice DEF -2" no card. Frozen Pass (`SIM_MAP=map_10`, 20 jogos): turnos terminados no lago caíram de 38% → 22% (Normal) e 27% → 10% (Hard), sem empates, partidas ~2 fases mais longas; o mapa ficou como está (corredores abertos acima e abaixo do lago). IA nova × antiga lá: Hard 98%, Normal 88%.
   - **Atualizar:** README, `howTo` (Terrain) nos dois idiomas, card de terreno, `tests/pathfinding` e `tests/unit-rules`.
 
 ---
@@ -52,11 +53,11 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
   - **Floresta:** custa 2 de movimento (Thief/Assassin/Ranger pagam 1), dá +2 DEF a quem está nela e custa 2 de alcance para Archer, Mage, Spearman, Ranger e Necromancer.
   - **Porta:** custa 2 de movimento, bloqueia ataques e quem está nela não ataca nem é atacado.
   - **Água:** não dá para andar nela; só Archer, Mage, Ranger e Necromancer atiram por cima.
-  - **Gelo / lago congelado:** mostra as regras de gelo (ver "Gelo escorregadio" na seção 1). Hoje o gelo não tem regra nenhuma.
+  - **Gelo / lago congelado:** custa 2 de movimento (Thief/Assassin pagam 1; o Ranger paga 2), quem está nele fica com −2 DEF e, para ataques, é campo aberto (custa 1 de alcance para todos).
   - **Arbustos, capim alto e entulho:** funcionam como floresta, então mostram as mesmas regras.
   - **Unidade em cima de um terreno especial:** o card do terreno aparece **acima** do card da unidade, os dois juntos.
   - **Sem card:** paredes, pedras, árvores e outros tiles que só bloqueiam (é óbvio), e chão comum.
-  - **Implementação:** as regras vêm das flags do tile (`PathNodeComponent`: `iswalkable`, `isattackable`, `isfast`, `isdoor`, `iswater`) e de `TERRAIN_RULES`, sem tabela por id de tile. Os textos entram em `en.ts` e `pt-br.ts`. No toque, o card aparece ao tocar no tile; no teclado e no controle, junto com o cursor.
+  - **Implementação:** as regras vêm das flags do tile (`PathNodeComponent`: `iswalkable`, `isattackable`, `isfast`, `isdoor`, `iswater`, `isice`) e de `TERRAIN_RULES`, sem tabela por id de tile. Os textos entram em `en.ts` e `pt-br.ts`. No toque, o card aparece ao tocar no tile; no teclado e no controle, junto com o cursor.
 - [ ] **Grade do tabuleiro opcional** (P): ajuda a contar tiles de alcance.
 - [ ] **Histórico de combate** (M): painel recolhível com "Archer → Cleric: 4 dano (68%)". O online já tem o `ActionFeed`; o local poderia reaproveitar.
 - [ ] **Prévia de combate em todos os modos** (P): ao escolher um ataque, o card com as probabilidades (acerto, crítico, dano, chance de matar e contra-ataque) deve aparecer no modo online e no tutorial, não só nas partidas locais. Hoje a prévia vem do `GameUI.forecastView` ([src/game-ui.ts](src/game-ui.ts)); falta investigar por que ela não aparece nesses dois modos (a causa ainda não foi verificada).

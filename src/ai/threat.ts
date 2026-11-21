@@ -2,19 +2,15 @@ import type { Board } from '../board'
 import type { Player } from '../player'
 import type { Unit } from '../unit'
 import type { PathNodeComponent } from '../path-finding/path-node-component'
-import { AttackForecast, FOREST_DEFENSE, Facing, forecastAttack } from '../combat'
+import { AttackForecast, Facing, forecastAttack } from '../combat'
+import { terrainDefense } from '../path-finding/terrain-rules'
 
 /** Grid step of each facing */
 export const STEP: Record<Facing, [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }
 
-/** Forest: walkable, not fast, not a door (+FOREST_DEFENSE) */
-export function isForest(node: PathNodeComponent): boolean {
-  return node.isWalkable && !node.isFast && !node.isDoor
-}
-
-/** Defense `unit` would have standing on `node` (skill bonuses + forest) */
+/** Defense `unit` would have standing on `node` (skill bonuses + forest/ice), as Unit.combatStats */
 export function defenseAt(unit: Unit, node: PathNodeComponent): number {
-  return unit.unitConfig.defense + unit.defenseBonus + (isForest(node) ? FOREST_DEFENSE : 0)
+  return unit.unitConfig.defense + unit.defenseBonus + terrainDefense(node)
 }
 
 export interface Harm {

@@ -11,6 +11,8 @@ export class PathNodeComponent extends ex.Component {
   isAttackable = true
   isDoor = false
   isWater = false
+  /** Slippery ice: costs 2 to enter (except for sure-footed units), -2 DEF, open for attacks */
+  isIce = false
   /**
    * Who can pass through this node: -1 when empty, otherwise the mask of the
    * player whose unit is standing here (32-bit mask)

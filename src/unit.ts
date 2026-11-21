@@ -5,10 +5,11 @@ import { Resources } from './resources'
 import { SCALE, SCALE_UNIT, UNIT_CONFIG, UnitConfig, UnitType } from './config'
 import { Cell } from './cell'
 import { PathNodeComponent } from './path-finding/path-node-component'
+import { isForest, terrainDefense } from './path-finding/terrain-rules'
 import { Player } from './player'
 import { DustParticles } from './dust-particles'
 import { DamageManager } from './damage-manager'
-import { AttackContext, AttackOutcome, CombatStats, FOREST_DEFENSE, Facing, PLAIN_ATTACK, facingBetween, resolveAttack, rollWithAdvantage } from './combat'
+import { AttackContext, AttackOutcome, CombatStats, Facing, PLAIN_ATTACK, facingBetween, resolveAttack, rollWithAdvantage } from './combat'
 import {
   BRACE_DEF, BRACE_REACH, FIREBALL_SPLASH, FRENZY_ATK, FRENZY_DEF, GUARD_DEF, HEAL_HP,
   SECOND_WIND_HP, SHIELD_WALL_DEF, SKILLS, STEAL_MP, SkillDefinition, SkillId, skillBonusDamage
@@ -518,17 +519,20 @@ export class Unit extends ex.Actor {
 
   // ---- Combat ----
 
-  /** Attack and defense right now: skill bonuses and +2 DEF in the forest */
+  /** Attack and defense right now: skill bonuses, +2 DEF in the forest, -2 DEF on ice */
   combatStats(): CombatStats {
     return {
       attack: this.unitConfig.attack + this.attackBonus,
-      defense: this.unitConfig.defense + this.defenseBonus + (this.isInForest() ? FOREST_DEFENSE : 0)
+      defense: this.unitConfig.defense + this.defenseBonus + (this.cell ? terrainDefense(this.cell.pathNode) : 0)
     }
   }
 
   isInForest(): boolean {
-    const node = this.cell?.pathNode
-    return !!node && node.isWalkable && !node.isFast && !node.isDoor
+    return !!this.cell && isForest(this.cell.pathNode)
+  }
+
+  isOnIce(): boolean {
+    return !!this.cell?.pathNode.isIce
   }
 
   /** How the next attack on `other` would go (back attack + pending skill) */
