@@ -174,7 +174,7 @@ export const ptBR: Strings = {
   traits: {
     pathfinder: { name: 'Desbravador', description: 'Anda a toda velocidade pela floresta.' },
     overWater: { name: 'Sobre a água', description: 'Pode mirar inimigos do outro lado da água.' },
-    counterattack: { name: 'Contra-ataque', description: 'Revida uma vez quando um inimigo ao lado o ataca e ele sobrevive.' }
+    counterattack: { name: 'Contra-ataque', description: 'Contra-ataca uma vez quando um inimigo ao lado o ataca e ele sobrevive.' }
   },
 
   details: {
@@ -202,7 +202,7 @@ export const ptBR: Strings = {
       'Um 20 natural é um <b>crítico</b>: 12 + ATQ − DEF de dano.',
       'Errar ainda causa 1 de dano.',
       'Ataque um inimigo <b>pelas costas</b> para nunca errar e usar o dobro do ATQ.',
-      '<b>Contra-ataque</b>: uma unidade corpo a corpo que sobrevive revida contra um atacante corpo a corpo, a não ser que tenha sido atingida pelas costas.',
+      '<b>Contra-ataque</b>: uma unidade corpo a corpo que sobrevive contra-ataca um atacante corpo a corpo, a não ser que tenha sido atingida pelas costas.',
       'Ataques vão em linha reta e param na primeira unidade.',
       'Mire num inimigo para ver as chances de acertar e de matar antes de atacar.'
     ] },
@@ -351,7 +351,7 @@ export const ptBR: Strings = {
     critical: n => `Crítico! ${n}`,
     backAttack: n => `Pelas costas! ${n}`,
     miss: n => `Errou ${n}`,
-    counter: 'Revide! ',
+    counter: 'Contra-ataque! ',
     brace: 'Firmeza',
     pinned: 'Imobilizada'
   },
@@ -543,8 +543,8 @@ export const ptBR: Strings = {
     mage: 'E o [Mago].',
     endTurn: 'Aperte [Encerrar turno].',
     hereTheyCome: 'Lá vêm eles!',
-    counter: 'Seu [Bárbaro] revida! Unidades corpo a corpo (alcance 1) contra-atacam quando sobrevivem.',
-    critical: 'Ai, um [acerto crítico]! Tirar 20 causa 12 + ATQ − DEF. Seu Guerreiro sobrevive e revida.',
+    counter: 'Seu [Bárbaro] contra-ataca! Unidades corpo a corpo (alcance 1) contra-atacam quando sobrevivem.',
+    critical: 'Ai, um [acerto crítico]! Tirar 20 causa 12 + ATQ − DEF. Seu Guerreiro sobrevive e contra-ataca.',
     facing: 'As unidades ficam viradas para onde se moveram ou atacaram por último. Atacar um inimigo [pelas costas] sempre acerta, usa o dobro do ATQ e não leva contra-ataque.',
     thiefBehind: 'O [Lutador] vermelho está virado para o seu Bárbaro. Mova o [Ladrão] para as costas dele.',
     attackBehind: 'Ataque pelas costas!',
@@ -567,7 +567,7 @@ export const ptBR: Strings = {
     luck: 'Um 20 no dado: [acerto crítico]! A sorte também pode estar do seu lado.',
     clericBehind: 'O [Bárbaro] vermelho está de costas para você. Mova o [Clérigo] para as costas dele.',
     spearmanRun: 'O [Lanceiro] entra na luta. Use [Correr] para chegar à casa marcada.',
-    reach: 'Lanceiros acertam a [2 casas] de distância, então unidades corpo a corpo não revidam. Acabe com o Bárbaro!',
+    reach: 'Lanceiros acertam a [2 casas] de distância, então unidades corpo a corpo não contra-atacam. Acabe com o Bárbaro!',
     careful: 'Cuidado: seu [Clérigo] está de costas para o inimigo. A direção também conta para você!',
     twoLeft: 'Só restam dois inimigos!',
     thiefArcher: 'Mova o [Ladrão] para as costas do [Arqueiro] vermelho.',

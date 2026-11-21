@@ -166,7 +166,7 @@ Cada ataque envolve três rolagens:
 | **Ataque pelas costas** | Atacante e defensor estão virados na mesma direção. Dano: **D6 + ATK×2 - DEF** |
 | **Sempre acerta** | Golpe crítico e ataque pelas costas acertam independente do teste |
 | **Erro** | Um ataque que erra ainda causa **1 de dano** |
-| **Contra-ataque** | Uma unidade corpo a corpo (alcance 1) que sobrevive revida uma vez contra um atacante adjacente, com um ataque normal, e se vira para ele. **Não há contra-ataque depois de um ataque pelas costas**, nem de unidades de alcance 2 ou mais (exceto o Halberdier com Brace) |
+| **Contra-ataque** | Uma unidade corpo a corpo (alcance 1) que sobrevive contra-ataca uma vez um atacante adjacente, com um ataque normal, e se vira para ele. **Não há contra-ataque depois de um ataque pelas costas**, nem de unidades de alcance 2 ou mais (exceto o Halberdier com Brace) |
 | **Floresta** | Quem está num tile de floresta recebe **+2 DEF** |
 
 > Todo ataque é em **linha reta** (mesma linha ou coluna) e para na primeira unidade do caminho; aliados bloqueiam a linha de tiro. Paredes, árvores e portas também bloqueiam. Uma unidade parada em uma porta não pode atacar.

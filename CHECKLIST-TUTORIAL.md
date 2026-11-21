@@ -36,8 +36,8 @@ Partida **100% roteirizada** para quem nunca jogou: **Twin Keeps (`map_1`)**, **
 | Rodada | Azul (jogador) | Vermelho (CPU) |
 |---|---|---|
 | 1 | Warrior sai; Barbarian para na porta → Undo → passa; Archer usa Run; Spearman Wait; End turn | todos correm (Run) para o meio |
-| 2 | Warrior na floresta; Thief corre (Run) para trás da linha; Archer **erra** o Cleric (1 de dano); Barbarian na frente do Archer; Cleric e Mage saem | Mage e Fighter atacam o Barbarian (**contra-ataque**); Thief tira **20** no Warrior (crítico) e leva o revide |
-| 3 | Thief **pelas costas** mata o Fighter; Barbarian **Special** mata o Mage; Warrior usa **Guard**; Cleric **Heal**; Archer **Aimed Shot**; Mage **Fireball** | Thief erra o Warrior com Guard e morre no revide; Cleric e Warrior apanham do Barbarian no revide; Barbarian com **Rage** mata o **Mage azul** |
+| 2 | Warrior na floresta; Thief corre (Run) para trás da linha; Archer **erra** o Cleric (1 de dano); Barbarian na frente do Archer; Cleric e Mage saem | Mage e Fighter atacam o Barbarian (**contra-ataque**); Thief tira **20** no Warrior (crítico) e leva o contra-ataque |
+| 3 | Thief **pelas costas** mata o Fighter; Barbarian **Special** mata o Mage; Warrior usa **Guard**; Cleric **Heal**; Archer **Aimed Shot**; Mage **Fireball** | Thief erra o Warrior com Guard e morre no contra-ataque; Cleric e Warrior apanham do Barbarian no contra-ataque; Barbarian com **Rage** mata o **Mage azul** |
 | 4 | Barbarian mata o Cleric; Thief pelas costas + Archer tira **20** e mata o Warrior; Cleric pelas costas + Spearman (Run, alcance 2) matam o Barbarian | Archer e Spearman (Pierce) acertam o Cleric azul **pelas costas** |
 | 5 | Thief pelas costas mata o Archer; Spearman com **Pierce** dá o golpe final → vitória | — |
 
