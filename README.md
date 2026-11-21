@@ -217,7 +217,7 @@ Cada unidade possui **4 PM (Pontos de Magia)** e pode usar **uma skill por turno
 | **Aimed Shot** | Archer | 2 PM | O próximo ataque não erra e causa +3 de dano. |
 | **Fireball** | Mage | 2 PM | O próximo ataque também queima o alvo (acertando ou não) e cada inimigo ao lado dele em 2 de dano. |
 | **Pierce** | Spearman | 2 PM | O próximo ataque ignora a DEF do alvo (armadura e floresta). |
-| **Steal** | Thief | 2 PM | O próximo ataque, se acertar, rouba até 2 PM do alvo. |
+| **Steal** | Thief | 2 PM | O próximo ataque, se acertar, rouba até 2 PM do alvo (o Thief fica com no máximo 4). |
 | **Second Wind** | Fighter | 2 PM | Recupera 6 HP. |
 | **Heal** | Cleric | 2 PM | Recupera 6 HP dele ou de um aliado adjacente (escolha o alvo no mapa). |
 | **Rage** | Barbarian | 2 PM | O próximo ataque causa +5 de dano se acertar. |
@@ -229,9 +229,9 @@ Cada unidade possui **4 PM (Pontos de Magia)** e pode usar **uma skill por turno
 | **Drain** | Necromancer | 2 PM | O próximo ataque causa +2 de dano se acertar e cura o Necromancer pelo dano causado. |
 | **Brace** | Halberdier | 2 PM | +2 DEF e contra-ataca a até 2 tiles, até o próximo turno dele. |
 
-> PM não se regenera durante a batalha — use com estratégia.
+> PM não se regenera sozinho: quem **abate** um inimigo ou acerta um **crítico** ganha **+1 PM** por cada um (vale também no contra-ataque e na queimadura do Fireball), até o máximo de 4. O crítico garantido do **Special** não conta. Nenhuma unidade passa de 4 PM, nem com o Steal (o alvo perde o PM roubado, mas o Thief só fica com o que cabe até 4).
 >
-> Toda skill custa **2 PM** (dá para usar duas vezes por partida) ou **4 PM** (uma vez). O Special (4 PM) é a régua: ele rende cerca de 7,5 de dano a mais, e cada skill de 2 PM foi ajustada para render perto da metade disso.
+> Toda skill custa **2 PM** (dá para usar duas vezes por partida) ou **4 PM** (uma vez), sem contar o PM ganho em combate. O Special (4 PM) é a régua: ele rende cerca de 7,5 de dano a mais, e cada skill de 2 PM foi ajustada para render perto da metade disso.
 
 ---
 

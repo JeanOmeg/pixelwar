@@ -100,6 +100,78 @@ describe('skills', () => {
   })
 })
 
+describe('MP earned in battle', () => {
+  test('a critical hit gives 1 MP back, never above the starting 4', () => {
+    const board = makeBoard(['......'])
+    const [a, b] = makePlayers(board)
+    const archer = place(board, 'ArcherA', 0, 0, a)
+    const target = place(board, 'WarriorB', 3, 0, b)
+    archer.mp = 2
+    archer.attackInstant(target, () => [20, 1])
+    expect(archer.mp).toBe(3)
+    archer.mp = 4
+    archer.attacked = false
+    archer.attackInstant(target, () => [20, 1])
+    expect(archer.mp).toBe(4)
+  })
+
+  test('a kill gives 1 MP, a critical kill 2, and a plain hit nothing', () => {
+    const board = makeBoard(['......'])
+    const [a, b] = makePlayers(board)
+    const archer = place(board, 'ArcherA', 0, 0, a)
+    const target = place(board, 'WarriorB', 3, 0, b)
+    archer.mp = 0
+    archer.attackInstant(target, () => [15, 6])
+    expect(archer.mp).toBe(0)
+    target.health = 1
+    archer.attacked = false
+    archer.attackInstant(target, () => [15, 6])
+    expect(archer.mp).toBe(1)
+    const other = place(board, 'WarriorB', 4, 0, b)
+    other.health = 1
+    archer.attacked = false
+    archer.attackInstant(other, () => [20, 6])
+    expect(archer.mp).toBe(3)
+  })
+
+  test('a counterattack that kills gives MP to the defender', () => {
+    const board = makeBoard(['..'])
+    const [a, b] = makePlayers(board)
+    const thief = place(board, 'ThiefA', 0, 0, a)
+    const fighter = place(board, 'FighterB', 1, 0, b)
+    fighter.miniDirection = 'left' // facing the thief: no back attack, so it can counter
+    thief.health = 1
+    fighter.mp = 2
+    thief.attackInstant(fighter, () => [1, 1]) // miss, then the counter (any damage kills)
+    expect(thief.health).toBeLessThanOrEqual(0)
+    expect(fighter.mp).toBe(3)
+  })
+
+  test('a critical forced by Special gives no MP', () => {
+    const board = makeBoard(['......'])
+    const [a, b] = makePlayers(board)
+    const archer = place(board, 'ArcherA', 0, 0, a)
+    const target = place(board, 'WarriorB', 3, 0, b)
+    archer.startSkill('skill-special-attack')
+    archer.attackInstant(target, () => [5, 1])
+    expect(target.health).toBeLessThan(25)
+    expect(archer.mp).toBe(0)
+  })
+
+  test('Steal never takes the thief above 4 MP (the target still loses it)', () => {
+    const board = makeBoard(['..'])
+    const [a, b] = makePlayers(board)
+    const thief = place(board, 'ThiefA', 0, 0, a)
+    const target = place(board, 'MageB', 1, 0, b)
+    target.miniDirection = 'right' // back attack: sure hit, no counter
+    thief.startSkill('skill-steal')
+    thief.mp = 3
+    thief.attackInstant(target, () => [1, 1])
+    expect(thief.mp).toBe(4)
+    expect(target.mp).toBe(2)
+  })
+})
+
 describe('forest and counterattacks', () => {
   test('forest gives +2 DEF', () => {
     const board = makeBoard(['.f'])

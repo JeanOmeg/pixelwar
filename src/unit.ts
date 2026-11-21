@@ -12,7 +12,7 @@ import { DamageManager } from './damage-manager'
 import { AttackContext, AttackOutcome, CombatStats, Facing, PLAIN_ATTACK, facingBetween, resolveAttack, rollWithAdvantage } from './combat'
 import {
   BRACE_DEF, BRACE_REACH, FIREBALL_SPLASH, FRENZY_ATK, FRENZY_DEF, GUARD_DEF, HEAL_HP,
-  SECOND_WIND_HP, SHIELD_WALL_DEF, SKILLS, STEAL_MP, SkillDefinition, SkillId, skillBonusDamage
+  MP_PER_CRITICAL, MP_PER_KILL, SECOND_WIND_HP, SHIELD_WALL_DEF, SKILLS, STEAL_MP, SkillDefinition, SkillId, skillBonusDamage
 } from './skills'
 import { gameDelay } from './speed'
 import { screenFacing, unitFacingArrow } from './board-markers'
@@ -26,7 +26,8 @@ import { AuraKind, aura, burst, effectScene, explosion, heavyHit, impact, impact
  * and the AI simulation can apply them all at once.
  */
 export type AttackEvent =
-  | { kind: 'strike', attacker: Unit, defender: Unit, outcome: AttackOutcome, counter: boolean }
+  /** `forced`: a critical forced by Special, which earns no MP */
+  | { kind: 'strike', attacker: Unit, defender: Unit, outcome: AttackOutcome, counter: boolean, forced?: boolean }
   | { kind: 'heal', unit: Unit, amount: number }
   | { kind: 'steal', from: Unit, to: Unit, amount: number }
   | { kind: 'pin', unit: Unit }
@@ -467,6 +468,15 @@ export class Unit extends ex.Actor {
     return true
   }
 
+  /** MP earned (kills, critical hits, Steal): never above the starting MP. Returns how much it got */
+  gainMp(amount: number): number {
+    const gained = Math.min(amount, this.unitConfig.mp - this.mp)
+    if (gained <= 0) return 0
+    this.mp += gained
+    this.say(`${t().stats.mp} +${gained}`, '#4cc9f0')
+    return gained
+  }
+
   heal(amount: number) {
     const healed = Math.min(amount, this.unitConfig.health - this.health)
     if (healed <= 0) return
@@ -579,7 +589,7 @@ export class Unit extends ex.Actor {
     const skill = this.pendingSkill?.id
     const [d20, d6] = rolls()
     const outcome = resolveAttack(this.combatStats(), other.combatStats(), context, d20, d6)
-    const events: AttackEvent[] = [{ kind: 'strike', attacker: this, defender: other, outcome, counter: false }]
+    const events: AttackEvent[] = [{ kind: 'strike', attacker: this, defender: other, outcome, counter: false, forced: context.forcesCritical }]
     let healthAfter = other.health - outcome.damage
 
     // skill effects that follow the hit
@@ -765,7 +775,12 @@ export function applyAttackEvent(event: AttackEvent) {
   applyEvent(event)
   if (!target) return
   const dealt = Math.max(0, before) - Math.max(0, target.health)
-  target.board.onAttackEvent?.(event, { dealt, killed: before > 0 && target.health <= 0 })
+  const killed = before > 0 && target.health <= 0
+  // kills and real critical hits (not Special's) give MP back to whoever landed them (counters and Fireball burns too)
+  const striker = event.kind === 'strike' ? event.attacker : event.kind === 'splash' ? event.by : null
+  const critical = event.kind === 'strike' && event.outcome.critical && !event.forced
+  if (striker) striker.gainMp((killed ? MP_PER_KILL : 0) + (critical ? MP_PER_CRITICAL : 0))
+  target.board.onAttackEvent?.(event, { dealt, killed })
 }
 
 function applyEvent(event: AttackEvent) {
@@ -777,9 +792,9 @@ function applyEvent(event: AttackEvent) {
     event.unit.heal(event.amount)
     break
   case 'steal':
+    // the target loses it all; the thief keeps only what fits under its max MP
     event.from.mp -= event.amount
-    event.to.mp += event.amount
-    if (event.amount > 0) event.to.say(`${t().stats.mp} +${event.amount}`, '#4cc9f0')
+    event.to.gainMp(event.amount)
     break
   case 'pin':
     event.unit.pinned = true

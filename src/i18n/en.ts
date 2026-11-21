@@ -230,7 +230,7 @@ export const en = {
       '<b>Run</b> (2 MP): double movement this turn.',
       '<b>Special</b> (4 MP): the next attack is a critical hit.',
       'Every class also has a <b>skill of its own</b> (see Units): heal, guard, pierce armor, backstab...',
-      'Every unit has 4 MP. One skill per turn. MP does not come back.'
+      'Every unit has 4 MP (never more). One skill per turn. MP comes back only in battle: +1 for each kill and +1 for each critical hit (the one forced by Special doesn\'t count).'
     ] },
     { title: 'Army', items: [
       'Before the match, pick a class for each starting slot of the map.',
@@ -552,7 +552,7 @@ export const en = {
     undo: 'Select the Barbarian again and choose [Undo move]. A move can be undone until the unit attacks.',
     throughDoor: 'Walk the [Barbarian] through the door instead.',
     run: 'The [Archer] only moves 4 tiles. Open [Skills], choose [Run] to double its movement this turn, then pick the marked tile.',
-    mp: 'Skills cost [MP]. Every unit starts with 4 MP for the whole match, and MP never comes back. One skill per unit each turn.',
+    mp: 'Skills cost [MP]. Every unit starts with 4 MP, and only gets it back by fighting: +1 for each kill and +1 for each critical hit (up to 4). One skill per unit each turn.',
     wait: 'The [Spearman] stays home for now. Choose [Wait] to finish with it: it turns gray.',
     endTurnFirst: 'Press [End turn]. Units you didn\'t use simply stay where they are.',
     enemyTurn: 'Enemy turn! Watch the [Red] army charge.',

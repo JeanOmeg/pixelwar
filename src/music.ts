@@ -13,9 +13,7 @@ import folklorePath from './assets/music/folklore.mp3'
 import frozenHordePath from './assets/music/frozen-horde.mp3'
 import helheimPath from './assets/music/helheim.mp3'
 import theRiffPath from './assets/music/the-riff.mp3'
-import twelveDaysOfChaosPath from './assets/music/twelve-days-of-chaos.mp3'
 import voidToTheWorldPath from './assets/music/void-to-the-world.mp3'
-import wreckTheHallsPath from './assets/music/wreck-the-halls.mp3'
 
 /**
  * Match music: these tracks play one after the other in random order during a
@@ -38,9 +36,7 @@ const MATCH_TRACKS: string[] = [
   frozenHordePath,
   helheimPath,
   theRiffPath,
-  twelveDaysOfChaosPath,
-  voidToTheWorldPath,
-  wreckTheHallsPath
+  voidToTheWorldPath
 ]
 
 /** Mix level of the match music: ~8 dB under the effects (the files are loudness-normalized by yarn music) */

@@ -92,6 +92,9 @@ export const AIMED_SHOT_DAMAGE = 3
 /** Fireball: burns the target (hit or miss) and every enemy next to it */
 export const FIREBALL_SPLASH = 2
 export const STEAL_MP = 2
+/** MP a unit earns back for each enemy it kills and for each critical hit it lands, never above its starting MP */
+export const MP_PER_KILL = 1
+export const MP_PER_CRITICAL = 1
 export const SECOND_WIND_HP = 6
 export const HEAL_HP = 6
 export const RAGE_DAMAGE = 5

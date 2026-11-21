@@ -6,7 +6,7 @@ import type { PathNodeComponent } from '../path-finding/path-node-component'
 import { AttackContext, Facing, PLAIN_ATTACK, facingBetween, forecastAttack } from '../combat'
 import { getTerrainRules } from '../path-finding/terrain-rules'
 import {
-  CLASS_SKILL, FIREBALL_SPLASH, FRENZY_ATK, FRENZY_DEF, SKILLS, STEAL_MP, SkillId, skillBonusDamage
+  CLASS_SKILL, FIREBALL_SPLASH, FRENZY_ATK, FRENZY_DEF, MP_PER_CRITICAL, MP_PER_KILL, SKILLS, STEAL_MP, SkillId, skillBonusDamage
 } from '../skills'
 import { CLASS_INFO } from '../unit-classes'
 import { unitClassOf } from '../unit-types'
@@ -273,6 +273,10 @@ export function scoreAttack(unit: Unit, target: Unit, from: PathNodeComponent, s
   case 'skill-pinning-shot': parts.skill = (1 - kill) * f.hitChance * value * w.pinShare; break
   }
   if (skill) parts.mp = -SKILLS[skill].cost * w.mp
+  // kills and critical hits give MP back (up to the starting MP; Special's forced critical gives none)
+  const room = unit.unitConfig.mp - (unit.mp - (skill ? SKILLS[skill].cost : 0))
+  const regain = Math.min(room, kill * MP_PER_KILL + (context.forcesCritical ? 0 : f.critChance) * MP_PER_CRITICAL)
+  if (regain > 0) parts.mpGain = regain * w.mp
 
   return { score: Object.values(parts).reduce((a, b) => a + b, 0), parts }
 }

@@ -224,7 +224,7 @@ export const ptBR: Strings = {
       '<b>Correr</b> (2 PM): movimento em dobro neste turno.',
       '<b>Especial</b> (4 PM): o próximo ataque é crítico.',
       'Toda classe também tem uma <b>habilidade própria</b> (veja Unidades): curar, guarda, perfurar armadura, apunhalar...',
-      'Toda unidade tem 4 PM. Uma habilidade por turno. PM não volta.'
+      'Toda unidade tem 4 PM (nunca mais que isso). Uma habilidade por turno. PM só volta em combate: +1 a cada abate e +1 a cada crítico (o do Especial não conta).'
     ] },
     { title: 'Exército', items: [
       'Antes da partida, escolha uma classe para cada vaga inicial do mapa.',
@@ -543,7 +543,7 @@ export const ptBR: Strings = {
     undo: 'Selecione o Bárbaro de novo e escolha [Desfazer movimento]. Dá para desfazer um movimento até a unidade atacar.',
     throughDoor: 'Em vez disso, passe com o [Bárbaro] pela porta.',
     run: 'O [Arqueiro] só anda 4 casas. Abra [Habilidades], escolha [Correr] para dobrar o movimento dele neste turno e clique na casa marcada.',
-    mp: 'Habilidades custam [PM]. Toda unidade começa com 4 PM para a partida inteira, e PM nunca volta. Uma habilidade por unidade a cada turno.',
+    mp: 'Habilidades custam [PM]. Toda unidade começa com 4 PM e só recupera lutando: +1 a cada abate e +1 a cada crítico (até 4). Uma habilidade por unidade a cada turno.',
     wait: 'O [Lanceiro] fica em casa por enquanto. Escolha [Esperar] para terminar com ele: ele fica cinza.',
     endTurnFirst: 'Aperte [Encerrar turno]. As unidades que você não usou só ficam onde estão.',
     enemyTurn: 'Turno do inimigo! Veja o exército [Vermelho] avançar.',

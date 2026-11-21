@@ -16,7 +16,7 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
 - [x] ⭐ **No modo mover, mostrar de onde dá para atacar** (M): ao passar o mouse num destino, marcar os inimigos atacáveis dali e indicar "pelas costas" quando for o caso. — feito: highlight vermelho nos inimigos ao alcance a partir do destino e espada dourada sobre os que seriam atacados pelas costas.
 
 ### Ritmo e fim de partida
-- [ ] **MP nunca volta** (P, regra): no fim da partida quase ninguém tem skill. Todas as unidades ganham 1 de MP pra cada abate, e 1 de MP a cada critico, não pode ultrapassar o maximo de 4MP Exige rodar `yarn balance:sim`.
+- [x] **MP nunca volta** (P, regra): no fim da partida quase ninguém tem skill. Todas as unidades ganham 1 de MP pra cada abate, e 1 de MP a cada critico, não pode ultrapassar o maximo de 4MP Exige rodar `yarn balance:sim`. Feito: +1 PM por abate e por crítico de verdade (o do Special não conta), teto de 4 sem exceção (Steal incluso). `balance:sim` (3000 partidas) antes × depois: todas as classes mudaram dentro do ruído (±2,5%); Warrior já estava em 46%, não foi a regra.
 
 ### Novos objetivos e modos
 - [ ] ⭐ **Objetivos além de eliminar** (G): Comandante (perde quem perder o líder), Capturar ponto (altares do Ruined Temple / Fallen Citadel), Sobreviver N rodadas. Dá vida nova aos 12 mapas.
