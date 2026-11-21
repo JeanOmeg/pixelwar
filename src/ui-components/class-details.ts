@@ -3,6 +3,7 @@ import { CLASS_INFO, classStats, classTraits, rangeNote } from '../unit-classes'
 import { CLASS_SKILL, skillsOf } from '../skills'
 import { STARTING_MP } from '../config'
 import type { UnitClass } from '../path-finding/terrain-rules'
+import { t } from '../i18n'
 
 /**
  * Everything a player needs to know about a class: description, stats, how
@@ -33,12 +34,12 @@ export function renderClassStats(unitClass: UnitClass, { mp = true } = {}) {
   const stats = classStats(unitClass)
   return html`
     <div class="stats" style="--stat-count: ${mp ? 6 : 5}">
-      <div>${stats.health}<small>HP</small></div>
-      <div>${stats.attack}<small>ATK</small></div>
-      <div>${stats.defense}<small>DEF</small></div>
-      <div>${stats.range}<small>RNG</small></div>
-      <div>${stats.movement}<small>MOV</small></div>
-      ${mp ? html`<div>${STARTING_MP}<small>MP</small></div>` : nothing}
+      <div>${stats.health}<small>${t().stats.hp}</small></div>
+      <div>${stats.attack}<small>${t().stats.atk}</small></div>
+      <div>${stats.defense}<small>${t().stats.def}</small></div>
+      <div>${stats.range}<small>${t().stats.rng}</small></div>
+      <div>${stats.movement}<small>${t().stats.mov}</small></div>
+      ${mp ? html`<div>${STARTING_MP}<small>${t().stats.mp}</small></div>` : nothing}
     </div>
   `
 }
@@ -49,16 +50,16 @@ export function renderClassAbilities(unitClass: UnitClass) {
   // the class skill first: it is what sets the class apart
   const skills = skillsOf(unitClass).sort((a, b) => Number(b.id === own) - Number(a.id === own))
   return html`
-    <div class="range"><b>Range:</b> ${rangeNote(unitClass, classStats(unitClass).range)}</div>
+    <div class="range"><b>${t().details.range}</b> ${rangeNote(unitClass, classStats(unitClass).range)}</div>
     <div class="skills">
       ${skills.map(skill => html`
         <div class="skill ${skill.id === own ? 'own' : ''}">
-          <b>${skill.name}</b> <span class="mp">${skill.cost} MP</span>: ${skill.description}
+          <b>${skill.name}</b> <span class="mp">${skill.cost} ${t().stats.mp}</span>: ${skill.description}
         </div>
       `)}
       ${classTraits(unitClass).map(trait => html`
         <div class="skill">
-          <b>${trait.name}</b> <span class="passive">Passive</span>: ${trait.description}
+          <b>${trait.name}</b> <span class="passive">${t().details.passive}</span>: ${trait.description}
         </div>
       `)}
     </div>

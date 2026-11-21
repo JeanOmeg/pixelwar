@@ -1,4 +1,5 @@
 import type { UnitClass } from '../unit-types'
+import { t } from '../i18n'
 import type { SkillId } from '../skills'
 import type { Placement } from '../deploy'
 
@@ -78,7 +79,8 @@ const EMOTE_EMOJI: Record<Emote, string> = {
 /** Text shown for an emote: the text plus its emoji */
 export function emoteLabel(emote: string): string {
   const emoji = EMOTE_EMOJI[emote as Emote]
-  return emoji ? `${emote} ${emoji}` : emote
+  const label = t().emotes[emote] ?? emote
+  return emoji ? `${label} ${emoji}` : label
 }
 
 /** 0 = Blue (plays first), 1 = Red */

@@ -1,6 +1,7 @@
 import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
+import { t } from '../i18n'
 
 export const RANDOM_MAP_ID = 'random'
 
@@ -185,8 +186,8 @@ export class MapSelect extends LitElement {
       <button class="item ${selected ? 'selected' : ''}" @click=${(e: MouseEvent) => this.onItemClick(e, RANDOM_MAP_ID)} @dblclick=${() => this.start()}>
         <div class="thumb">?</div>
         <div>
-          <div class="name">Random map</div>
-          <div class="meta">Any of the ${this.maps.length} maps</div>
+          <div class="name">${t().mapSelect.randomMap}</div>
+          <div class="meta">${t().mapSelect.anyOf(this.maps.length)}</div>
         </div>
       </button>
     `
@@ -204,9 +205,9 @@ export class MapSelect extends LitElement {
           <div class="question">?</div>
         </div>
         <div class="info">
-          <h3>Random map</h3>
-          <p>Let fate pick the battlefield. One of the ${this.maps.length} maps is chosen when the match starts.</p>
-          <div class="chips"><span class="chip">${this.maps.length} maps</span></div>
+          <h3>${t().mapSelect.randomMap}</h3>
+          <p>${t().mapSelect.randomText(this.maps.length)}</p>
+          <div class="chips"><span class="chip">${t().mapSelect.mapCount(this.maps.length)}</span></div>
         </div>
       `
     }
@@ -216,9 +217,9 @@ export class MapSelect extends LitElement {
         <h3>${map.name}</h3>
         <p>${map.description}</p>
         <div class="chips">
-          <span class="chip">${map.width}×${map.height} tiles</span>
-          <span class="chip">${map.unitsPerTeam.join(' vs ')} units</span>
-          <span class="chip">${map.rounds} rounds max</span>
+          <span class="chip">${t().mapSelect.tiles(map.width, map.height)}</span>
+          <span class="chip">${t().mapSelect.units(map.unitsPerTeam.join(' vs '))}</span>
+          <span class="chip">${t().mapSelect.rounds(map.rounds)}</span>
         </div>
       </div>
     `
@@ -229,12 +230,12 @@ export class MapSelect extends LitElement {
     const map = this.maps.find(m => m.id === current)
     return html`
       <div class="header">
-        <h2>Select map</h2>
-        ${this.modeLabel ? html`<div class="mode">Mode: <b>${this.modeLabel}</b></div>` : nothing}
+        <h2>${t().mapSelect.heading}</h2>
+        ${this.modeLabel ? html`<div class="mode">${t().mapSelect.mode} <b>${this.modeLabel}</b></div>` : nothing}
       </div>
       <div class="layout">
         <div class="panel list">
-          <div class="panel-title"><span>Maps</span><span>${this.maps.length}</span></div>
+          <div class="panel-title"><span>${t().mapSelect.maps}</span><span>${this.maps.length}</span></div>
           <div class="items">
             ${this.maps.map(m => this.renderItem(m, m.id === current))}
             ${this.renderRandomItem(current === RANDOM_MAP_ID)}
@@ -243,9 +244,9 @@ export class MapSelect extends LitElement {
         <div class="panel detail">
           ${this.renderDetail(map)}
           <div class="actions">
-            <span class="keys"><span class="keys-only">↑↓ choose · Enter start · Esc back</span></span>
-            <button class="btn btn-solid back" @click=${() => this.dispatchEvent(new Event('back'))}>Back</button>
-            <button class="btn btn-solid start" @click=${() => this.start()}>Start</button>
+            <span class="keys"><span class="keys-only">${t().mapSelect.keys}</span></span>
+            <button class="btn btn-solid back" @click=${() => this.dispatchEvent(new Event('back'))}>${t().common.back}</button>
+            <button class="btn btn-solid start" @click=${() => this.start()}>${t().mapSelect.start}</button>
           </div>
         </div>
       </div>

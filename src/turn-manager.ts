@@ -6,6 +6,7 @@ import { LevelBase } from './levels/level-base'
 import type { GameUI } from './game-ui'
 import type { GameResultView } from './ui-components/view-models'
 import type { GameOverChoice } from './ui-components/game-over'
+import { t } from './i18n'
 
 /** From the last unit's death to the game over screen (its death animation takes ~0.8 s) */
 const GAME_OVER_DELAY_MS = 2000
@@ -140,29 +141,29 @@ export class TurnManager {
     const lastRound = this.playedRound
     const winner = result.winner
     if (!winner) {
-      if (result.reason === 'out-of-sync') return { title: 'Match ended', subtitle: 'The two games went out of sync', team: null }
+      if (result.reason === 'out-of-sync') return { title: t().gameOver.matchEnded, subtitle: t().gameOver.outOfSync, team: null }
       return {
-        title: 'Draw',
-        subtitle: result.reason === 'turn-limit' ? `Turn limit reached after ${lastRound} rounds` : 'No units left',
+        title: t().gameOver.draw,
+        subtitle: result.reason === 'turn-limit' ? t().gameOver.turnLimit(lastRound) : t().gameOver.noUnits,
         team: null
       }
     }
 
     const loser = this.players.find(p => p !== winner)
-    const loserName = loser?.displayName ?? (loser ? this.ui.teamLabel(loser) : 'The opponent')
+    const loserName = loser?.displayName ?? (loser ? this.ui.teamLabel(loser) : t().gameOver.theOpponent)
     const survivors = this.level.board.getLivingUnits().filter(u => u.player === winner).length
-    const subtitle = result.reason === 'forfeit' ? `${loserName} left the match`
-      : result.reason === 'abandoned' ? `${loserName} stopped responding`
-        : `Round ${lastRound} - ${survivors} unit${survivors === 1 ? '' : 's'} left`
+    const subtitle = result.reason === 'forfeit' ? t().gameOver.leftMatch(loserName)
+      : result.reason === 'abandoned' ? t().gameOver.stoppedResponding(loserName)
+        : t().gameOver.roundSurvivors(lastRound, survivors)
     const locals = this.players.filter(p => p.isLocal)
 
     // one player on this device (vs CPU, online): speak from their point of view
     if (locals.length === 1) {
       // online defeat: say who won
-      const named = !winner.isLocal && winner.displayName ? `${winner.displayName} wins - ${subtitle}` : subtitle
-      return { title: winner.isLocal ? 'Victory!' : 'Defeat', subtitle: named, team: this.ui.teamOf(winner) }
+      const named = !winner.isLocal && winner.displayName ? t().gameOver.winsDash(winner.displayName, subtitle) : subtitle
+      return { title: winner.isLocal ? t().gameOver.victory : t().gameOver.defeat, subtitle: named, team: this.ui.teamOf(winner) }
     }
-    return { title: `${winner.displayName ?? this.ui.teamLabel(winner)} wins!`, subtitle, team: this.ui.teamOf(winner) }
+    return { title: t().gameOver.wins(winner.displayName ?? this.ui.teamLabel(winner)), subtitle, team: this.ui.teamOf(winner) }
   }
 
   /**

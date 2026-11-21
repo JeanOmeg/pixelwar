@@ -74,7 +74,7 @@ export interface UnitView {
   rangeNote: string
   movement: number
   facing: Facing
-  status: string[]
+  status: UnitStatus[]
   done: boolean
 }
 
@@ -115,4 +115,10 @@ export function hpLevel(hp: number, maxHp: number): '' | 'mid' | 'low' {
 
 export function percent(value: number): string {
   return `${Math.round(value * 100)}%`
+}
+
+/** A chip on the unit card; `hot` = a skill ready to use */
+export interface UnitStatus {
+  label: string
+  hot?: boolean
 }

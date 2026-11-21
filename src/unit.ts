@@ -1,3 +1,4 @@
+import { t } from './i18n'
 import * as ex from 'excalibur'
 import { Board } from './board'
 import { Resources } from './resources'
@@ -398,7 +399,7 @@ export class Unit extends ex.Actor {
    * nothing. Drawn a bit above the effect text (DEF +3, +8...) so both read.
    */
   private announceSkill(skill: SkillDefinition) {
-    void this.damageManager?.spawnText(this.textPos().add(ex.vec(0, -18 * SCALE.y)), `${skill.name} -${skill.cost} MP`, SKILL_TEXT_COLOR)
+    void this.damageManager?.spawnText(this.textPos().add(ex.vec(0, -18 * SCALE.y)), `${skill.name} -${skill.cost} ${t().stats.mp}`, SKILL_TEXT_COLOR)
   }
 
   /** Gives the MP back for a move/attack skill that wasn't used */
@@ -444,22 +445,22 @@ export class Unit extends ex.Actor {
       break
     case 'skill-guard':
       this.defenseBonus += GUARD_DEF
-      void this.damageManager?.spawnText(this.textPos(), `DEF +${GUARD_DEF}`, '#4cc9f0')
+      void this.damageManager?.spawnText(this.textPos(), `${t().stats.def} +${GUARD_DEF}`, '#4cc9f0')
       break
     case 'skill-frenzy':
       this.attackBonus += FRENZY_ATK
       this.defenseBonus += FRENZY_DEF
-      void this.damageManager?.spawnText(this.textPos(), `ATK +${FRENZY_ATK}`, '#ff8c42')
+      void this.damageManager?.spawnText(this.textPos(), `${t().stats.atk} +${FRENZY_ATK}`, '#ff8c42')
       break
     case 'skill-brace':
       this.braced = true
       this.defenseBonus += BRACE_DEF
-      void this.damageManager?.spawnText(this.textPos(), 'Brace', '#4cc9f0')
+      void this.damageManager?.spawnText(this.textPos(), t().floating.brace, '#4cc9f0')
       break
     case 'skill-shield-wall':
       for (const ally of this.alliesAround(true)) {
         ally.defenseBonus += SHIELD_WALL_DEF
-        void ally.damageManager?.spawnText(ally.textPos(), `DEF +${SHIELD_WALL_DEF}`, '#4cc9f0')
+        void ally.damageManager?.spawnText(ally.textPos(), `${t().stats.def} +${SHIELD_WALL_DEF}`, '#4cc9f0')
       }
       break
     }
@@ -638,7 +639,7 @@ export class Unit extends ex.Actor {
 
     applyAttackEvent(event)
     await gameDelay(350)
-    await this.damageManager.spawnDamageNumber(event.defender.textPos(), event.outcome, event.counter ? 'Counter! ' : '')
+    await this.damageManager.spawnDamageNumber(event.defender.textPos(), event.outcome, event.counter ? t().floating.counter : '')
     if (event.defender.health > 0) event.defender.actions.blink(100, 100, 4)
   }
 
@@ -671,11 +672,11 @@ export function applyAttackEvent(event: AttackEvent) {
   case 'steal':
     event.from.mp -= event.amount
     event.to.mp += event.amount
-    if (event.amount > 0) event.to.say(`MP +${event.amount}`, '#4cc9f0')
+    if (event.amount > 0) event.to.say(`${t().stats.mp} +${event.amount}`, '#4cc9f0')
     break
   case 'pin':
     event.unit.pinned = true
-    event.unit.say('Pinned', '#b8bcc8')
+    event.unit.say(t().floating.pinned, '#b8bcc8')
     break
   case 'splash':
     event.unit.health -= event.damage

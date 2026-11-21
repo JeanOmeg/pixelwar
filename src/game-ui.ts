@@ -18,11 +18,13 @@ import { isTouchDevice, readableBoost } from './device'
 import { SKILLS, SkillId } from './skills'
 import { DIFFICULTIES, Difficulty } from './ai/weights'
 import { cycleSpeed, getSpeed, isSpeedLocked } from './speed'
-import { rangeNote } from './unit-classes'
-import { ForecastView, GameResultView, HudHighlight, HudView, MenuItem, OnlineHudView, Team, UnitView } from './ui-components/view-models'
+import { className, rangeNote } from './unit-classes'
+import { unitClassOf } from './unit-types'
+import { ForecastView, GameResultView, HudHighlight, HudView, MenuItem, OnlineHudView, Team, UnitStatus, UnitView } from './ui-components/view-models'
 import { GameNotice, NoticeView } from './ui-components/game-notice'
 import { inputMode, onInputModeChange, padLabel, type GamepadMatch } from './gamepad/gamepad-input'
 import type { PadAnalog, PadButton } from './gamepad/controller'
+import { t } from './i18n'
 
 export interface MenuOptions {
   move: () => void
@@ -45,7 +47,6 @@ export interface TutorialUiControl {
 }
 
 const TEAMS: Team[] = ['blue', 'red']
-const TEAM_LABELS: Record<Team, string> = { blue: 'Blue', red: 'Red' }
 const REFRESH_MS = 150
 /** Size of the in-game UI relative to the base sizes in the components */
 const UI_SCALE = 1.3
@@ -185,16 +186,18 @@ export class GameUI implements GamepadMatch {
   }
 
   teamLabel(player: Player): string {
-    return TEAM_LABELS[this.teamOf(player)]
+    return this.teamOf(player) === 'blue' ? t().common.blue : t().common.red
   }
 
   controllerLabel(player: Player): string {
     if (player.displayName) return player.displayName
     const sameKind = this.players.filter(p => p.isHuman === player.isHuman)
-    const base = player.isHuman ? 'Player' : 'CPU'
-    const label = sameKind.length > 1 ? `${base} ${sameKind.indexOf(player) + 1}` : base
+    const n = sameKind.indexOf(player) + 1
+    const label = sameKind.length > 1
+      ? (player.isHuman ? t().match.playerN(n) : t().match.cpuN(n))
+      : (player.isHuman ? t().common.player : t().common.cpu)
     const difficulty = (player as Partial<{ difficulty: Difficulty }>).difficulty
-    return difficulty ? `${label} (${DIFFICULTIES[difficulty].label})` : label
+    return difficulty ? t().match.withDifficulty(label, DIFFICULTIES[difficulty].label) : label
   }
 
   async playPhaseBanner(player: Player, round: number): Promise<void> {
@@ -202,8 +205,8 @@ export class GameUI implements GamepadMatch {
     this.bannerActive = true
     this.refresh()
     // online: "Jean's turn"; otherwise "Blue phase"
-    const title = player.displayName ? `${player.displayName}'s turn` : `${this.teamLabel(player)} phase`
-    const subtitle = player.displayName ? `Round ${round} - ${this.teamLabel(player)}` : `Round ${round} - ${this.controllerLabel(player)}`
+    const title = player.displayName ? t().match.turnOf(player.displayName) : t().hud.phase(this.teamOf(player))
+    const subtitle = t().match.roundOf(round, player.displayName ? this.teamLabel(player) : this.controllerLabel(player))
     await this.banner.play(this.teamOf(player), title, subtitle)
     this.bannerActive = false
     this.refresh()
@@ -322,14 +325,14 @@ export class GameUI implements GamepadMatch {
       const ok = enabled && (allows?.(id) ?? true)
       return { id, label, enabled: ok, highlight: !!allows && ok, ...extra }
     }
-    const skillItems = skills.map(skill => item(skill.id, skill.name, unit.canUseSkill(skill.id), { detail: `${skill.cost} MP`, description: skill.description }))
+    const skillItems = skills.map(skill => item(skill.id, skill.name, unit.canUseSkill(skill.id), { detail: `${skill.cost} ${t().stats.mp}`, description: skill.description }))
     const anySkill = allows ? skillItems.some(s => s.enabled) : skills.length > 0
     const items: MenuItem[] = [
-      item('move', 'Move', unit.canMove()),
-      item('attack', 'Attack', unit.canAttack()),
-      { id: 'skills', label: 'Skills', enabled: anySkill, highlight: !!allows && anySkill, children: skillItems },
-      ...(unit.canUndoMove() ? [item('undo', 'Undo move', true)] : []),
-      item('pass', 'Wait', true)
+      item('move', t().match.move, unit.canMove()),
+      item('attack', t().match.attack, unit.canAttack()),
+      { id: 'skills', label: t().match.skills, enabled: anySkill, highlight: !!allows && anySkill, children: skillItems },
+      ...(unit.canUndoMove() ? [item('undo', t().match.undo, true)] : []),
+      item('pass', t().match.wait, true)
     ]
 
     this.menu.title = this.className(unit)
@@ -360,7 +363,7 @@ export class GameUI implements GamepadMatch {
     this.overlaysHidden = !this.overlaysHidden
     for (const el of [this.hud, this.hint, this.card]) el.style.display = this.overlaysHidden ? 'none' : ''
     this.eye.textContent = this.overlaysHidden ? 'visibility_off' : 'visibility'
-    this.eye.title = this.overlaysHidden ? 'Show interface (H)' : 'Hide interface (H)'
+    this.eye.title = this.overlaysHidden ? t().match.showInterface : t().match.hideInterface
     this.eye.setAttribute('aria-pressed', String(this.overlaysHidden))
   }
 
@@ -370,8 +373,8 @@ export class GameUI implements GamepadMatch {
     eye.type = 'button'
     eye.className = 'material-symbols-outlined'
     eye.textContent = 'visibility'
-    eye.title = 'Hide interface (H)'
-    eye.setAttribute('aria-label', 'Hide or show the interface')
+    eye.title = t().match.hideInterface
+    eye.setAttribute('aria-label', t().match.toggleInterface)
     eye.setAttribute('aria-pressed', 'false')
     Object.assign(eye.style, {
       position: 'fixed',
@@ -459,22 +462,23 @@ export class GameUI implements GamepadMatch {
   }
 
   private className(unit: Unit) {
-    return unit.name.replace(/[AB]$/, '')
+    return className(unitClassOf(unit.name))
   }
 
   private unitView(unit: Unit): UnitView {
-    const status: string[] = []
+    const status: UnitStatus[] = []
+    const text = t().match
     const done = !unit.hasActions()
-    if (done) status.push('Done')
+    if (done) status.push({ label: text.done })
     else {
-      if (unit.moved) status.push('Moved')
-      if (unit.attacked) status.push('Attacked')
+      if (unit.moved) status.push({ label: text.moved })
+      if (unit.attacked) status.push({ label: text.attacked })
     }
-    if (unit.pendingSkill) status.push(`${unit.pendingSkill.name} ready`)
-    else if (unit.usedSkill) status.push('Skill used')
-    if (unit.isInForest()) status.push('Forest DEF +2')
-    if (unit.braced) status.push('Braced')
-    if (unit.pinned) status.push('Pinned')
+    if (unit.pendingSkill) status.push({ label: text.skillReady(unit.pendingSkill.name), hot: true })
+    else if (unit.usedSkill) status.push({ label: text.skillUsed })
+    if (unit.isInForest()) status.push({ label: text.forest })
+    if (unit.braced) status.push({ label: text.braced })
+    if (unit.pinned) status.push({ label: text.pinned })
     const stats = unit.combatStats()
 
     return {
@@ -557,46 +561,46 @@ export class GameUI implements GamepadMatch {
     const current = this.currentPlayer
     if (this.matchOver || this.bannerActive || !current) return ''
     if (!current.isLocal) {
-      return current.isHuman ? `Waiting for ${this.controllerLabel(current)}...` : `${this.teamLabel(current)} (${this.controllerLabel(current)}) is thinking...`
+      return current.isHuman ? t().match.waitingFor(this.controllerLabel(current)) : t().match.thinking(this.teamLabel(current), this.controllerLabel(current))
     }
     if (inputMode() === 'gamepad') return this.padHintText()
     if (this.touch) return this.touchHintText()
-    if (this.menu.open) return 'Choose an action · [Esc] close'
+    if (this.menu.open) return t().match.hintMenu
     if (this.selection.currentUnitSelection) {
       switch (this.selection.currentSelectionMode) {
-      case 'move': return 'Click a highlighted tile to move · [Esc] cancel'
-      case 'attack': return 'Click an enemy in range to attack · [Esc] cancel'
-      case 'heal': return 'Click an ally to heal · [Esc] cancel'
+      case 'move': return t().match.hintMove
+      case 'attack': return t().match.hintAttack
+      case 'heal': return t().match.hintHeal
       }
     }
-    return '[Left click] select unit · [Right click] move range · [Middle click] attack range · [Tab] next unit'
+    return t().match.hintIdle
   }
 
   /** Controller hints: {button} shows as that button of the controller in use */
   private padHintText(): string {
     const b = (button: PadButton) => `{${padLabel(button)}}`
-    if (this.hud.emotesOpen) return `${b('a')} send · ${b('b')} close`
-    if (this.menu.open) return `${b('a')} choose · ${b('b')} close`
+    if (this.hud.emotesOpen) return t().match.padEmotes(b('a'), b('b'))
+    if (this.menu.open) return t().match.padMenu(b('a'), b('b'))
     if (this.selection.currentUnitSelection) {
       switch (this.selection.currentSelectionMode) {
-      case 'move': return `${b('a')} move here · ${b('b')} cancel`
-      case 'attack': return `${b('a')} attack · ${b('b')} cancel`
-      case 'heal': return `${b('a')} heal · ${b('b')} cancel`
+      case 'move': return t().match.padMove(b('a'), b('b'))
+      case 'attack': return t().match.padAttack(b('a'), b('b'))
+      case 'heal': return t().match.padHeal(b('a'), b('b'))
       }
     }
-    return `${b('a')} select · ${b('y')} move range · ${b('x')} attack range · ${b('lb')}${b('rb')} units · ${b('select')} end turn · ${b('start')} pause`
+    return t().match.padIdle(b('a'), b('y'), b('x'), `${b('lb')}${b('rb')}`, b('select'), b('start'))
   }
 
   private touchHintText(): string {
-    if (this.menu.open) return 'Choose an action · [tap outside] close'
+    if (this.menu.open) return t().match.touchMenu
     if (this.selection.currentUnitSelection) {
       switch (this.selection.currentSelectionMode) {
-      case 'move': return '[Tap] a tile to preview, [tap again] to move · tap outside to cancel'
-      case 'attack': return '[Tap] an enemy to preview, [tap again] to attack · tap outside to cancel'
-      case 'heal': return '[Tap] an ally to preview, [tap again] to heal · tap outside to cancel'
+      case 'move': return t().match.touchMove
+      case 'attack': return t().match.touchAttack
+      case 'heal': return t().match.touchHeal
       }
     }
-    return '[Tap] your unit to act · [tap] other units to see their range (again: attack range)'
+    return t().match.touchIdle
   }
 
   private refresh() {

@@ -8,6 +8,7 @@ import { AudioManager } from './audio-manager'
 import { isTouchDevice, refitScreen, setupTouchDevice } from './device'
 import { attachSpeedToEngine } from './speed'
 import { startGamepadInput } from './gamepad/gamepad-input'
+import { onLanguageChange, t } from './i18n'
 
 const game = new ex.Engine({
   resolution: { width: 1920, height: 1080 },
@@ -29,6 +30,8 @@ AudioManager.init()
 attachSpeedToEngine(game)
 
 setupTouchDevice()
+localizePage()
+onLanguageChange(localizePage)
 
 // controllers: the match on screen gets the camera (zoom/pan); everything else goes through keys and focus
 startGamepadInput(() => game.currentScene instanceof LevelBase ? game.currentScene.ui ?? null : null)
@@ -85,3 +88,11 @@ game.start(loader).then(() => {
 if (process.env.NODE_ENV !== 'production') (window as unknown as { __game: ex.Engine }).__game = game
 
 export { game }
+/** Texts written in index.html (the "rotate your device" hint) follow the language */
+function localizePage() {
+  const hint = document.querySelector('.rotate-hint-box')
+  const title = hint?.querySelector('p')
+  const text = hint?.querySelector('small')
+  if (title) title.textContent = t().rotate.title
+  if (text) text.textContent = t().rotate.text
+}

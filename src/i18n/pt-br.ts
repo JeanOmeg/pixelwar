@@ -1,0 +1,578 @@
+import type { Strings } from './en'
+
+/** Brazilian Portuguese texts. Same keys as en.ts (checked by the typecheck and by tests/i18n.test.ts) */
+
+const s = (count: number) => count === 1 ? '' : 's'
+
+export const ptBR: Strings = {
+  languageName: 'Português',
+
+  common: {
+    back: 'Voltar',
+    cancel: 'Cancelar',
+    confirm: 'Confirmar',
+    mainMenu: 'Menu principal',
+    blue: 'Azul',
+    red: 'Vermelho',
+    player: 'Jogador',
+    cpu: 'IA',
+    you: 'Você',
+    random: 'Aleatório',
+    pts: 'pts',
+    vs: 'VS'
+  },
+
+  stats: {
+    hp: 'PV',
+    atk: 'ATQ',
+    def: 'DEF',
+    rng: 'ALC',
+    mov: 'MOV',
+    mp: 'PM'
+  },
+
+  loader: {
+    play: 'JOGAR!'
+  },
+
+  rotate: {
+    title: 'Gire o aparelho',
+    text: 'PixelFantasyWar é jogado na horizontal'
+  },
+
+  audio: {
+    sound: 'Som',
+    fullscreen: 'Tela cheia',
+    tipTitle: 'Jogue em tela cheia',
+    tipBefore: 'Toque em',
+    tipShare: 'Compartilhar, depois em',
+    tipAdd: 'Adicionar à Tela de Início',
+    tipAfter: ' e abra o PixelWar pelo novo ícone.',
+    tipClose: 'Toque para fechar'
+  },
+
+  title: {
+    tagline: 'Batalhas táticas por turnos',
+    play: 'Jogar',
+    howToPlay: 'Como jogar',
+    units: 'Unidades',
+    credits: 'Créditos',
+    language: 'Idioma'
+  },
+
+  modes: {
+    heading: 'Escolha o modo',
+    newHere: 'Primeira vez?',
+    cpuDifficulty: 'Dificuldade da IA',
+    escBack: 'Esc volta'
+  },
+
+  gameModes: {
+    tutorial: { title: 'Aprenda a jogar', description: 'Primeira vez? Uma partida guiada ensina o básico.', sides: ['Você', 'IA'] },
+    online: { title: 'Online', description: 'Jogue ou assista a um amigo em outro aparelho.', sides: ['Você', 'Amigo'] },
+    p1vscpu: { title: 'Jogador vs IA', description: 'Comande o exército azul contra a IA.', sides: ['Você', 'IA'] },
+    p1vsp2: { title: 'Jogador vs Jogador', description: 'Dois jogadores se revezam no mesmo dispositivo.', sides: ['J1', 'J2'] },
+    cpuvscpu: { title: 'IA vs IA', description: 'Relaxe e assista a dois exércitos da IA se enfrentarem.', sides: ['IA', 'IA'] }
+  },
+
+  difficulties: {
+    easy: 'Fácil',
+    normal: 'Normal',
+    hard: 'Difícil'
+  },
+
+  maps: {
+    'twin-keeps': { name: 'Fortes Gêmeos', description: 'Dois fortes murados se encaram em um campo aberto. O bosque no meio dá cobertura, e pontes cruzam os lagos.' },
+    'river-isles': { name: 'Ilhas do Rio', description: 'Os exércitos começam em ilhotas ligadas por pontes estreitas. Domine as travessias e o prado central.' },
+    greenwood: { name: 'Bosque Verde', description: 'Prado aberto com arvoredos e pedras espalhados para se proteger. Um pequeno lago com ponte fica bem no centro.' },
+    'split-river': { name: 'Rio Dividido', description: 'Um rio corta o campo em dois. Só três pontes estreitas o atravessam, mas arqueiros e magos atiram por cima da água.' },
+    'crater-lake': { name: 'Lago da Cratera', description: 'Um grande lago ocupa o meio, cruzado por uma única ponte longa. Passagens rochosas guardam as margens ao norte e ao sul.' },
+    'old-fortress': { name: 'Fortaleza Antiga', description: 'Uma fortaleza abandonada fica entre os exércitos. As portas são a única entrada, e o pátio com pilares é o prêmio.' },
+    'riverside-village': { name: 'Vila do Rio', description: 'Uma vila cortada por um rio. Lute entre casas e jardins e segure as praças de pedra nas duas pontes.' },
+    'ruined-temple': { name: 'Templo em Ruínas', description: 'Muros e pilares quebrados cercam um antigo altar. Torres de vigia em cada prado protegem os arqueiros.' },
+    'desert-oasis': { name: 'Oásis do Deserto', description: 'Um deserto escaldante em volta de um oásis verde. O lago divide o campo em duas trilhas, com só cactos e pedras como cobertura.' },
+    'frozen-pass': { name: 'Passo Gelado', description: 'Um campo de neve entre dois vales verdes. O lago congelado pode ser cruzado a pé; pinheiros nevados e pedras estreitam o caminho em volta.' },
+    'hamlet-ford': { name: 'Vau dos Povoados', description: 'Dois povoados de fazenda, um de cada lado do rio. Duas pontes de madeira e uma de pedra são as únicas travessias.' },
+    'fallen-citadel': { name: 'Cidadela Caída', description: 'Os muros quebrados de uma cidadela guardam altares gêmeos. Brechas em todos os lados deixam os dois exércitos entrar, e torres de vigia ladeiam cada acampamento.' }
+  },
+
+  mapSelect: {
+    heading: 'Escolha o mapa',
+    mode: 'Modo:',
+    maps: 'Mapas',
+    randomMap: 'Mapa aleatório',
+    anyOf: n => `Qualquer um dos ${n} mapas`,
+    randomText: n => `Deixe o destino escolher o campo de batalha. Um dos ${n} mapas é sorteado quando a partida começa.`,
+    mapCount: n => `${n} mapas`,
+    tiles: (w, h) => `${w}×${h} casas`,
+    units: counts => `${counts} unidades`,
+    rounds: n => `${n} rodadas no máximo`,
+    keys: '↑↓ escolhe · Enter começa · Esc volta',
+    start: 'Começar'
+  },
+
+  army: {
+    heading: 'Monte seu exército',
+    playerLabel: (player, team) => `${player} (${team})`,
+    playerN: n => `Jogador ${n}`,
+    points: 'pontos',
+    slotOf: (slot, total) => `Vaga ${slot} de ${total}`,
+    pickFor: slot => `Escolha uma classe para a vaga ${slot}`,
+    left: n => `${n} sobrando`,
+    moveHere: slot => `Mover a vaga ${slot} para cá`,
+    moveTo: (slot, x, y) => `Mover a vaga ${slot} para ${x}, ${y}`,
+    slotTitle: (slot, unit) => `Vaga ${slot}: ${unit}`,
+    empty: 'Vazia',
+    emptyLower: 'vazia',
+    remove: 'Remover',
+    removeUnit: unit => `Remover ${unit}`,
+    notEnough: 'Pontos insuficientes',
+    pickForSlot: slot => `Escolher para a vaga ${slot}`,
+    fullHint: 'Escolha uma vaga, depois uma classe para ela ou uma casa iluminada para movê-la',
+    emptyHint: n => `${n} vaga${s(n)} vazia${s(n)} para preencher`,
+    keys: ' · Del remove · Enter confirma · Esc volta',
+    removeAll: 'Remover todas',
+    classic: 'Exército clássico'
+  },
+
+  classes: {
+    Archer: { name: 'Arqueiro', role: 'À distância', description: 'Abate alvos de muito longe. Frágil de perto.' },
+    Mage: { name: 'Mago', role: 'À distância', description: 'Ataca de longe e anda um pouco mais rápido que o arqueiro.' },
+    Spearman: { name: 'Lanceiro', role: 'Alcance 2', description: 'Acerta a duas casas de distância em campo aberto, a salvo de contra-ataques.' },
+    Thief: { name: 'Ladrão', role: 'Flanco', description: 'Bate forte e cruza terreno difícil a toda velocidade. Perfeito para ataques pelas costas.' },
+    Fighter: { name: 'Lutador', role: 'Corpo a corpo', description: 'Equilibrado e sólido, com boa mobilidade.' },
+    Cleric: { name: 'Clérigo', role: 'Suporte', description: 'Resistente e móvel. Segura bem a linha de frente.' },
+    Barbarian: { name: 'Bárbaro', role: 'Brutamontes', description: 'Ataque forte e couro grosso, mas lento.' },
+    Warrior: { name: 'Guerreiro', role: 'Tanque', description: 'Maior PV e defesa. Lento, feito para bloquear caminhos.' },
+    Paladin: { name: 'Paladino', role: 'Cavaleiro sagrado', description: 'Espadachim de armadura: quase tão resistente quanto um Bárbaro e mais ágil.' },
+    Berserker: { name: 'Berserker', role: 'Berserker', description: 'O ataque mais forte do jogo. Armadura leve, então ataque primeiro.' },
+    Assassin: { name: 'Assassino', role: 'Assassino', description: 'A unidade mais rápida, cruza terreno difícil livremente. Mortal pelas costas, cai com um sopro.' },
+    Ranger: { name: 'Patrulheiro', role: 'À distância', description: 'Arqueiro da floresta: alcance menor que o do Arqueiro, mas mais forte e ágil no bosque.' },
+    Necromancer: { name: 'Necromante', role: 'Mago sombrio', description: 'Magia sombria que bate duas vezes mais forte que o Mago, com alcance menor.' },
+    Halberdier: { name: 'Alabardeiro', role: 'Alcance 2', description: 'Piqueiro de armadura. Seu alcance de 2 funciona em qualquer terreno.' }
+  },
+
+  skills: {
+    'skill-run': { name: 'Correr', description: 'Movimento em dobro neste turno. Ainda pode atacar.' },
+    'skill-special-attack': { name: 'Especial', description: 'O próximo ataque é sempre crítico.' },
+    'skill-aimed-shot': { name: 'Tiro Certeiro', description: 'O próximo ataque não erra e causa 3 de dano extra.' },
+    'skill-fireball': { name: 'Bola de Fogo', description: 'O próximo ataque também queima o alvo e todo inimigo ao lado dele em 2 de dano, acertando ou não.' },
+    'skill-pierce': { name: 'Perfurar', description: 'O próximo ataque ignora a defesa do alvo (armadura e floresta).' },
+    'skill-steal': { name: 'Roubar', description: 'O próximo ataque também rouba até 2 PM do alvo.' },
+    'skill-second-wind': { name: 'Fôlego Extra', description: 'Recupera 6 PV.' },
+    'skill-heal': { name: 'Curar', description: 'Recupera 6 PV de si mesmo ou de um aliado ao lado.' },
+    'skill-rage': { name: 'Fúria', description: 'O próximo ataque causa 5 de dano extra se acertar.' },
+    'skill-guard': { name: 'Guarda', description: '+4 DEF até o próximo turno dele.' },
+    'skill-shield-wall': { name: 'Muralha de Escudos', description: 'Ele e os aliados ao lado ganham +2 DEF até o próximo turno dele.' },
+    'skill-frenzy': { name: 'Frenesi', description: '+4 ATQ e -1 DEF até o próximo turno dele.' },
+    'skill-backstab': { name: 'Apunhalar', description: 'O próximo ataque conta como ataque pelas costas: acerto garantido, ATQ em dobro, sem contra-ataque.' },
+    'skill-pinning-shot': { name: 'Tiro Imobilizador', description: 'O próximo ataque causa 2 de dano extra se acertar, e o alvo não pode se mover no próximo turno dele.' },
+    'skill-drain': { name: 'Drenar', description: 'O próximo ataque causa 2 de dano extra se acertar e o cura pelo dano causado.' },
+    'skill-brace': { name: 'Firmeza', description: '+2 DEF e contra-ataca até 2 casas de distância até o próximo turno dele.' }
+  },
+
+  traits: {
+    pathfinder: { name: 'Desbravador', description: 'Anda a toda velocidade pela floresta.' },
+    overWater: { name: 'Sobre a água', description: 'Pode mirar inimigos do outro lado da água.' },
+    counterattack: { name: 'Contra-ataque', description: 'Revida uma vez quando um inimigo ao lado o ataca e ele sobrevive.' }
+  },
+
+  details: {
+    range: 'Alcance:',
+    passive: 'Passiva',
+    melee: 'Corpo a corpo: casas ao lado',
+    rangeSlow: (range, slow) => `${range} casas em campo aberto, ${slow} sobre floresta ou água`,
+    rangeAny: range => `${range} casas em qualquer terreno`
+  },
+
+  howTo: [
+    { title: 'Objetivo', items: [
+      'Derrote todas as unidades inimigas.',
+      'Se ninguém vencer em 50 rodadas, a partida termina empatada.'
+    ] },
+    { title: 'Seu turno', items: [
+      'Clique numa unidade e escolha <b>Mover</b>, <b>Atacar</b>, <b>Habilidades</b> ou <b>Esperar</b>.',
+      'Cada unidade pode mover uma vez e atacar uma vez por turno, em qualquer ordem.',
+      '<b>Desfazer movimento</b> devolve a unidade enquanto ela não atacou.',
+      'Aperte <b>Encerrar turno</b> no topo quando terminar. O turno também acaba quando nenhuma unidade pode mover nem atacar.'
+    ] },
+    { title: 'Combate', items: [
+      'Acerta se <b>ATQ + d20</b> passar de <b>DEF + 10</b>. O dano é <b>d6 + ATQ − DEF</b>.',
+      'Os dados são rolados duas vezes e vale o melhor resultado.',
+      'Um 20 natural é um <b>crítico</b>: 12 + ATQ − DEF de dano.',
+      'Errar ainda causa 1 de dano.',
+      'Ataque um inimigo <b>pelas costas</b> para nunca errar e usar o dobro do ATQ.',
+      '<b>Contra-ataque</b>: uma unidade corpo a corpo que sobrevive revida contra um atacante corpo a corpo, a não ser que tenha sido atingida pelas costas.',
+      'Ataques vão em linha reta e param na primeira unidade.',
+      'Mire num inimigo para ver as chances de acertar e de matar antes de atacar.'
+    ] },
+    { title: 'Terreno', items: [
+      'Campo aberto custa 1 de movimento. Floresta custa 2.',
+      'Unidades na <b>floresta</b> ganham +2 DEF.',
+      'Arqueiros, magos e lanceiros pagam 2 pontos de alcance por casa de floresta ou água.',
+      'Muros e árvores bloqueiam movimento e ataques.',
+      'Água bloqueia o movimento, mas ataques passam por cima dela.',
+      'Portas podem ser atravessadas, mas bloqueiam ataques. Unidades numa porta não atacam nem podem ser atacadas.'
+    ] },
+    { title: 'Habilidades', items: [
+      '<b>Correr</b> (2 PM): movimento em dobro neste turno.',
+      '<b>Especial</b> (4 PM): o próximo ataque é crítico.',
+      'Toda classe também tem uma <b>habilidade própria</b> (veja Unidades): curar, guarda, perfurar armadura, apunhalar...',
+      'Toda unidade tem 4 PM. Uma habilidade por turno. PM não volta.'
+    ] },
+    { title: 'Exército', items: [
+      'Antes da partida, escolha uma classe para cada vaga inicial do mapa.',
+      'Toda classe custa pontos. Seu exército pode gastar até <b>100</b>.',
+      'Posicione suas unidades em qualquer casa iluminada: as primeiras <b>6 colunas</b> a partir da sua borda. Escolha uma unidade, depois uma casa iluminada.',
+      '<b>Exército clássico</b> volta às unidades desenhadas no mapa (exatamente 100 pontos) e às posições delas.'
+    ] },
+    { title: 'Online', items: [
+      'Digite seu nome e <b>crie uma sala</b> ou entre numa pelo <b>código</b>. Salas abertas aparecem para todos; salas <b>fechadas</b> só aceitam quem tem o código.',
+      'Até 8 pessoas podem <b>assistir</b> a uma partida, mesmo já em andamento.',
+      'Cada turno tem <b>5 minutos</b>. Quando o tempo acaba, o turno termina sozinho.',
+      'Sair da partida conta como desistência. Caiu a conexão? Recarregue a página para voltar.',
+      '<b>Jogue no Wi-Fi</b>: os aparelhos se conectam direto, e algumas redes móveis bloqueiam isso.'
+    ] },
+    { title: 'Controles', items: [
+      '<b>Clique esquerdo</b>: selecionar e agir.',
+      '<b>Clique direito</b>: mostra o alcance de movimento da unidade.',
+      '<b>Clique do meio</b>: mostra o alcance de ataque da unidade.',
+      '<b>Clique</b> num inimigo (ou numa unidade que já agiu): alcance de movimento; clique de novo: alcance de ataque.',
+      '<b>Esc</b>: fecha o menu ou cancela a ação; sem nada para cancelar, pausa.',
+      'Botão de <b>pausa</b> (no alto, ao centro, ou <b>P</b>): continuar ou sair da partida para o menu principal.',
+      'Botão <b>x1/x2/x3</b>: velocidade do jogo.',
+      'Botão do <b>olho</b> (embaixo à esquerda, ou <b>H</b>): esconde ou mostra as barras do topo, a dica e o card da unidade para ver o mapa inteiro. O menu da unidade sempre aparece.',
+      'Teclado: <b>setas</b> movem o cursor, <b>Enter</b> age, <b>Tab</b> pula para a próxima unidade, <b>R</b>/<b>F</b> mostram o alcance de movimento/ataque, <b>E</b> encerra o turno, <b>T</b> abre as mensagens rápidas do online.'
+    ] },
+    { title: 'Controle', items: [
+      'Xbox, PlayStation, Switch Pro e a maioria dos controles USB/Bluetooth funcionam. Aperte qualquer botão para começar a usar; as dicas passam a mostrar os botões dele.',
+      '<b>Direcional</b> ou <b>analógico esquerdo</b>: move o cursor (nos menus: passa entre os botões). <b>A</b> (✕): selecionar e agir. <b>B</b> (◯): cancelar ou voltar.',
+      '<b>Y</b> (△) / <b>X</b> (▢): alcance de movimento / ataque. <b>LB</b>/<b>RB</b> (L1/R1): unidade anterior/próxima que pode agir.',
+      '<b>LT</b>/<b>RT</b> (L2/R2): zoom. <b>Analógico direito</b>: move a câmera (nos menus: rola).',
+      '<b>Start</b> (Options): pausa. <b>View</b>/<b>Select</b> (Share): encerra o turno. <b>Clique do analógico esquerdo</b>: esconde a interface. <b>Clique do analógico direito</b>: mensagens rápidas do online.',
+      'Tela cheia e o primeiro som ainda precisam de um toque ou clique (regra do navegador).'
+    ] },
+    { title: 'Tela de toque', items: [
+      '<b>Toque</b> numa unidade sua para abrir o menu dela.',
+      'Ao mover ou atacar, o primeiro <b>toque</b> mostra a prévia do caminho ou do combate; <b>toque de novo na mesma casa</b> para confirmar.',
+      '<b>Toque</b> fora das casas destacadas para cancelar.',
+      '<b>Toque</b> num inimigo: alcance de movimento; toque de novo: alcance de ataque.'
+    ] }
+  ],
+
+  credits: {
+    createdBy: 'Criado por',
+    aka: 'também conhecido como',
+    source: 'Código-fonte:',
+    builtWith: 'Feito com',
+    and: 'e',
+    soundBy: 'Efeitos sonoros de',
+    with: 'com',
+    font: 'Fonte NotJamSlabSerif11'
+  },
+
+  hud: {
+    timeLeft: 'Tempo restante neste turno',
+    say: 'Dizer...',
+    sayTitle: 'Enviar uma mensagem rápida (T, 1-9)',
+    pause: 'Pausa (P)',
+    speed: 'Velocidade do jogo',
+    speedLocked: 'Velocidade do jogo (fixa no tutorial)',
+    round: n => `Rodada ${n}`,
+    watchingCount: n => `${n} assistindo`,
+    peopleWatching: 'Pessoas assistindo',
+    phase: team => team === 'blue' ? 'Fase azul' : 'Fase vermelha',
+    watching: 'Assistindo',
+    endTurn: 'Encerrar turno',
+    endTurnTitle: 'Encerrar turno (E)',
+    endTurnSure: n => `${n} com ações - certeza?`
+  },
+
+  match: {
+    turnOf: name => `Turno de ${name}`,
+    roundOf: (round, who) => `Rodada ${round} - ${who}`,
+    playerN: n => `Jogador ${n}`,
+    cpuN: n => `IA ${n}`,
+    withDifficulty: (label, difficulty) => `${label} (${difficulty})`,
+    move: 'Mover',
+    attack: 'Atacar',
+    skills: 'Habilidades',
+    undo: 'Desfazer movimento',
+    wait: 'Esperar',
+    showInterface: 'Mostrar interface (H)',
+    hideInterface: 'Esconder interface (H)',
+    toggleInterface: 'Esconder ou mostrar a interface',
+    done: 'Pronta',
+    moved: 'Moveu',
+    attacked: 'Atacou',
+    skillReady: skill => `${skill} pronta`,
+    skillUsed: 'Habilidade usada',
+    forest: 'Floresta DEF +2',
+    braced: 'Firme',
+    pinned: 'Imobilizada',
+    waitingFor: name => `Aguardando ${name}...`,
+    thinking: (team, who) => `${team} (${who}) está pensando...`,
+    hintMenu: 'Escolha uma ação · [Esc] fecha',
+    hintMove: 'Clique numa casa destacada para mover · [Esc] cancela',
+    hintAttack: 'Clique num inimigo ao alcance para atacar · [Esc] cancela',
+    hintHeal: 'Clique num aliado para curar · [Esc] cancela',
+    hintIdle: '[Clique esquerdo] seleciona · [Clique direito] alcance de movimento · [Clique do meio] alcance de ataque · [Tab] próxima unidade',
+    padEmotes: (a, b) => `${a} envia · ${b} fecha`,
+    padMenu: (a, b) => `${a} escolhe · ${b} fecha`,
+    padMove: (a, b) => `${a} move para cá · ${b} cancela`,
+    padAttack: (a, b) => `${a} ataca · ${b} cancela`,
+    padHeal: (a, b) => `${a} cura · ${b} cancela`,
+    padIdle: (a, y, x, lbrb, select, start) =>
+      `${a} seleciona · ${y} alcance de movimento · ${x} alcance de ataque · ${lbrb} unidades · ${select} encerra o turno · ${start} pausa`,
+    touchMenu: 'Escolha uma ação · [toque fora] fecha',
+    touchMove: '[Toque] numa casa para ver, [toque de novo] para mover · toque fora para cancelar',
+    touchAttack: '[Toque] num inimigo para ver, [toque de novo] para atacar · toque fora para cancelar',
+    touchHeal: '[Toque] num aliado para ver, [toque de novo] para curar · toque fora para cancelar',
+    touchIdle: '[Toque] numa unidade sua para agir · [toque] em outras para ver o alcance (de novo: alcance de ataque)'
+  },
+
+  card: {
+    facing: dir => `virado para ${dir}`,
+    directions: { up: 'cima', down: 'baixo', left: 'a esquerda', right: 'a direita' },
+    range: note => `Alcance: ${note}`,
+    forecast: 'Prévia do ataque',
+    hit: 'Acerto',
+    damage: 'Dano',
+    kill: 'Matar',
+    counterIfSurvives: 'Contra-ataque se sobreviver:',
+    counterHit: pct => `${pct} de acerto`,
+    counterDmg: dmg => `${dmg} de dano`,
+    killsYou: pct => `${pct} de te matar`,
+    backAttack: 'Pelas costas: acerto garantido, ATQ em dobro',
+    critical: 'Crítico'
+  },
+
+  floating: {
+    critical: n => `Crítico! ${n}`,
+    backAttack: n => `Pelas costas! ${n}`,
+    miss: n => `Errou ${n}`,
+    counter: 'Revide! ',
+    brace: 'Firmeza',
+    pinned: 'Imobilizada'
+  },
+
+  banner: {
+    skip: touch => `${touch ? 'toque' : 'clique'} para pular`
+  },
+
+  gameOver: {
+    playAgain: 'Jogar de novo',
+    matchEnded: 'Partida encerrada',
+    outOfSync: 'Os dois jogos perderam a sincronia',
+    draw: 'Empate',
+    turnLimit: rounds => `Limite de turnos atingido após ${rounds} rodadas`,
+    noUnits: 'Não sobrou nenhuma unidade',
+    theOpponent: 'O adversário',
+    leftMatch: name => `${name} saiu da partida`,
+    stoppedResponding: name => `${name} parou de responder`,
+    roundSurvivors: (round, n) => `Rodada ${round} - ${n} unidade${s(n)} restante${s(n)}`,
+    winsDash: (name, rest) => `${name} venceu - ${rest}`,
+    victory: 'Vitória!',
+    defeat: 'Derrota',
+    wins: name => `${name} venceu!`
+  },
+
+  pause: {
+    title: 'Pausado',
+    resume: 'Continuar',
+    quitSure: 'Sair da partida - certeza?',
+    showEmotes: 'Mostrar mensagens',
+    muteEmotes: 'Silenciar mensagens',
+    quitWarning: 'A partida em andamento será perdida.'
+  },
+
+  tutorialUi: {
+    next: 'Próximo',
+    nextTitle: 'Próximo (Enter)',
+    skip: 'Pular tutorial',
+    skipSure: 'Certeza? Pular',
+    playMatch: 'Jogar uma partida',
+    complete: 'Tutorial concluído!',
+    completeText: 'Pronto para uma partida de verdade? Mesmo mapa, mesmos exércitos, sem ajuda desta vez.',
+    broken: 'Algo deu errado no tutorial. Voltando ao menu...'
+  },
+
+  online: {
+    heading: 'Online',
+    rejectFull: 'A sala está cheia.',
+    rejectVersion: 'As versões do jogo são diferentes. Recarregue a página (Ctrl+F5) e tente de novo.',
+    rejectKicked: 'Você foi removido desta sala.',
+    rejectClosed: 'A sala foi fechada pelo dono.',
+    connectionClosed: 'A conexão com a sala foi encerrada.',
+    wifiTip: 'As partidas online ligam os aparelhos direto, sem servidor de jogo no meio. Algumas redes móveis (4G/5G) e redes de empresa bloqueiam conexões diretas. Se não conseguir conectar, mude para o Wi-Fi.',
+    wifiTipTitle: 'Dica: jogue no Wi-Fi.',
+    typeName: 'Digite seu nome primeiro.',
+    badCode: 'Códigos de sala têm 5 letras e números.',
+    yourName: 'Seu nome',
+    namePlaceholder: 'Nome',
+    youWereIn: code => `Você estava na sala ${code}.`,
+    rejoin: 'Voltar',
+    createRoom: 'Criar uma sala',
+    locked: 'Fechada: só com o código',
+    open: 'Aberta: aparece para todos',
+    createButton: 'Criar sala',
+    joinWithCode: 'Entrar com um código',
+    codePlaceholder: 'CÓDIGO',
+    play: 'Jogar',
+    watch: 'Assistir',
+    openRooms: 'Salas abertas',
+    refresh: 'Atualizar',
+    looking: 'Procurando salas',
+    noRooms: 'Nenhuma sala aberta agora. Crie uma!',
+    waitingOpponent: 'Aguardando adversário',
+    gettingReady: 'Se preparando',
+    inMatch: round => `Em partida - rodada ${round}`,
+    matchOver: 'Partida encerrada',
+    ownersRoom: owner => `Sala de ${owner}`,
+    watchingCount: n => `${n} assistindo`,
+    couldntConnect: code => `Não foi possível conectar à sala ${code}`,
+    mayBeClosed: 'A sala pode ter sido fechada, ou sua rede bloqueia conexões diretas.',
+    tryAgain: 'Tentar de novo',
+    connecting: code => `Conectando à sala ${code}`,
+    fewSeconds: 'Isso pode levar alguns segundos.',
+    disconnected: 'Desconectado',
+    wantsRematch: 'Quer revanche',
+    playing: 'Jogando',
+    ready: 'Pronto',
+    choosingArmy: 'Montando o exército',
+    waitingForOpponent: team => `${team}: aguardando um adversário`,
+    youTag: ' · você',
+    ownerTag: ' · dono',
+    kick: 'Expulsar',
+    youSuffix: ' (você)',
+    lockedRoom: 'Sala fechada',
+    openRoom: 'Sala aberta',
+    roomCode: 'Código da sala',
+    copied: 'Copiado!',
+    copy: 'Copiar',
+    lockedInfo: 'Fechada: só entra quem tem o código.',
+    openInfo: 'Aberta: qualquer um encontra esta sala na lista.',
+    changeMap: 'Trocar mapa',
+    mapUnits: (w, h, counts) => `${w}x${h} · ${counts} unidades`,
+    players: 'Jogadores',
+    watchingTitle: (n, max) => `Assistindo (${n}/${max})`,
+    nobody: 'Ninguém ainda.',
+    ownerAway: 'O dono da sala perdeu a conexão. Aguardando a volta dele...',
+    waitingRematch: 'Aguardando os dois jogadores pedirem revanche.',
+    waitingOther: 'Aguardando o outro jogador',
+    leaveRoom: 'Sair da sala',
+    rematch: 'Revanche',
+    changeArmy: 'Trocar exército',
+    chooseArmy: 'Escolher exército',
+    bothSeatsTaken: 'As duas vagas estão ocupadas: você está assistindo.',
+    leaveWarning: 'Você vai sair da sala.',
+    forfeitWarning: 'Você vai desistir da partida.',
+    stayInRoom: 'Ficar na sala',
+    notResponding: name => `${name} não está respondendo`,
+    notRespondingText: 'O tempo do turno acabou e nada chegou.\nEspere mais um pouco ou saia e fique com a vitória.',
+    wait: 'Esperar',
+    leave: 'Sair',
+    waitingBack: time => `Aguardando a volta... ${time}`,
+    waitingBackWin: time => `Aguardando a volta... ${time}\nSe não voltar, você vence.`,
+    connectionLost: name => `Conexão perdida com ${name}`,
+    leaveAndWin: 'Sair e vencer',
+    removed: 'Você foi removido da sala.',
+    leftRoom: name => `${name} saiu da sala.`,
+    waitingAccept: name => `Aguardando ${name} aceitar...`
+  },
+
+  emotes: {
+    'Nice!': 'Boa!',
+    'Oops': 'Ops',
+    'Good luck': 'Boa sorte',
+    'GG': 'GG',
+    'Hmm...': 'Hmm...',
+    'Hurry up!': 'Anda logo!',
+    'Too easy': 'Fácil demais',
+    'Is that all?': 'Só isso?',
+    'Watch your back': 'Cuidado com as costas',
+    'Big brain': 'Cérebro gigante',
+    'Lucky!': 'Sortudo!',
+    'Noooo!': 'Nããão!',
+    'Run!': 'Corre!',
+    'Bring it on': 'Pode vir',
+    'I meant that': 'Foi de propósito',
+    'Hahaha': 'Kkkkkk',
+    'Wow': 'Uau',
+    'Oh no': 'Ah não',
+    'Hello?': 'Alô?',
+    'Calculated': 'Calculado',
+    'Sorry not sorry': 'Foi mal, só que não',
+    'EZ': 'EZ',
+    'Skill issue': 'Falta de skill',
+    'Cry about it': 'Chora mais',
+    'Uninstall': 'Desinstala',
+    'Get rekt': 'Amassado',
+    'Too slow': 'Lerdo demais',
+    'Free kill': 'Free kill',
+    'Was that a plan?': 'Isso era um plano?',
+    'Rage quit?': 'Vai quitar?',
+    'Nerf this!': 'Nerfa isso!',
+    'Grandma plays better': 'Minha vó joga melhor',
+    'Read the rules': 'Lê as regras'
+  },
+
+  tutorial: {
+    welcome: 'Bem-vindo ao PixelFantasyWar! Você comanda o exército [Azul]. Derrote todas as unidades [Vermelhas] para vencer.',
+    rounds: 'Os exércitos se revezam: primeiro você age com suas unidades, depois o inimigo age com as dele. Isso é uma rodada.',
+    card: 'Selecione uma unidade e o card dela aparece no topo: PV, ataque (ATQ), defesa (DEF), alcance e movimento.',
+    moveWarrior: 'Selecione seu [Guerreiro], escolha [Mover] e clique na casa marcada. As casas azuis mostram até onde ele pode ir.',
+    barbarianDoor: 'Agora mova o [Bárbaro] para cima da [porta].',
+    doorBad: 'Entrar numa porta custa 2 de movimento, e uma unidade parada numa porta não pode atacar. Não é um bom lugar!',
+    undo: 'Selecione o Bárbaro de novo e escolha [Desfazer movimento]. Dá para desfazer um movimento até a unidade atacar.',
+    throughDoor: 'Em vez disso, passe com o [Bárbaro] pela porta.',
+    run: 'O [Arqueiro] só anda 4 casas. Abra [Habilidades], escolha [Correr] para dobrar o movimento dele neste turno e clique na casa marcada.',
+    mp: 'Habilidades custam [PM]. Toda unidade começa com 4 PM para a partida inteira, e PM nunca volta. Uma habilidade por unidade a cada turno.',
+    wait: 'O [Lanceiro] fica em casa por enquanto. Escolha [Esperar] para terminar com ele: ele fica cinza.',
+    endTurnFirst: 'Aperte [Encerrar turno]. As unidades que você não usou só ficam onde estão.',
+    enemyTurn: 'Turno do inimigo! Veja o exército [Vermelho] avançar.',
+    pauseTip: 'Dica: [Esc] ou o botão de pausa pausam o jogo. Use a roda do mouse (ou pinça) para dar zoom no mapa.',
+    warriorForest: 'Mova o [Guerreiro] para dentro da [floresta].',
+    forest: 'A floresta custa 2 de movimento e dá [+2 DEF] a quem estiver nela: um bom lugar para segurar a linha. Água não pode ser atravessada, mas flechas e magias passam por cima dela.',
+    thiefRun: 'O [Ladrão] atravessa a floresta a toda velocidade. Use [Correr] para levá-lo até a casa marcada.',
+    archerMarked: 'Mova o [Arqueiro] para a casa marcada.',
+    fire: 'Escolha [Atacar] e aponte para o [Clérigo] vermelho: a prévia mostra a chance de acerto e o dano. Arqueiros atiram em linha reta, até 6 casas. Fogo!',
+    miss: 'Errou! Os dados decidem cada ataque, mas até um erro causa [1 de dano].',
+    protect: 'Mova o [Bárbaro] para a frente do Arqueiro para protegê-lo.',
+    cleric: 'Traga o [Clérigo] para fora pela porta de baixo.',
+    mage: 'E o [Mago].',
+    endTurn: 'Aperte [Encerrar turno].',
+    hereTheyCome: 'Lá vêm eles!',
+    counter: 'Seu [Bárbaro] revida! Unidades corpo a corpo (alcance 1) contra-atacam quando sobrevivem.',
+    critical: 'Ai, um [acerto crítico]! Tirar 20 causa 12 + ATQ − DEF. Seu Guerreiro sobrevive e revida.',
+    facing: 'As unidades ficam viradas para onde se moveram ou atacaram por último. Atacar um inimigo [pelas costas] sempre acerta, usa o dobro do ATQ e não leva contra-ataque.',
+    thiefBehind: 'O [Lutador] vermelho está virado para o seu Bárbaro. Mova o [Ladrão] para as costas dele.',
+    attackBehind: 'Ataque pelas costas!',
+    barbarianMage: 'Mova o [Bárbaro] para o lado do [Mago] vermelho.',
+    special: 'Abra [Habilidades] e escolha [Especial] (4 PM): o próximo ataque é sempre crítico. Ataque o Mago!',
+    guard: 'O [Ladrão] vermelho está ao lado do seu Guerreiro. Abra as [Habilidades] do Guerreiro e escolha [Guarda]: +4 DEF até o seu próximo turno.',
+    clericWarrior: 'Mova o [Clérigo] para o lado do Guerreiro.',
+    heal: 'Abra [Habilidades], escolha [Curar] e clique no Guerreiro: ele recupera 6 PV.',
+    aimedShot: 'Toda classe tem uma habilidade própria. O [Tiro Certeiro] do Arqueiro não erra e causa 3 de dano extra. Use no [Clérigo] vermelho.',
+    mageMarked: 'Mova o [Mago] para a casa marcada.',
+    fireball: 'A [Bola de Fogo] do Mago também queima o alvo e todo inimigo ao lado dele. Mire no [Bárbaro] vermelho!',
+    guardPays: 'A Guarda valeu a pena: o ataque erra, e o contra-ataque do seu Guerreiro acaba com o Ladrão.',
+    rage: 'A [Fúria] do Bárbaro vermelho derruba seu Mago. Mantenha as unidades frágeis atrás da linha de frente!',
+    lostMage: 'Você perdeu o Mago, mas o Vermelho já perdeu três unidades. Acabe com eles!',
+    finishCleric: 'Seu [Bárbaro] pode acabar com o [Clérigo] vermelho ferido.',
+    thiefWarrior: 'Mova o [Ladrão] para as costas do [Guerreiro] vermelho.',
+    backAttack: 'Ataque pelas costas!',
+    archerWarrior: 'Mova o [Arqueiro] para o lado do Guerreiro vermelho.',
+    shoot: 'Atire nele!',
+    luck: 'Um 20 no dado: [acerto crítico]! A sorte também pode estar do seu lado.',
+    clericBehind: 'O [Bárbaro] vermelho está de costas para você. Mova o [Clérigo] para as costas dele.',
+    spearmanRun: 'O [Lanceiro] entra na luta. Use [Correr] para chegar à casa marcada.',
+    reach: 'Lanceiros acertam a [2 casas] de distância, então unidades corpo a corpo não revidam. Acabe com o Bárbaro!',
+    careful: 'Cuidado: seu [Clérigo] está de costas para o inimigo. A direção também conta para você!',
+    twoLeft: 'Só restam dois inimigos!',
+    thiefArcher: 'Mova o [Ladrão] para as costas do [Arqueiro] vermelho.',
+    spearmanNext: 'Mova o [Lanceiro] para o lado do Lanceiro vermelho.',
+    pierce: 'O [Perfurar] do Lanceiro ignora a defesa. Termine a batalha!',
+    victory: '[Vitória!] Agora você sabe o básico: mova, ataque de bons ângulos, use o terreno e gaste PM com sabedoria.'
+  }
+}

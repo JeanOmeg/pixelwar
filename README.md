@@ -4,6 +4,8 @@ Jogo de batalhas táticas por turnos inspirado em Fire Emblem e Final Fantasy Ta
 
 **Jogar no navegador:** https://jeanomeg.github.io/pixelwar/
 
+**Idiomas:** inglês (padrão) e português do Brasil. Troque pelas bandeiras no canto da tela inicial; a escolha fica salva para a próxima visita.
+
 ---
 
 ## Como jogar

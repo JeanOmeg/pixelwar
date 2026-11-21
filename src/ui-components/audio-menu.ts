@@ -2,6 +2,7 @@ import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { AudioManager } from '../audio-manager'
 import { canFullscreen, isFullscreen, isStandalone, needsHomeScreenForFullscreen, toggleFullscreen } from '../device'
+import { onLanguageChange, t } from '../i18n'
 
 /**
  * Corner buttons: sound on/off and fullscreen (entering fullscreen also turns
@@ -101,23 +102,26 @@ export class AudioMenu extends LitElement {
   private fullscreenButton() {
     if (!this.fullscreenReady || isStandalone()) return nothing
     if (canFullscreen()) {
-      return html`<button @click=${() => toggleFullscreen()} class="material-symbols-outlined" title="Fullscreen">${this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</button>`
+      return html`<button @click=${() => toggleFullscreen()} class="material-symbols-outlined" title=${t().audio.fullscreen}>${this.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</button>`
     }
     if (!needsHomeScreenForFullscreen()) return nothing
     return html`
-      <button @click=${() => { this.tipOpen = !this.tipOpen }} class="material-symbols-outlined" title="Fullscreen" aria-expanded=${this.tipOpen}>fullscreen</button>
+      <button @click=${() => { this.tipOpen = !this.tipOpen }} class="material-symbols-outlined" title=${t().audio.fullscreen} aria-expanded=${this.tipOpen}>fullscreen</button>
       ${this.tipOpen ? html`
         <div class="tip" role="dialog" @click=${() => { this.tipOpen = false }}>
-          <strong>Play in fullscreen</strong>
-          Tap <span class="material-symbols-outlined icon">ios_share</span> Share, then <b>Add to Home Screen</b>, and open PixelWar from the new icon.
-          <small>Tap to close</small>
+          <strong>${t().audio.tipTitle}</strong>
+          ${t().audio.tipBefore} <span class="material-symbols-outlined icon">ios_share</span> ${t().audio.tipShare} <b>${t().audio.tipAdd}</b>${t().audio.tipAfter}
+          <small>${t().audio.tipClose}</small>
         </div>
       ` : nothing}
     `
   }
 
+  private stopLanguage: (() => void) | null = null
+
   override connectedCallback() {
     super.connectedCallback()
+    this.stopLanguage = onLanguageChange(() => this.requestUpdate())
     document.addEventListener('fullscreenchange', this.onFullscreenChange)
     document.addEventListener('webkitfullscreenchange', this.onFullscreenChange)
   }
@@ -125,6 +129,7 @@ export class AudioMenu extends LitElement {
   override disconnectedCallback() {
     document.removeEventListener('fullscreenchange', this.onFullscreenChange)
     document.removeEventListener('webkitfullscreenchange', this.onFullscreenChange)
+    this.stopLanguage?.()
     super.disconnectedCallback()
   }
 
@@ -137,7 +142,7 @@ export class AudioMenu extends LitElement {
     // material symbols
     // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:volume_off:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=speaker
     return html`
-      <button @click=${this.toggleSound} class="material-symbols-outlined" title="Sound">${this.soundOn ? 'volume_up' : 'volume_off'}</button>
+      <button @click=${this.toggleSound} class="material-symbols-outlined" title=${t().audio.sound}>${this.soundOn ? 'volume_up' : 'volume_off'}</button>
       ${this.fullscreenButton()}
     `
   }

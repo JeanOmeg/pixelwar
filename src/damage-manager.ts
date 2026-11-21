@@ -1,11 +1,12 @@
 import * as ex from 'excalibur'
 import { SCALE } from './config'
 import type { AttackOutcome } from './combat'
+import { t } from './i18n'
 
 function describe(outcome: AttackOutcome): { text: string, color: ex.Color } {
-  if (outcome.critical) return { text: `Critical! ${outcome.damage}`, color: ex.Color.fromHex('#ffd23f') }
-  if (outcome.backAttack) return { text: `Back attack! ${outcome.damage}`, color: ex.Color.fromHex('#ff8c42') }
-  if (!outcome.hit) return { text: `Miss ${outcome.damage}`, color: ex.Color.fromHex('#b8bcc8') }
+  if (outcome.critical) return { text: t().floating.critical(outcome.damage), color: ex.Color.fromHex('#ffd23f') }
+  if (outcome.backAttack) return { text: t().floating.backAttack(outcome.damage), color: ex.Color.fromHex('#ff8c42') }
+  if (!outcome.hit) return { text: t().floating.miss(outcome.damage), color: ex.Color.fromHex('#b8bcc8') }
   return { text: outcome.damage.toFixed(0), color: ex.Color.White }
 }
 

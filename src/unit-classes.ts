@@ -1,6 +1,7 @@
 import { CLASS_STATS, ClassStats } from './class-stats'
 import { TERRAIN_RULES } from './path-finding/terrain-rules'
 import { UNIT_CLASSES, UnitClass } from './unit-types'
+import { t } from './i18n'
 
 export { UNIT_CLASSES, unitTypeOf } from './unit-types'
 
@@ -12,21 +13,37 @@ export { UNIT_CLASSES, unitTypeOf } from './unit-types'
  * all computed with the real combat odds (combat.ts). Scaled so the classic army
  * (the 8 original classes) costs exactly ARMY_BUDGET.
  */
-export const CLASS_INFO: Record<UnitClass, { role: string, description: string, cost: number }> = {
-  Archer: { role: 'Ranged', cost: 9, description: 'Picks off targets from far away. Fragile up close.' },
-  Mage: { role: 'Ranged', cost: 8, description: 'Strikes from a distance and moves a bit faster than the archer.' },
-  Spearman: { role: 'Reach', cost: 8, description: 'Hits two tiles away on open ground, safe from counterattacks.' },
-  Thief: { role: 'Skirmisher', cost: 10, description: 'Hard hitter that crosses rough terrain at full speed. Perfect for back attacks.' },
-  Fighter: { role: 'Melee', cost: 12, description: 'Solid all-rounder with good mobility.' },
-  Cleric: { role: 'Support', cost: 15, description: 'Sturdy and mobile. Holds the line well.' },
-  Barbarian: { role: 'Bruiser', cost: 17, description: 'Strong attacker with thick hide, but slow.' },
-  Warrior: { role: 'Tank', cost: 21, description: 'Highest HP and defense. Slow, built to block paths.' },
-  Paladin: { role: 'Holy knight', cost: 15, description: 'Armored swordsman: almost as tough as a Barbarian and faster on its feet.' },
-  Berserker: { role: 'Berserker', cost: 17, description: 'The hardest hitter in the game. Light armor, so strike first.' },
-  Assassin: { role: 'Assassin', cost: 9, description: 'Fastest unit, crosses rough terrain freely. Deadly from behind, dies to a stiff breeze.' },
-  Ranger: { role: 'Ranged', cost: 11, description: 'Forest archer: shorter range than the Archer, but stronger and swift through the woods.' },
-  Necromancer: { role: 'Dark mage', cost: 8, description: 'Dark magic that hits twice as hard as the Mage, at a shorter range.' },
-  Halberdier: { role: 'Reach', cost: 12, description: 'Armored pikeman. Its reach of 2 works on any terrain.' }
+export interface ClassInfo {
+  /** Name shown to the player (translated; the code uses the UnitClass id) */
+  readonly name: string
+  readonly role: string
+  readonly description: string
+  readonly cost: number
+}
+
+/** Name, role and description come from the current language (i18n) */
+const info = (unitClass: UnitClass, cost: number): ClassInfo => ({
+  cost,
+  get name() { return t().classes[unitClass].name },
+  get role() { return t().classes[unitClass].role },
+  get description() { return t().classes[unitClass].description }
+})
+
+export const CLASS_INFO: Record<UnitClass, ClassInfo> = {
+  Archer: info('Archer', 9),
+  Mage: info('Mage', 8),
+  Spearman: info('Spearman', 8),
+  Thief: info('Thief', 10),
+  Fighter: info('Fighter', 12),
+  Cleric: info('Cleric', 15),
+  Barbarian: info('Barbarian', 17),
+  Warrior: info('Warrior', 21),
+  Paladin: info('Paladin', 15),
+  Berserker: info('Berserker', 17),
+  Assassin: info('Assassin', 9),
+  Ranger: info('Ranger', 11),
+  Necromancer: info('Necromancer', 8),
+  Halberdier: info('Halberdier', 12)
 }
 
 /** Points available to build an army (the classic 8-class army costs exactly this) */
@@ -56,9 +73,9 @@ export interface ClassTrait {
 export function classTraits(unitClass: UnitClass): ClassTrait[] {
   const rules = TERRAIN_RULES[unitClass]
   const traits: ClassTrait[] = []
-  if (rules.ignoresSlowTerrain) traits.push({ name: 'Pathfinder', description: 'Moves at full speed through forest.' })
-  if (rules.targetsWater) traits.push({ name: 'Over water', description: 'Can target enemies across water.' })
-  if (classStats(unitClass).range === 1) traits.push({ name: 'Counterattack', description: 'Strikes back once when an adjacent enemy attacks it and it survives.' })
+  if (rules.ignoresSlowTerrain) traits.push(t().traits.pathfinder)
+  if (rules.targetsWater) traits.push(t().traits.overWater)
+  if (classStats(unitClass).range === 1) traits.push(t().traits.counterattack)
   return traits
 }
 
@@ -73,9 +90,14 @@ export function classStats(unitClass: UnitClass): ClassStats {
  * open and 3 over forest or water.
  */
 export function rangeNote(unitName: string, range: number): string {
-  if (range <= 1) return 'Melee: adjacent tiles'
+  if (range <= 1) return t().details.melee
   const rules = TERRAIN_RULES[unitName.replace(/[AB]$/, '') as UnitClass] ?? {}
   return rules.slowTerrainCostsRange
-    ? `${range} tiles in the open, ${Math.floor(range / 2)} over forest or water`
-    : `${range} tiles on any terrain`
+    ? t().details.rangeSlow(range, Math.floor(range / 2))
+    : t().details.rangeAny(range)
+}
+
+/** Class name in the current language (the code always uses the UnitClass id) */
+export function className(unitClass: UnitClass): string {
+  return t().classes[unitClass]?.name ?? unitClass
 }

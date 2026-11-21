@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 /* eslint-disable no-console -- out-of-sync details go to the console for debugging */
 import * as ex from 'excalibur'
 import type { Board } from '../board'
@@ -110,10 +111,10 @@ export class OnlineMatch {
     }
     ui.onToggleEmotes = () => this.toggleEmotes()
     ui.setPauseOptions({
-      quitWarning: this.seat === null ? 'You will leave the room.' : 'You will forfeit the match.',
+      quitWarning: this.seat === null ? t().online.leaveWarning : t().online.forfeitWarning,
       emotesMuted: this.emotesMuted
     })
-    ui.setRematchLabel(this.seat === null ? 'Stay in room' : 'Rematch')
+    ui.setRematchLabel(this.seat === null ? t().online.stayInRoom : t().online.rematch)
     ui.onQuit = () => {
       this.leaving = true
       this.session.leave()
@@ -190,11 +191,11 @@ export class OnlineMatch {
   private async showUnresponsive(current: Player) {
     if (!this.ui) return
     this.notice = 'unresponsive'
-    const name = current.displayName ?? 'The opponent'
+    const name = current.displayName ?? t().gameOver.theOpponent
     const choice = await this.ui.showNotice({
-      title: `${name} is not responding`,
-      text: 'Their turn time ran out and nothing arrived.\nWait a bit longer, or leave and take the win.',
-      buttons: [{ id: 'wait', label: 'Wait', primary: true }, { id: 'leave', label: 'Leave' }]
+      title: t().online.notResponding(name),
+      text: t().online.notRespondingText,
+      buttons: [{ id: 'wait', label: t().online.wait, primary: true }, { id: 'leave', label: t().online.leave }]
     })
     if (this.notice === 'unresponsive') this.notice = null
     if (choice === 'leave') this.session.claimWin('abandoned')
@@ -239,8 +240,8 @@ export class OnlineMatch {
 
   private lostText(secondsLeft: number): string {
     return this.seat === null
-      ? `Waiting for them to come back... ${formatTime(secondsLeft)}`
-      : `Waiting for them to come back... ${formatTime(secondsLeft)}\nIf they don't, you win.`
+      ? t().online.waitingBack(formatTime(secondsLeft))
+      : t().online.waitingBackWin(formatTime(secondsLeft))
   }
 
   private async showLost(seat: Seat) {
@@ -249,9 +250,9 @@ export class OnlineMatch {
     this.notice = 'lost'
     const name = this.session.memberName(seat)
     const choice = await this.ui.showNotice({
-      title: `Connection lost with ${name}`,
+      title: t().online.connectionLost(name),
       text: this.lostText(RECONNECT_SECONDS),
-      buttons: this.seat === null ? [{ id: 'leave', label: 'Leave room' }] : [{ id: 'leave', label: 'Leave and win' }]
+      buttons: this.seat === null ? [{ id: 'leave', label: t().online.leaveRoom }] : [{ id: 'leave', label: t().online.leaveAndWin }]
     })
     if (this.notice === 'lost') this.notice = null
     if (choice !== 'leave') return
@@ -264,9 +265,9 @@ export class OnlineMatch {
     this.ui.closeNotice()
     this.notice = 'closed'
     await this.ui.showNotice({
-      title: 'Disconnected',
-      text: this.session.rejectReason === 'kicked' ? 'You were removed from the room.' : 'The connection to the room was closed.',
-      buttons: [{ id: 'menu', label: 'Main menu', primary: true }]
+      title: t().online.disconnected,
+      text: this.session.rejectReason === 'kicked' ? t().online.removed : t().online.connectionClosed,
+      buttons: [{ id: 'menu', label: t().common.mainMenu, primary: true }]
     })
     this.quitToMenu()
   }
@@ -339,15 +340,15 @@ export class OnlineMatch {
         if (!room || this.session.status !== 'joined') return resolve('gone')
         if (room.phase === 'lobby' && room.matchNo > matchNo) return resolve('lobby')
         const other = this.seat === null ? null : room.seats[1 - this.seat]
-        if (!other || !other.connected) ui.changeNotice({ text: `${opponent} left the room.`, buttons: [{ id: 'menu', label: 'Main menu', primary: true }] })
+        if (!other || !other.connected) ui.changeNotice({ text: t().online.leftRoom(opponent ?? ''), buttons: [{ id: 'menu', label: t().common.mainMenu, primary: true }] })
       }
       this.stops.push(this.session.changed.on(check))
       check()
     })
     const picked = ui.showNotice({
-      title: 'Rematch',
-      text: `Waiting for ${opponent} to accept...`,
-      buttons: [{ id: 'menu', label: 'Main menu' }]
+      title: t().online.rematch,
+      text: t().online.waitingAccept(opponent ?? ''),
+      buttons: [{ id: 'menu', label: t().common.mainMenu }]
     })
     const outcome = await Promise.race([ready, picked.then(() => 'menu' as const)])
     if (outcome === 'lobby') {

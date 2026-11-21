@@ -4,6 +4,8 @@
  * so killing, hurting, risking and moving are all compared on the same scale.
  */
 
+import { t } from '../i18n'
+
 export const VALUE_PER_POINT = 10
 
 export interface AiWeights {
@@ -85,10 +87,10 @@ export interface DifficultySettings {
 }
 
 export const DIFFICULTIES: Record<Difficulty, DifficultySettings> = {
-  easy: { label: 'Easy', noise: 3, threatScale: 0.2, skillChance: 0.3, mistakeChance: 0.4, enemyRun: false },
-  normal: { label: 'Normal', noise: 0.3, threatScale: 0.85, skillChance: 0.85, mistakeChance: 0.05, enemyRun: false },
+  easy: { get label() { return t().difficulties.easy }, noise: 3, threatScale: 0.2, skillChance: 0.3, mistakeChance: 0.4, enemyRun: false },
+  normal: { get label() { return t().difficulties.normal }, noise: 0.3, threatScale: 0.85, skillChance: 0.85, mistakeChance: 0.05, enemyRun: false },
   // Hard weights picked with yarn ai:tune (they beat the plain weights ~2.6 to 1)
-  hard: { label: 'Hard', noise: 0.03, threatScale: 1, skillChance: 1, mistakeChance: 0, enemyRun: false, weights: { mp: 12, damageShare: 0.9, killBonus: 100 } }
+  hard: { get label() { return t().difficulties.hard }, noise: 0.03, threatScale: 1, skillChance: 1, mistakeChance: 0, enemyRun: false, weights: { mp: 12, damageShare: 0.9, killBonus: 100 } }
 }
 
 export const DIFFICULTY_IDS = Object.keys(DIFFICULTIES) as Difficulty[]

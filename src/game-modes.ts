@@ -1,49 +1,27 @@
 import type { UnitClass } from './path-finding/terrain-rules'
 import type { Difficulty } from './ai/weights'
 import type { Placement } from './deploy'
+import { t } from './i18n'
 
 export type GameMode = 'tutorial' | 'p1vscpu' | 'p1vsp2' | 'cpuvscpu' | 'online'
 
 export interface GameModeDefinition {
   id: GameMode
-  title: string
-  description: string
+  readonly title: string
+  readonly description: string
   /** Who controls Blue and Red */
-  sides: [string, string]
+  readonly sides: [string, string]
 }
 
-export const GAME_MODES: GameModeDefinition[] = [
-  {
-    id: 'tutorial',
-    title: 'Learn to play',
-    description: 'New here? A guided match teaches you the basics.',
-    sides: ['You', 'CPU']
-  },
-  {
-    id: 'online',
-    title: 'Online',
-    description: 'Play or watch a friend on another device.',
-    sides: ['You', 'Friend']
-  },
-  {
-    id: 'p1vscpu',
-    title: 'Player vs CPU',
-    description: 'Command the blue army against the computer.',
-    sides: ['You', 'CPU']
-  },
-  {
-    id: 'p1vsp2',
-    title: 'Player vs Player',
-    description: 'Two players take turns on the same computer.',
-    sides: ['P1', 'P2']
-  },
-  {
-    id: 'cpuvscpu',
-    title: 'CPU vs CPU',
-    description: 'Sit back and watch two AI armies fight it out.',
-    sides: ['CPU', 'CPU']
-  }
-]
+/** Texts come from the current language (i18n) */
+const gameMode = (id: GameMode): GameModeDefinition => ({
+  id,
+  get title() { return t().gameModes[id].title },
+  get description() { return t().gameModes[id].description },
+  get sides() { return t().gameModes[id].sides }
+})
+
+export const GAME_MODES: GameModeDefinition[] = (['tutorial', 'online', 'p1vscpu', 'p1vsp2', 'cpuvscpu'] as GameMode[]).map(gameMode)
 
 export function findGameMode(id: string | null | undefined): GameModeDefinition | undefined {
   return GAME_MODES.find(mode => mode.id === id)

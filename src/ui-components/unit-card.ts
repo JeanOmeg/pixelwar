@@ -4,11 +4,12 @@ import { theme } from './theme'
 import { iconStyles } from './icons'
 import { ForecastView, UnitView, hpLevel, percent } from './view-models'
 import type { Facing } from '../combat'
+import { t } from '../i18n'
 
 const FACING_ROTATION: Record<Facing, number> = { up: 0, right: 90, down: 180, left: 270 }
 
 function facingArrow(facing: Facing) {
-  return html`<svg class="facing" viewBox="0 0 7 7" style="transform: rotate(${FACING_ROTATION[facing]}deg)" aria-label="facing ${facing}">
+  return html`<svg class="facing" viewBox="0 0 7 7" style="transform: rotate(${FACING_ROTATION[facing]}deg)" aria-label=${t().card.facing(t().card.directions[facing])}>
     ${svg`<path fill="currentColor" d="M3 0h1v1h1v1h1v1h1v1H5v3H2V4H0V3h1V2h1V1h1z"/>`}
   </svg>`
 }
@@ -113,7 +114,7 @@ export class UnitCard extends LitElement {
       <div class="panel card team-${unit.team}">
         <div class="panel-title">
           <span>${unit.name}</span>
-          <small>${unit.team === 'blue' ? 'Blue' : 'Red'} ${facingArrow(unit.facing)}</small>
+          <small>${unit.team === 'blue' ? t().common.blue : t().common.red} ${facingArrow(unit.facing)}</small>
         </div>
         <div class="body">
           <div class="meter">
@@ -127,15 +128,15 @@ export class UnitCard extends LitElement {
             <span class="value">${unit.mp}/${unit.maxMp}</span>
           </div>
           <div class="stats">
-            <div class="stat"><i class="icon i-sword"></i>${changed(unit.attack, unit.baseAttack)}<small>ATK</small></div>
-            <div class="stat"><i class="icon i-shield"></i>${changed(unit.defense, unit.baseDefense)}<small>DEF</small></div>
-            <div class="stat"><i class="icon i-bow"></i>${unit.range}<small>RNG</small></div>
-            <div class="stat"><i class="icon i-boot"></i>${unit.movement}<small>MOV</small></div>
+            <div class="stat"><i class="icon i-sword"></i>${changed(unit.attack, unit.baseAttack)}<small>${t().stats.atk}</small></div>
+            <div class="stat"><i class="icon i-shield"></i>${changed(unit.defense, unit.baseDefense)}<small>${t().stats.def}</small></div>
+            <div class="stat"><i class="icon i-bow"></i>${unit.range}<small>${t().stats.rng}</small></div>
+            <div class="stat"><i class="icon i-boot"></i>${unit.movement}<small>${t().stats.mov}</small></div>
           </div>
-          <div class="range-note">Range: ${unit.rangeNote}</div>
+          <div class="range-note">${t().card.range(unit.rangeNote)}</div>
           ${unit.status.length > 0 ? html`
             <div class="status">
-              ${unit.status.map(s => html`<span class="chip ${s.endsWith(' ready') ? 'hot' : ''}">${s}</span>`)}
+              ${unit.status.map(s => html`<span class="chip ${s.hot ? 'hot' : ''}">${s.label}</span>`)}
             </div>
           ` : nothing}
         </div>
@@ -171,28 +172,28 @@ export class UnitCard extends LitElement {
     const damage = f.minDamage === f.maxDamage ? `${f.maxDamage}` : `${f.minDamage}-${f.maxDamage}`
     return html`
       <div class="panel forecast team-${view.attacker.team}">
-        <div class="panel-title"><span>Attack forecast</span></div>
+        <div class="panel-title"><span>${t().card.forecast}</span></div>
         <div class="versus">
           ${this.renderFighter(view.attacker, 'left')}
           <dl class="numbers">
-            <dt>Hit</dt><dd>${percent(f.hitChance)}</dd>
-            <dt>Damage</dt><dd>${damage}</dd>
-            <dt>Kill</dt><dd class="kill">${percent(f.killChance)}</dd>
+            <dt>${t().card.hit}</dt><dd>${percent(f.hitChance)}</dd>
+            <dt>${t().card.damage}</dt><dd>${damage}</dd>
+            <dt>${t().card.kill}</dt><dd class="kill">${percent(f.killChance)}</dd>
           </dl>
           ${this.renderFighter(view.defender, 'right', { min: f.minDamage, max: f.maxDamage })}
         </div>
         ${view.counter ? html`
           <div class="counter">
-            <span class="label">Counterattack if it survives:</span>
-            <span>${percent(view.counter.hitChance)} hit</span>
-            <span>${view.counter.minDamage === view.counter.maxDamage ? view.counter.maxDamage : `${view.counter.minDamage}-${view.counter.maxDamage}`} dmg</span>
-            ${view.counter.killChance > 0 ? html`<span class="kill">${percent(view.counter.killChance)} kills you</span>` : nothing}
+            <span class="label">${t().card.counterIfSurvives}</span>
+            <span>${t().card.counterHit(percent(view.counter.hitChance))}</span>
+            <span>${t().card.counterDmg(view.counter.minDamage === view.counter.maxDamage ? `${view.counter.maxDamage}` : `${view.counter.minDamage}-${view.counter.maxDamage}`)}</span>
+            ${view.counter.killChance > 0 ? html`<span class="kill">${t().card.killsYou(percent(view.counter.killChance))}</span>` : nothing}
           </div>
         ` : nothing}
         ${f.backAttack || f.critChance >= 1 ? html`
           <div class="badges">
-            ${f.backAttack ? html`<span class="chip badge-back">Back attack: sure hit, double ATK</span>` : nothing}
-            ${f.critChance >= 1 ? html`<span class="chip badge-crit">Critical</span>` : nothing}
+            ${f.backAttack ? html`<span class="chip badge-back">${t().card.backAttack}</span>` : nothing}
+            ${f.critChance >= 1 ? html`<span class="chip badge-crit">${t().card.critical}</span>` : nothing}
           </div>
         ` : nothing}
       </div>

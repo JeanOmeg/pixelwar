@@ -1,4 +1,5 @@
 import type { UnitClass } from './unit-types'
+import { t } from './i18n'
 
 /**
  * Skills: every class has Run and Special plus one skill of its own.
@@ -32,26 +33,32 @@ export interface SkillDefinition {
   kind: SkillKind
 }
 
-const skill = (id: SkillId, name: string, cost: number, kind: SkillKind, description: string): SkillDefinition =>
-  ({ id, name, cost, kind, description })
+/** Name and description come from the current language (i18n) */
+const skill = (id: SkillId, cost: number, kind: SkillKind): SkillDefinition => ({
+  id,
+  cost,
+  kind,
+  get name() { return t().skills[id].name },
+  get description() { return t().skills[id].description }
+})
 
 export const SKILLS: Record<SkillId, SkillDefinition> = {
-  'skill-run': skill('skill-run', 'Run', 2, 'move', 'Double movement this turn. You can still attack.'),
-  'skill-special-attack': skill('skill-special-attack', 'Special', 4, 'attack', 'Next attack is always critical.'),
-  'skill-aimed-shot': skill('skill-aimed-shot', 'Aimed Shot', 2, 'attack', 'Next attack cannot miss and deals 3 extra damage.'),
-  'skill-fireball': skill('skill-fireball', 'Fireball', 2, 'attack', 'Next attack also burns the target and every enemy next to it for 2 damage, hit or miss.'),
-  'skill-pierce': skill('skill-pierce', 'Pierce', 2, 'attack', 'Next attack ignores the target\'s defense (armor and forest).'),
-  'skill-steal': skill('skill-steal', 'Steal', 2, 'attack', 'Next attack also steals up to 2 MP from the target.'),
-  'skill-second-wind': skill('skill-second-wind', 'Second Wind', 2, 'self', 'Recover 6 HP.'),
-  'skill-heal': skill('skill-heal', 'Heal', 2, 'ally', 'Restore 6 HP to itself or an adjacent ally.'),
-  'skill-rage': skill('skill-rage', 'Rage', 2, 'attack', 'Next attack deals 5 extra damage if it hits.'),
-  'skill-guard': skill('skill-guard', 'Guard', 2, 'self', '+4 DEF until its next turn.'),
-  'skill-shield-wall': skill('skill-shield-wall', 'Shield Wall', 2, 'self', 'It and adjacent allies get +2 DEF until its next turn.'),
-  'skill-frenzy': skill('skill-frenzy', 'Frenzy', 2, 'self', '+4 ATK and -1 DEF until its next turn.'),
-  'skill-backstab': skill('skill-backstab', 'Backstab', 4, 'attack', 'Next attack counts as a back attack: sure hit, double ATK, no counterattack.'),
-  'skill-pinning-shot': skill('skill-pinning-shot', 'Pinning Shot', 2, 'attack', 'Next attack deals 2 extra damage if it hits, and the target cannot move on its next turn.'),
-  'skill-drain': skill('skill-drain', 'Drain', 2, 'attack', 'Next attack deals 2 extra damage if it hits and heals it by the damage dealt.'),
-  'skill-brace': skill('skill-brace', 'Brace', 2, 'self', '+2 DEF and counterattacks up to 2 tiles away until its next turn.')
+  'skill-run': skill('skill-run', 2, 'move'),
+  'skill-special-attack': skill('skill-special-attack', 4, 'attack'),
+  'skill-aimed-shot': skill('skill-aimed-shot', 2, 'attack'),
+  'skill-fireball': skill('skill-fireball', 2, 'attack'),
+  'skill-pierce': skill('skill-pierce', 2, 'attack'),
+  'skill-steal': skill('skill-steal', 2, 'attack'),
+  'skill-second-wind': skill('skill-second-wind', 2, 'self'),
+  'skill-heal': skill('skill-heal', 2, 'ally'),
+  'skill-rage': skill('skill-rage', 2, 'attack'),
+  'skill-guard': skill('skill-guard', 2, 'self'),
+  'skill-shield-wall': skill('skill-shield-wall', 2, 'self'),
+  'skill-frenzy': skill('skill-frenzy', 2, 'self'),
+  'skill-backstab': skill('skill-backstab', 4, 'attack'),
+  'skill-pinning-shot': skill('skill-pinning-shot', 2, 'attack'),
+  'skill-drain': skill('skill-drain', 2, 'attack'),
+  'skill-brace': skill('skill-brace', 2, 'self')
 }
 
 /** Every skill costs 2 MP (twice per match) or 4 MP (once): see "Skills" in CLAUDE.md */

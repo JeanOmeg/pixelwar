@@ -21,6 +21,7 @@ import { ENEMY_SPEED } from '../config'
 import { gameDelay, lockSpeed } from '../speed'
 import { TutorialPanel } from '../ui-components/tutorial-panel'
 import '../ui-components/tutorial-panel'
+import { t } from '../i18n'
 
 const REFRESH_MS = 150
 const HUD_PARTS: HudHighlight[] = ['teams', 'round', 'pause', 'end-turn']
@@ -90,7 +91,7 @@ export class TutorialMatch {
       hudHighlight: () => this.hudHighlight(),
       blocksInput: () => !!this.nextWaiter
     }
-    ui.setRematchLabel('Play a match')
+    ui.setRematchLabel(t().tutorialUi.playMatch)
     this.panel.addEventListener('next', () => this.next())
     this.panel.addEventListener('skip', () => void this.turnManager?.quit())
     this.interval = window.setInterval(() => this.refresh(), REFRESH_MS)
@@ -124,7 +125,7 @@ export class TutorialMatch {
         if (result.winner !== this.human) return null
         // the dialog takes over from the balloon
         this.show('', false)
-        return { title: 'Tutorial complete!', subtitle: 'Ready for a real match? Same map, same armies, no help this time.', team: 'blue' }
+        return { title: t().tutorialUi.complete, subtitle: t().tutorialUi.completeText, team: 'blue' }
       },
       finished: async (result, choice) => {
         if (choice === 'menu') await turnManager.returnToMainMenu()
@@ -157,28 +158,28 @@ export class TutorialMatch {
       const team = this.teamOf(this.index)
       // after the winning blow: the text stays while the game over screen comes
       if (team === null) {
-        this.show(step.text ?? '', false)
+        this.show(step.text ? t().tutorial[step.text] : '', false)
         continue
       }
       await this.waitForPhase(team)
       if (this.disposed) return
 
       if (step.kind === 'info') {
-        this.show(step.text, true)
+        this.show(t().tutorial[step.text], true)
         await this.waitForNext()
       } else if (step.kind === 'do') {
         const done = new Promise<void>(resolve => { this.actionWaiter = resolve })
-        this.show(step.text, false)
+        this.show(t().tutorial[step.text], false)
         this.reopenMenu(step.action)
         await done
         this.actionWaiter = null
       } else {
         // an announcement ("Here they come!") stays up while the enemy keeps playing
-        if (step.text) this.show(step.text, false)
+        if (step.text) this.show(t().tutorial[step.text], false)
         if (!await this.playCpu(step)) return
         // a lesson about an enemy attack: read it before going on
         if (step.text && step.action.a === 'attack' && !this.disposed) {
-          this.show(step.text, true)
+          this.show(t().tutorial[step.text], true)
           await this.waitForNext()
           this.show('', false)
         }
@@ -238,7 +239,7 @@ export class TutorialMatch {
     } catch (error) {
       // only if the rules or the map changed without updating the script (tests/tutorial.test.ts)
       console.error('Tutorial script out of step', error)
-      this.show('Something went wrong with the tutorial. Back to the menu...', false)
+      this.show(t().tutorialUi.broken, false)
       await gameDelay(2500)
       await this.turnManager?.quit()
       return false

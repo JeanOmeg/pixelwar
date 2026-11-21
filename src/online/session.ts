@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import type { UnitClass } from '../unit-types'
 import type { Placement } from '../deploy'
 import { RoomAnnouncer } from './directory'
@@ -168,7 +169,7 @@ export class OnlineSession {
   }
 
   memberName(seat: Seat): string {
-    return this.room?.seats[seat]?.name ?? (seat === 0 ? 'Blue' : 'Red')
+    return this.room?.seats[seat]?.name ?? (seat === 0 ? t().common.blue : t().common.red)
   }
 
   // --- local actions ---
@@ -383,7 +384,7 @@ export class OnlineSession {
     if (this.status === 'connecting') {
       this.status = 'joined'
       this.stopConnectTimer()
-      if (this.intent === 'play' && this.seat === null) this.notice = 'Both seats are taken: you are watching.'
+      if (this.intent === 'play' && this.seat === null) this.notice = t().online.bothSeatsTaken
     }
     this.save()
     this.syncMatch(before)

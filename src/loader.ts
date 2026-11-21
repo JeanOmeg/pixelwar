@@ -1,6 +1,7 @@
 import * as ex from 'excalibur'
 import { Resources } from './resources'
 import LoaderLogoPath from './assets/loader-logo.png'
+import { t } from './i18n'
 
 /** Loading screen: loads every asset in Resources, then shows the PLAY! button */
 export const loader = new ex.Loader()
@@ -8,7 +9,7 @@ loader.backgroundColor = 'black'
 
 loader.startButtonFactory = () => {
   const myButton = document.createElement('button')
-  myButton.textContent = 'PLAY!'
+  myButton.textContent = t().loader.play
   // sizes follow the screen like the rest of the game (N = N px at 1920x1080),
   // with a floor so the button stays easy to tap on a phone
   const unit = 'min(100vw / 1920, 100vh / 1080)'

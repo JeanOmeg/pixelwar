@@ -18,11 +18,16 @@ import { mapPreview, unitPortrait } from '../ui-sprites'
 import { TUTORIAL_MAP_ID, isTutorialDone, tutorialSettings } from '../tutorial/tutorial-mode'
 import { buildCpuArmy } from '../army-ai'
 import { DIFFICULTIES, DIFFICULTY_IDS, Difficulty, findDifficulty } from '../ai/weights'
-import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, unitTypeOf } from '../unit-classes'
+import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, className, unitTypeOf } from '../unit-classes'
 import { saveArmy, savePlacement, savedArmy, savedPlacement } from './army-prefs'
 import { Placement, defaultPlacement, deployCells } from '../deploy'
 import type { UnitClass } from '../path-finding/terrain-rules'
 import type { UnitType } from '../config'
+import { LANGUAGES, Language, language, onLanguageChange, setLanguage, t } from '../i18n'
+import { flagIcon } from './flags'
+
+/** Each language named in itself, so anyone finds their own */
+const LANGUAGE_NAMES: Record<Language, string> = { en: 'English', 'pt-BR': 'Português (Brasil)' }
 
 type Screen = 'title' | 'mode' | 'map' | 'army' | 'online' | 'howto' | 'units' | 'credits'
 
@@ -138,6 +143,23 @@ export class StartScreenUi extends LitElement {
     .difficulty .btn { --team: #2a2d3a; font-size: calc(20 * var(--t)); padding: calc(8 * var(--u)) calc(20 * var(--u)); }
     .difficulty .btn.on { --team: var(--blue); }
 
+    .languages { position: absolute; top: calc(24 * var(--u)); right: calc(24 * var(--u)); display: flex; gap: calc(12 * var(--u)); }
+    .flag {
+      appearance: none;
+      display: grid;
+      place-items: center;
+      padding: calc(6 * var(--u));
+      background: rgba(0, 0, 0, 0.45);
+      border: calc(3 * var(--u)) solid var(--edge);
+      box-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: transform 120ms steps(2);
+    }
+    .flag svg { display: block; width: calc(60 * var(--u)); height: calc(42 * var(--u)); image-rendering: pixelated; }
+    .flag:hover, .flag:focus-visible { opacity: 1; transform: translateY(calc(-3 * var(--u))); }
+    .flag.on { opacity: 1; border-color: var(--gold); }
+
     .fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity 600ms steps(6); }
     .fade.visible { opacity: 1; pointer-events: auto; }
   `]
@@ -205,8 +227,12 @@ export class StartScreenUi extends LitElement {
     if (event.key === 'Escape' && !['title', 'map', 'army', 'online'].includes(this.screen)) this.go('title')
   }
 
+  private stopLanguage: (() => void) | null = null
+
   override connectedCallback(): void {
     super.connectedCallback()
+    // names and descriptions of the cached map list are read when it is built
+    this.stopLanguage = onLanguageChange(() => { this.mapItems = null; this.requestUpdate() })
     this.updateScale()
     window.addEventListener('resize', this.onResize)
     window.addEventListener('keydown', this.onKeyDown)
@@ -217,6 +243,7 @@ export class StartScreenUi extends LitElement {
   override disconnectedCallback(): void {
     window.removeEventListener('resize', this.onResize)
     window.removeEventListener('keydown', this.onKeyDown)
+    this.stopLanguage?.()
     Resources.TitleMusic.stop()
     super.disconnectedCallback()
   }
@@ -236,6 +263,12 @@ export class StartScreenUi extends LitElement {
   private go(screen: Screen) {
     Resources.SelectSound.play()
     this.screen = screen
+  }
+
+  private chooseLanguage(next: Language) {
+    if (next === language()) return
+    Resources.SelectSound.play()
+    setLanguage(next)
   }
 
   private chooseDifficulty(difficulty: Difficulty) {
@@ -359,18 +392,19 @@ export class StartScreenUi extends LitElement {
     const classic = defaultArmy(info, team)
     const options: ArmyClassOption[] = UNIT_CLASSES.map(unitClass => ({
       unitClass,
+      name: className(unitClass),
       role: CLASS_INFO[unitClass].role,
       cost: CLASS_INFO[unitClass].cost,
       portrait: unitPortrait(unitTypeOf(unitClass, team), team === 1)
     }))
     const cpu = this.isCpuTeam(team)
-    const player = cpu ? 'CPU' : this.mode === 'p1vsp2' ? `Player ${team + 1}` : 'You'
+    const player = cpu ? t().common.cpu : this.mode === 'p1vsp2' ? t().army.playerN(team + 1) : t().common.you
     const suggestion = this.cpuSuggestions[team] ?? classic
     return html`
       <army-select
         class="screen"
         .team=${team}
-        .playerLabel=${`${player} (${team === 0 ? 'Blue' : 'Red'})`}
+        .playerLabel=${t().army.playerLabel(player, team === 0 ? t().common.blue : t().common.red)}
         .mapName=${map.name}
         .preview=${mapPreview(map, false)}
         .mapWidth=${info.width}
@@ -398,19 +432,31 @@ export class StartScreenUi extends LitElement {
         <div class="logo">
           <span class="top">Pixel Fantasy</span>
           <span class="war"><span class="b">W</span>A<span class="r">R</span></span>
-          <span class="tagline">Turn-based tactics in the browser</span>
+          <span class="tagline">${t().title.tagline}</span>
         </div>
         <div class="armies">
           ${blue.map((src, i) => html`<img src=${src} alt="" style="animation-delay: ${i * 120}ms" />`)}
-          <span class="vs">VS</span>
+          <span class="vs">${t().common.vs}</span>
           ${red.map((src, i) => html`<img src=${src} alt="" style="animation-delay: ${(i + 5) * 120}ms" />`)}
         </div>
         <nav class="panel menu">
-          <button class="btn btn-solid primary" @click=${() => this.go('mode')}>Play</button>
-          <button class="btn btn-solid" @click=${() => this.go('howto')}>How to play</button>
-          <button class="btn btn-solid" @click=${() => this.go('units')}>Units</button>
-          <button class="btn btn-solid" @click=${() => this.go('credits')}>Credits</button>
+          <button class="btn btn-solid primary" @click=${() => this.go('mode')}>${t().title.play}</button>
+          <button class="btn btn-solid" @click=${() => this.go('howto')}>${t().title.howToPlay}</button>
+          <button class="btn btn-solid" @click=${() => this.go('units')}>${t().title.units}</button>
+          <button class="btn btn-solid" @click=${() => this.go('credits')}>${t().title.credits}</button>
         </nav>
+      </div>
+    `
+  }
+
+  /** Language flags (title screen only): the choice is saved for the next visit */
+  private renderLanguages() {
+    return html`
+      <div class="languages" role="group" aria-label=${t().title.language}>
+        ${LANGUAGES.map(lang => html`
+          <button class="flag ${lang === language() ? 'on' : ''}" title=${LANGUAGE_NAMES[lang]} aria-label=${LANGUAGE_NAMES[lang]}
+            aria-pressed=${lang === language()} @click=${() => this.chooseLanguage(lang)}>${flagIcon(lang)}</button>
+        `)}
       </div>
     `
   }
@@ -426,16 +472,16 @@ export class StartScreenUi extends LitElement {
     const tutorialDone = isTutorialDone()
     return html`
       <div class="screen mode-screen">
-        <h2 class="heading">Choose mode</h2>
+        <h2 class="heading">${t().modes.heading}</h2>
         <div class="modes">
           ${GAME_MODES.map(mode => {
             const [blue, red] = portraits[mode.id]
             return html`
               <button class="panel mode ${mode.id === this.mode ? 'last' : ''}" @click=${() => this.chooseMode(mode.id)}>
-                ${mode.id === 'tutorial' && !tutorialDone ? html`<span class="badge">New here?</span>` : ''}
+                ${mode.id === 'tutorial' && !tutorialDone ? html`<span class="badge">${t().modes.newHere}</span>` : ''}
                 <div class="sides">
                   <div class="side blue"><img src=${unitPortrait(blue)} alt="" /><span>${mode.sides[0]}</span></div>
-                  <span class="vs">VS</span>
+                  <span class="vs">${t().common.vs}</span>
                   <div class="side red"><img src=${unitPortrait(red, true)} alt="" /><span>${mode.sides[1]}</span></div>
                 </div>
                 <h3>${mode.title}</h3>
@@ -445,14 +491,14 @@ export class StartScreenUi extends LitElement {
           })}
         </div>
         <div class="difficulty">
-          <span class="label">CPU difficulty</span>
+          <span class="label">${t().modes.cpuDifficulty}</span>
           ${DIFFICULTY_IDS.map(id => html`
             <button class="btn btn-solid ${id === this.difficulty ? 'on' : ''}" @click=${() => this.chooseDifficulty(id)}>${DIFFICULTIES[id].label}</button>
           `)}
         </div>
         <div class="bottom">
-          <button class="btn btn-solid" @click=${() => this.go('title')}>Back</button>
-          <small class="keys-only">Esc back</small>
+          <button class="btn btn-solid" @click=${() => this.go('title')}>${t().common.back}</button>
+          <small class="keys-only">${t().modes.escBack}</small>
         </div>
       </div>
     `
@@ -463,7 +509,7 @@ export class StartScreenUi extends LitElement {
       <div class="screen panel page">
         <div class="panel-title">${title}</div>
         <div class="page-body">${body}</div>
-        <div class="page-footer"><button class="btn btn-solid" @click=${() => this.go('title')}>Back</button></div>
+        <div class="page-footer"><button class="btn btn-solid" @click=${() => this.go('title')}>${t().common.back}</button></div>
       </div>
     `
   }
@@ -493,9 +539,9 @@ export class StartScreenUi extends LitElement {
         @back=${() => this.go('mode')}
       ></online-screen>
     `
-    case 'howto': return this.renderPage('How to play', renderHowToPlay())
-    case 'units': return this.renderPage('Units', renderUnits())
-    case 'credits': return this.renderPage('Credits', renderCredits())
+    case 'howto': return this.renderPage(t().title.howToPlay, renderHowToPlay())
+    case 'units': return this.renderPage(t().title.units, renderUnits())
+    case 'credits': return this.renderPage(t().title.credits, renderCredits())
     }
   }
 
@@ -503,6 +549,7 @@ export class StartScreenUi extends LitElement {
     return html`
       <div class="wrapper">
         ${this.renderScreen()}
+        ${this.screen === 'title' ? this.renderLanguages() : ''}
         <div class="fade ${this.leaving ? 'visible' : ''}"></div>
       </div>
     `

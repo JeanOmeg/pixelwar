@@ -3,6 +3,7 @@ import { Resources } from './resources'
 import type { UnitType } from './config'
 import { UnitClass, unitClassOf } from './path-finding/terrain-rules'
 import { Placement, isValidPlacement } from './deploy'
+import { t } from './i18n'
 
 /**
  * Every playable map. This list is the single source of truth: scenes are
@@ -17,99 +18,34 @@ import { Placement, isValidPlacement } from './deploy'
 export interface MapDefinition {
   /** Stable id: used in the scene name and in saved preferences. Don't rename. */
   id: string
-  name: string
-  /** One or two short sentences shown in the map selector */
-  description: string
+  readonly name: string
+  /** One or two short sentences shown in the map selector (i18n `maps`) */
+  readonly description: string
   tiledMap: TiledResource
   /** Player phases before the match ends in a draw (2 phases = 1 round) */
   maxTurns: number
 }
 
+/** Name and description come from the current language (i18n, keyed by id) */
+const map = (entry: Omit<MapDefinition, 'name' | 'description'>): MapDefinition => ({
+  ...entry,
+  get name() { return t().maps[entry.id]?.name ?? entry.id },
+  get description() { return t().maps[entry.id]?.description ?? '' }
+})
+
 export const MAPS: MapDefinition[] = [
-  {
-    id: 'twin-keeps',
-    name: 'Twin Keeps',
-    description: 'Two walled keeps face each other across an open field. Woods in the middle give cover, bridges cross the ponds.',
-    tiledMap: Resources.TiledMap1,
-    maxTurns: 100
-  },
-  {
-    id: 'river-isles',
-    name: 'River Isles',
-    description: 'Armies start on small islands linked by narrow bridges. Hold the crossings and the central meadow.',
-    tiledMap: Resources.TiledMap2,
-    maxTurns: 100
-  },
-  {
-    id: 'greenwood',
-    name: 'Greenwood',
-    description: 'Open meadow with scattered groves and rocks for cover. A small pond with a bridge sits in the very center.',
-    tiledMap: Resources.TiledMap3,
-    maxTurns: 100
-  },
-  {
-    id: 'split-river',
-    name: 'Split River',
-    description: 'A river cuts the field in two. Only three narrow bridges cross it, but archers and mages can shoot over the water.',
-    tiledMap: Resources.TiledMap4,
-    maxTurns: 100
-  },
-  {
-    id: 'crater-lake',
-    name: 'Crater Lake',
-    description: 'A wide lake fills the middle, crossed by one long bridge. Rocky passes guard the shores to the north and south.',
-    tiledMap: Resources.TiledMap5,
-    maxTurns: 100
-  },
-  {
-    id: 'old-fortress',
-    name: 'Old Fortress',
-    description: 'An abandoned fortress stands between the armies. Its doors are the only way in, and its pillared courtyard is the prize.',
-    tiledMap: Resources.TiledMap6,
-    maxTurns: 100
-  },
-  {
-    id: 'riverside-village',
-    name: 'Riverside Village',
-    description: 'A village split by a river. Fight between houses and gardens, and hold the stone squares at both bridges.',
-    tiledMap: Resources.TiledMap7,
-    maxTurns: 100
-  },
-  {
-    id: 'ruined-temple',
-    name: 'Ruined Temple',
-    description: 'Broken walls and pillars surround an old altar. Watchtowers on each meadow shelter the archers.',
-    tiledMap: Resources.TiledMap8,
-    maxTurns: 100
-  },
-  {
-    id: 'desert-oasis',
-    name: 'Desert Oasis',
-    description: 'A sun-baked desert around a green oasis. The lake splits the field into two lanes, with only cacti and rocks for cover.',
-    tiledMap: Resources.TiledMap9,
-    maxTurns: 100
-  },
-  {
-    id: 'frozen-pass',
-    name: 'Frozen Pass',
-    description: 'A snowfield between two green valleys. The frozen lake can be crossed on foot; snowy pines and rocks narrow the way around it.',
-    tiledMap: Resources.TiledMap10,
-    maxTurns: 100
-  },
-  {
-    id: 'hamlet-ford',
-    name: 'Hamlet Ford',
-    description: 'Two farm hamlets on either side of a river. Two wooden bridges and a stone one are the only crossings.',
-    tiledMap: Resources.TiledMap11,
-    maxTurns: 100
-  },
-  {
-    id: 'fallen-citadel',
-    name: 'Fallen Citadel',
-    description: 'The broken walls of a citadel guard twin altars. Breaches on every side let both armies in, and watchtowers flank each camp.',
-    tiledMap: Resources.TiledMap12,
-    maxTurns: 100
-  }
+  map({ id: 'twin-keeps', tiledMap: Resources.TiledMap1, maxTurns: 100 }),
+  map({ id: 'river-isles', tiledMap: Resources.TiledMap2, maxTurns: 100 }),
+  map({ id: 'greenwood', tiledMap: Resources.TiledMap3, maxTurns: 100 }),
+  map({ id: 'split-river', tiledMap: Resources.TiledMap4, maxTurns: 100 }),
+  map({ id: 'crater-lake', tiledMap: Resources.TiledMap5, maxTurns: 100 }),
+  map({ id: 'old-fortress', tiledMap: Resources.TiledMap6, maxTurns: 100 }),
+  map({ id: 'riverside-village', tiledMap: Resources.TiledMap7, maxTurns: 100 }),
+  map({ id: 'ruined-temple', tiledMap: Resources.TiledMap8, maxTurns: 100 }),
+  map({ id: 'desert-oasis', tiledMap: Resources.TiledMap9, maxTurns: 100 }),
+  map({ id: 'frozen-pass', tiledMap: Resources.TiledMap10, maxTurns: 100 }),
+  map({ id: 'hamlet-ford', tiledMap: Resources.TiledMap11, maxTurns: 100 }),
+  map({ id: 'fallen-citadel', tiledMap: Resources.TiledMap12, maxTurns: 100 })
 ]
 
 export function sceneNameOf(map: MapDefinition): string {

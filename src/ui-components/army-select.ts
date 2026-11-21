@@ -6,9 +6,12 @@ import { CLASS_INFO } from '../unit-classes'
 import { UNIT_FOOTPRINT } from '../ui-sprites'
 import type { UnitClass } from '../path-finding/terrain-rules'
 import type { Placement } from '../deploy'
+import { t } from '../i18n'
 
 export interface ArmyClassOption {
   unitClass: UnitClass
+  /** Class name in the current language */
+  name: string
   role: string
   cost: number
   /** data URL of the class in this team's colors */
@@ -367,8 +370,8 @@ export class ArmySelect extends LitElement {
       <button
         class="zone"
         style=${this.tileBox(cell)}
-        title="Move slot ${this.selected + 1} here"
-        aria-label="Move slot ${this.selected + 1} to ${cell.x}, ${cell.y}"
+        title=${t().army.moveHere(this.selected + 1)}
+        aria-label=${t().army.moveTo(this.selected + 1, cell.x, cell.y)}
         @click=${() => this.moveTo(cell)}
       ></button>
     `
@@ -386,9 +389,9 @@ export class ArmySelect extends LitElement {
       <button
         class="slot ${index === this.selected ? 'selected' : ''} ${option ? '' : 'empty'}"
         style=${box}
-        title="Slot ${index + 1}: ${unitClass ?? 'empty'}"
+        title=${t().army.slotTitle(index + 1, option?.name ?? t().army.emptyLower)}
         @click=${() => { this.selected = index }}
-      >${option ? html`<img src=${option.portrait} alt=${option.unitClass} style=${mini} />` : nothing}</button>
+      >${option ? html`<img src=${option.portrait} alt=${option.name} style=${mini} />` : nothing}</button>
     `
   }
 
@@ -399,10 +402,10 @@ export class ArmySelect extends LitElement {
         <button class="pick-slot" @click=${() => { this.selected = index }}>
           <span class="num">${index + 1}</span>
           ${option ? html`<img src=${option.portrait} alt="" />` : html`<span class="placeholder"></span>`}
-          <span class="label">${option ? option.unitClass : 'Empty'}</span>
+          <span class="label">${option ? option.name : t().army.empty}</span>
           <span class="cost">${option ? option.cost : ''}</span>
         </button>
-        <button class="remove" title="Remove" aria-label="Remove ${unitClass ?? ''}" ?hidden=${!option} @click=${() => this.removeAt(index)}>✕</button>
+        <button class="remove" title=${t().army.remove} aria-label=${t().army.removeUnit(option?.name ?? '')} ?hidden=${!option} @click=${() => this.removeAt(index)}>✕</button>
       </div>
     `
   }
@@ -419,8 +422,8 @@ export class ArmySelect extends LitElement {
         <button class="toggle" aria-expanded=${open} @click=${() => this.toggle(unitClass)}>
           <div class="head">
             <img src=${option.portrait} alt="" />
-            <div class="name">${unitClass}<small>${option.role}</small></div>
-            <div class="price">${option.cost}<small>pts</small></div>
+            <div class="name">${option.name}<small>${option.role}</small></div>
+            <div class="price">${option.cost}<small>${t().common.pts}</small></div>
             <span class="chevron">${open ? '▾' : '▸'}</span>
           </div>
           ${renderClassStats(unitClass, { mp: false })}
@@ -430,9 +433,9 @@ export class ArmySelect extends LitElement {
             <p class="desc">${CLASS_INFO[unitClass].description}</p>
             ${renderClassAbilities(unitClass)}
             <div class="pick-row">
-              ${fits ? nothing : html`<span class="note">Not enough points</span>`}
+              ${fits ? nothing : html`<span class="note">${t().army.notEnough}</span>`}
               <button class="btn btn-solid pick" ?disabled=${!fits} @click=${() => this.assign(unitClass)}>
-                Pick for slot ${this.selected + 1}
+                ${t().army.pickForSlot(this.selected + 1)}
               </button>
             </div>
           </div>
@@ -447,12 +450,12 @@ export class ArmySelect extends LitElement {
     const teamClass = this.team === 0 ? 'team-blue' : 'team-red'
     return html`
       <div class="header ${teamClass}">
-        <h2>Build your army <span>· ${this.playerLabel}</span></h2>
-        <div class="points ${total > this.budget ? 'over' : ''}">${total} / ${this.budget} <small>points</small></div>
+        <h2>${t().army.heading} <span>· ${this.playerLabel}</span></h2>
+        <div class="points ${total > this.budget ? 'over' : ''}">${total} / ${this.budget} <small>${t().army.points}</small></div>
       </div>
       <div class="layout">
         <div class="panel field ${teamClass}">
-          <div class="panel-title"><span>${this.mapName}</span><span>Slot ${this.selected + 1} of ${this.slots.length}</span></div>
+          <div class="panel-title"><span>${this.mapName}</span><span>${t().army.slotOf(this.selected + 1, this.slots.length)}</span></div>
           <div class="map">
             <img src=${this.preview} alt="" />
             ${this.zone.map(cell => this.renderZoneCell(cell))}
@@ -463,17 +466,17 @@ export class ArmySelect extends LitElement {
           </div>
         </div>
         <div class="panel classes ${teamClass}">
-          <div class="panel-title"><span>Pick a class for slot ${this.selected + 1}</span><span>${this.budget - total} left</span></div>
+          <div class="panel-title"><span>${t().army.pickFor(this.selected + 1)}</span><span>${t().army.left(this.budget - total)}</span></div>
           <div class="grid">${this.sortedClasses().map(option => this.renderCard(option))}</div>
         </div>
       </div>
       <div class="actions">
-        <span class="keys">${this.isFull() ? 'Pick a slot, then a class for it or a lit tile to move it' : `${empty} empty slot${empty === 1 ? '' : 's'} left to fill`}<span class="keys-only"> · Del remove · Enter confirm · Esc back</span></span>
-        <button class="btn btn-solid" ?disabled=${this.army.every(c => c === null)} @click=${() => this.clearAll()}>Remove all</button>
-        <button class="btn btn-solid" @click=${() => this.classic()}>Classic army</button>
-        ${this.randomize ? html`<button class="btn btn-solid" @click=${() => { this.army = this.randomize?.() ?? this.army; this.selected = 0 }}>Random</button>` : nothing}
-        <button class="btn btn-solid" @click=${() => this.dispatchEvent(new Event('back'))}>Back</button>
-        <button class="btn btn-solid confirm" ?disabled=${!this.canConfirm()} @click=${() => this.confirm()}>Confirm</button>
+        <span class="keys">${this.isFull() ? t().army.fullHint : t().army.emptyHint(empty)}<span class="keys-only">${t().army.keys}</span></span>
+        <button class="btn btn-solid" ?disabled=${this.army.every(c => c === null)} @click=${() => this.clearAll()}>${t().army.removeAll}</button>
+        <button class="btn btn-solid" @click=${() => this.classic()}>${t().army.classic}</button>
+        ${this.randomize ? html`<button class="btn btn-solid" @click=${() => { this.army = this.randomize?.() ?? this.army; this.selected = 0 }}>${t().common.random}</button>` : nothing}
+        <button class="btn btn-solid" @click=${() => this.dispatchEvent(new Event('back'))}>${t().common.back}</button>
+        <button class="btn btn-solid confirm" ?disabled=${!this.canConfirm()} @click=${() => this.confirm()}>${t().common.confirm}</button>
       </div>
     `
   }

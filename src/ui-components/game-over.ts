@@ -2,6 +2,7 @@ import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
 import { GameResultView } from './view-models'
+import { t } from '../i18n'
 
 export type GameOverChoice = 'rematch' | 'menu'
 
@@ -45,9 +46,9 @@ export class GameOver extends LitElement {
   @state()
   private result: GameResultView | null = null
 
-  /** Online: "Rematch" (players) or "Stay in room" (spectators) */
+  /** Online: "Rematch" (players) or "Stay in room" (spectators); null = "Play again" */
   @property()
-    rematchLabel = 'Play again'
+    rematchLabel: string | null = null
 
   private chosen: GameOverChoice = 'menu'
   private settle: (() => void) | null = null
@@ -75,8 +76,8 @@ export class GameOver extends LitElement {
           <div class="title">${result.title}</div>
           <div class="subtitle">${result.subtitle}</div>
           <div class="actions">
-            <button class="btn btn-solid" @click=${() => this.pick('rematch')}>${this.rematchLabel}</button>
-            <button class="btn btn-solid" style="--team: #2a2d3a" @click=${() => this.pick('menu')}>Main menu</button>
+            <button class="btn btn-solid" @click=${() => this.pick('rematch')}>${this.rematchLabel ?? t().gameOver.playAgain}</button>
+            <button class="btn btn-solid" style="--team: #2a2d3a" @click=${() => this.pick('menu')}>${t().common.mainMenu}</button>
           </div>
         </div>
       </div>

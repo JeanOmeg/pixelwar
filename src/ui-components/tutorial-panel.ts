@@ -1,6 +1,7 @@
 import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
+import { t } from '../i18n'
 
 /** Clicks this soon after Next shows up come from the tap that made it show */
 const GHOST_CLICK_MS = 350
@@ -105,8 +106,8 @@ export class TutorialPanel extends LitElement {
         <div class="progress" style="width: ${Math.round(this.progress * 100)}%"></div>
         <div class="text">${parts}</div>
         <div class="actions">
-          ${this.canNext ? html`<button class="btn btn-solid next ${this.shaking ? 'shake' : ''}" title="Next (Enter)" @click=${() => this.next()}>Next</button>` : nothing}
-          <button class="btn btn-solid skip ${this.confirmSkip ? 'confirm' : ''}" @click=${() => this.skip()}>${this.confirmSkip ? 'Sure? Skip' : 'Skip tutorial'}</button>
+          ${this.canNext ? html`<button class="btn btn-solid next ${this.shaking ? 'shake' : ''}" title=${t().tutorialUi.nextTitle} @click=${() => this.next()}>${t().tutorialUi.next}</button>` : nothing}
+          <button class="btn btn-solid skip ${this.confirmSkip ? 'confirm' : ''}" @click=${() => this.skip()}>${this.confirmSkip ? t().tutorialUi.skipSure : t().tutorialUi.skip}</button>
         </div>
       </div>
     `

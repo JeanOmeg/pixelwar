@@ -16,6 +16,7 @@ import { ARMY_BUDGET, CLASS_INFO, UNIT_CLASSES, unitTypeOf } from '../unit-class
 import { RoomDirectory } from '../online/directory'
 import { OnlineSession, activeSession, forgetSavedSession, savedSession } from '../online/session'
 import { MAX_SPECTATORS, NAME_MAX_LENGTH, cleanName, normalizeRoomCode, type JoinIntent, type Member, type RoomListing, type Seat, type SeatState } from '../online/protocol'
+import { t } from '../i18n'
 
 const PREF_NAME = 'pixelfantasywar.name'
 const PREF_ONLINE_MAP = 'pixelfantasywar.onlineMap'
@@ -29,17 +30,20 @@ function writePref(key: string, value: string) {
   try { localStorage.setItem(key, value) } catch { /* storage unavailable: ignore */ }
 }
 
-const REJECT_TEXT: Record<string, string> = {
-  full: 'The room is full.',
-  version: 'Your game versions differ. Reload the page (Ctrl+F5) and try again.',
-  kicked: 'You were removed from this room.',
-  closed: 'The room was closed by its owner.'
+function rejectText(reason: string | null | undefined): string {
+  const text = t().online
+  switch (reason) {
+  case 'full': return text.rejectFull
+  case 'version': return text.rejectVersion
+  case 'kicked': return text.rejectKicked
+  case 'closed': return text.rejectClosed
+  default: return text.connectionClosed
+  }
 }
 
 /** Rooms answer within a few seconds of joining the hall; after that an empty list really is empty */
 const SEARCH_MS = 8000
 
-const WIFI_TIP = 'Online matches connect the devices directly, with no game server in the middle. Some mobile networks (4G/5G) and office networks block direct connections. If you can\'t connect, switch to Wi-Fi.'
 
 /**
  * Online menus: name, the Wi-Fi tip, open rooms, create / join with a code,
@@ -218,7 +222,7 @@ export class OnlineScreen extends LitElement {
   private validName(): string | null {
     const name = cleanName(this.name)
     if (!name) {
-      this.error = 'Type your name first.'
+      this.error = t().online.typeName
       this.shadowRoot?.querySelector<HTMLInputElement>('input.name')?.focus()
       return null
     }
@@ -239,7 +243,7 @@ export class OnlineScreen extends LitElement {
     this.revision++
     if (session.status === 'joined' && this.view === 'connecting') this.view = 'lobby'
     if (session.status === 'rejected' || session.status === 'closed') {
-      this.error = REJECT_TEXT[session.rejectReason ?? ''] ?? 'The connection to the room was closed.'
+      this.error = rejectText(session.rejectReason)
       this.dropSession()
       return
     }
@@ -289,7 +293,7 @@ export class OnlineScreen extends LitElement {
   private joinWithCode(intent: JoinIntent) {
     const code = normalizeRoomCode(this.codeInput)
     if (!code) {
-      this.error = 'Room codes have 5 letters and numbers.'
+      this.error = t().online.badCode
       return
     }
     void this.join(code, intent)
@@ -372,54 +376,54 @@ export class OnlineScreen extends LitElement {
   private renderBrowse() {
     const saved = savedSession()
     return html`
-      <h2>Online</h2>
+      <h2>${t().online.heading}</h2>
       <div class="grid">
         <div class="panel box">
-          <label>Your name</label>
+          <label>${t().online.yourName}</label>
           <div class="row">
-            <input class="name" maxlength=${NAME_MAX_LENGTH} .value=${this.name} placeholder="Name"
+            <input class="name" maxlength=${NAME_MAX_LENGTH} .value=${this.name} placeholder=${t().online.namePlaceholder}
               @input=${(e: Event) => { this.name = (e.target as HTMLInputElement).value; this.error = '' }} />
           </div>
-          <div class="tip"><b>Tip: play on Wi-Fi.</b> ${WIFI_TIP}</div>
+          <div class="tip"><b>${t().online.wifiTipTitle}</b> ${t().online.wifiTip}</div>
           ${saved ? html`
             <div class="row">
-              <span class="note">You were in room ${saved.code}.</span>
-              <button class="btn btn-solid primary small" @click=${() => void this.resume()}>Rejoin</button>
+              <span class="note">${t().online.youWereIn(saved.code)}</span>
+              <button class="btn btn-solid primary small" @click=${() => void this.resume()}>${t().online.rejoin}</button>
             </div>
           ` : nothing}
-          <h3>Create a room</h3>
+          <h3>${t().online.createRoom}</h3>
           <div class="row">
             <div class="lock ${this.locked ? 'on' : ''}" role="switch" aria-checked=${String(this.locked)} tabindex="0"
               @click=${() => { this.locked = !this.locked }}
               @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.locked = !this.locked } }}>
-              <span class="switch"><i></i></span>${this.locked ? 'Locked: only with the code' : 'Open: listed for everyone'}
+              <span class="switch"><i></i></span>${this.locked ? t().online.locked : t().online.open}
             </div>
           </div>
-          <button class="btn btn-solid primary" @click=${() => void this.create()}>Create room</button>
-          <h3>Join with a code</h3>
+          <button class="btn btn-solid primary" @click=${() => void this.create()}>${t().online.createButton}</button>
+          <h3>${t().online.joinWithCode}</h3>
           <div class="row">
-            <input class="code" maxlength="7" .value=${this.codeInput} placeholder="CODE"
+            <input class="code" maxlength="7" .value=${this.codeInput} placeholder=${t().online.codePlaceholder}
               @input=${(e: Event) => { this.codeInput = (e.target as HTMLInputElement).value; this.error = '' }}
               @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter') this.joinWithCode('play') }} />
-            <button class="btn btn-solid primary" @click=${() => this.joinWithCode('play')}>Play</button>
-            <button class="btn btn-solid" @click=${() => this.joinWithCode('watch')}>Watch</button>
+            <button class="btn btn-solid primary" @click=${() => this.joinWithCode('play')}>${t().online.play}</button>
+            <button class="btn btn-solid" @click=${() => this.joinWithCode('watch')}>${t().online.watch}</button>
           </div>
           ${this.error ? html`<div class="error">${this.error}</div>` : nothing}
         </div>
         <div class="panel box">
           <div class="list-head">
-            <h3>Open rooms</h3>
-            <button class="btn btn-solid small" ?disabled=${this.searching} @click=${() => this.refreshRooms()}>Refresh</button>
+            <h3>${t().online.openRooms}</h3>
+            <button class="btn btn-solid small" ?disabled=${this.searching} @click=${() => this.refreshRooms()}>${t().online.refresh}</button>
           </div>
           <div class="rooms">
             ${this.rooms.length === 0
-              ? html`<div class="empty ${this.searching ? 'dots' : ''}">${this.searching ? 'Looking for rooms' : 'No open rooms right now. Create one!'}</div>`
+              ? html`<div class="empty ${this.searching ? 'dots' : ''}">${this.searching ? t().online.looking : t().online.noRooms}</div>`
               : this.rooms.map(room => this.renderListing(room))}
           </div>
         </div>
       </div>
       <div class="bottom">
-        <button class="btn btn-solid" @click=${() => this.back()}>Back</button>
+        <button class="btn btn-solid" @click=${() => this.back()}>${t().common.back}</button>
       </div>
     `
   }
@@ -427,17 +431,17 @@ export class OnlineScreen extends LitElement {
   private renderListing(room: RoomListing) {
     const map = findMap(room.mapId)
     const item = this.maps.find(m => m.id === room.mapId)
-    const status = room.phase === 'lobby' ? (room.seatOpen ? 'Waiting for opponent' : 'Getting ready') : room.phase === 'match' ? `In match - round ${room.round}` : 'Match over'
+    const status = room.phase === 'lobby' ? (room.seatOpen ? t().online.waitingOpponent : t().online.gettingReady) : room.phase === 'match' ? t().online.inMatch(room.round) : t().online.matchOver
     return html`
       <div class="room">
         ${item ? html`<img src=${item.preview} alt="" />` : html`<span></span>`}
         <div>
-          <div class="who">${room.owner}'s room</div>
-          <div class="what">${map?.name ?? room.mapId} · ${status}${room.spectators > 0 ? ` · ${room.spectators} watching` : ''}</div>
+          <div class="who">${t().online.ownersRoom(room.owner)}</div>
+          <div class="what">${map?.name ?? room.mapId} · ${status}${room.spectators > 0 ? ` · ${t().online.watchingCount(room.spectators)}` : ''}</div>
         </div>
         <div class="row">
-          ${room.seatOpen ? html`<button class="btn btn-solid primary small" @click=${() => void this.join(room.code, 'play')}>Play</button>` : nothing}
-          <button class="btn btn-solid small" ?disabled=${room.spectators >= MAX_SPECTATORS} @click=${() => void this.join(room.code, 'watch')}>Watch</button>
+          ${room.seatOpen ? html`<button class="btn btn-solid primary small" @click=${() => void this.join(room.code, 'play')}>${t().online.play}</button>` : nothing}
+          <button class="btn btn-solid small" ?disabled=${room.spectators >= MAX_SPECTATORS} @click=${() => void this.join(room.code, 'watch')}>${t().online.watch}</button>
         </div>
       </div>
     `
@@ -449,17 +453,17 @@ export class OnlineScreen extends LitElement {
     return html`
       <div class="panel center">
         ${failed ? html`
-          <h3>Couldn't connect to room ${session?.code}</h3>
-          <div class="error">The room may be closed, or your network blocks direct connections.</div>
-          <div class="tip"><b>Tip: play on Wi-Fi.</b> ${WIFI_TIP}</div>
+          <h3>${t().online.couldntConnect(session?.code ?? '')}</h3>
+          <div class="error">${t().online.mayBeClosed}</div>
+          <div class="tip"><b>${t().online.wifiTipTitle}</b> ${t().online.wifiTip}</div>
           <div class="row">
-            ${this.lastJoin ? html`<button class="btn btn-solid primary" @click=${() => { const j = this.lastJoin!; this.dropSession(); void this.join(j.code, j.intent) }}>Try again</button>` : nothing}
-            <button class="btn btn-solid" @click=${() => this.cancelConnecting()}>Back</button>
+            ${this.lastJoin ? html`<button class="btn btn-solid primary" @click=${() => { const j = this.lastJoin!; this.dropSession(); void this.join(j.code, j.intent) }}>${t().online.tryAgain}</button>` : nothing}
+            <button class="btn btn-solid" @click=${() => this.cancelConnecting()}>${t().common.back}</button>
           </div>
         ` : html`
-          <h3 class="dots">Connecting to room ${session?.code ?? ''}</h3>
-          <div class="muted">This can take a few seconds.</div>
-          <button class="btn btn-solid" @click=${() => this.cancelConnecting()}>Cancel</button>
+          <h3 class="dots">${t().online.connecting(session?.code ?? '')}</h3>
+          <div class="muted">${t().online.fewSeconds}</div>
+          <button class="btn btn-solid" @click=${() => this.cancelConnecting()}>${t().common.cancel}</button>
         `}
       </div>
     `
@@ -467,10 +471,10 @@ export class OnlineScreen extends LitElement {
 
   private seatStatus(seat: SeatState) {
     const room = this.session?.room
-    if (!seat.connected) return html`<span class="status away">Disconnected</span>`
-    if (room?.phase === 'over') return html`<span class="status">${seat.wantsRematch ? 'Wants a rematch' : 'Match over'}</span>`
-    if (room?.phase === 'match') return html`<span class="status">Playing</span>`
-    return seat.ready ? html`<span class="status ready">Ready</span>` : html`<span class="status">Choosing army</span>`
+    if (!seat.connected) return html`<span class="status away">${t().online.disconnected}</span>`
+    if (room?.phase === 'over') return html`<span class="status">${seat.wantsRematch ? t().online.wantsRematch : t().online.matchOver}</span>`
+    if (room?.phase === 'match') return html`<span class="status">${t().online.playing}</span>`
+    return seat.ready ? html`<span class="status ready">${t().online.ready}</span>` : html`<span class="status">${t().online.choosingArmy}</span>`
   }
 
   private renderSeat(seatNo: Seat) {
@@ -478,17 +482,17 @@ export class OnlineScreen extends LitElement {
     const room = session.room!
     const seat = room.seats[seatNo]
     const team = seatNo === 0 ? 'blue' : 'red'
-    const label = seatNo === 0 ? 'Blue' : 'Red'
+    const label = seatNo === 0 ? t().common.blue : t().common.red
     if (!seat) {
-      return html`<div class="seat team-${team}"><span class="who muted">${label}: waiting for an opponent<span class="dots"></span></span></div>`
+      return html`<div class="seat team-${team}"><span class="who muted">${t().online.waitingForOpponent(label)}<span class="dots"></span></span></div>`
     }
     const you = seat.token === session.token
     const owner = seat.token === room.ownerToken
     return html`
       <div class="seat team-${team}">
-        <span class="who">${seat.name}<small>${label}${you ? ' · you' : ''}${owner ? ' · owner' : ''}</small></span>
+        <span class="who">${seat.name}<small>${label}${you ? t().online.youTag : ''}${owner ? t().online.ownerTag : ''}</small></span>
         ${this.seatStatus(seat)}
-        ${session.ownsRoom && !you && room.phase === 'lobby' ? html`<button class="btn btn-solid danger small" @click=${() => session.kick(seat.token)}>Kick</button>` : nothing}
+        ${session.ownsRoom && !you && room.phase === 'lobby' ? html`<button class="btn btn-solid danger small" @click=${() => session.kick(seat.token)}>${t().online.kick}</button>` : nothing}
       </div>
     `
   }
@@ -498,8 +502,8 @@ export class OnlineScreen extends LitElement {
     const room = session.room!
     return html`
       <div class="spectator">
-        <span>${member.name}${member.token === session.token ? ' (you)' : ''}</span>
-        ${session.ownsRoom && room.phase === 'lobby' ? html`<button class="btn btn-solid danger small" @click=${() => session.kick(member.token)}>Kick</button>` : nothing}
+        <span>${member.name}${member.token === session.token ? t().online.youSuffix : ''}</span>
+        ${session.ownsRoom && room.phase === 'lobby' ? html`<button class="btn btn-solid danger small" @click=${() => session.kick(member.token)}>${t().online.kick}</button>` : nothing}
       </div>
     `
   }
@@ -513,46 +517,46 @@ export class OnlineScreen extends LitElement {
     const mine = seat === null ? null : room.seats[seat]
     const ownerAway = !room.seats.some(s => s?.token === room.ownerToken && s.connected)
     return html`
-      <h2>${room.locked ? 'Locked room' : 'Open room'}</h2>
+      <h2>${room.locked ? t().online.lockedRoom : t().online.openRoom}</h2>
       <div class="grid">
         <div class="panel box map-card">
           <div class="row">
-            <span class="muted">Room code</span>
+            <span class="muted">${t().online.roomCode}</span>
             <span class="code-big">${room.code}</span>
-            <button class="btn btn-solid small" @click=${() => void this.copyCode(room.code)}>${this.copied ? 'Copied!' : 'Copy'}</button>
+            <button class="btn btn-solid small" @click=${() => void this.copyCode(room.code)}>${this.copied ? t().online.copied : t().online.copy}</button>
           </div>
           ${session.ownsRoom && room.phase === 'lobby' ? html`
             <div class="lock ${room.locked ? 'on' : ''}" role="switch" aria-checked=${String(room.locked)} tabindex="0"
               @click=${() => session.setLocked(!room.locked)}
               @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); session.setLocked(!room.locked) } }}>
-              <span class="switch"><i></i></span>${room.locked ? 'Locked: only with the code' : 'Open: listed for everyone'}
+              <span class="switch"><i></i></span>${room.locked ? t().online.locked : t().online.open}
             </div>
-          ` : html`<div class="muted">${room.locked ? 'Locked: only people with the code can come in.' : 'Open: anyone can find this room in the list.'}</div>`}
+          ` : html`<div class="muted">${room.locked ? t().online.lockedInfo : t().online.openInfo}</div>`}
           ${item ? html`<img src=${item.preview} alt="" />` : nothing}
           <div class="row">
             <h3>${item?.name ?? room.mapId}</h3>
-            ${session.ownsRoom && room.phase === 'lobby' ? html`<button class="btn btn-solid small" @click=${() => { Resources.SelectSound.play(); this.view = 'map' }}>Change map</button>` : nothing}
+            ${session.ownsRoom && room.phase === 'lobby' ? html`<button class="btn btn-solid small" @click=${() => { Resources.SelectSound.play(); this.view = 'map' }}>${t().online.changeMap}</button>` : nothing}
           </div>
-          ${item ? html`<div class="muted">${item.width}x${item.height} · ${item.unitsPerTeam.join(' vs ')} units</div>` : nothing}
+          ${item ? html`<div class="muted">${t().online.mapUnits(item.width, item.height, item.unitsPerTeam.join(' vs '))}</div>` : nothing}
         </div>
         <div class="panel box">
-          <h3>Players</h3>
+          <h3>${t().online.players}</h3>
           <div class="seats">${this.renderSeat(0)}${this.renderSeat(1)}</div>
-          <h3>Watching (${room.spectators.length}/${MAX_SPECTATORS})</h3>
-          ${room.spectators.length === 0 ? html`<div class="muted">Nobody yet.</div>` : room.spectators.map(m => this.renderSpectator(m))}
+          <h3>${t().online.watchingTitle(room.spectators.length, MAX_SPECTATORS)}</h3>
+          ${room.spectators.length === 0 ? html`<div class="muted">${t().online.nobody}</div>` : room.spectators.map(m => this.renderSpectator(m))}
           ${session.notice ? html`<div class="note">${session.notice}</div>` : nothing}
-          ${ownerAway ? html`<div class="error">The room owner lost the connection. Waiting for them to come back...</div>` : nothing}
-          ${room.phase === 'over' ? html`<div class="note">Waiting for both players to ask for a rematch.</div>` : nothing}
-          ${room.phase === 'lobby' && mine?.ready && !room.seats.every(s => s?.ready) ? html`<div class="note dots">Waiting for the other player</div>` : nothing}
+          ${ownerAway ? html`<div class="error">${t().online.ownerAway}</div>` : nothing}
+          ${room.phase === 'over' ? html`<div class="note">${t().online.waitingRematch}</div>` : nothing}
+          ${room.phase === 'lobby' && mine?.ready && !room.seats.every(s => s?.ready) ? html`<div class="note dots">${t().online.waitingOther}</div>` : nothing}
         </div>
       </div>
       <div class="bottom">
-        <button class="btn btn-solid" @click=${() => this.leaveRoom()}>Leave room</button>
+        <button class="btn btn-solid" @click=${() => this.leaveRoom()}>${t().online.leaveRoom}</button>
         <span class="grow"></span>
-        ${room.phase === 'over' && mine && !mine.wantsRematch ? html`<button class="btn btn-solid primary" @click=${() => session.requestRematch()}>Rematch</button>` : nothing}
+        ${room.phase === 'over' && mine && !mine.wantsRematch ? html`<button class="btn btn-solid primary" @click=${() => session.requestRematch()}>${t().online.rematch}</button>` : nothing}
         ${room.phase === 'lobby' && mine ? (mine.ready
-          ? html`<button class="btn btn-solid" @click=${() => this.unready()}>Change army</button>`
-          : html`<button class="btn btn-solid primary" @click=${() => { Resources.SelectSound.play(); this.view = 'army' }}>Choose army</button>`) : nothing}
+          ? html`<button class="btn btn-solid" @click=${() => this.unready()}>${t().online.changeArmy}</button>`
+          : html`<button class="btn btn-solid primary" @click=${() => { Resources.SelectSound.play(); this.view = 'army' }}>${t().online.chooseArmy}</button>`) : nothing}
       </div>
     `
   }
@@ -562,7 +566,7 @@ export class OnlineScreen extends LitElement {
       <map-select
         .maps=${this.maps}
         .initial=${this.session?.room?.mapId ?? RANDOM_MAP_ID}
-        .modeLabel=${'Online'}
+        .modeLabel=${t().gameModes.online.title}
         @select=${() => Resources.SelectSound.play()}
         @start=${(event: CustomEvent<string>) => this.chooseMap(event.detail)}
         @back=${() => { this.view = 'lobby' }}
@@ -581,6 +585,7 @@ export class OnlineScreen extends LitElement {
     const classic = defaultArmy(info, seat)
     const options: ArmyClassOption[] = UNIT_CLASSES.map(unitClass => ({
       unitClass,
+      name: CLASS_INFO[unitClass].name,
       role: CLASS_INFO[unitClass].role,
       cost: CLASS_INFO[unitClass].cost,
       portrait: unitPortrait(unitTypeOf(unitClass, seat), seat === 1)
@@ -588,7 +593,7 @@ export class OnlineScreen extends LitElement {
     return html`
       <army-select
         .team=${seat}
-        .playerLabel=${`${session.name} (${seat === 0 ? 'Blue' : 'Red'})`}
+        .playerLabel=${t().army.playerLabel(session.name, seat === 0 ? t().common.blue : t().common.red)}
         .mapName=${map.name}
         .preview=${mapPreview(map, false)}
         .mapWidth=${info.width}

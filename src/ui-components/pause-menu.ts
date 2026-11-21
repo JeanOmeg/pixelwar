@@ -1,6 +1,7 @@
 import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
+import { t } from '../i18n'
 
 export type PauseChoice = 'resume' | 'quit'
 
@@ -38,7 +39,7 @@ export class PauseMenu extends LitElement {
 
   /** Shown under "Main menu" once armed */
   @property()
-    quitWarning = 'The match in progress will be lost.'
+    quitWarning: string | null = null
 
   /** Online: the "Mute emotes" switch (null: not shown) */
   @property({ attribute: false })
@@ -91,16 +92,16 @@ export class PauseMenu extends LitElement {
     return html`
       <div class="backdrop">
         <div class="panel dialog">
-          <div class="panel-title">Paused</div>
+          <div class="panel-title">${t().pause.title}</div>
           <div class="body">
-            <button class="btn btn-solid resume" @click=${() => this.pick('resume')}>Resume</button>
+            <button class="btn btn-solid resume" @click=${() => this.pick('resume')}>${t().pause.resume}</button>
             <button class="btn btn-solid quit ${this.confirming ? 'confirm' : ''}" @click=${() => this.onQuit()}>
-              ${this.confirming ? 'Quit match - sure?' : 'Main menu'}
+              ${this.confirming ? t().pause.quitSure : t().common.mainMenu}
             </button>
             ${this.emotesMuted !== null ? html`
-              <button class="btn btn-solid quit" @click=${() => this.dispatchEvent(new Event('toggle-emotes'))}>${this.emotesMuted ? 'Show emotes' : 'Mute emotes'}</button>
+              <button class="btn btn-solid quit" @click=${() => this.dispatchEvent(new Event('toggle-emotes'))}>${this.emotesMuted ? t().pause.showEmotes : t().pause.muteEmotes}</button>
             ` : nothing}
-            <div class="warning">${this.confirming ? this.quitWarning : ''}</div>
+            <div class="warning">${this.confirming ? this.quitWarning ?? t().pause.quitWarning : ''}</div>
           </div>
         </div>
       </div>

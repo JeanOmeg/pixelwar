@@ -4,6 +4,7 @@ import { theme } from './theme'
 import { iconStyles } from './icons'
 import { HudHighlight, HudView, TeamView, hpLevel } from './view-models'
 import { EMOTES, TURN_WARNING_SECONDS, emoteLabel } from '../online/protocol'
+import { t } from '../i18n'
 
 /**
  * Top bar: both teams (units left, total HP), round/phase and End Turn.
@@ -209,7 +210,7 @@ export class GameHud extends LitElement {
     const online = this.view?.online
     if (!online || online.timeLeft === null) return nothing
     const left = Math.max(0, Math.ceil(online.timeLeft))
-    return html`<span class="clock" title="Time left in this turn">${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}</span>`
+    return html`<span class="clock" title=${t().hud.timeLeft}>${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}</span>`
   }
 
   private renderTimerBar() {
@@ -223,7 +224,7 @@ export class GameHud extends LitElement {
     const online = this.view?.online
     if (!online?.canEmote) return nothing
     return html`
-      <button class="btn btn-solid emote-btn" title="Send a quick message (T, 1-9)" @click=${() => { this.emotesOpen = !this.emotesOpen }}>Say...</button>
+      <button class="btn btn-solid emote-btn" title=${t().hud.sayTitle} @click=${() => { this.emotesOpen = !this.emotesOpen }}>${t().hud.say}</button>
       ${this.emotesOpen ? html`
         <div class="panel emote-list">
           ${EMOTES.map((emote, i) => html`<button class="btn btn-solid" @click=${() => this.pickEmote(emote)}>${i < 9 ? html`<small class="keys-only">${i + 1}</small>` : nothing}${emoteLabel(emote)}</button>`)}
@@ -267,19 +268,19 @@ export class GameHud extends LitElement {
       ${this.renderTeam(left, 'left', view.activeTeam === left.team)}
       <div class="panel center team-${active.team} ${warning ? 'warning' : ''}">
         ${view.canPause ? html`
-          <button class="btn btn-solid pause ${this.lit('pause')}" title="Pause (P)" @click=${() => this.dispatchEvent(new Event('pause'))}><i></i></button>
-          <button class="btn btn-solid speed" title=${view.speedLocked ? 'Game speed (fixed in the tutorial)' : 'Game speed'} ?disabled=${view.speedLocked} @click=${() => this.dispatchEvent(new Event('speed'))}>x${view.speed}</button>
+          <button class="btn btn-solid pause ${this.lit('pause')}" title=${t().hud.pause} @click=${() => this.dispatchEvent(new Event('pause'))}><i></i></button>
+          <button class="btn btn-solid speed" title=${view.speedLocked ? t().hud.speedLocked : t().hud.speed} ?disabled=${view.speedLocked} @click=${() => this.dispatchEvent(new Event('speed'))}>x${view.speed}</button>
         ` : nothing}
         ${this.renderEmotes()}
         <div class="phase ${this.lit('round')}">
-          <small>Round ${view.round}${online && online.spectators > 0 ? html` · <span class="spectators" title="People watching">${online.spectators} watching</span>` : nothing}</small>
-          <strong>${online ? active.controller : `${active.label} phase`}</strong>
+          <small>${t().hud.round(view.round)}${online && online.spectators > 0 ? html` · <span class="spectators" title=${t().hud.peopleWatching}>${t().hud.watchingCount(online.spectators)}</span>` : nothing}</small>
+          <strong>${online ? active.controller : t().hud.phase(active.team)}</strong>
         </div>
         ${this.renderClock()}
-        ${online?.watching ? html`<span class="watching">Watching</span>` : nothing}
+        ${online?.watching ? html`<span class="watching">${t().hud.watching}</span>` : nothing}
         ${view.canEndTurn ? html`
-          <button class="btn btn-solid end-turn ${this.confirming ? 'confirm' : ''} ${this.lit('end-turn')}" title="End turn (E)" ?disabled=${view.endTurnLocked} @click=${this.onEndTurn}>
-            ${this.confirming ? `${view.unitsWithActions} left - sure?` : 'End turn'}
+          <button class="btn btn-solid end-turn ${this.confirming ? 'confirm' : ''} ${this.lit('end-turn')}" title=${t().hud.endTurnTitle} ?disabled=${view.endTurnLocked} @click=${this.onEndTurn}>
+            ${this.confirming ? t().hud.endTurnSure(view.unitsWithActions) : t().hud.endTurn}
           </button>
         ` : nothing}
         ${this.renderTimerBar()}
