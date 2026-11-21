@@ -5,6 +5,7 @@ import { MAPS } from './maps'
 import './ui-components/audio-menu'
 import './ui-components/start-screen-ui'
 import { AudioManager } from './audio-manager'
+import { installDeniedSound } from './effects'
 import { isTouchDevice, refitScreen, setupTouchDevice } from './device'
 import { attachSpeedToEngine } from './speed'
 import { startGamepadInput } from './gamepad/gamepad-input'
@@ -27,6 +28,7 @@ const game = new ex.Engine({
 })
 
 AudioManager.init()
+installDeniedSound()
 attachSpeedToEngine(game)
 
 setupTouchDevice()

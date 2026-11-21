@@ -104,6 +104,32 @@ export interface GameResultView {
   subtitle: string
   /** Winning team, or null for a draw */
   team: Team | null
+  /** Damage, kills, MVP... (not shown when missing) */
+  stats?: MatchStatsView
+}
+
+export interface TeamStatsView {
+  team: Team
+  label: string
+  damage: number
+  kills: number
+  lost: number
+}
+
+/** A unit singled out on the game over screen (MVP, strongest critical) */
+export interface StandoutView {
+  portrait: string
+  name: string
+  team: Team
+  /** "3 kills · 24 damage", "14 damage" */
+  detail: string
+}
+
+export interface MatchStatsView {
+  rounds: number
+  teams: TeamStatsView[]
+  mvp: StandoutView | null
+  bestCritical: StandoutView | null
 }
 
 export function hpLevel(hp: number, maxHp: number): '' | 'mid' | 'low' {

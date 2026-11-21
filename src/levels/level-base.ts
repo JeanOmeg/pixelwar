@@ -10,7 +10,7 @@ import { TurnManager } from '../turn-manager'
 import { ComputerPlayer } from '../computer-player'
 import { DustParticles } from '../dust-particles'
 import { CameraController } from '../camera-controller'
-import { Resources } from '../resources'
+import { MatchMusic } from '../music'
 import { Tile } from '@excaliburjs/plugin-tiled'
 import { MapDefinition, getMapInfo, sceneNameOf, spawnsWithArmies } from '../maps'
 import type { GameMode, MatchSettings } from '../game-modes'
@@ -58,7 +58,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
       this.world.remove(entities[i], false)
     }
 
-    Resources.LevelMusic2.stop()
+    MatchMusic.stop()
     this.backgroundColor = ex.Color.fromHex('#0070d4')
     this.board = await this.parse()
     this.add(DustParticles)
@@ -78,8 +78,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
   }
 
   override onDeactivate(): void {
-    Resources.LevelMusic2.instances.forEach(i => i.stop())
-    Resources.LevelMusic2.stop()
+    MatchMusic.stop()
     this.ui?.destroy()
     this.players?.forEach(p => p.dispose())
     this.cameraController?.dispose()
@@ -109,8 +108,7 @@ export class LevelBase extends ex.Scene<MatchSettings> {
     const tiledMap = this.map.tiledMap
     const info = getMapInfo(this.map)
 
-    Resources.LevelMusic2.loop = true
-    Resources.LevelMusic2.play()
+    MatchMusic.start()
 
     // online, the red player sees the map mirrored: both players play from the left
     const mirrored = this.settings.mode === 'online' && activeSession()?.seat === 1

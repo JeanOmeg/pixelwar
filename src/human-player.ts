@@ -8,6 +8,7 @@ import { Unit, fixedRolls, type StrikeRolls } from './unit'
 import type { ActionFeed } from './online/feed'
 import type { GameAction } from './online/protocol'
 import { applyAction, instantPresenter, posOf, rollAttackDice } from './online/actions'
+import { withoutEffects } from './effects'
 import { Resources } from './resources'
 import { SKILLS, SkillId } from './skills'
 import type { CameraController } from './camera-controller'
@@ -459,7 +460,7 @@ export class HumanPlayer extends Player {
       const entry = this.feed.take()
       if (!entry) break
       try {
-        if (await applyAction(this.board, this, entry.action, instantPresenter)) return true
+        if (await withoutEffects(() => applyAction(this.board, this, entry.action, instantPresenter))) return true
       } catch (error) {
         this.onOutOfSync(error)
         return true

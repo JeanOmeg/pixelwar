@@ -13,6 +13,7 @@ import { PhaseBanner } from './ui-components/phase-banner'
 import { GameOver, GameOverChoice } from './ui-components/game-over'
 import { PauseMenu } from './ui-components/pause-menu'
 import { Resources } from './resources'
+import { MatchMusic } from './music'
 import type { CameraController } from './camera-controller'
 import { isTouchDevice, readableBoost } from './device'
 import { SKILLS, SkillId } from './skills'
@@ -302,7 +303,7 @@ export class GameUI implements GamepadMatch {
     // Not engine.stop(): its 'stop' event makes every ex.Sound stop and refuse
     // to play again until a 'start' event. Stop only the clock instead.
     this.engine.clock.stop()
-    const sounds = Object.values(Resources).filter((r): r is ex.Sound => r instanceof ex.Sound && r.isPlaying())
+    const sounds = [...Object.values(Resources), ...MatchMusic.sounds].filter((r): r is ex.Sound => r instanceof ex.Sound && r.isPlaying())
     sounds.forEach(sound => sound.pause())
     const choice = await this.pauseMenu.show()
     this.engine.clock.start()

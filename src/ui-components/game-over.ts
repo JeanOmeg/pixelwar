@@ -1,7 +1,7 @@
 import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
-import { GameResultView } from './view-models'
+import { GameResultView, MatchStatsView, StandoutView } from './view-models'
 import { t } from '../i18n'
 
 export type GameOverChoice = 'rematch' | 'menu'
@@ -28,6 +28,9 @@ export class GameOver extends LitElement {
       gap: calc(18 * var(--u));
       min-width: calc(520 * var(--u));
       padding: calc(32 * var(--u)) calc(40 * var(--u));
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      box-sizing: border-box;
       animation: drop 500ms steps(8) both;
     }
     @keyframes drop { from { transform: translateY(calc(-120 * var(--u))); opacity: 0; } }
@@ -41,6 +44,26 @@ export class GameOver extends LitElement {
     .actions { display: flex; gap: calc(16 * var(--u)); margin-top: calc(8 * var(--u)); }
     .actions .btn { font-size: calc(24 * var(--t)); padding: calc(10 * var(--u)) calc(22 * var(--u)); }
     .draw { --team: var(--gold); --team-dark: #6b5300; }
+    .stats { display: flex; flex-direction: column; gap: calc(12 * var(--u)); width: 100%; font-size: calc(18 * var(--t)); }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: calc(4 * var(--u)) calc(12 * var(--u)); text-align: right; }
+    th:first-child, td:first-child { text-align: left; color: var(--muted); }
+    th { color: var(--team); }
+    tbody tr { border-top: calc(2 * var(--u)) solid #2a2d3a; }
+    .rounds { text-align: center; color: var(--muted); font-size: calc(16 * var(--t)); }
+    .standouts { display: flex; flex-wrap: wrap; gap: calc(12 * var(--u)); justify-content: center; }
+    .standout {
+      display: flex;
+      align-items: center;
+      gap: calc(10 * var(--u));
+      padding: calc(6 * var(--u)) calc(14 * var(--u)) calc(6 * var(--u)) calc(6 * var(--u));
+      border: calc(3 * var(--u)) solid var(--team);
+      background: #14161f;
+    }
+    .standout img { width: calc(56 * var(--u)); height: calc(56 * var(--u)); image-rendering: pixelated; }
+    .standout .what { font-size: calc(14 * var(--t)); color: var(--gold); }
+    .standout .name { font-size: calc(18 * var(--t)); }
+    .standout .detail { font-size: calc(14 * var(--t)); color: var(--muted); }
   `]
 
   @state()
@@ -66,6 +89,43 @@ export class GameOver extends LitElement {
     settle?.()
   }
 
+  private renderStandout(what: string, unit: StandoutView | null) {
+    if (!unit) return nothing
+    return html`
+      <div class="standout team-${unit.team}">
+        <img src=${unit.portrait} alt="">
+        <div>
+          <div class="what">${what}</div>
+          <div class="name">${unit.name}</div>
+          <div class="detail">${unit.detail}</div>
+        </div>
+      </div>
+    `
+  }
+
+  private renderStats(stats: MatchStatsView) {
+    const row = (label: string, value: (team: MatchStatsView['teams'][number]) => number) => html`
+      <tr><td>${label}</td>${stats.teams.map(team => html`<td>${value(team)}</td>`)}</tr>
+    `
+    return html`
+      <div class="stats">
+        <table>
+          <thead><tr><th></th>${stats.teams.map(team => html`<th class="team-${team.team}">${team.label}</th>`)}</tr></thead>
+          <tbody>
+            ${row(t().gameOver.damageDealt, team => team.damage)}
+            ${row(t().gameOver.kills, team => team.kills)}
+            ${row(t().gameOver.unitsLost, team => team.lost)}
+          </tbody>
+        </table>
+        <div class="rounds">${t().gameOver.rounds(stats.rounds)}</div>
+        <div class="standouts">
+          ${this.renderStandout(t().gameOver.mvp, stats.mvp)}
+          ${this.renderStandout(t().gameOver.bestCritical, stats.bestCritical)}
+        </div>
+      </div>
+    `
+  }
+
   override render() {
     const result = this.result
     if (!result) return nothing
@@ -75,6 +135,7 @@ export class GameOver extends LitElement {
         <div class="panel dialog ${teamClass}">
           <div class="title">${result.title}</div>
           <div class="subtitle">${result.subtitle}</div>
+          ${result.stats ? this.renderStats(result.stats) : nothing}
           <div class="actions">
             <button class="btn btn-solid" @click=${() => this.pick('rematch')}>${this.rematchLabel ?? t().gameOver.playAgain}</button>
             <button class="btn btn-solid" style="--team: #2a2d3a" @click=${() => this.pick('menu')}>${t().common.mainMenu}</button>

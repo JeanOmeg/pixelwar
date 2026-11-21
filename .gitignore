@@ -2,3 +2,5 @@ node_modules
 dist
 CLAUDE.md
 .parcel-cache
+# original music (yarn music converts it to src/assets/music/)
+music-src/

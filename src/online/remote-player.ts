@@ -6,6 +6,7 @@ import { ENEMY_SPEED } from '../config'
 import { gameDelay } from '../speed'
 import { fixedRolls } from '../unit'
 import { applyAction, instantPresenter, type ActionPresenter } from './actions'
+import { withoutEffects } from '../effects'
 import type { ActionFeed } from './feed'
 
 /**
@@ -51,7 +52,8 @@ export class RemotePlayer extends Player {
       const entry = await this.feed.next()
       if (!entry || this.disposed) break
       try {
-        const ended = await applyAction(this.board, this, entry.action, entry.catchUp ? instantPresenter : this.animated)
+        const apply = () => applyAction(this.board, this, entry.action, entry.catchUp ? instantPresenter : this.animated)
+        const ended = await (entry.catchUp ? withoutEffects(apply) : apply())
         if (ended) break
       } catch (error) {
         this.onOutOfSync(error)

@@ -2,7 +2,13 @@ import * as ex from 'excalibur'
 import { Cell } from './cell'
 import { SCALE } from './config'
 import { PathFinder } from './path-finding/path-finding-system'
-import { Unit } from './unit'
+import { Unit, type AttackEvent } from './unit'
+
+/** What one step of an attack did: HP really lost (not below 0) and whether it killed */
+export interface AttackEventResult {
+  dealt: number
+  killed: boolean
+}
 
 export class Board {
   tileWidth: number = 32
@@ -16,6 +22,8 @@ export class Board {
   scene: ex.Scene
   /** Called when a unit drops to 0 HP (TurnManager checks whether the match is over) */
   onUnitDown: ((unit: Unit) => void) | null = null
+  /** Called after each step of an attack is applied (match statistics, music) */
+  onAttackEvent: ((event: AttackEvent, result: AttackEventResult) => void) | null = null
 
   /**
    * @param mirrored draws column x at cols - 1 - x (online: the red player

@@ -3,9 +3,10 @@ import { customElement, property, state } from 'lit/decorators.js'
 import { AudioManager } from '../audio-manager'
 import { canFullscreen, isFullscreen, isStandalone, needsHomeScreenForFullscreen, toggleFullscreen } from '../device'
 import { onLanguageChange, t } from '../i18n'
+import './volume-controls'
 
 /**
- * Corner buttons: sound on/off and fullscreen (entering fullscreen also turns
+ * Corner buttons: sound (opens the volume panel: music, effects, mute) and fullscreen (entering fullscreen also turns
  * a phone to landscape). The fullscreen button appears only after PLAY! (from
  * the main menu on). Where the browser can't go fullscreen (iPhone) it opens a
  * tip on adding the game to the home screen; in the installed app (already
@@ -66,6 +67,7 @@ export class AudioMenu extends LitElement {
         line-height: 1.5;
         cursor: pointer;
     }
+    .volume { cursor: default; width: auto; }
     .tip strong {
         display: block;
         margin-bottom: 6px;
@@ -83,8 +85,12 @@ export class AudioMenu extends LitElement {
     }
   `
 
-  @property({ type: Boolean })
-    soundOn = !AudioManager.muted
+  @state()
+  private soundOn = !AudioManager.muted
+
+  /** Volume panel (music, effects, mute) */
+  @state()
+  private volumeOpen = false
 
   /** The fullscreen button only shows once the player is past the loader (main.ts) */
   @property({ type: Boolean, attribute: 'fullscreen-ready' })
@@ -118,10 +124,18 @@ export class AudioMenu extends LitElement {
   }
 
   private stopLanguage: (() => void) | null = null
+  private stopAudio: (() => void) | null = null
+
+  /** A press anywhere else closes the volume panel */
+  private onOutside = (event: Event) => {
+    if (this.volumeOpen && !event.composedPath().includes(this)) this.volumeOpen = false
+  }
 
   override connectedCallback() {
     super.connectedCallback()
     this.stopLanguage = onLanguageChange(() => this.requestUpdate())
+    this.stopAudio = AudioManager.onChange(() => { this.soundOn = !AudioManager.muted })
+    document.addEventListener('pointerdown', this.onOutside, true)
     document.addEventListener('fullscreenchange', this.onFullscreenChange)
     document.addEventListener('webkitfullscreenchange', this.onFullscreenChange)
   }
@@ -130,19 +144,21 @@ export class AudioMenu extends LitElement {
     document.removeEventListener('fullscreenchange', this.onFullscreenChange)
     document.removeEventListener('webkitfullscreenchange', this.onFullscreenChange)
     this.stopLanguage?.()
+    this.stopAudio?.()
+    document.removeEventListener('pointerdown', this.onOutside, true)
     super.disconnectedCallback()
   }
 
-  toggleSound() {
-    this.soundOn = !this.soundOn
-    AudioManager.toggleMute(!this.soundOn)
+  private toggleVolume() {
+    this.volumeOpen = !this.volumeOpen
   }
 
   override render() {
     // material symbols
     // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:volume_off:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=speaker
     return html`
-      <button @click=${this.toggleSound} class="material-symbols-outlined" title=${t().audio.sound}>${this.soundOn ? 'volume_up' : 'volume_off'}</button>
+      <button @click=${this.toggleVolume} class="material-symbols-outlined" title=${t().audio.sound} aria-expanded=${this.volumeOpen}>${this.soundOn ? 'volume_up' : 'volume_off'}</button>
+      ${this.volumeOpen ? html`<div class="tip volume" role="dialog"><volume-controls></volume-controls></div>` : nothing}
       ${this.fullscreenButton()}
     `
   }

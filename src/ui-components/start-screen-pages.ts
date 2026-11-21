@@ -83,6 +83,7 @@ export function renderCredits() {
       <div>${t().credits.builtWith} <a href="https://excaliburjs.com" target="_blank" rel="noopener">Excalibur.js</a> ${t().credits.and} <a href="https://lit.dev" target="_blank" rel="noopener">Lit</a>.</div>
       <ul>
         <li>${t().credits.soundBy} <a href="https://erikonarheim.com" target="_blank" rel="noopener">Erik Onarheim</a> ${t().credits.with} <a href="https://sfxr.me/" target="_blank" rel="noopener">JSFXR</a></li>
+        <li>${t().credits.musicBy} <a href="https://pixabay.com/users/nakaradaalexander-7260388/" target="_blank" rel="noopener">Alexander Nakarada</a> / <a href="https://www.creatorchords.com" target="_blank" rel="noopener">https://www.creatorchords.com</a></li>
         <li><a href="https://not-jam.itch.io/not-jam-slab-serif-11" target="_blank" rel="noopener">${t().credits.font}</a> (CC0)</li>
       </ul>
     </div>

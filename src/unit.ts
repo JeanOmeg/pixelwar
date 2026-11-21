@@ -15,6 +15,8 @@ import {
 } from './skills'
 import { gameDelay } from './speed'
 import { screenFacing, unitFacingArrow } from './board-markers'
+import { unitClassOf } from './unit-types'
+import { AuraKind, aura, burst, effectScene, explosion, heavyHit, impact, impactSound, launchSound, playSound, projectileOf, shootProjectile, stream } from './effects'
 
 /**
  * What an attack does, in order: the strike, the effects of the attack skill,
@@ -27,7 +29,7 @@ export type AttackEvent =
   | { kind: 'heal', unit: Unit, amount: number }
   | { kind: 'steal', from: Unit, to: Unit, amount: number }
   | { kind: 'pin', unit: Unit }
-  | { kind: 'splash', unit: Unit, damage: number }
+  | { kind: 'splash', unit: Unit, damage: number, by: Unit }
 
 /** Color of the "Skill -N MP" text over a unit (the MP bar's color) */
 const SKILL_TEXT_COLOR = '#4cc9f0'
@@ -107,7 +109,7 @@ export class Unit extends ex.Actor {
     return this.dying || this.health <= 0
   }
 
-  constructor(x: number, y: number, unitType: UnitType, private readonly board: Board, public player: Player) {
+  constructor(x: number, y: number, unitType: UnitType, readonly board: Board, public player: Player) {
     super({
       name: unitType,
       anchor: ex.vec(0, 0),
@@ -182,8 +184,10 @@ export class Unit extends ex.Actor {
     this.hpBar.kill()
     this.facingArrow.kill()
     this.setAnim(this.selectAnimationDeath())
+    playSound(Resources.DeathSound)
     await this.actions.delay(500).toPromise()
-    Resources.ExplosionSound.play()
+    const scene = effectScene(this)
+    if (scene) burst(scene, this.centerPos().add(ex.vec(0, 8 * SCALE.y)), 10, { colors: ['#d8dce6', '#b8bcc8', '#7a7f93'], speed: 25, life: 600, size: 3, rise: 25, spread: 10 })
     await this.actions.fade(0, 300).toPromise()
     this.kill()
   }
@@ -208,7 +212,7 @@ export class Unit extends ex.Actor {
       const sound = new ex.ActionSequence(this, (ctx) => {
         ctx.delay(200)
         ctx.callMethod(() => {
-          Resources.MoveSound.play()
+          playSound(Resources.MoveSound)
         })
       })
 
@@ -415,7 +419,22 @@ export class Unit extends ex.Actor {
    * nothing. Drawn a bit above the effect text (DEF +3, +8...) so both read.
    */
   private announceSkill(skill: SkillDefinition) {
+    if (!effectScene(this)) return
     void this.damageManager?.spawnText(this.textPos().add(ex.vec(0, -18 * SCALE.y)), `${skill.name} -${skill.cost} ${t().stats.mp}`, SKILL_TEXT_COLOR)
+    // healing skills sound like healing (heal() plays it)
+    if (skill.id !== 'skill-heal' && skill.id !== 'skill-second-wind') playSound(Resources.SkillSound)
+    if (skill.id === 'skill-rage') this.showAura('attack')
+  }
+
+  /** Glow over the unit when a skill takes effect */
+  private showAura(kind: AuraKind) {
+    const scene = effectScene(this)
+    if (scene) aura(scene, this.centerPos(), kind)
+  }
+
+  /** Middle of the unit's tile (world) */
+  centerPos(): ex.Vector {
+    return this.pos.add(this.unitConfig.graphics.offset).add(ex.vec(16 * SCALE.x, 16 * SCALE.y))
   }
 
   /** Gives the MP back for a move/attack skill that wasn't used */
@@ -452,6 +471,10 @@ export class Unit extends ex.Actor {
     if (healed <= 0) return
     this.health += healed
     void this.damageManager?.spawnText(this.textPos(), `+${healed}`, '#4ee06a')
+    if (effectScene(this)) {
+      playSound(Resources.HealSound)
+      this.showAura('heal')
+    }
   }
 
   private applySelfSkill(id: SkillId) {
@@ -462,21 +485,25 @@ export class Unit extends ex.Actor {
     case 'skill-guard':
       this.defenseBonus += GUARD_DEF
       void this.damageManager?.spawnText(this.textPos(), `${t().stats.def} +${GUARD_DEF}`, '#4cc9f0')
+      this.showAura('defense')
       break
     case 'skill-frenzy':
       this.attackBonus += FRENZY_ATK
       this.defenseBonus += FRENZY_DEF
       void this.damageManager?.spawnText(this.textPos(), `${t().stats.atk} +${FRENZY_ATK}`, '#ff8c42')
+      this.showAura('attack')
       break
     case 'skill-brace':
       this.braced = true
       this.defenseBonus += BRACE_DEF
       void this.damageManager?.spawnText(this.textPos(), t().floating.brace, '#4cc9f0')
+      this.showAura('defense')
       break
     case 'skill-shield-wall':
       for (const ally of this.alliesAround(true)) {
         ally.defenseBonus += SHIELD_WALL_DEF
         void ally.damageManager?.spawnText(ally.textPos(), `${t().stats.def} +${SHIELD_WALL_DEF}`, '#4cc9f0')
+        ally.showAura('defense')
       }
       break
     }
@@ -557,11 +584,11 @@ export class Unit extends ex.Actor {
     if (skill === 'skill-fireball' && other.cell) {
       // the target burns too (hit or miss), unless the strike already killed it
       if (healthAfter > 0) {
-        events.push({ kind: 'splash', unit: other, damage: FIREBALL_SPLASH })
+        events.push({ kind: 'splash', unit: other, damage: FIREBALL_SPLASH, by: this })
         healthAfter -= FIREBALL_SPLASH
       }
       for (const cell of other.cell.getNeighbors()) {
-        if (cell.unit && cell.unit.player !== this.player) events.push({ kind: 'splash', unit: cell.unit, damage: FIREBALL_SPLASH })
+        if (cell.unit && cell.unit.player !== this.player) events.push({ kind: 'splash', unit: cell.unit, damage: FIREBALL_SPLASH, by: this })
       }
     }
     if (skill === 'skill-pinning-shot' && outcome.hit && healthAfter > 0) events.push({ kind: 'pin', unit: other })
@@ -594,10 +621,35 @@ export class Unit extends ex.Actor {
         await striker.playStrike(event)
         if (event.counter) striker.setAnim(striker.selectAnimationIdle())
       } else {
+        this.playEventEffect(event, events)
         applyAttackEvent(event)
       }
     }
     this.attacked = true
+  }
+
+  /** Effects of a skill after the strike (Fireball blast, Drain, Steal, Pinning Shot) */
+  private playEventEffect(event: AttackEvent, events: AttackEvent[]) {
+    const scene = effectScene(this)
+    if (!scene) return
+    switch (event.kind) {
+    case 'splash':
+      // one blast sound for the whole Fireball
+      if (events.find(e => e.kind === 'splash') === event) playSound(Resources.ExplosionSound)
+      explosion(scene, event.unit.centerPos())
+      break
+    case 'heal': {
+      const strike = events.find(e => e.kind === 'strike')
+      if (strike?.kind === 'strike') stream(scene, strike.defender.centerPos(), event.unit.centerPos(), ['#7dff9a', '#2f9e4a', '#e8ffe8'])
+      break
+    }
+    case 'steal':
+      if (event.amount > 0) stream(scene, event.from.centerPos(), event.to.centerPos(), ['#4cc9f0', '#fff000', '#ffffff'], 6)
+      break
+    case 'pin':
+      burst(scene, event.unit.centerPos().add(ex.vec(0, 10 * SCALE.y)), 8, { colors: ['#d8dce6', '#b8bcc8'], speed: 30, life: 400, size: 2 })
+      break
+    }
   }
 
   /**
@@ -635,25 +687,36 @@ export class Unit extends ex.Actor {
     this.moved = true
   }
 
-  /** Attack animation, then the damage and its number */
+  /**
+   * Attack animation, then the damage and its number. Ranged classes shoot a
+   * projectile (arrow, fire, dark magic) that flies to the target first.
+   * Critical hits and back attacks shake the camera and flash the board.
+   */
   private async playStrike(event: Extract<AttackEvent, { kind: 'strike' }>) {
+    const projectile = projectileOf(unitClassOf(this.name as UnitType))
+    const outcome = event.outcome
     // the animation starts when the sequence runs, not when it is queued: a
     // counterattacker may still be blinking from the hit it just took
     const atkAnim = new ex.ActionSequence(this, (ctx) => {
       ctx.callMethod(() => {
         this.setAnim(this.selectAnimationAttack())
-        Resources.HitSound.play()
+        playSound(projectile ? launchSound(projectile) : impactSound(outcome))
       })
-      ctx.moveTo({
-        pos: this.pos,
-        duration: 500,
-        easing: ex.EasingFunctions.EaseInOutCubic
-      })
+      ctx.delay(projectile ? 300 : 500)
     })
     await this.actions.runAction(atkAnim).toPromise()
+    const scene = effectScene(this)
+    if (projectile && scene) {
+      await shootProjectile(scene, projectile, this.centerPos(), event.defender.centerPos())
+      playSound(impactSound(outcome))
+    }
     this.setAnim(this.selectAnimationIdle())
 
     applyAttackEvent(event)
+    if (scene) {
+      impact(scene, event.defender.centerPos(), outcome)
+      heavyHit(scene, outcome)
+    }
     await gameDelay(350)
     await this.damageManager.spawnDamageNumber(event.defender.textPos(), event.outcome, event.counter ? t().floating.counter : '')
     if (event.defender.health > 0) event.defender.actions.blink(100, 100, 4)
@@ -691,8 +754,17 @@ export class Unit extends ex.Actor {
   }
 }
 
-/** Applies one step of an attack to the units involved */
+/** Applies one step of an attack to the units involved (and tells the board, for the match statistics) */
 export function applyAttackEvent(event: AttackEvent) {
+  const target = event.kind === 'strike' ? event.defender : event.kind === 'splash' ? event.unit : null
+  const before = target?.health ?? 0
+  applyEvent(event)
+  if (!target) return
+  const dealt = Math.max(0, before) - Math.max(0, target.health)
+  target.board.onAttackEvent?.(event, { dealt, killed: before > 0 && target.health <= 0 })
+}
+
+function applyEvent(event: AttackEvent) {
   switch (event.kind) {
   case 'strike':
     event.defender.health -= event.outcome.damage

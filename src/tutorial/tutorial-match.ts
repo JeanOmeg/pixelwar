@@ -22,6 +22,8 @@ import { gameDelay, lockSpeed } from '../speed'
 import { TutorialPanel } from '../ui-components/tutorial-panel'
 import '../ui-components/tutorial-panel'
 import { t } from '../i18n'
+import { playSound } from '../effects'
+import { Resources } from '../resources'
 
 const REFRESH_MS = 150
 const HUD_PARTS: HudHighlight[] = ['teams', 'round', 'pause', 'end-turn']
@@ -307,7 +309,10 @@ export class TutorialMatch {
       this.lastActed = action.a === 'move' ? action.path[action.path.length - 1] : 'unit' in action ? action.unit : null
       resolve?.()
     },
-    refused: () => this.panel.shake()
+    refused: () => {
+      this.panel.shake()
+      playSound(Resources.DeniedSound)
+    }
   }
 
   /** Enter / Space (controller: A) = Next */

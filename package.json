@@ -17,7 +17,9 @@
     "ai:stall": "vitest run --config vitest.sim.config.ts tests/sim/stall.sim.ts",
     "balance:sim": "vitest run --config vitest.sim.config.ts tests/sim/classes.sim.ts",
     "tileset": "vite-node scripts/tileset/extend-tileset.ts",
-    "minis": "vite-node scripts/minis/build-minis.ts"
+    "minis": "vite-node scripts/minis/build-minis.ts",
+    "sfx": "vite-node scripts/audio/build-sfx.ts",
+    "music": "vite-node scripts/audio/build-music.ts"
   },
   "author": "Jean Fernandes",
   "license": "BSD-2-Clause",
@@ -35,6 +37,7 @@
     "@typescript-eslint/parser": "^8.18.1",
     "buffer": "^5.5.0 || ^6.0.0",
     "eslint": "^9.17.0",
+    "ffmpeg-static": "5.2.0",
     "happy-dom": "15.11.7",
     "parcel": "2.11.0",
     "ts-lit-plugin": "^2.0.1",

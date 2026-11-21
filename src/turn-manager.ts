@@ -1,12 +1,20 @@
 import * as ex from 'excalibur'
 import { Player } from './player'
 import { SelectionManager } from './selection-manager'
-import { Resources } from './resources'
+import { MatchMusic } from './music'
 import { LevelBase } from './levels/level-base'
 import type { GameUI } from './game-ui'
-import type { GameResultView } from './ui-components/view-models'
+import type { GameResultView, MatchStatsView, StandoutView } from './ui-components/view-models'
 import type { GameOverChoice } from './ui-components/game-over'
 import { t } from './i18n'
+import { MatchStats } from './match-stats'
+import { playSound } from './effects'
+import { Resources } from './resources'
+import { unitPortrait } from './ui-sprites'
+import { className } from './unit-classes'
+import { unitClassOf } from './unit-types'
+import type { UnitType } from './config'
+import type { Unit } from './unit'
 
 /** From the last unit's death to the game over screen (its death animation takes ~0.8 s) */
 const GAME_OVER_DELAY_MS = 2000
@@ -50,6 +58,8 @@ export class TurnManager {
   /** A side was wiped out: the game over screen comes after a short pause */
   private ending = false
   hooks: TurnHooks = {}
+  /** Damage, kills... for the game over screen */
+  readonly stats = new MatchStats()
 
   constructor(public engine: ex.Engine, public level: LevelBase, public players: Player[], public selectionManager: SelectionManager, public ui: GameUI, maxTurns: number) {
     if (players.length === 0) throw Error('Players should be non-zero in length')
@@ -61,7 +71,9 @@ export class TurnManager {
     this.currentPlayer = players[0]
     this.phasesLeft = maxTurns
     // a side may be wiped out in the middle of a phase: don't wait for it to end
-    level.board.onUnitDown = () => {
+    level.board.onAttackEvent = (event, outcome) => this.stats.record(event, outcome)
+    level.board.onUnitDown = unit => {
+      this.stats.unitLost(unit)
       const result = this.checkResult()
       if (result) void this.endAfterPause(result)
     }
@@ -182,8 +194,10 @@ export class TurnManager {
     this.finished = true
     this.hooks.ended?.(result)
     this.selectionManager.reset()
-    const choice = await this.ui.showGameOver(this.hooks.describe?.(result) ?? this.describe(result))
-    Resources.LevelMusic2.stop()
+    MatchMusic.stop()
+    const view = this.hooks.describe?.(result) ?? this.describe(result)
+    playSound(this.wonHere(result) ? Resources.VictorySound : Resources.DefeatSound)
+    const choice = await this.ui.showGameOver({ ...view, stats: this.statsView() })
     if (this.hooks.finished) {
       await this.hooks.finished(result, choice)
     } else if (choice === 'rematch') {
@@ -193,13 +207,44 @@ export class TurnManager {
     }
   }
 
+  /**
+   * Victory jingle when somebody on this device won (or, with nobody or
+   * everybody here, when anybody won); defeat jingle for a loss or a draw
+   */
+  private wonHere(result: MatchResult): boolean {
+    if (!result.winner) return false
+    const locals = this.players.filter(p => p.isLocal)
+    return locals.length === 1 ? result.winner.isLocal : true
+  }
+
+  private standout(unit: Unit, detail: string): StandoutView {
+    const team = this.ui.teamOf(unit.player)
+    const type = unit.name as UnitType
+    return { portrait: unitPortrait(type, team === 'red'), name: className(unitClassOf(type)), team, detail }
+  }
+
+  private statsView(): MatchStatsView {
+    const mvp = this.stats.mvp()
+    const critical = this.stats.bestCritical
+    return {
+      rounds: this.playedRound,
+      teams: this.players.map(player => ({
+        team: this.ui.teamOf(player),
+        label: player.displayName ?? this.ui.teamLabel(player),
+        ...this.stats.team(player)
+      })),
+      mvp: mvp ? this.standout(mvp.unit, t().gameOver.mvpDetail(mvp.kills, mvp.damage)) : null,
+      bestCritical: critical ? this.standout(critical.unit, t().gameOver.damageDetail(critical.damage)) : null
+    }
+  }
+
   /** Leaves the match from the pause menu, without a result */
   async quit() {
     if (this.aborted) return
     this.aborted = true
     this.players.forEach(p => { p.active = false })
     this.selectionManager.reset()
-    Resources.LevelMusic2.stop()
+    MatchMusic.stop()
     await this.returnToMainMenu()
   }
 

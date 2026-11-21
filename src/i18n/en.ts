@@ -54,7 +54,11 @@ export const en = {
     tipShare: 'Share, then',
     tipAdd: 'Add to Home Screen',
     tipAfter: ', and open PixelWar from the new icon.',
-    tipClose: 'Tap to close'
+    tipClose: 'Tap to close',
+    music: 'Music',
+    effects: 'Effects',
+    mute: 'Mute all',
+    unmute: 'Sound on'
   },
 
   title: {
@@ -274,7 +278,8 @@ export const en = {
     and: 'and',
     soundBy: 'Sound effects by',
     with: 'with',
-    font: 'Font NotJamSlabSerif11'
+    font: 'Font NotJamSlabSerif11',
+    musicBy: 'Music by'
   },
 
   hud: {
@@ -380,7 +385,15 @@ export const en = {
     winsDash: (name: string, rest: string) => `${name} wins - ${rest}`,
     victory: 'Victory!',
     defeat: 'Defeat',
-    wins: (name: string) => `${name} wins!`
+    wins: (name: string) => `${name} wins!`,
+    damageDealt: 'Damage dealt',
+    kills: 'Kills',
+    unitsLost: 'Units lost',
+    rounds: (n: number) => `${n} round${s(n)}`,
+    mvp: 'MVP',
+    bestCritical: 'Strongest critical',
+    mvpDetail: (kills: number, damage: number) => `${kills} kill${s(kills)} · ${damage} damage`,
+    damageDetail: (damage: number) => `${damage} damage`
   },
 
   pause: {

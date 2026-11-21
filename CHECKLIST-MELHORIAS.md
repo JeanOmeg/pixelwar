@@ -16,15 +16,12 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
 - [x] ⭐ **No modo mover, mostrar de onde dá para atacar** (M): ao passar o mouse num destino, marcar os inimigos atacáveis dali e indicar "pelas costas" quando for o caso. — feito: highlight vermelho nos inimigos ao alcance a partir do destino e espada dourada sobre os que seriam atacados pelas costas.
 
 ### Ritmo e fim de partida
-- [ ] **Partidas que empacam** (M): o empate só vem em 50 rodadas. Opções: morte súbita depois da rodada X (ex.: dano por turno a todos, ou a zona encolhe), ou vitória por pontos (HP/custo restante) no limite. Rodar `yarn ai:stall` antes/depois.
-- [ ] **MP nunca volta** (P, regra): no fim da partida quase ninguém tem skill. Testar +1 MP a cada N rodadas, ou MP ao matar. Exige rodar `yarn balance:sim`.
-- [ ] **Pular animação da CPU** (P): além de x1/x2/x3, um "instantâneo" (já existe `moveInstant`/`attackInstant`).
+- [ ] **MP nunca volta** (P, regra): no fim da partida quase ninguém tem skill. Todas as unidades ganham 1 de MP pra cada abate, e 1 de MP a cada critico, não pode ultrapassar o maximo de 4MP Exige rodar `yarn balance:sim`.
 
 ### Novos objetivos e modos
 - [ ] ⭐ **Objetivos além de eliminar** (G): Comandante (perde quem perder o líder), Capturar ponto (altares do Ruined Temple / Fallen Citadel), Sobreviver N rodadas. Dá vida nova aos 12 mapas.
 - [ ] **Desafios / puzzles** (M): "vença em 1 turno" com exército e posições fixas. O motor do tutorial (`script.ts`, `ActionGate`) e o `applyAction` ajudam muito.
 - [ ] **Campanha curta** (G): sequência de mapas com exército que evolui (desbloqueia classes, mantém sobreviventes).
-- [ ] **Névoa de guerra** (G): cada unidade enxerga X tiles. Muda bastante a IA.
 - [ ] ⭐ **Gelo escorregadio** (M, muda regra): hoje o gelo (tiles 208–209 e o lago congelado 277–299, só no Frozen Pass) é marcado como chão rápido (`isFast`), igual à grama. Proposta: custa **2 de movimento**, como a floresta, e quem está nele fica com **−2 DEF** (é difícil se defender escorregando).
   - **Nova flag:** precisa de uma flag nova (`isIce`) no tileset, gerada por `yarn tileset` (`scripts/tileset/`). Só tirar o `isFast` não basta, porque o jogo trataria o gelo como floresta (+2 DEF e custo de alcance).
   - **Onde mexer:** custo no `PathFinder`, −2 DEF em `Unit.combatStats()` (ao lado do bônus da floresta) e uma constante `ICE_DEFENSE` em `combat.ts`.
@@ -33,20 +30,18 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
   - **IA:** confirmar que o `ThreatMap` e o `scorePosition` usam `combatStats()`. Assim a IA evita parar no gelo sozinha. Rodar `yarn ai:sim` no Frozen Pass.
   - **Mapa e tutorial:** o lago congelado deixa de ser atalho e vira uma travessia arriscada; rever o Frozen Pass. O tutorial não é afetado (Twin Keeps não tem gelo).
   - **Atualizar:** README, `howTo` (Terrain) nos dois idiomas, card de terreno, `tests/pathfinding` e `tests/unit-rules`.
-- [ ] **Tiles especiais** (M): vila/altar que cura 2 HP por turno, terreno elevado (+alcance para ranged), fogo/lava. Os tiles 190+ já têm altar, poço etc.
 
 ---
 
 ## 2. Feedback visual e áudio (sensação de jogo)
 
-- [ ] ⭐ **Projéteis** (M): Archer/Ranger/Mage/Necromancer não disparam nada; o alvo só pisca. Flecha, bola de fogo e magia verde atravessando os tiles deixam o ataque à distância legível.
-- [ ] ⭐ **Efeitos de skill** (M): Fireball sem explosão na área, Heal sem brilho, Guard/Shield Wall sem aura. Partículas simples (já existe `dust-particles.ts`).
-- [ ] **Tremida de câmera e flash** em crítico e ataque pelas costas (P).
-- [ ] ⭐ **Sons que faltam** (P/M): hoje são só 5 efeitos (hit, move, select, target, explosão) e o mesmo `HitSound` serve para espada, flecha e magia. Faltam: errou, crítico, cura, skill, morte própria, vitória/derrota, botão desabilitado.
-- [ ] **Mais músicas** (P): uma trilha só para todas as partidas. Uma por bioma (deserto, neve, cidade) ou por fase (calma / poucas unidades / último inimigo).
-- [ ] **Volume separado de música e efeitos** (P): hoje só existe mudo ([src/audio-manager.ts](src/audio-manager.ts)).
-- [ ] **Clima nos mapas** (P): neve caindo no Frozen Pass, poeira no Desert Oasis.
-- [ ] **Tela de fim mais rica** (M): hoje só título + subtítulo. Mostrar dano causado, abates, MVP, crítico mais forte, rodadas.
+- [x] ⭐ **Projéteis** (M): Archer/Ranger/Mage/Necromancer não disparam nada; o alvo só pisca. Flecha, bola de fogo e magia verde atravessando os tiles deixam o ataque à distância legível.
+- [x] ⭐ **Efeitos de skill** (M): Fireball sem explosão na área, Heal sem brilho, Guard/Shield Wall sem aura. Partículas simples (já existe `dust-particles.ts`).
+- [x] **Tremida de câmera e flash** em crítico e ataque pelas costas (P).
+- [x] ⭐ **Sons que faltam** (P/M): hoje são só 5 efeitos (hit, move, select, target, explosão) e o mesmo `HitSound` serve para espada, flecha e magia. Faltam: errou, crítico, cura, skill, morte própria, vitória/derrota, botão desabilitado.
+- [x] **Mais músicas** (P): uma trilha só para todas as partidas. — feito: 16 faixas do Alexander Nakarada (Pixabay, crédito na tela Credits) tocando em ordem aleatória durante a partida (`src/music.ts`); a do menu nunca muda. Carregam sob demanda e são convertidas para 64 kbps por `yarn music` (originais em `music-src/`, fora do git): 141 MB → 34 MB.
+- [x] **Volume separado de música e efeitos** (P): hoje só existe mudo ([src/audio-manager.ts](src/audio-manager.ts)).
+- [x] **Tela de fim mais rica** (M): hoje só título + subtítulo. Mostrar dano causado, abates, MVP, crítico mais forte, rodadas.
 
 ---
 

@@ -48,7 +48,11 @@ export const ptBR: Strings = {
     tipShare: 'Compartilhar, depois em',
     tipAdd: 'Adicionar à Tela de Início',
     tipAfter: ' e abra o PixelWar pelo novo ícone.',
-    tipClose: 'Toque para fechar'
+    tipClose: 'Toque para fechar',
+    music: 'Música',
+    effects: 'Efeitos',
+    mute: 'Silenciar tudo',
+    unmute: 'Ligar o som'
   },
 
   title: {
@@ -268,7 +272,8 @@ export const ptBR: Strings = {
     and: 'e',
     soundBy: 'Efeitos sonoros de',
     with: 'com',
-    font: 'Fonte NotJamSlabSerif11'
+    font: 'Fonte NotJamSlabSerif11',
+    musicBy: 'Música de'
   },
 
   hud: {
@@ -374,7 +379,15 @@ export const ptBR: Strings = {
     winsDash: (name, rest) => `${name} venceu - ${rest}`,
     victory: 'Vitória!',
     defeat: 'Derrota',
-    wins: name => `${name} venceu!`
+    wins: name => `${name} venceu!`,
+    damageDealt: 'Dano causado',
+    kills: 'Abates',
+    unitsLost: 'Unidades perdidas',
+    rounds: n => `${n} rodada${s(n)}`,
+    mvp: 'Destaque',
+    bestCritical: 'Crítico mais forte',
+    mvpDetail: (kills, damage) => `${kills} abate${s(kills)} · ${damage} de dano`,
+    damageDetail: damage => `${damage} de dano`
   },
 
   pause: {
