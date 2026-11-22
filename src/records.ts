@@ -57,6 +57,8 @@ export interface MatchSummary {
   /** Own units lost / still alive at the end */
   lost: number
   survivors: number
+  /** HP of the own units still alive at the end, added up */
+  survivorHp: number
   kills: number
   damage: number
   feats: FeatRecord

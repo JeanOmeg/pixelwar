@@ -58,8 +58,6 @@ export const ptBR: Strings = {
   title: {
     tagline: 'Batalhas táticas por turnos',
     play: 'Jogar',
-    howToPlay: 'Como jogar',
-    units: 'Unidades',
     credits: 'Créditos',
     dailyChallenge: 'Desafio diário',
     records: 'Recordes',
@@ -206,82 +204,6 @@ export const ptBR: Strings = {
     rangeAny: range => `${range} casas em qualquer terreno`
   },
 
-  howTo: [
-    { title: 'Objetivo', items: [
-      'Derrote todas as unidades inimigas.',
-      'Se ninguém vencer em 50 rodadas, a partida termina empatada.'
-    ] },
-    { title: 'Seu turno', items: [
-      'Clique numa unidade e escolha <b>Mover</b>, <b>Atacar</b>, <b>Habilidades</b> ou <b>Esperar</b>.',
-      'Cada unidade pode mover uma vez e atacar uma vez por turno, em qualquer ordem.',
-      '<b>Desfazer movimento</b> devolve a unidade enquanto ela não atacou.',
-      'Aperte <b>Encerrar turno</b> no topo quando terminar. O turno também acaba quando nenhuma unidade pode mover nem atacar.'
-    ] },
-    { title: 'Combate', items: [
-      'Acerta se <b>ATQ + d20</b> passar de <b>DEF + 10</b>. O dano é <b>d6 + ATQ − DEF</b>.',
-      'Os dados são rolados duas vezes e vale o melhor resultado.',
-      'Um 20 natural é um <b>crítico</b>: 12 + ATQ − DEF de dano.',
-      'Errar ainda causa 1 de dano.',
-      'Ataque um inimigo <b>pelas costas</b> para nunca errar e usar o dobro do ATQ.',
-      '<b>Contra-ataque</b>: uma unidade corpo a corpo que sobrevive contra-ataca um atacante corpo a corpo, a não ser que tenha sido atingida pelas costas.',
-      'Ataques vão em linha reta e param na primeira unidade.',
-      'Mire num inimigo para ver as chances de acertar e de matar antes de atacar.'
-    ] },
-    { title: 'Terreno', items: [
-      'Campo aberto custa 1 de movimento. Floresta custa 2.',
-      'Unidades na <b>floresta</b> ganham +2 DEF.',
-      'Arqueiros, magos, lanceiros, patrulheiros e necromantes pagam 2 pontos de alcance por casa de floresta.',
-      'Muros e árvores bloqueiam movimento e ataques.',
-      'Água bloqueia o movimento, mas ataques passam por cima dela.',
-      'O <b>gelo</b> custa 2 de movimento (ladrões e assassinos pagam 1) e quem está nele fica com −2 DEF. Ataques passam por ele como em campo aberto.',
-      'Portas podem ser atravessadas, mas bloqueiam ataques. Unidades numa porta não atacam nem podem ser atacadas.'
-    ] },
-    { title: 'Habilidades', items: [
-      '<b>Correr</b> (2 PM): movimento em dobro neste turno.',
-      '<b>Especial</b> (4 PM): o próximo ataque é crítico.',
-      'Toda classe também tem uma <b>habilidade própria</b> (veja Unidades): curar, guarda, perfurar armadura, apunhalar...',
-      'Toda unidade tem 4 PM (nunca mais que isso). Uma habilidade por turno. PM só volta em combate: +1 a cada abate e +1 a cada crítico (o do Especial não conta).'
-    ] },
-    { title: 'Exército', items: [
-      'Antes da partida, escolha uma classe para cada vaga inicial do mapa.',
-      'Toda classe custa pontos. Seu exército pode gastar até <b>100</b>.',
-      'Posicione suas unidades em qualquer casa iluminada: as primeiras <b>6 colunas</b> a partir da sua borda. Escolha uma unidade, depois uma casa iluminada.',
-      '<b>Exército clássico</b> volta às unidades desenhadas no mapa (exatamente 100 pontos) e às posições delas.'
-    ] },
-    { title: 'Online', items: [
-      'Digite seu nome e <b>crie uma sala</b> ou entre numa pelo <b>código</b>. Salas abertas aparecem para todos; salas <b>fechadas</b> só aceitam quem tem o código.',
-      'Até 8 pessoas podem <b>assistir</b> a uma partida, mesmo já em andamento.',
-      'Cada turno tem <b>5 minutos</b>. Quando o tempo acaba, o turno termina sozinho.',
-      'Sair da partida conta como desistência. Caiu a conexão? Recarregue a página para voltar.',
-      '<b>Jogue no Wi-Fi</b>: os aparelhos se conectam direto, e algumas redes móveis bloqueiam isso.'
-    ] },
-    { title: 'Controles', items: [
-      '<b>Clique esquerdo</b>: selecionar e agir.',
-      '<b>Clique direito</b>: mostra o alcance de movimento da unidade.',
-      '<b>Clique do meio</b>: mostra o alcance de ataque da unidade.',
-      '<b>Clique</b> num inimigo (ou numa unidade que já agiu): alcance de movimento; clique de novo: alcance de ataque.',
-      '<b>Esc</b>: fecha o menu ou cancela a ação; sem nada para cancelar, pausa.',
-      'Botão de <b>pausa</b> (no alto, ao centro, ou <b>P</b>): continuar ou sair da partida para o menu principal.',
-      'Botão <b>x1/x2/x3</b>: velocidade do jogo.',
-      'Botão do <b>olho</b> (embaixo à esquerda, ou <b>H</b>): esconde ou mostra as barras do topo, a dica, o card da unidade e o histórico para ver o mapa inteiro. O menu da unidade sempre aparece.',
-      'Botão <b>Histórico</b> (embaixo à direita, ou <b>L</b>): todos os ataques da partida, com o dano, a chance que tinham, contra-ataques e efeitos de skill.',
-      'Teclado: <b>setas</b> movem o cursor, <b>Enter</b> age, <b>Tab</b> pula para a próxima unidade, <b>R</b>/<b>F</b> mostram o alcance de movimento/ataque, <b>E</b> encerra o turno, <b>T</b> abre as mensagens rápidas do online.'
-    ] },
-    { title: 'Controle', items: [
-      'Xbox, PlayStation, Switch Pro e a maioria dos controles USB/Bluetooth funcionam. Aperte qualquer botão para começar a usar; as dicas passam a mostrar os botões dele.',
-      '<b>Direcional</b> ou <b>analógico esquerdo</b>: move o cursor (nos menus: passa entre os botões). <b>A</b> (✕): selecionar e agir. <b>B</b> (◯): cancelar ou voltar.',
-      '<b>Y</b> (△) / <b>X</b> (▢): alcance de movimento / ataque. <b>LB</b>/<b>RB</b> (L1/R1): unidade anterior/próxima que pode agir.',
-      '<b>LT</b>/<b>RT</b> (L2/R2): zoom. <b>Analógico direito</b>: move a câmera (nos menus: rola).',
-      '<b>Start</b> (Options): pausa. <b>View</b>/<b>Select</b> (Share): encerra o turno. <b>Clique do analógico esquerdo</b>: esconde a interface. <b>Clique do analógico direito</b>: mensagens rápidas do online.',
-      'Tela cheia e o primeiro som ainda precisam de um toque ou clique (regra do navegador).'
-    ] },
-    { title: 'Tela de toque', items: [
-      '<b>Toque</b> numa unidade sua para abrir o menu dela.',
-      'Ao mover ou atacar, o primeiro <b>toque</b> mostra a prévia do caminho ou do combate; <b>toque de novo na mesma casa</b> para confirmar.',
-      '<b>Toque</b> fora das casas destacadas para cancelar.',
-      '<b>Toque</b> num inimigo: alcance de movimento; toque de novo: alcance de ataque.'
-    ] }
-  ],
 
   credits: {
     createdBy: 'Criado por',
@@ -499,21 +421,55 @@ export const ptBR: Strings = {
   achievements: {
     graduate: { name: 'Formado', description: 'Termine o tutorial.' },
     'first-win': { name: 'Primeira vitória', description: 'Vença uma partida contra a IA ou online.' },
+    seasoned: { name: 'Experiente', description: 'Vença 10 partidas.' },
+    veteran: { name: 'Veterano', description: 'Vença 25 partidas.' },
+    legend: { name: 'Lenda', description: 'Vença 100 partidas.' },
+    regular: { name: 'Frequentador', description: 'Jogue 50 partidas.' },
     flawless: { name: 'Impecável', description: 'Vença sem perder nenhuma unidade.' },
     'last-stand': { name: 'Último de pé', description: 'Vença com só uma unidade viva.' },
+    'close-call': { name: 'Por um fio', description: 'Vença com 5 PV ou menos somando todo o seu exército.' },
+    comeback: { name: 'Virada', description: 'Vença uma partida depois de estar 3 unidades atrás.' },
     blitz: { name: 'Blitz', description: 'Vença em 10 rodadas ou menos.' },
-    backstabber: { name: 'Traiçoeiro', description: 'Acerte 3 ataques pelas costas em um só turno.' },
-    lucky: { name: 'Estrela da sorte', description: 'Acerte 4 críticos em uma partida (o Especial não conta).' },
-    'one-shot': { name: 'Golpe único', description: 'Derrote uma unidade de vida cheia com um só golpe.' },
-    'counter-kill': { name: 'Troco', description: 'Derrote um inimigo com um contra-ataque.' },
     'hard-win': { name: 'Calejado', description: 'Vença a IA no Difícil.' },
-    'every-map': { name: 'Cartógrafo', description: 'Vença em todos os mapas.' },
-    'hard-every-map': { name: 'Conquistador', description: 'Vença no Difícil em todos os mapas.' },
+    'clean-sweep': { name: 'Sem arranhões', description: 'Vença a IA no Difícil sem perder nenhuma unidade.' },
+    storm: { name: 'Olho da tempestade', description: 'Vença a IA no Difícil em 12 rodadas ou menos.' },
+    'one-shot': { name: 'Golpe único', description: 'Derrote uma unidade de vida cheia com um só golpe.' },
+    overkill: { name: 'Exagero', description: 'Cause 15 ou mais de dano em um só golpe.' },
+    lucky: { name: 'Estrela da sorte', description: 'Acerte 4 críticos em uma partida (o Especial não conta).' },
+    'long-shot': { name: 'Contra as chances', description: 'Acerte um golpe que tinha 25% ou menos de chance de acerto.' },
+    grazed: { name: 'Só de raspão', description: 'Derrote um inimigo com um ataque que errou.' },
+    'counter-kill': { name: 'Troco', description: 'Derrote um inimigo com um contra-ataque.' },
+    'long-reach': { name: 'Braço longo', description: 'Derrote um inimigo com um contra-ataque a 2 casas (Firmeza).' },
+    backstabber: { name: 'Traiçoeiro', description: 'Acerte 3 ataques pelas costas em um só turno.' },
+    'silent-blade': { name: 'Lâmina silenciosa', description: 'Derrote um inimigo com Apunhalar.' },
+    deadeye: { name: 'Olho de águia', description: 'Derrote um inimigo a 5 casas ou mais de distância.' },
+    scorched: { name: 'Chamuscado', description: 'Derrote um inimigo com a queimadura da Bola de Fogo.' },
+    pickpocket: { name: 'Batedor de carteira', description: 'Roube 6 PM em uma partida.' },
+    'field-medic': { name: 'Médico de campo', description: 'Recupere 18 PV com Curar em uma partida.' },
+    'life-leech': { name: 'Sanguessuga', description: 'Drene 12 PV de inimigos em uma partida.' },
+    'pinned-down': { name: 'Imobilizados', description: 'Imobilize 3 inimigos com Tiro Imobilizador em uma partida.' },
+    'thin-ice': { name: 'Gelo fino', description: 'Derrote um inimigo que está sobre o gelo.' },
+    sweep: { name: 'Varredura', description: 'Derrote 3 inimigos em um só turno.' },
+    rampage: { name: 'Fúria', description: 'Derrote 4 inimigos com a mesma unidade em uma partida.' },
+    'iron-wall': { name: 'Muralha de ferro', description: 'Uma unidade sua leva 25 de dano em uma partida e chega viva ao fim.' },
+    legion: { name: 'Legião', description: 'Vença com um exército de uma só classe.' },
+    'mixed-company': { name: 'Tropa variada', description: 'Vença com um exército sem nenhuma classe repetida.' },
+    marksmen: { name: 'Atiradores', description: 'Vença com um exército que só ataca a 2 casas ou mais.' },
+    vanguard: { name: 'Vanguarda', description: 'Vença com um exército só de unidades corpo a corpo.' },
+    frugal: { name: 'Econômico', description: 'Vença com um exército de 80 pts ou menos.' },
     'every-class': { name: 'Versátil', description: 'Vença com cada uma das 14 classes no seu exército.' },
-    veteran: { name: 'Veterano', description: 'Vença 25 partidas.' },
+    slayer: { name: 'Matador', description: 'Derrote 100 inimigos.' },
+    warlord: { name: 'Senhor da guerra', description: 'Derrote 500 inimigos.' },
+    devastator: { name: 'Devastador', description: 'Cause 3000 de dano.' },
+    'every-map': { name: 'Cartógrafo', description: 'Vença em todos os mapas.' },
+    'hard-veteran': { name: 'Estrategista', description: 'Vença a IA no Difícil 10 vezes.' },
+    'hard-every-map': { name: 'Conquistador', description: 'Vença no Difícil em todos os mapas.' },
     'online-win': { name: 'Duelista', description: 'Vença uma partida online.' },
+    'online-champion': { name: 'Campeão', description: 'Vença 5 partidas online.' },
     'daily-win': { name: 'Desafiante', description: 'Vença um desafio diário.' },
-    'daily-streak': { name: 'Hábito diário', description: 'Vença o desafio diário 3 dias seguidos.' }
+    'daily-streak': { name: 'Hábito diário', description: 'Vença o desafio diário 3 dias seguidos.' },
+    'daily-regular': { name: 'Assíduo', description: 'Vença 10 desafios diários.' },
+    'daily-devotee': { name: 'Devoto', description: 'Vença o desafio diário 7 dias seguidos.' }
   },
 
   pause: {

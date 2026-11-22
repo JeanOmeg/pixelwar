@@ -13,13 +13,19 @@ import type { UnitClass } from '../unit-types'
 /** Records screen (stats + achievements) and the daily challenge screen of the start menu */
 
 export const recordsStyles = [iconStyles, css`
-  .records { display: grid; grid-template-columns: 1.15fr 1fr; gap: calc(20 * var(--u)); align-items: start; }
+  /* Each column scrolls on its own: the page body doesn't scroll, the columns fill it */
+  .page.split-page { height: 90vh; }
+  .page-body.split { display: flex; flex-direction: column; overflow: hidden; min-height: 0; flex: 1 1 auto; }
+  .records { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: calc(16 * var(--u)); }
+  .records .columns { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 1.15fr 1fr; grid-template-rows: minmax(0, 1fr); gap: calc(20 * var(--u)); }
+  .records .column { overflow-y: auto; min-height: 0; padding-right: calc(6 * var(--u)); scrollbar-color: var(--edge) transparent; }
   .records section { background: rgba(255, 255, 255, 0.05); padding: calc(14 * var(--u)) calc(18 * var(--u)); display: flex; flex-direction: column; gap: calc(10 * var(--u)); }
   .records h3 { margin: 0; font-weight: normal; font-size: calc(24 * var(--t)); color: var(--gold); display: flex; justify-content: space-between; align-items: baseline; gap: calc(12 * var(--u)); }
   .records h3 small { font-size: calc(15 * var(--t)); color: var(--muted); }
   .records .column { display: flex; flex-direction: column; gap: calc(16 * var(--u)); }
+  .records section { flex-shrink: 0; }
   .records .hint { font-size: calc(14 * var(--t)); color: var(--muted); }
-  .records .empty { grid-column: 1 / -1; font-size: calc(18 * var(--t)); color: var(--muted); text-align: center; }
+  .records .empty { font-size: calc(18 * var(--t)); color: var(--muted); text-align: center; }
 
   .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: calc(8 * var(--u)); }
   .summary div { background: rgba(0, 0, 0, 0.3); padding: calc(8 * var(--u)) calc(10 * var(--u)); display: flex; flex-direction: column; gap: calc(2 * var(--u)); }
@@ -55,12 +61,15 @@ export const recordsStyles = [iconStyles, css`
   .bar { width: calc(90 * var(--u)); height: calc(8 * var(--u)); background: #14161f; border: calc(2 * var(--u)) solid #2a2d3a; margin-top: calc(4 * var(--u)); }
   .bar i { display: block; height: 100%; background: var(--gold); }
 
-  .daily { display: grid; grid-template-columns: 1.2fr 1fr; gap: calc(24 * var(--u)); align-items: start; }
-  .daily .map { display: flex; flex-direction: column; gap: calc(10 * var(--u)); }
-  .daily .map img { width: 100%; image-rendering: pixelated; border: calc(3 * var(--u)) solid var(--edge); box-sizing: border-box; }
-  .daily .map h3 { margin: 0; font-weight: normal; font-size: calc(32 * var(--t)); }
-  .daily .map p { margin: 0; font-size: calc(16 * var(--t)); color: var(--muted); line-height: 1.35; }
-  .daily .info { display: flex; flex-direction: column; gap: calc(16 * var(--u)); }
+  .page.daily-page { width: calc(1240 * var(--u)); }
+  .daily { display: flex; flex-direction: column; gap: calc(18 * var(--u)); }
+  .daily .head { display: grid; grid-template-columns: calc(420 * var(--u)) 1fr; gap: calc(24 * var(--u)); align-items: start; }
+  .daily .head > img { width: 100%; display: block; image-rendering: pixelated; border: calc(3 * var(--u)) solid var(--edge); box-sizing: border-box; }
+  .daily .text { display: flex; flex-direction: column; gap: calc(10 * var(--u)); }
+  .daily .text h3 { margin: 0; font-weight: normal; font-size: calc(32 * var(--t)); }
+  .daily .text p { margin: 0; font-size: calc(16 * var(--t)); color: var(--muted); line-height: 1.35; }
+  .daily .armies { display: grid; grid-template-columns: 1fr 1fr; gap: calc(24 * var(--u)); }
+  .daily .foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: calc(12 * var(--u)); }
   .daily .date { font-size: calc(26 * var(--t)); color: var(--gold); }
   .daily .intro { font-size: calc(16 * var(--t)); line-height: 1.4; }
   .daily .label { font-size: calc(16 * var(--t)); color: var(--muted); margin-bottom: calc(6 * var(--u)); }
@@ -159,6 +168,7 @@ export function renderRecords(today: string) {
   return html`
     <div class="records">
       ${total.played === 0 ? html`<div class="empty">${t().records.empty}</div>` : nothing}
+      <div class="columns">
       <div class="column">
         <section><div class="summary">${summary.map(([label, value]) => html`<div><b>${value}</b><span>${label}</span></div>`)}</div></section>
         <section>
@@ -175,6 +185,7 @@ export function renderRecords(today: string) {
         </section>
       </div>
       <div class="column">${renderAchievements(context)}</div>
+      </div>
     </div>
   `
 }
@@ -205,16 +216,20 @@ export function renderDaily(view: DailyView) {
   `
   return html`
     <div class="daily">
-      <div class="map">
+      <div class="head">
         <img src=${view.preview} alt="">
-        <h3>${view.mapName}</h3>
-        <p>${view.mapDescription}</p>
+        <div class="text">
+          <div class="date">${t().daily.date(formatDate(view.date))}</div>
+          <h3>${view.mapName}</h3>
+          <p>${view.mapDescription}</p>
+          <div class="intro">${t().daily.intro}</div>
+        </div>
       </div>
-      <div class="info">
-        <div class="date">${t().daily.date(formatDate(view.date))}</div>
-        <div class="intro">${t().daily.intro}</div>
+      <div class="armies">
         <div><div class="label">${t().daily.yourArmy}</div>${army(view.armies[0], 0)}</div>
         <div><div class="label">${t().daily.enemyArmy} · ${t().daily.cpu(view.difficulty)}</div>${army(view.armies[1], 1)}</div>
+      </div>
+      <div class="foot">
         <div class="result">
           <span class="small">${t().daily.todayBest}</span>
           ${dailyResult(records.daily[view.date])}

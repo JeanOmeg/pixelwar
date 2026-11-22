@@ -49,7 +49,7 @@ Dois jogadores, cada um no seu aparelho, mais até 8 espectadores. Não há serv
 
 **Tutorial:** cada passo aparece num balão embaixo da tela, com a unidade e o tile marcados em dourado; só a ação pedida funciona (o item certo do menu fica destacado). Passos só de texto avançam com **Next** (ou Enter). Tudo é roteirizado, inclusive os dados e as jogadas da CPU, então a partida é sempre a mesma (5 rodadas). A velocidade fica em x1 e o End turn não pede confirmação. **Skip tutorial** (ou Main menu na pausa) volta ao menu.
 
-O menu também tem **How to play** (regras resumidas), **Units** (as 14 classes, com atributos, custo e habilidades), **Records** e **Credits**.
+O menu também tem **Records** e **Credits**. As regras são ensinadas no tutorial (**Learn to play**) e as 14 classes, com atributos, custo e habilidades, aparecem na escolha de exército.
 
 ### Desafio diário
 
@@ -59,27 +59,61 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 14 classes,
 
 **Records**, no menu inicial: partidas, vitórias, derrotas, empates, aproveitamento, abates, dano e vitória mais rápida, separados por dificuldade (Easy/Normal/Hard/Online), por mapa e por classe (partidas com a classe no seu exército). Só contam partidas com **um** jogador neste aparelho: contra a CPU, online e o desafio diário (Player vs Player e CPU vs CPU não contam; sair pela pausa também não). Tudo fica salvo só no navegador.
 
-**Conquistas** (17, na mesma tela, com a data em que saíram; as longas mostram o progresso). Aparecem na tela de fim quando são desbloqueadas:
+**Conquistas** (51, na mesma tela, com a data em que saíram; as longas mostram o progresso). Aparecem na tela de fim quando são desbloqueadas. As façanhas de partida (golpes, abates, skills) valem mesmo numa derrota; as de exército e de resultado pedem a vitória.
 
 | Conquista | Como |
 |---|---|
-| Graduate | Terminar o tutorial |
-| First victory | Vencer uma partida (CPU ou online) |
-| Flawless | Vencer sem perder nenhuma unidade |
-| Last one standing | Vencer com só uma unidade viva |
-| Blitz | Vencer em até 10 rodadas |
-| Backstabber | 3 ataques pelas costas no mesmo turno |
-| Lucky star | 4 críticos numa partida (o do Special não conta) |
-| One shot | Derrotar uma unidade de vida cheia com um golpe só |
-| Payback | Derrotar um inimigo com um contra-ataque |
-| Hardened | Vencer a CPU no Hard |
-| Cartographer | Vencer em todos os mapas |
-| Conqueror | Vencer no Hard em todos os mapas |
-| Jack of all trades | Vencer com cada uma das 14 classes no exército |
-| Veteran | 25 vitórias |
-| Duelist | Vencer uma partida online |
-| Challenger | Vencer um desafio diário |
-| Daily habit | Vencer o desafio diário 3 dias seguidos |
+| Graduate | Termine o tutorial |
+| First victory | Vença uma partida contra a IA ou online |
+| Seasoned | Vença 10 partidas |
+| Veteran | Vença 25 partidas |
+| Legend | Vença 100 partidas |
+| Regular | Jogue 50 partidas |
+| Flawless | Vença sem perder nenhuma unidade |
+| Last one standing | Vença com só uma unidade viva |
+| Close call | Vença com 5 PV ou menos somando todo o seu exército |
+| Comeback | Vença uma partida depois de estar 3 unidades atrás |
+| Blitz | Vença em 10 rodadas ou menos |
+| Hardened | Vença a IA no Difícil |
+| Clean sweep | Vença a IA no Difícil sem perder nenhuma unidade |
+| Eye of the storm | Vença a IA no Difícil em 12 rodadas ou menos |
+| One shot | Derrote uma unidade de vida cheia com um só golpe |
+| Overkill | Cause 15 ou mais de dano em um só golpe |
+| Lucky star | Acerte 4 críticos em uma partida (o Especial não conta) |
+| Against the odds | Acerte um golpe que tinha 25% ou menos de chance de acerto |
+| Just a scratch | Derrote um inimigo com um ataque que errou |
+| Payback | Derrote um inimigo com um contra-ataque |
+| Long reach | Derrote um inimigo com um contra-ataque a 2 casas (Firmeza) |
+| Backstabber | Acerte 3 ataques pelas costas em um só turno |
+| Silent blade | Derrote um inimigo com Apunhalar |
+| Deadeye | Derrote um inimigo a 5 casas ou mais de distância |
+| Scorched | Derrote um inimigo com a queimadura da Bola de Fogo |
+| Pickpocket | Roube 6 PM em uma partida |
+| Field medic | Recupere 18 PV com Curar em uma partida |
+| Life leech | Drene 12 PV de inimigos em uma partida |
+| Pinned down | Imobilize 3 inimigos com Tiro Imobilizador em uma partida |
+| Thin ice | Derrote um inimigo que está sobre o gelo |
+| Sweep | Derrote 3 inimigos em um só turno |
+| Rampage | Derrote 4 inimigos com a mesma unidade em uma partida |
+| Iron wall | Uma unidade sua leva 25 de dano em uma partida e chega viva ao fim |
+| Legion | Vença com um exército de uma só classe |
+| Mixed company | Vença com um exército sem nenhuma classe repetida |
+| Marksmen | Vença com um exército que só ataca a 2 casas ou mais |
+| Vanguard | Vença com um exército só de unidades corpo a corpo |
+| Frugal | Vença com um exército de 80 pts ou menos |
+| Jack of all trades | Vença com cada uma das 14 classes no seu exército |
+| Slayer | Derrote 100 inimigos |
+| Warlord | Derrote 500 inimigos |
+| Devastator | Cause 3000 de dano |
+| Cartographer | Vença em todos os mapas |
+| Tactician | Vença a IA no Difícil 10 vezes |
+| Conqueror | Vença no Difícil em todos os mapas |
+| Duelist | Vença uma partida online |
+| Champion | Vença 5 partidas online |
+| Challenger | Vença um desafio diário |
+| Daily habit | Vença o desafio diário 3 dias seguidos |
+| Daily regular | Vença 10 desafios diários |
+| Devotee | Vença o desafio diário 7 dias seguidos |
 
 ### Mapas
 

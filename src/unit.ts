@@ -30,10 +30,10 @@ export type AttackEvent =
    * `forced`: a critical forced by Special, which earns no MP; `hitChance`:
    * odds of hitting before the dice were rolled (combat log)
    */
-  | { kind: 'strike', attacker: Unit, defender: Unit, outcome: AttackOutcome, counter: boolean, forced?: boolean, hitChance?: number }
+  | { kind: 'strike', attacker: Unit, defender: Unit, outcome: AttackOutcome, counter: boolean, forced?: boolean, hitChance?: number, skill?: SkillId }
   | { kind: 'heal', unit: Unit, amount: number }
   | { kind: 'steal', from: Unit, to: Unit, amount: number }
-  | { kind: 'pin', unit: Unit }
+  | { kind: 'pin', unit: Unit, by: Unit }
   | { kind: 'splash', unit: Unit, damage: number, by: Unit }
 
 /** Color of the "Skill -N MP" text over a unit (the MP bar's color) */
@@ -467,7 +467,8 @@ export class Unit extends ex.Actor {
     this.mp -= SKILLS[id].cost
     this.usedSkill = true
     this.announceSkill(SKILLS[id])
-    target.heal(HEAL_HP)
+    const healed = target.heal(HEAL_HP)
+    this.board.onHeal?.(this, healed)
     return true
   }
 
@@ -480,15 +481,17 @@ export class Unit extends ex.Actor {
     return gained
   }
 
-  heal(amount: number) {
+  /** Returns the HP really restored */
+  heal(amount: number): number {
     const healed = Math.min(amount, this.unitConfig.health - this.health)
-    if (healed <= 0) return
+    if (healed <= 0) return 0
     this.health += healed
     void this.damageManager?.spawnText(this.textPos(), `+${healed}`, '#4ee06a')
     if (effectScene(this)) {
       playSound(Resources.HealSound)
       this.showAura('heal')
     }
+    return healed
   }
 
   private applySelfSkill(id: SkillId) {
@@ -593,7 +596,7 @@ export class Unit extends ex.Actor {
     const [d20, d6] = rolls()
     const outcome = resolveAttack(this.combatStats(), other.combatStats(), context, d20, d6)
     const hitChance = forecastAttack(this.combatStats(), other.combatStats(), context, other.health).hitChance
-    const events: AttackEvent[] = [{ kind: 'strike', attacker: this, defender: other, outcome, counter: false, forced: context.forcesCritical, hitChance }]
+    const events: AttackEvent[] = [{ kind: 'strike', attacker: this, defender: other, outcome, counter: false, forced: context.forcesCritical, hitChance, skill }]
     let healthAfter = other.health - outcome.damage
 
     // skill effects that follow the hit
@@ -609,7 +612,7 @@ export class Unit extends ex.Actor {
         if (cell.unit && cell.unit.player !== this.player) events.push({ kind: 'splash', unit: cell.unit, damage: FIREBALL_SPLASH, by: this })
       }
     }
-    if (skill === 'skill-pinning-shot' && outcome.hit && healthAfter > 0) events.push({ kind: 'pin', unit: other })
+    if (skill === 'skill-pinning-shot' && outcome.hit && healthAfter > 0) events.push({ kind: 'pin', unit: other, by: this })
 
     // a melee defender that survives strikes back (never after a back attack)
     if (healthAfter > 0 && other.canCounter(this, context)) {

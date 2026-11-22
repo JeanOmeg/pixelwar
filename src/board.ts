@@ -24,6 +24,8 @@ export class Board {
   onUnitDown: ((unit: Unit) => void) | null = null
   /** Called after each step of an attack is applied (match statistics, music) */
   onAttackEvent: ((event: AttackEvent, result: AttackEventResult) => void) | null = null
+  /** Heal skill used: HP really restored (match statistics) */
+  onHeal: ((healer: Unit, amount: number) => void) | null = null
 
   /**
    * @param mirrored draws column x at cols - 1 - x (online: the red player

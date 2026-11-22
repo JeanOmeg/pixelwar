@@ -79,6 +79,7 @@ export class TurnManager {
       this.stats.record(event, outcome)
       ui.recordAttack(event, outcome)
     }
+    level.board.onHeal = (healer, amount) => this.stats.healed(healer, amount)
     level.board.onUnitDown = unit => {
       this.stats.unitLost(unit)
       const result = this.checkResult()
@@ -236,6 +237,7 @@ export class TurnManager {
       .filter(spawn => spawn.team === team)
       .map(spawn => unitClassOf(spawn.unitType))
     const own = this.stats.team(me)
+    const survivors = this.level.board.getLivingUnits().filter(u => u.player === me)
     const match: MatchSummary = {
       bucket: settings.mode === 'online' ? 'online' : settings.difficulty ?? 'normal',
       mapId: this.level.map.id,
@@ -243,7 +245,8 @@ export class TurnManager {
       rounds: this.playedRound,
       army,
       lost: own.lost,
-      survivors: this.level.board.getLivingUnits().filter(u => u.player === me).length,
+      survivors: survivors.length,
+      survivorHp: survivors.reduce((sum, unit) => sum + unit.health, 0),
       kills: own.kills,
       damage: own.damage,
       feats: this.stats.feat(me),

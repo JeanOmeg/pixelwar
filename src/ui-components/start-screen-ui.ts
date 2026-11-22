@@ -11,7 +11,7 @@ import './army-select'
 import './online-screen'
 import { activeSession, savedSession } from '../online/session'
 import { readableBoost } from '../device'
-import { pageStyles, renderCredits, renderHowToPlay, renderUnits } from './start-screen-pages'
+import { pageStyles, renderCredits } from './start-screen-pages'
 import { GAME_MODES, GameMode, MatchSettings, findGameMode } from '../game-modes'
 import { MAPS, MapDefinition, defaultArmy, findMap, getMapInfo, randomMap, sceneNameOf, teamSpawns } from '../maps'
 import { mapPreview, unitPortrait } from '../ui-sprites'
@@ -31,7 +31,7 @@ import { type DailyChallenge, dailyChallenge, dailySettings, todayKey } from '..
 /** Each language named in itself, so anyone finds their own */
 const LANGUAGE_NAMES: Record<Language, string> = { en: 'English', 'pt-BR': 'Português (Brasil)' }
 
-type Screen = 'title' | 'mode' | 'map' | 'army' | 'online' | 'howto' | 'units' | 'credits' | 'daily' | 'records'
+type Screen = 'title' | 'mode' | 'map' | 'army' | 'online' | 'credits' | 'daily' | 'records'
 
 const PREF_MODE = 'pixelfantasywar.mode'
 const PREF_DIFFICULTY = 'pixelfantasywar.difficulty'
@@ -95,7 +95,7 @@ export class StartScreenUi extends LitElement {
     .menu { display: flex; flex-direction: column; gap: calc(12 * var(--u)); padding: calc(18 * var(--u)); width: calc(600 * var(--u)); }
     .menu .btn { font-size: calc(32 * var(--t)); padding: calc(12 * var(--u)) calc(18 * var(--u)); --team: #2a2d3a; }
     .menu .btn.primary { --team: var(--blue); font-size: calc(40 * var(--t)); }
-    .menu .btn.daily { --team: #6b5300; }
+    .menu .btn { text-align: center; white-space: nowrap; }
     .menu .pair { display: grid; grid-template-columns: 1fr 1fr; gap: calc(12 * var(--u)); }
     .menu .pair .btn { font-size: calc(26 * var(--t)); white-space: nowrap; }
 
@@ -446,10 +446,8 @@ export class StartScreenUi extends LitElement {
         </div>
         <nav class="panel menu">
           <button class="btn btn-solid primary" @click=${() => this.go('mode')}>${t().title.play}</button>
-          <button class="btn btn-solid daily" @click=${() => this.go('daily')}>${t().title.dailyChallenge}</button>
+          <button class="btn btn-solid" @click=${() => this.go('daily')}>${t().title.dailyChallenge}</button>
           <div class="pair">
-            <button class="btn btn-solid" @click=${() => this.go('howto')}>${t().title.howToPlay}</button>
-            <button class="btn btn-solid" @click=${() => this.go('units')}>${t().title.units}</button>
             <button class="btn btn-solid" @click=${() => this.go('records')}>${t().title.records}</button>
             <button class="btn btn-solid" @click=${() => this.go('credits')}>${t().title.credits}</button>
           </div>
@@ -514,11 +512,12 @@ export class StartScreenUi extends LitElement {
     `
   }
 
-  private renderPage(title: string, body: unknown) {
+  /** split: the body doesn't scroll, its columns scroll on their own (Records) */
+  private renderPage(title: string, body: unknown, split = false) {
     return html`
-      <div class="screen panel page">
+      <div class="screen panel page ${split ? 'split-page' : ''}">
         <div class="panel-title">${title}</div>
-        <div class="page-body">${body}</div>
+        <div class="page-body ${split ? 'split' : ''}">${body}</div>
         <div class="page-footer"><button class="btn btn-solid" @click=${() => this.go('title')}>${t().common.back}</button></div>
       </div>
     `
@@ -563,7 +562,7 @@ export class StartScreenUi extends LitElement {
       armies: challenge.armies
     }
     return html`
-      <div class="screen panel page">
+      <div class="screen panel page daily-page">
         <div class="panel-title">${t().title.dailyChallenge}</div>
         <div class="page-body">${renderDaily(view)}</div>
         <div class="page-footer">
@@ -599,10 +598,8 @@ export class StartScreenUi extends LitElement {
         @back=${() => this.go('mode')}
       ></online-screen>
     `
-    case 'howto': return this.renderPage(t().title.howToPlay, renderHowToPlay())
-    case 'units': return this.renderPage(t().title.units, renderUnits())
     case 'credits': return this.renderPage(t().title.credits, renderCredits())
-    case 'records': return this.renderPage(t().title.records, renderRecords(todayKey()))
+    case 'records': return this.renderPage(t().title.records, renderRecords(todayKey()), true)
     case 'daily': return this.renderDailyPage()
     }
   }

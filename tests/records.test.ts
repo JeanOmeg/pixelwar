@@ -3,20 +3,21 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import { type MatchSummary, addMatch, betterDaily, dailyStreak, emptyRecords, loadRecords, previousDay, saveRecords } from '../src/records'
 import { ACHIEVEMENT_IDS, type AchievementContext, achievementProgress, loadUnlocked, newAchievements, unlock } from '../src/achievements'
 import { dailyChallenge, dailySettings, seededRandom, todayKey } from '../src/daily'
-import { MatchStats } from '../src/match-stats'
+import { MatchStats, emptyFeats } from '../src/match-stats'
 import { fixedRolls } from '../src/unit'
+import { FIREBALL_SPLASH, HEAL_HP } from '../src/skills'
 import { roleOf } from '../src/army-ai'
 import { ARMY_BUDGET, armyCost } from '../src/unit-classes'
 import { UNIT_CLASSES, type UnitClass } from '../src/unit-types'
 import { en } from '../src/i18n/en'
 import { makeBoard, makePlayers, place } from './helpers'
 
-const noFeats = { criticals: 0, backAttacksInPhase: 0, counterKills: 0, oneShots: 0 }
+const noFeats = emptyFeats()
 
 function match(overrides: Partial<MatchSummary> = {}): MatchSummary {
   return {
-    bucket: 'normal', mapId: 'twin-keeps', outcome: 'won', rounds: 15, army: ['Archer', 'Archer', 'Warrior'],
-    lost: 2, survivors: 3, kills: 5, damage: 60, feats: noFeats, ...overrides
+    bucket: 'normal', mapId: 'twin-keeps', outcome: 'won', rounds: 15, army: ['Archer', 'Archer', 'Warrior', 'Warrior', 'Barbarian', 'Cleric'],
+    lost: 2, survivors: 3, survivorHp: 30, kills: 5, damage: 60, feats: noFeats, ...overrides
   }
 }
 
@@ -95,15 +96,39 @@ describe('achievements', () => {
 
   test('earned from the match just played', () => {
     expect(newAchievements(context(match()), {})).toEqual(['first-win'])
-    const flawless = match({ lost: 0, rounds: 8, survivors: 1, bucket: 'hard', feats: { criticals: 4, backAttacksInPhase: 3, counterKills: 1, oneShots: 1 } })
+    const flawless = match({ lost: 0, rounds: 8, survivors: 1, bucket: 'hard', feats: { ...noFeats, criticals: 4, backAttacksInPhase: 3, counterKills: 1, oneShots: 1 } })
     expect(newAchievements(context(flawless), {})).toEqual([
-      'first-win', 'flawless', 'last-stand', 'blitz', 'backstabber', 'lucky', 'one-shot', 'counter-kill', 'hard-win'
+      'first-win', 'flawless', 'last-stand', 'blitz', 'hard-win', 'clean-sweep', 'storm', 'one-shot', 'lucky', 'counter-kill', 'backstabber'
     ])
     // feats count even in a defeat; victories don't
     const lost = match({ outcome: 'lost', lost: 0, feats: { ...noFeats, backAttacksInPhase: 3 } })
     expect(newAchievements(context(lost), {})).toEqual(['backstabber'])
     expect(newAchievements(context(match({ bucket: 'online' })), {})).toContain('online-win')
     expect(newAchievements(context(match({ daily: '2026-11-22' })), {})).toContain('daily-win')
+  })
+
+  test('feats of the match reach their goals', () => {
+    const earned = (feats: Partial<typeof noFeats>, overrides: Partial<MatchSummary> = {}) =>
+      newAchievements(context(match({ outcome: 'lost', ...overrides, feats: { ...noFeats, ...feats } })), {})
+    expect(earned({ biggestStrike: 14 })).toEqual([])
+    expect(earned({ biggestStrike: 15 })).toEqual(['overkill'])
+    expect(earned({ longShots: 1, missKills: 1, reachCounterKills: 1, backstabKills: 1, farKills: 1, burnKills: 1, iceKills: 1 }))
+      .toEqual(['long-shot', 'grazed', 'long-reach', 'silent-blade', 'deadeye', 'scorched', 'thin-ice'])
+    expect(earned({ mpStolen: 5, healed: 17, drained: 11, pins: 2, killsInPhase: 2, bestUnitKills: 3, toughest: 24 })).toEqual([])
+    expect(earned({ mpStolen: 6, healed: 18, drained: 12, pins: 3, killsInPhase: 3, bestUnitKills: 4, toughest: 25 }))
+      .toEqual(['pickpocket', 'field-medic', 'life-leech', 'pinned-down', 'sweep', 'rampage', 'iron-wall'])
+    // a comeback and a close call need the victory
+    expect(earned({ maxDeficit: 3 }, { survivorHp: 4 })).toEqual([])
+    expect(earned({ maxDeficit: 3 }, { outcome: 'won', survivorHp: 4 })).toEqual(['first-win', 'close-call', 'comeback'])
+  })
+
+  test('the winning army: one class, no repeats, ranged only, melee only, cheap', () => {
+    const earned = (army: UnitClass[], outcome: MatchSummary['outcome'] = 'won') =>
+      newAchievements(context(match({ army, outcome })), { 'first-win': '2026-11-01' })
+    expect(earned(['Mage', 'Mage', 'Mage'])).toEqual(['legion', 'marksmen', 'frugal'])
+    expect(earned(['Warrior', 'Barbarian', 'Cleric', 'Paladin', 'Berserker'])).toEqual(['mixed-company', 'vanguard'])
+    expect(earned(['Archer', 'Spearman', 'Halberdier', 'Ranger', 'Mage', 'Necromancer', 'Archer', 'Warrior', 'Warrior'])).toEqual([])
+    expect(earned(['Mage', 'Mage', 'Mage'], 'lost')).toEqual([])
   })
 
   test('already unlocked ones are not earned again', () => {
@@ -114,7 +139,7 @@ describe('achievements', () => {
     let records = emptyRecords()
     const maps = Array.from({ length: 12 }, (_, i) => `map-${i}`)
     maps.forEach((mapId, i) => { records = addMatch(records, match({ mapId, army: [UNIT_CLASSES[i]] })) })
-    expect(newAchievements(context(null, records), {})).toEqual(['every-map'])
+    expect(newAchievements(context(null, records), {})).toEqual(['seasoned', 'every-map'])
     expect(achievementProgress('every-class', context(null, records))).toEqual([12, 14])
     records = addMatch(records, match({ army: ['Ranger', 'Necromancer', 'Halberdier'] }))
     expect(newAchievements(context(null, records), {})).toContain('every-class')
@@ -124,7 +149,12 @@ describe('achievements', () => {
       expect(newAchievements(context(null, records), {}).includes('daily-streak')).toBe(i === 2)
     }
     maps.forEach(mapId => { records = addMatch(records, match({ mapId, bucket: 'hard' })) })
-    expect(newAchievements(context(null, records), {})).toEqual(['every-map', 'hard-every-map', 'every-class', 'veteran', 'daily-streak'])
+    expect(newAchievements(context(null, records), {})).toEqual([
+      'seasoned', 'veteran', 'every-class', 'slayer', 'every-map', 'hard-veteran', 'hard-every-map', 'daily-streak'
+    ])
+    expect(achievementProgress('legend', context(null, records))).toEqual([28, 100])
+    expect(achievementProgress('devastator', context(null, records))).toEqual([1680, 3000])
+    expect(achievementProgress('daily-devotee', context(null, records))).toEqual([3, 7])
   })
 
   test('unlock stores the date once', () => {
@@ -170,6 +200,82 @@ describe('match feats', () => {
     weak.health = 1
     weak.attackInstant(fighter, fixedRolls([[2, 1], [15, 6]]))
     expect(stats.feat(b).counterKills).toBe(1)
+  })
+
+  test('kills from afar, with a miss, by burn, by Backstab, on ice; kills per turn and per unit', () => {
+    const board = makeBoard(['.......', '.......', '...i...'])
+    const [a, b] = makePlayers(board)
+    const stats = new MatchStats()
+    board.onAttackEvent = (event, result) => stats.record(event, result)
+    stats.phaseStarted()
+
+    // a miss still deals 1: from 5 tiles, a 1 HP thief falls
+    const archer = place(board, 'ArcherA', 0, 0, a)
+    const far = place(board, 'ThiefB', 5, 0, b)
+    far.health = 1
+    far.miniDirection = 'left'
+    archer.attackInstant(far, fixedRolls([[2, 1]]))
+    expect(stats.feat(a)).toMatchObject({ farKills: 1, missKills: 1, longShots: 0 })
+    far.cell?.removeUnit(far)
+
+    // Fireball: the strike misses, the burn finishes it
+    const mage = place(board, 'MageA', 0, 1, a)
+    const burnt = place(board, 'ThiefB', 3, 1, b)
+    burnt.health = 1 + FIREBALL_SPLASH
+    burnt.miniDirection = 'left'
+    mage.startSkill('skill-fireball')
+    mage.attackInstant(burnt, fixedRolls([[2, 1]]))
+    expect(stats.feat(a).burnKills).toBe(1)
+    burnt.cell?.removeUnit(burnt)
+
+    // Backstab on a unit standing on ice
+    const assassin = place(board, 'AssassinA', 2, 2, a)
+    const iced = place(board, 'WarriorB', 3, 2, b)
+    iced.health = 1
+    assassin.startSkill('skill-backstab')
+    assassin.attackInstant(iced, fixedRolls([[2, 1]]))
+    expect(stats.feat(a)).toMatchObject({ backstabKills: 1, iceKills: 1, killsInPhase: 3, bestUnitKills: 1 })
+    stats.phaseStarted()
+    expect(stats.feat(a).killsInPhase).toBe(3)
+  })
+
+  test('Steal, Pinning Shot, Drain and Heal add up; the toughest survivor; how far behind a team was', () => {
+    const board = makeBoard(['......', '......'])
+    const [a, b] = makePlayers(board)
+    const stats = new MatchStats()
+    board.onAttackEvent = (event, result) => stats.record(event, result)
+    board.onHeal = (healer, amount) => stats.healed(healer, amount)
+    board.onUnitDown = unit => stats.unitLost(unit)
+
+    const thief = place(board, 'ThiefA', 0, 0, a)
+    const warrior = place(board, 'WarriorB', 1, 0, b)
+    warrior.miniDirection = 'left'
+    thief.startSkill('skill-steal')
+    thief.attackInstant(warrior, fixedRolls([[20, 1], [2, 1]]))
+    expect(stats.feat(a).mpStolen).toBe(2)
+
+    const ranger = place(board, 'RangerA', 4, 0, a)
+    ranger.startSkill('skill-pinning-shot')
+    ranger.attackInstant(warrior, fixedRolls([[20, 1]]))
+    expect(stats.feat(a).pins).toBe(1)
+
+    const necromancer = place(board, 'NecromancerB', 4, 1, b)
+    necromancer.startSkill('skill-drain')
+    necromancer.attackInstant(ranger, fixedRolls([[20, 1]]))
+    expect(stats.feat(b).drained).toBeGreaterThan(0)
+
+    const cleric = place(board, 'ClericB', 1, 1, b)
+    const taken = warrior.unitConfig.health - warrior.health
+    expect(cleric.useSkillOn('skill-heal', warrior)).toBe(true)
+    expect(stats.feat(b).healed).toBe(Math.min(HEAL_HP, taken))
+    // the warrior took every hit and is still standing
+    expect(stats.feat(b).toughest).toBe(taken)
+
+    board.onUnitDown?.(thief)
+    board.onUnitDown?.(ranger)
+    board.onUnitDown?.(warrior)
+    expect(stats.feat(a).maxDeficit).toBe(2)
+    expect(stats.feat(b).maxDeficit).toBe(0)
   })
 })
 

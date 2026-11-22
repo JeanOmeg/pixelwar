@@ -6,7 +6,7 @@ import type { AchievementId } from '../achievements'
 /**
  * English texts: the source of every key. `pt-br.ts` must have the same shape
  * (`Strings`). Texts in `[brackets]` are highlighted by the hint and the
- * tutorial balloon. HTML (`<b>`) only in `howTo` (rendered as markup).
+ * tutorial balloon.
  */
 
 const s = (count: number) => count === 1 ? '' : 's'
@@ -65,8 +65,6 @@ export const en = {
   title: {
     tagline: 'Turn-based tactics in the browser',
     play: 'Play',
-    howToPlay: 'How to play',
-    units: 'Units',
     credits: 'Credits',
     dailyChallenge: 'Daily challenge',
     records: 'Records',
@@ -213,82 +211,6 @@ export const en = {
     rangeAny: (range: number) => `${range} tiles on any terrain`
   },
 
-  howTo: [
-    { title: 'Goal', items: [
-      'Defeat every enemy unit.',
-      'If nobody wins in 50 rounds, the match is a draw.'
-    ] },
-    { title: 'Your turn', items: [
-      'Click a unit and pick <b>Move</b>, <b>Attack</b>, <b>Skills</b> or <b>Wait</b>.',
-      'Each unit can move once and attack once per turn, in any order.',
-      '<b>Undo move</b> puts a unit back while it hasn\'t attacked.',
-      'Press <b>End turn</b> at the top when you are done. The turn also ends when no unit can move or attack.'
-    ] },
-    { title: 'Combat', items: [
-      'Hit if <b>ATK + d20</b> beats <b>DEF + 10</b>. Damage is <b>d6 + ATK − DEF</b>.',
-      'Dice are rolled twice and the best roll counts.',
-      'A natural 20 is a <b>critical</b>: 12 + ATK − DEF damage.',
-      'A miss still deals 1 damage.',
-      'Hit an enemy from <b>behind</b> to never miss and use double ATK.',
-      '<b>Counterattack</b>: a melee unit that survives strikes back at a melee attacker, unless it was hit from behind.',
-      'Attacks go in straight lines and stop at the first unit.',
-      'Aim at an enemy to see the hit and kill chances before attacking.'
-    ] },
-    { title: 'Terrain', items: [
-      'Open ground costs 1 move. Forest costs 2.',
-      'Units in the <b>forest</b> get +2 DEF.',
-      'Archers, mages, spearmen, rangers and necromancers pay 2 points of range per forest tile.',
-      'Walls and trees block moves and attacks.',
-      'Water blocks moves, but attacks fly over it.',
-      '<b>Ice</b> costs 2 moves (thieves and assassins pay 1) and units on it get −2 DEF. Attacks cross it like open ground.',
-      'Doors can be crossed, but block attacks. Units on a door can\'t attack or be attacked.'
-    ] },
-    { title: 'Skills', items: [
-      '<b>Run</b> (2 MP): double movement this turn.',
-      '<b>Special</b> (4 MP): the next attack is a critical hit.',
-      'Every class also has a <b>skill of its own</b> (see Units): heal, guard, pierce armor, backstab...',
-      'Every unit has 4 MP (never more). One skill per turn. MP comes back only in battle: +1 for each kill and +1 for each critical hit (the one forced by Special doesn\'t count).'
-    ] },
-    { title: 'Army', items: [
-      'Before the match, pick a class for each starting slot of the map.',
-      'Every class has a cost in points. Your army can spend up to <b>100</b>.',
-      'Place your units anywhere on the lit tiles: the first <b>6 columns</b> from your edge. Pick a unit, then a lit tile.',
-      '<b>Classic army</b> restores the units drawn in the map (exactly 100 points) and their positions.'
-    ] },
-    { title: 'Online', items: [
-      'Type your name, then <b>create a room</b> or join one with its <b>code</b>. Open rooms are listed for everyone; <b>locked</b> rooms only take people with the code.',
-      'Up to 8 people can <b>watch</b> a match, even one already going.',
-      'Each turn has <b>5 minutes</b>. When time runs out the turn ends by itself.',
-      'Leaving the match counts as a forfeit. Lost the connection? Reload the page to get back in.',
-      '<b>Play on Wi-Fi</b>: the devices connect directly, and some mobile networks block that.'
-    ] },
-    { title: 'Controls', items: [
-      '<b>Left click</b>: select and act.',
-      '<b>Right click</b>: show a unit\'s movement range.',
-      '<b>Middle click</b>: show a unit\'s attack range.',
-      '<b>Click</b> an enemy (or a unit that already acted): its movement range; click again: its attack range.',
-      '<b>Esc</b>: close the menu or cancel the action; with nothing to cancel, pause.',
-      '<b>Pause</b> button (top center, or <b>P</b>): resume or leave the match for the main menu.',
-      '<b>x1/x2/x3</b> button: game speed.',
-      '<b>Eye</b> button (bottom left, or <b>H</b>): hide or show the top bars, the hint, the unit card and the combat log to see the whole map. The unit menu always shows.',
-      '<b>Combat log</b> button (bottom right, or <b>L</b>): every attack of the match, with the damage, the odds it had, counterattacks and skill effects.',
-      'Keyboard: <b>arrows</b> move the cursor, <b>Enter</b> acts, <b>Tab</b> jumps to the next unit, <b>R</b>/<b>F</b> show move/attack range, <b>E</b> ends the turn, <b>T</b> opens the online quick messages.'
-    ] },
-    { title: 'Controller', items: [
-      'Xbox, PlayStation, Switch Pro and most USB/Bluetooth controllers work. Press any button to start using it; the hints then show its buttons.',
-      '<b>D-pad</b> or <b>left stick</b>: move the cursor (in menus: move between buttons). <b>A</b> (✕): select and act. <b>B</b> (◯): cancel or go back.',
-      '<b>Y</b> (△) / <b>X</b> (▢): movement / attack range. <b>LB</b>/<b>RB</b> (L1/R1): previous/next unit that can act.',
-      '<b>LT</b>/<b>RT</b> (L2/R2): zoom. <b>Right stick</b>: move the camera (in menus: scroll).',
-      '<b>Start</b> (Options): pause. <b>View</b>/<b>Select</b> (Share): end turn. <b>Left stick click</b>: hide the interface. <b>Right stick click</b>: online quick messages.',
-      'Fullscreen and the first sound still need one tap or click (a browser rule).'
-    ] },
-    { title: 'Touch screen', items: [
-      '<b>Tap</b> one of your units to open its menu.',
-      'When moving or attacking, the first <b>tap</b> previews the path or the combat; <b>tap the same tile again</b> to confirm.',
-      '<b>Tap</b> outside the highlighted tiles to cancel.',
-      '<b>Tap</b> an enemy: its movement range; tap it again: its attack range.'
-    ] }
-  ],
 
   credits: {
     createdBy: 'Created by',
@@ -508,21 +430,55 @@ export const en = {
   achievements: {
     graduate: { name: 'Graduate', description: 'Finish the tutorial.' },
     'first-win': { name: 'First victory', description: 'Win a match against the CPU or online.' },
+    seasoned: { name: 'Seasoned', description: 'Win 10 matches.' },
+    veteran: { name: 'Veteran', description: 'Win 25 matches.' },
+    legend: { name: 'Legend', description: 'Win 100 matches.' },
+    regular: { name: 'Regular', description: 'Play 50 matches.' },
     flawless: { name: 'Flawless', description: 'Win without losing a single unit.' },
     'last-stand': { name: 'Last one standing', description: 'Win with only one unit left.' },
+    'close-call': { name: 'Close call', description: 'Win with 5 HP or less left on your whole army.' },
+    comeback: { name: 'Comeback', description: 'Win a match after being 3 units behind.' },
     blitz: { name: 'Blitz', description: 'Win in 10 rounds or fewer.' },
-    backstabber: { name: 'Backstabber', description: 'Land 3 back attacks in a single turn.' },
-    lucky: { name: 'Lucky star', description: 'Land 4 critical hits in one match (Special doesn\'t count).' },
-    'one-shot': { name: 'One shot', description: 'Defeat a unit at full HP with a single strike.' },
-    'counter-kill': { name: 'Payback', description: 'Defeat an enemy with a counterattack.' },
     'hard-win': { name: 'Hardened', description: 'Beat the CPU on Hard.' },
-    'every-map': { name: 'Cartographer', description: 'Win on every map.' },
-    'hard-every-map': { name: 'Conqueror', description: 'Win on Hard on every map.' },
+    'clean-sweep': { name: 'Clean sweep', description: 'Beat the CPU on Hard without losing a unit.' },
+    storm: { name: 'Eye of the storm', description: 'Beat the CPU on Hard in 12 rounds or fewer.' },
+    'one-shot': { name: 'One shot', description: 'Defeat a unit at full HP with a single strike.' },
+    overkill: { name: 'Overkill', description: 'Deal 15 or more damage with a single strike.' },
+    lucky: { name: 'Lucky star', description: 'Land 4 critical hits in one match (Special doesn\'t count).' },
+    'long-shot': { name: 'Against the odds', description: 'Land a strike that had 25% or less chance to hit.' },
+    grazed: { name: 'Just a scratch', description: 'Defeat an enemy with a missed attack.' },
+    'counter-kill': { name: 'Payback', description: 'Defeat an enemy with a counterattack.' },
+    'long-reach': { name: 'Long reach', description: 'Defeat an enemy with a counterattack from 2 tiles away (Brace).' },
+    backstabber: { name: 'Backstabber', description: 'Land 3 back attacks in a single turn.' },
+    'silent-blade': { name: 'Silent blade', description: 'Defeat an enemy with Backstab.' },
+    deadeye: { name: 'Deadeye', description: 'Defeat an enemy from 5 or more tiles away.' },
+    scorched: { name: 'Scorched', description: 'Defeat an enemy with Fireball\'s burn.' },
+    pickpocket: { name: 'Pickpocket', description: 'Steal 6 MP in one match.' },
+    'field-medic': { name: 'Field medic', description: 'Restore 18 HP with Heal in one match.' },
+    'life-leech': { name: 'Life leech', description: 'Drain 12 HP from enemies in one match.' },
+    'pinned-down': { name: 'Pinned down', description: 'Pin 3 enemies with Pinning Shot in one match.' },
+    'thin-ice': { name: 'Thin ice', description: 'Defeat an enemy standing on ice.' },
+    sweep: { name: 'Sweep', description: 'Defeat 3 enemies in a single turn.' },
+    rampage: { name: 'Rampage', description: 'Defeat 4 enemies with the same unit in one match.' },
+    'iron-wall': { name: 'Iron wall', description: 'Have a unit take 25 damage in one match and live to the end.' },
+    legion: { name: 'Legion', description: 'Win with an army of a single class.' },
+    'mixed-company': { name: 'Mixed company', description: 'Win with an army where no class repeats.' },
+    marksmen: { name: 'Marksmen', description: 'Win with an army that only attacks from 2 or more tiles.' },
+    vanguard: { name: 'Vanguard', description: 'Win with an army of melee units only.' },
+    frugal: { name: 'Frugal', description: 'Win with an army that costs 80 pts or less.' },
     'every-class': { name: 'Jack of all trades', description: 'Win with each of the 14 classes in your army.' },
-    veteran: { name: 'Veteran', description: 'Win 25 matches.' },
+    slayer: { name: 'Slayer', description: 'Defeat 100 enemies.' },
+    warlord: { name: 'Warlord', description: 'Defeat 500 enemies.' },
+    devastator: { name: 'Devastator', description: 'Deal 3000 damage.' },
+    'every-map': { name: 'Cartographer', description: 'Win on every map.' },
+    'hard-veteran': { name: 'Tactician', description: 'Beat the CPU on Hard 10 times.' },
+    'hard-every-map': { name: 'Conqueror', description: 'Win on Hard on every map.' },
     'online-win': { name: 'Duelist', description: 'Win an online match.' },
+    'online-champion': { name: 'Champion', description: 'Win 5 online matches.' },
     'daily-win': { name: 'Challenger', description: 'Win a daily challenge.' },
-    'daily-streak': { name: 'Daily habit', description: 'Win the daily challenge 3 days in a row.' }
+    'daily-streak': { name: 'Daily habit', description: 'Win the daily challenge 3 days in a row.' },
+    'daily-regular': { name: 'Daily regular', description: 'Win 10 daily challenges.' },
+    'daily-devotee': { name: 'Devotee', description: 'Win the daily challenge 7 days in a row.' }
   } as Record<AchievementId, { name: string, description: string }>,
 
   pause: {
