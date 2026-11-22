@@ -7,6 +7,7 @@ import { UNIT_FOOTPRINT } from '../ui-sprites'
 import type { UnitClass } from '../path-finding/terrain-rules'
 import type { Placement } from '../deploy'
 import { t } from '../i18n'
+import { MAX_SAVED_ARMIES, SAVED_NAME_LENGTH, SavedArmy, cleanArmyName, deleteSavedArmy, loadSavedArmies, nextArmyName, saveNamedArmy } from '../saved-armies'
 
 export interface ArmyClassOption {
   unitClass: UnitClass
@@ -41,7 +42,7 @@ export class ArmySelect extends LitElement {
     /* fixed height: when the header or the buttons take more room (longer
        labels in Portuguese, bigger text on phones) the panels shrink and
        scroll instead of the screen running past the bottom of the window */
-    :host { display: flex; flex-direction: column; width: calc(1680 * var(--u)); max-width: 97vw; height: calc(960 * var(--u)); max-height: 96vh; max-height: 96dvh; }
+    :host { position: relative; display: flex; flex-direction: column; width: calc(1680 * var(--u)); max-width: 97vw; height: calc(960 * var(--u)); max-height: 96vh; max-height: 96dvh; }
     /* always one line: the heading keeps its words, the player label (an
        online name can be long) is cut with "…" when there is no room left */
     .header { flex-shrink: 0; display: flex; align-items: baseline; justify-content: space-between; gap: calc(20 * var(--u)); margin-bottom: calc(12 * var(--u)); }
@@ -144,6 +145,37 @@ export class ArmySelect extends LitElement {
     .actions .btn { font-size: calc(22 * var(--t)); padding: calc(10 * var(--u)) calc(20 * var(--u)); white-space: nowrap; --team: #2a2d3a; }
     .actions .confirm { --team: var(--red); min-width: calc(220 * var(--u)); }
     .actions .confirm:disabled { opacity: 0.4; }
+
+    /* Saved armies: a dialog over the whole screen (the controller's focus stays inside it) */
+    .saved-backdrop { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; background: rgba(0, 0, 0, 0.65); }
+    .saved { width: min(calc(820 * var(--u)), 94%); max-height: 94%; display: flex; flex-direction: column; }
+    .saved .panel-title { font-size: calc(20 * var(--t)); justify-content: space-between; }
+    .saved-list { display: flex; flex-direction: column; gap: calc(8 * var(--u)); padding: calc(12 * var(--u)); overflow-y: auto; min-height: 0; }
+    .saved-list .none { margin: 0; color: var(--muted); font-size: calc(16 * var(--t)); }
+    .saved-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: calc(10 * var(--u)); padding: calc(8 * var(--u)) calc(10 * var(--u)); background: rgba(255, 255, 255, 0.05); }
+    .saved-row .what { display: flex; flex-direction: column; gap: calc(5 * var(--u)); min-width: 0; }
+    .saved-row .name { font-size: calc(20 * var(--t)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .saved-row .name small { margin-left: calc(8 * var(--u)); font-size: calc(14 * var(--t)); color: var(--gold); }
+    .saved-row .minis { display: flex; flex-wrap: wrap; gap: calc(2 * var(--u)); }
+    .saved-row .minis img { width: calc(44 * var(--u)); height: calc(44 * var(--u)); image-rendering: pixelated; }
+    .saved-row .note { font-size: calc(14 * var(--t)); color: var(--red); }
+    .saved-row .load { font-size: calc(18 * var(--t)); padding: calc(6 * var(--u)) calc(16 * var(--u)); --team: var(--blue); }
+    .saved-row .load:disabled { opacity: 0.4; }
+    .saved-row .remove { all: unset; cursor: pointer; width: calc(36 * var(--u)); height: calc(36 * var(--u)); display: grid; place-items: center; font-size: calc(18 * var(--t)); color: var(--muted); }
+    .saved-row .remove:hover, .saved-row .remove:focus-visible { color: var(--red); background: rgba(255, 77, 77, 0.15); }
+    .save-row { display: flex; flex-wrap: wrap; gap: calc(10 * var(--u)); padding: 0 calc(12 * var(--u)); }
+    .save-row input {
+      flex: 1 1 calc(240 * var(--u)); min-width: 0;
+      font: inherit; font-size: calc(18 * var(--t)); color: var(--ink);
+      padding: calc(6 * var(--u)) calc(10 * var(--u));
+      background: rgba(0, 0, 0, 0.4); border: calc(2 * var(--u)) solid var(--edge); outline: none;
+    }
+    .save-row input:focus { border-color: var(--gold); }
+    .save-row .save { font-size: calc(18 * var(--t)); padding: calc(6 * var(--u)) calc(16 * var(--u)); --team: var(--blue); white-space: nowrap; }
+    .save-row .save:disabled { opacity: 0.4; }
+    .saved .footer { display: flex; align-items: center; justify-content: space-between; gap: calc(12 * var(--u)); padding: calc(10 * var(--u)) calc(12 * var(--u)) calc(12 * var(--u)); }
+    .saved .footer .note { font-size: calc(14 * var(--t)); color: var(--muted); }
+    .saved .footer .close { font-size: calc(18 * var(--t)); padding: calc(6 * var(--u)) calc(16 * var(--u)); --team: #2a2d3a; }
   `]
 
   /** 0 = Blue, 1 = Red */
@@ -212,10 +244,27 @@ export class ArmySelect extends LitElement {
   @state()
   private expanded: UnitClass | null = null
 
+  /** "Saved armies" dialog open */
+  @state()
+  private savedOpen = false
+
+  @state()
+  private savedList: SavedArmy[] = []
+
+  /** name typed in the Saved armies dialog */
+  @state()
+  private saveName = ''
+
   /** element to focus after the next render (keyboard / gamepad flow) */
   private focusAfterRender: string | null = null
 
   private onKeyDown = (event: KeyboardEvent) => {
+    if (this.savedOpen) {
+      if (event.key === 'Escape') this.closeSaved()
+      // Enter in the name field saves
+      else if (event.key === 'Enter' && event.composedPath()[0] instanceof HTMLInputElement) this.saveCurrent()
+      return
+    }
     if (event.key === 'Escape') {
       if (this.expanded) this.collapse()
       else this.dispatchEvent(new Event('back'))
@@ -248,6 +297,7 @@ export class ArmySelect extends LitElement {
       this.positions = (this.initialPlacement.length === this.slots.length ? this.initialPlacement : this.slots).map(p => ({ ...p }))
       this.selected = 0
       this.expanded = null
+      this.savedOpen = false
     }
   }
 
@@ -361,6 +411,115 @@ export class ArmySelect extends LitElement {
     next[this.selected] = { ...cell }
     this.positions = next
     this.dispatchEvent(new Event('pick'))
+  }
+
+  private openSaved() {
+    this.savedList = loadSavedArmies()
+    const same = this.savedList.find(saved => this.isFull() && this.sameArmy(saved.army))
+    this.saveName = same?.name ?? nextArmyName(this.savedList, t().army.defaultName)
+    this.savedOpen = true
+    this.expanded = null
+    this.focusAfterRender = this.canSave() ? '.saved .save' : '.saved .close'
+  }
+
+  private closeSaved() {
+    this.savedOpen = false
+    this.focusAfterRender = '.actions .open-saved'
+  }
+
+  private sameArmy(army: UnitClass[]) {
+    return army.length === this.army.length && army.every((c, i) => c === this.army[i])
+  }
+
+  /** A saved army with this name exists: saving replaces it */
+  private replacing() {
+    const name = cleanArmyName(this.saveName).toLowerCase()
+    return this.savedList.some(saved => saved.name.toLowerCase() === name)
+  }
+
+  private canSave() {
+    return this.isFull() && cleanArmyName(this.saveName) !== '' && (this.replacing() || this.savedList.length < MAX_SAVED_ARMIES)
+  }
+
+  private saveCurrent() {
+    if (!this.canSave()) return
+    const list = saveNamedArmy(this.saveName, this.army.filter((c): c is UnitClass => c !== null))
+    if (!list) return
+    this.savedList = list
+    this.saveName = cleanArmyName(this.saveName)
+    this.dispatchEvent(new Event('pick'))
+  }
+
+  /** Why a saved army can't be used here, or null when it can */
+  private loadProblem(saved: SavedArmy): string | null {
+    if (saved.army.length !== this.slots.length) return t().army.wrongSize(saved.army.length, this.slots.length)
+    if (saved.army.some(c => !this.option(c))) return t().army.wrongSize(saved.army.length, this.slots.length)
+    if (this.total(saved.army) > this.budget) return t().army.overBudget
+    return null
+  }
+
+  private loadSaved(saved: SavedArmy) {
+    if (this.loadProblem(saved)) return
+    this.army = [...saved.army]
+    this.selected = 0
+    this.closeSaved()
+    this.dispatchEvent(new Event('pick'))
+  }
+
+  private deleteSaved(index: number) {
+    this.savedList = deleteSavedArmy(index)
+    this.focusAfterRender = '.saved .close'
+  }
+
+  private renderSavedRow(saved: SavedArmy, index: number) {
+    const problem = this.loadProblem(saved)
+    const minis = saved.army.map(c => this.option(c)).filter(option => !!option)
+    return html`
+      <div class="saved-row">
+        <div class="what">
+          <div class="name">${saved.name}<small>${this.total(saved.army)} ${t().common.pts}</small></div>
+          <div class="minis">${minis.map(option => html`<img src=${option.portrait} alt=${option.name} title=${option.name} />`)}</div>
+          ${problem ? html`<div class="note">${problem}</div>` : nothing}
+        </div>
+        <button class="btn btn-solid load" ?disabled=${!!problem} @click=${() => this.loadSaved(saved)}>${t().army.load}</button>
+        <button class="remove" title=${t().army.deleteArmy(saved.name)} aria-label=${t().army.deleteArmy(saved.name)} @click=${() => this.deleteSaved(index)}>✕</button>
+      </div>
+    `
+  }
+
+  private renderSaved() {
+    const teamClass = this.team === 0 ? 'team-blue' : 'team-red'
+    const list = this.savedList
+    const full = list.length >= MAX_SAVED_ARMIES && !this.replacing()
+    const note = !this.isFull() ? t().army.saveIncomplete : full ? t().army.savedFull(MAX_SAVED_ARMIES) : ''
+    return html`
+      <div class="saved-backdrop" @click=${(event: Event) => { if (event.target === event.currentTarget) this.closeSaved() }}>
+        <div class="panel saved ${teamClass}" role="dialog" aria-label=${t().army.saved}>
+          <div class="panel-title"><span>${t().army.saved}</span><span>${list.length} / ${MAX_SAVED_ARMIES}</span></div>
+          <div class="saved-list">
+            ${list.length === 0 ? html`<p class="none">${t().army.savedEmpty}</p>` : nothing}
+            ${list.map((saved, index) => this.renderSavedRow(saved, index))}
+          </div>
+          <div class="save-row">
+            <input
+              type="text"
+              maxlength=${SAVED_NAME_LENGTH}
+              aria-label=${t().army.armyName}
+              placeholder=${t().army.armyName}
+              .value=${this.saveName}
+              @input=${(event: Event) => { this.saveName = (event.target as HTMLInputElement).value }}
+            />
+            <button class="btn btn-solid save" ?disabled=${!this.canSave()} @click=${() => this.saveCurrent()}>
+              ${this.replacing() ? t().army.replace : t().army.saveCurrent}
+            </button>
+          </div>
+          <div class="footer">
+            <span class="note">${note}</span>
+            <button class="btn btn-solid close" @click=${() => this.closeSaved()}>${t().army.close}</button>
+          </div>
+        </div>
+      </div>
+    `
   }
 
   /** Back to the map's classes and positions */
@@ -484,12 +643,14 @@ export class ArmySelect extends LitElement {
         <span class="keys">${this.isFull() ? t().army.fullHint : t().army.emptyHint(empty)}<span class="keys-only">${t().army.keys}</span></span>
         <div class="buttons">
         <button class="btn btn-solid" ?disabled=${this.army.every(c => c === null)} @click=${() => this.clearAll()}>${t().army.removeAll}</button>
+        <button class="btn btn-solid open-saved" @click=${() => this.openSaved()}>${t().army.saved}</button>
         <button class="btn btn-solid" @click=${() => this.classic()}>${t().army.classic}</button>
         ${this.randomize ? html`<button class="btn btn-solid" @click=${() => { this.army = this.randomize?.() ?? this.army; this.selected = 0 }}>${t().common.random}</button>` : nothing}
         <button class="btn btn-solid" @click=${() => this.dispatchEvent(new Event('back'))}>${t().common.back}</button>
         <button class="btn btn-solid confirm" ?disabled=${!this.canConfirm()} @click=${() => this.confirm()}>${t().common.confirm}</button>
         </div>
       </div>
+      ${this.savedOpen ? this.renderSaved() : nothing}
     `
   }
 }

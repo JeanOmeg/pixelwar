@@ -69,6 +69,12 @@ export class UnitCard extends LitElement {
     .status .chip { color: var(--muted); }
     .status .chip.hot { color: var(--gold); }
 
+    /* skills: bright when its MP still pays for them, faded and struck through when not */
+    .skills { display: flex; flex-wrap: wrap; gap: calc(5 * var(--u)); }
+    .skills .chip { display: inline-flex; align-items: center; gap: calc(4 * var(--u)); }
+    .skills .chip .i-mana { width: calc(11 * var(--u)); height: calc(11 * var(--u)); color: var(--mp); }
+    .skills .chip.off { opacity: 0.45; text-decoration: line-through; }
+
     /* Terrain card: above the unit card when a unit stands on special terrain */
     .stack {
       /* unit and terrain cards: 80% of the HUD size (the forecast keeps the full size) */
@@ -158,6 +164,11 @@ export class UnitCard extends LitElement {
             <div class="stat"><i class="icon i-boot"></i>${unit.movement}<small>${t().stats.mov}</small></div>
           </div>
           <div class="range-note">${t().card.range(unit.rangeNote)}</div>
+          ${unit.skills.length > 0 ? html`
+            <div class="skills" aria-label=${t().card.skills}>
+              ${unit.skills.map(s => html`<span class="chip ${s.affordable ? '' : 'off'}" title=${s.affordable ? t().card.canPay : t().card.cantPay}>${s.name} <i class="icon i-mana"></i>${s.cost}</span>`)}
+            </div>
+          ` : nothing}
           ${unit.status.length > 0 ? html`
             <div class="status">
               ${unit.status.map(s => html`<span class="chip ${s.hot ? 'hot' : ''}">${s.label}</span>`)}

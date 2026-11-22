@@ -27,6 +27,12 @@ import { inputMode, onInputModeChange, padLabel, type GamepadMatch } from './gam
 import type { PadAnalog, PadButton } from './gamepad/controller'
 import { t } from './i18n'
 import { terrainView } from './terrain-info'
+import { screenFacing } from './board-markers'
+import { CombatLog } from './combat-log'
+import { CombatLogPanel } from './ui-components/combat-log'
+import type { AttackEventResult } from './board'
+import type { AttackEvent } from './unit'
+import { idleHint, noteHintUse, type HintCommand, type HintInput } from './hint-progress'
 
 export interface MenuOptions {
   move: () => void
@@ -57,6 +63,8 @@ const TEXT_SCALE = 1.1
 const CARD_TOP = 84
 /** Tiles above a unit used by floating texts (damage, skill names); the card keeps clear of them */
 const FLOATING_TEXT_TILES = 1.5
+/** The combat log stays open or closed between matches */
+const PREF_LOG_OPEN = 'pixelfantasywar.combatLog.open'
 
 /**
  * In-game HTML UI: top HUD, contextual hint, unit card / attack forecast,
@@ -93,6 +101,10 @@ export class GameUI implements GamepadMatch {
   private gameOver = new GameOver()
   private pauseMenu = new PauseMenu()
   private notice = new GameNotice()
+  private logPanel = new CombatLogPanel()
+  /** Every attack of the match, for the combat log panel */
+  readonly combatLog = new CombatLog(unit => ({ name: this.className(unit), team: this.teamOf(unit.player) }), () => this.round)
+  private logVersion = -1
   /** Eye button above the sound button: hides/shows the HUD, the hint and the unit card */
   private eye = document.createElement('button')
   private overlaysHidden = false
@@ -131,12 +143,17 @@ export class GameUI implements GamepadMatch {
     this.root.style.setProperty('--text-scale', String(TEXT_SCALE))
     this.setupEyeButton()
     // the eye comes before the dialogs, so an open menu/pause/game over covers it
-    this.root.append(this.hud, this.hint, this.card, this.eye, this.menu, this.banner, this.notice, this.gameOver, this.pauseMenu)
+    this.root.append(this.hud, this.hint, this.logPanel, this.card, this.eye, this.menu, this.banner, this.notice, this.gameOver, this.pauseMenu)
     document.body.appendChild(this.root)
 
-    this.hud.addEventListener('end-turn', () => this.onEndTurn())
+    this.hud.addEventListener('end-turn', () => {
+      this.noteCommand('end-turn')
+      this.onEndTurn()
+    })
     this.hud.addEventListener('pause', () => void this.pause())
     this.hud.addEventListener('speed', () => { cycleSpeed(); this.refresh() })
+    this.logPanel.open = readLogOpen()
+    this.logPanel.addEventListener('toggle', () => this.toggleLog())
     this.hud.addEventListener('emote', event => this.onEmote((event as CustomEvent<string>).detail))
     this.pauseMenu.addEventListener('toggle-emotes', () => this.onToggleEmotes())
     this.menu.addEventListener('select', event => this.onMenuSelect((event as CustomEvent<string>).detail))
@@ -221,6 +238,28 @@ export class GameUI implements GamepadMatch {
     this.refresh()
   }
 
+  /** One step of an attack was applied (Board.onAttackEvent, through the TurnManager) */
+  recordAttack(event: AttackEvent, result: AttackEventResult) {
+    this.combatLog.record(event, result)
+  }
+
+  /** Opens or closes the combat log (its button or L) */
+  toggleLog() {
+    this.logPanel.open = !this.logPanel.open
+    try { localStorage.setItem(PREF_LOG_OPEN, this.logPanel.open ? '1' : '0') } catch { /* storage unavailable */ }
+  }
+
+  /** The player used a command: the idle hint stops showing it (hint-progress.ts) */
+  noteCommand(command: HintCommand) {
+    noteHintUse(this.hintInput(), command)
+  }
+
+  /** Which buttons the hints talk about */
+  private hintInput(): HintInput {
+    if (inputMode() === 'gamepad') return 'pad'
+    return this.touch ? 'touch' : 'desktop'
+  }
+
   /** A dialog or banner is up: the board shouldn't react to keys */
   isBlockingInput(): boolean {
     return this.menu.open || this.notice.open || this.hud.emotesOpen || this.isModalOpen() || !!this.tutorial?.blocksInput()
@@ -300,6 +339,7 @@ export class GameUI implements GamepadMatch {
    */
   async pause() {
     if (this.matchOver || this.pauseMenu.open) return
+    this.noteCommand('pause')
     this.dismissAll()
     // Not engine.stop(): its 'stop' event makes every ex.Sound stop and refuse
     // to play again until a 'start' event. Stop only the clock instead.
@@ -363,7 +403,7 @@ export class GameUI implements GamepadMatch {
    */
   toggleOverlays() {
     this.overlaysHidden = !this.overlaysHidden
-    for (const el of [this.hud, this.hint, this.card]) el.style.display = this.overlaysHidden ? 'none' : ''
+    for (const el of [this.hud, this.hint, this.card, this.logPanel]) el.style.display = this.overlaysHidden ? 'none' : ''
     this.eye.textContent = this.overlaysHidden ? 'visibility_off' : 'visibility'
     this.eye.title = this.overlaysHidden ? t().match.showInterface : t().match.hideInterface
     this.eye.setAttribute('aria-pressed', String(this.overlaysHidden))
@@ -435,6 +475,7 @@ export class GameUI implements GamepadMatch {
       if (key === 't' && this.hud.view?.online?.canEmote) { this.hud.toggleEmotes(); this.refresh(); return }
       if (key === 'p') { void this.pause(); return }
       if (key === 'h') { this.toggleOverlays(); return }
+      if (key === 'l') { this.toggleLog(); return }
     }
     if (event.key !== 'Escape') return
     if (this.pauseMenu.open) {
@@ -498,8 +539,10 @@ export class GameUI implements GamepadMatch {
       range: unit.unitConfig.range,
       rangeNote: rangeNote(unit.name, unit.unitConfig.range),
       movement: unit.effectiveMovement,
-      facing: unit.miniDirection,
+      // the way it faces on screen (a mirrored board swaps left and right)
+      facing: screenFacing(unit.miniDirection, this.board.mirrored),
       status,
+      skills: unit.unitConfig.skills.map(skill => ({ name: skill.name, cost: skill.cost, affordable: unit.mp >= skill.cost })),
       done
     }
   }
@@ -576,7 +619,8 @@ export class GameUI implements GamepadMatch {
       case 'heal': return t().match.hintHeal
       }
     }
-    return t().match.hintIdle
+    const idle = t().match.hintIdle
+    return idleHint('desktop', [['select', idle.select], ['move-range', idle.moveRange], ['attack-range', idle.attackRange], ['next-unit', idle.nextUnit]])
   }
 
   /** Controller hints: {button} shows as that button of the controller in use */
@@ -591,7 +635,15 @@ export class GameUI implements GamepadMatch {
       case 'heal': return t().match.padHeal(b('a'), b('b'))
       }
     }
-    return t().match.padIdle(b('a'), b('y'), b('x'), `${b('lb')}${b('rb')}`, b('select'), b('start'))
+    const idle = t().match.padIdle
+    return idleHint('pad', [
+      ['select', idle.select(b('a'))],
+      ['move-range', idle.moveRange(b('y'))],
+      ['attack-range', idle.attackRange(b('x'))],
+      ['next-unit', idle.nextUnit(`${b('lb')}${b('rb')}`)],
+      ['end-turn', idle.endTurn(b('select'))],
+      ['pause', idle.pause(b('start'))]
+    ])
   }
 
   private touchHintText(): string {
@@ -603,13 +655,20 @@ export class GameUI implements GamepadMatch {
       case 'heal': return t().match.touchHeal
       }
     }
-    return t().match.touchIdle
+    const idle = t().match.touchIdle
+    // the inspect part covers both taps (range, then attack range)
+    return idleHint('touch', [['select', idle.select], ['attack-range', idle.inspect]])
   }
 
   private refresh() {
     this.updateScale()
     this.hud.view = this.hudView()
     this.hint.text = this.hintText()
+    if (this.combatLog.version !== this.logVersion) {
+      this.logVersion = this.combatLog.version
+      this.logPanel.entries = this.combatLog.entries
+      this.logPanel.version = this.logVersion
+    }
 
     if (this.matchOver || this.bannerActive) {
       this.card.unit = null
@@ -685,4 +744,8 @@ export class GameUI implements GamepadMatch {
     const bottomRight = this.camera.worldToPage(cell.pos.add(size))
     return { left: topLeft.x, right: bottomRight.x, top: topLeft.y, bottom: bottomRight.y }
   }
+}
+
+function readLogOpen(): boolean {
+  try { return localStorage.getItem(PREF_LOG_OPEN) === '1' } catch { return false }
 }

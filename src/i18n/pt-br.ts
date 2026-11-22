@@ -136,24 +136,37 @@ export const ptBR: Strings = {
     emptyHint: n => `${n} vaga${s(n)} vazia${s(n)} para preencher`,
     keys: ' · Del remove · Enter confirma · Esc volta',
     removeAll: 'Remover todas',
-    classic: 'Exército clássico'
+    classic: 'Exército clássico',
+    saved: 'Exércitos salvos',
+    savedEmpty: 'Nenhum exército salvo ainda. Monte um, dê um nome e salve aqui.',
+    load: 'Carregar',
+    deleteArmy: name => `Apagar ${name}`,
+    armyName: 'Nome do exército',
+    defaultName: n => `Exército ${n}`,
+    saveCurrent: 'Salvar atual',
+    replace: 'Substituir',
+    savedFull: max => `Até ${max} exércitos: apague um, ou salve com o nome de um para substituí-lo`,
+    saveIncomplete: 'Preencha todos os slots para salvar este exército',
+    wrongSize: (units, slots) => `${units} unidades: este mapa tem ${slots} slots`,
+    overBudget: 'Passa do limite de pontos',
+    close: 'Fechar'
   },
 
   classes: {
-    Archer: { name: 'Arqueiro', role: 'À distância', description: 'Abate alvos de muito longe. Frágil de perto.' },
-    Mage: { name: 'Mago', role: 'À distância', description: 'Ataca de longe e anda um pouco mais rápido que o arqueiro.' },
-    Spearman: { name: 'Lanceiro', role: 'Alcance 2', description: 'Acerta a duas casas de distância em campo aberto, a salvo de contra-ataques.' },
+    Archer: { name: 'Arqueiro', role: 'Atirador', description: 'Maior alcance do jogo (6 casas). Abate alvos de muito longe, frágil de perto.' },
+    Mage: { name: 'Mago', role: 'Mago de batalha', description: 'Ataca de longe e anda um pouco mais que o Arqueiro. A Bola de Fogo queima também os inimigos ao lado do alvo.' },
+    Spearman: { name: 'Lanceiro', role: 'Quebra-linhas', description: 'Acerta a duas casas de distância em campo aberto, a salvo de contra-ataques. Perfurar ignora armadura e floresta.' },
     Thief: { name: 'Ladrão', role: 'Flanco', description: 'Bate forte e cruza terreno difícil a toda velocidade. Perfeito para ataques pelas costas.' },
     Fighter: { name: 'Lutador', role: 'Corpo a corpo', description: 'Equilibrado e sólido, com boa mobilidade.' },
-    Cleric: { name: 'Clérigo', role: 'Suporte', description: 'Resistente e móvel. Segura bem a linha de frente.' },
+    Cleric: { name: 'Clérigo', role: 'Curandeiro', description: 'O único que cura: devolve 6 PV a si mesmo ou a um aliado vizinho. Resistente para ficar na linha de frente.' },
     Barbarian: { name: 'Bárbaro', role: 'Brutamontes', description: 'Ataque forte e couro grosso, mas lento.' },
     Warrior: { name: 'Guerreiro', role: 'Tanque', description: 'Maior PV e defesa. Lento, feito para bloquear caminhos.' },
-    Paladin: { name: 'Paladino', role: 'Cavaleiro sagrado', description: 'Espadachim de armadura: quase tão resistente quanto um Bárbaro e mais ágil.' },
-    Berserker: { name: 'Berserker', role: 'Berserker', description: 'O ataque mais forte do jogo. Armadura leve, então ataque primeiro.' },
-    Assassin: { name: 'Assassino', role: 'Assassino', description: 'A unidade mais rápida, cruza terreno difícil livremente. Mortal pelas costas, cai com um sopro.' },
-    Ranger: { name: 'Patrulheiro', role: 'À distância', description: 'Arqueiro da floresta: alcance menor que o do Arqueiro, mas mais forte e ágil no bosque.' },
-    Necromancer: { name: 'Necromante', role: 'Mago sombrio', description: 'Magia sombria que bate duas vezes mais forte que o Mago, com alcance menor.' },
-    Halberdier: { name: 'Alabardeiro', role: 'Alcance 2', description: 'Piqueiro de armadura. Seu alcance de 2 funciona em qualquer terreno.' }
+    Paladin: { name: 'Paladino', role: 'Guardião', description: 'Espadachim de armadura, quase tão resistente quanto um Bárbaro e mais ágil. Muralha de Escudos protege também os aliados vizinhos.' },
+    Berserker: { name: 'Berserker', role: 'Canhão de vidro', description: 'O ataque mais forte do jogo. Armadura leve, então ataque primeiro.' },
+    Assassin: { name: 'Assassino', role: 'Infiltrador', description: 'A unidade mais rápida, cruza terreno difícil livremente. Mortal pelas costas, cai com um sopro.' },
+    Ranger: { name: 'Patrulheiro', role: 'Arqueiro da mata', description: 'Alcance menor que o do Arqueiro, mas mais forte e ágil no bosque. Tiro Imobilizador impede o alvo de andar.' },
+    Necromancer: { name: 'Necromante', role: 'Mago sombrio', description: 'Magia sombria que bate duas vezes mais forte que o Mago, com alcance menor. Drenar o cura pelo dano causado.' },
+    Halberdier: { name: 'Alabardeiro', role: 'Muralha de lanças', description: 'Piqueiro de armadura. Seu alcance de 2 funciona em qualquer terreno, e Firmeza o deixa revidar a 2 casas.' }
   },
 
   skills: {
@@ -247,7 +260,8 @@ export const ptBR: Strings = {
       '<b>Esc</b>: fecha o menu ou cancela a ação; sem nada para cancelar, pausa.',
       'Botão de <b>pausa</b> (no alto, ao centro, ou <b>P</b>): continuar ou sair da partida para o menu principal.',
       'Botão <b>x1/x2/x3</b>: velocidade do jogo.',
-      'Botão do <b>olho</b> (embaixo à esquerda, ou <b>H</b>): esconde ou mostra as barras do topo, a dica e o card da unidade para ver o mapa inteiro. O menu da unidade sempre aparece.',
+      'Botão do <b>olho</b> (embaixo à esquerda, ou <b>H</b>): esconde ou mostra as barras do topo, a dica, o card da unidade e o histórico para ver o mapa inteiro. O menu da unidade sempre aparece.',
+      'Botão <b>Histórico</b> (embaixo à direita, ou <b>L</b>): todos os ataques da partida, com o dano, a chance que tinham, contra-ataques e efeitos de skill.',
       'Teclado: <b>setas</b> movem o cursor, <b>Enter</b> age, <b>Tab</b> pula para a próxima unidade, <b>R</b>/<b>F</b> mostram o alcance de movimento/ataque, <b>E</b> encerra o turno, <b>T</b> abre as mensagens rápidas do online.'
     ] },
     { title: 'Controle', items: [
@@ -324,19 +338,33 @@ export const ptBR: Strings = {
     hintMove: 'Clique numa casa destacada para mover · [Esc] cancela',
     hintAttack: 'Clique num inimigo ao alcance para atacar · [Esc] cancela',
     hintHeal: 'Clique num aliado para curar · [Esc] cancela',
-    hintIdle: '[Clique esquerdo] seleciona · [Clique direito] alcance de movimento · [Clique do meio] alcance de ataque · [Tab] próxima unidade',
+    hintIdle: {
+      select: '[Clique esquerdo] seleciona',
+      moveRange: '[Clique direito] alcance de movimento',
+      attackRange: '[Clique do meio] alcance de ataque',
+      nextUnit: '[Tab] próxima unidade'
+    },
     padEmotes: (a, b) => `${a} envia · ${b} fecha`,
     padMenu: (a, b) => `${a} escolhe · ${b} fecha`,
     padMove: (a, b) => `${a} move para cá · ${b} cancela`,
     padAttack: (a, b) => `${a} ataca · ${b} cancela`,
     padHeal: (a, b) => `${a} cura · ${b} cancela`,
-    padIdle: (a, y, x, lbrb, select, start) =>
-      `${a} seleciona · ${y} alcance de movimento · ${x} alcance de ataque · ${lbrb} unidades · ${select} encerra o turno · ${start} pausa`,
+    padIdle: {
+      select: a => `${a} seleciona`,
+      moveRange: y => `${y} alcance de movimento`,
+      attackRange: x => `${x} alcance de ataque`,
+      nextUnit: lbrb => `${lbrb} unidades`,
+      endTurn: select => `${select} encerra o turno`,
+      pause: start => `${start} pausa`
+    },
     touchMenu: 'Escolha uma ação · [toque fora] fecha',
     touchMove: '[Toque] numa casa para ver, [toque de novo] para mover · toque fora para cancelar',
     touchAttack: '[Toque] num inimigo para ver, [toque de novo] para atacar · toque fora para cancelar',
     touchHeal: '[Toque] num aliado para ver, [toque de novo] para curar · toque fora para cancelar',
-    touchIdle: '[Toque] numa unidade sua para agir · [toque] em outras para ver o alcance (de novo: alcance de ataque)'
+    touchIdle: {
+      select: '[Toque] numa unidade sua para agir',
+      inspect: '[Toque] em outras unidades para ver o alcance (de novo: alcance de ataque)'
+    }
   },
 
   card: {
@@ -352,7 +380,27 @@ export const ptBR: Strings = {
     counterDmg: dmg => `${dmg} de dano`,
     killsYou: pct => `${pct} de te matar`,
     backAttack: 'Pelas costas: acerto garantido, ATQ em dobro',
-    critical: 'Crítico'
+    critical: 'Crítico',
+    skills: 'Habilidades (apagadas: PM insuficiente)',
+    canPay: 'PM suficiente para usar',
+    cantPay: 'PM insuficiente'
+  },
+
+  log: {
+    title: 'Histórico',
+    toggle: 'Mostra ou esconde o histórico de combate (L)',
+    empty: 'Nenhum ataque ainda',
+    round: n => `Rodada ${n}`,
+    counter: 'Revide:',
+    damage: n => `${n} de dano`,
+    miss: n => `Errou, ${n} de dano`,
+    critical: 'Crítico!',
+    back: 'Pelas costas',
+    defeated: 'Derrotado',
+    burn: n => `queima ${n}`,
+    heal: n => `recupera ${n} PV`,
+    steal: n => `rouba ${n} PM de`,
+    pinned: 'fica imobilizado'
   },
 
   terrain: {

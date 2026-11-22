@@ -71,7 +71,10 @@ export class TurnManager {
     this.currentPlayer = players[0]
     this.phasesLeft = maxTurns
     // a side may be wiped out in the middle of a phase: don't wait for it to end
-    level.board.onAttackEvent = (event, outcome) => this.stats.record(event, outcome)
+    level.board.onAttackEvent = (event, outcome) => {
+      this.stats.record(event, outcome)
+      ui.recordAttack(event, outcome)
+    }
     level.board.onUnitDown = unit => {
       this.stats.unitLost(unit)
       const result = this.checkResult()

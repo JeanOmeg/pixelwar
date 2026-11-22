@@ -142,24 +142,37 @@ export const en = {
     emptyHint: (n: number) => `${n} empty slot${s(n)} left to fill`,
     keys: ' · Del remove · Enter confirm · Esc back',
     removeAll: 'Remove all',
-    classic: 'Classic army'
+    classic: 'Classic army',
+    saved: 'Saved armies',
+    savedEmpty: 'No saved armies yet. Build one, name it and save it here.',
+    load: 'Load',
+    deleteArmy: (name: string) => `Delete ${name}`,
+    armyName: 'Army name',
+    defaultName: (n: number) => `Army ${n}`,
+    saveCurrent: 'Save current',
+    replace: 'Replace',
+    savedFull: (max: number) => `Up to ${max} armies: delete one, or save with the name of one to replace it`,
+    saveIncomplete: 'Fill every slot to save this army',
+    wrongSize: (units: number, slots: number) => `${units} units: this map has ${slots} slots`,
+    overBudget: 'Over the points budget',
+    close: 'Close'
   },
 
   classes: {
-    Archer: { name: 'Archer', role: 'Ranged', description: 'Picks off targets from far away. Fragile up close.' },
-    Mage: { name: 'Mage', role: 'Ranged', description: 'Strikes from a distance and moves a bit faster than the archer.' },
-    Spearman: { name: 'Spearman', role: 'Reach', description: 'Hits two tiles away on open ground, safe from counterattacks.' },
+    Archer: { name: 'Archer', role: 'Sniper', description: 'Longest range in the game (6 tiles). Picks off targets from far away, fragile up close.' },
+    Mage: { name: 'Mage', role: 'Battle mage', description: 'Ranged caster, a bit faster than the Archer. Its Fireball also burns every enemy next to the target.' },
+    Spearman: { name: 'Spearman', role: 'Line breaker', description: 'Hits two tiles away on open ground, safe from counterattacks. Pierce ignores armor and forest.' },
     Thief: { name: 'Thief', role: 'Skirmisher', description: 'Hard hitter that crosses rough terrain at full speed. Perfect for back attacks.' },
     Fighter: { name: 'Fighter', role: 'Melee', description: 'Solid all-rounder with good mobility.' },
-    Cleric: { name: 'Cleric', role: 'Support', description: 'Sturdy and mobile. Holds the line well.' },
+    Cleric: { name: 'Cleric', role: 'Healer', description: 'The only healer: restores 6 HP to itself or an adjacent ally. Sturdy enough to stay on the front line.' },
     Barbarian: { name: 'Barbarian', role: 'Bruiser', description: 'Strong attacker with thick hide, but slow.' },
     Warrior: { name: 'Warrior', role: 'Tank', description: 'Highest HP and defense. Slow, built to block paths.' },
-    Paladin: { name: 'Paladin', role: 'Holy knight', description: 'Armored swordsman: almost as tough as a Barbarian and faster on its feet.' },
-    Berserker: { name: 'Berserker', role: 'Berserker', description: 'The hardest hitter in the game. Light armor, so strike first.' },
-    Assassin: { name: 'Assassin', role: 'Assassin', description: 'Fastest unit, crosses rough terrain freely. Deadly from behind, dies to a stiff breeze.' },
-    Ranger: { name: 'Ranger', role: 'Ranged', description: 'Forest archer: shorter range than the Archer, but stronger and swift through the woods.' },
-    Necromancer: { name: 'Necromancer', role: 'Dark mage', description: 'Dark magic that hits twice as hard as the Mage, at a shorter range.' },
-    Halberdier: { name: 'Halberdier', role: 'Reach', description: 'Armored pikeman. Its reach of 2 works on any terrain.' }
+    Paladin: { name: 'Paladin', role: 'Guardian', description: 'Armored swordsman, almost as tough as a Barbarian and faster. Shield Wall also guards the allies next to it.' },
+    Berserker: { name: 'Berserker', role: 'Glass cannon', description: 'The hardest hitter in the game. Light armor, so strike first.' },
+    Assassin: { name: 'Assassin', role: 'Infiltrator', description: 'Fastest unit, crosses rough terrain freely. Deadly from behind, dies to a stiff breeze.' },
+    Ranger: { name: 'Ranger', role: 'Woodland archer', description: 'Shorter range than the Archer, but stronger and swift through the woods. Pinning Shot stops the target from moving.' },
+    Necromancer: { name: 'Necromancer', role: 'Dark mage', description: 'Dark magic that hits twice as hard as the Mage, at a shorter range. Drain heals it by the damage dealt.' },
+    Halberdier: { name: 'Halberdier', role: 'Pike wall', description: 'Armored pikeman. Its reach of 2 works on any terrain, and Brace lets it counter from 2 tiles away.' }
   } as Record<UnitClass, { name: string, role: string, description: string }>,
 
   skills: {
@@ -253,7 +266,8 @@ export const en = {
       '<b>Esc</b>: close the menu or cancel the action; with nothing to cancel, pause.',
       '<b>Pause</b> button (top center, or <b>P</b>): resume or leave the match for the main menu.',
       '<b>x1/x2/x3</b> button: game speed.',
-      '<b>Eye</b> button (bottom left, or <b>H</b>): hide or show the top bars, the hint and the unit card to see the whole map. The unit menu always shows.',
+      '<b>Eye</b> button (bottom left, or <b>H</b>): hide or show the top bars, the hint, the unit card and the combat log to see the whole map. The unit menu always shows.',
+      '<b>Combat log</b> button (bottom right, or <b>L</b>): every attack of the match, with the damage, the odds it had, counterattacks and skill effects.',
       'Keyboard: <b>arrows</b> move the cursor, <b>Enter</b> acts, <b>Tab</b> jumps to the next unit, <b>R</b>/<b>F</b> show move/attack range, <b>E</b> ends the turn, <b>T</b> opens the online quick messages.'
     ] },
     { title: 'Controller', items: [
@@ -330,19 +344,34 @@ export const en = {
     hintMove: 'Click a highlighted tile to move · [Esc] cancel',
     hintAttack: 'Click an enemy in range to attack · [Esc] cancel',
     hintHeal: 'Click an ally to heal · [Esc] cancel',
-    hintIdle: '[Left click] select unit · [Right click] move range · [Middle click] attack range · [Tab] next unit',
+    /** Idle hint, one part per command; a part goes away once the player used it */
+    hintIdle: {
+      select: '[Left click] select unit',
+      moveRange: '[Right click] move range',
+      attackRange: '[Middle click] attack range',
+      nextUnit: '[Tab] next unit'
+    },
     padEmotes: (a: string, b: string) => `${a} send · ${b} close`,
     padMenu: (a: string, b: string) => `${a} choose · ${b} close`,
     padMove: (a: string, b: string) => `${a} move here · ${b} cancel`,
     padAttack: (a: string, b: string) => `${a} attack · ${b} cancel`,
     padHeal: (a: string, b: string) => `${a} heal · ${b} cancel`,
-    padIdle: (a: string, y: string, x: string, lbrb: string, select: string, start: string) =>
-      `${a} select · ${y} move range · ${x} attack range · ${lbrb} units · ${select} end turn · ${start} pause`,
+    padIdle: {
+      select: (a: string) => `${a} select`,
+      moveRange: (y: string) => `${y} move range`,
+      attackRange: (x: string) => `${x} attack range`,
+      nextUnit: (lbrb: string) => `${lbrb} units`,
+      endTurn: (select: string) => `${select} end turn`,
+      pause: (start: string) => `${start} pause`
+    },
     touchMenu: 'Choose an action · [tap outside] close',
     touchMove: '[Tap] a tile to preview, [tap again] to move · tap outside to cancel',
     touchAttack: '[Tap] an enemy to preview, [tap again] to attack · tap outside to cancel',
     touchHeal: '[Tap] an ally to preview, [tap again] to heal · tap outside to cancel',
-    touchIdle: '[Tap] your unit to act · [tap] other units to see their range (again: attack range)'
+    touchIdle: {
+      select: '[Tap] your unit to act',
+      inspect: '[Tap] other units to see their range (again: attack range)'
+    }
   },
 
   card: {
@@ -358,7 +387,28 @@ export const en = {
     counterDmg: (dmg: string) => `${dmg} dmg`,
     killsYou: (pct: string) => `${pct} kills you`,
     backAttack: 'Back attack: sure hit, double ATK',
-    critical: 'Critical'
+    critical: 'Critical',
+    skills: 'Skills (faded: not enough MP)',
+    canPay: 'Enough MP to use it',
+    cantPay: 'Not enough MP'
+  },
+
+  /** Combat log panel (bottom right of the match) */
+  log: {
+    title: 'Combat log',
+    toggle: 'Show or hide the combat log (L)',
+    empty: 'No attacks yet',
+    round: (n: number) => `Round ${n}`,
+    counter: 'Counter:',
+    damage: (n: number) => `${n} dmg`,
+    miss: (n: number) => `Miss, ${n} dmg`,
+    critical: 'Critical!',
+    back: 'Back attack',
+    defeated: 'Defeated',
+    burn: (n: number) => `burns ${n}`,
+    heal: (n: number) => `heals ${n} HP`,
+    steal: (n: number) => `steals ${n} MP from`,
+    pinned: 'is pinned'
   },
 
   terrain: {

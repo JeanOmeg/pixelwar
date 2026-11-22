@@ -132,8 +132,14 @@ export class HumanPlayer extends Player {
       if (!this.selectionManager.currentUnitSelection && !cell?.unit) this.inspected = null
     }
 
-    if (button === 'right') this.highlightUnitMoveRange(cell)
-    if (button === 'middle') this.highlightUnitAttackRange(cell)
+    if (button === 'right') {
+      this.highlightUnitMoveRange(cell)
+      if (cell?.unit) this.ui.noteCommand('move-range')
+    }
+    if (button === 'middle') {
+      this.highlightUnitAttackRange(cell)
+      if (cell?.unit) this.ui.noteCommand('attack-range')
+    }
   }
 
   pointerMove(pointer: ex.PointerEvent) {
@@ -195,6 +201,7 @@ export class HumanPlayer extends Player {
   private cycleUnits(direction: 1 | -1) {
     const units = this.board.getUnits().filter(u => u.player === this && u.canBeSelected() && u.cell)
     if (units.length === 0) return
+    this.ui.noteCommand('next-unit')
     const { x, y } = this.selectionManager.currentCursor
     const order = (u: Unit) => (u.cell!.y * this.board.cols) + u.cell!.x
     units.sort((a, b) => order(a) - order(b))
@@ -260,6 +267,7 @@ export class HumanPlayer extends Player {
     this.inspected = { unit, mode }
     if (mode === 'range') this.highlightUnitMoveRange(unit.cell)
     else this.highlightUnitAttackRange(unit.cell)
+    this.ui.noteCommand(mode === 'range' ? 'move-range' : 'attack-range')
   }
 
   private selectMode(unit: Unit, mode: 'move' | 'attack' | 'heal') {
@@ -391,6 +399,7 @@ export class HumanPlayer extends Player {
       unit.setAnim(unit.selectAnimationMove())
       this.selectionManager.showCursor(cell.x, cell.y)
       Resources.SelectSound.play()
+      if (!quiet) this.ui.noteCommand('select')
 
       this.ui.showUnitMenu(unit, {
         move: () => this.selectMode(unit, 'move'),

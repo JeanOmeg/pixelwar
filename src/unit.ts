@@ -9,7 +9,7 @@ import { isForest, terrainDefense } from './path-finding/terrain-rules'
 import { Player } from './player'
 import { DustParticles } from './dust-particles'
 import { DamageManager } from './damage-manager'
-import { AttackContext, AttackOutcome, CombatStats, Facing, PLAIN_ATTACK, facingBetween, resolveAttack, rollWithAdvantage } from './combat'
+import { AttackContext, AttackOutcome, CombatStats, Facing, PLAIN_ATTACK, facingBetween, forecastAttack, resolveAttack, rollWithAdvantage } from './combat'
 import {
   BRACE_DEF, BRACE_REACH, FIREBALL_SPLASH, FRENZY_ATK, FRENZY_DEF, GUARD_DEF, HEAL_HP,
   MP_PER_CRITICAL, MP_PER_KILL, SECOND_WIND_HP, SHIELD_WALL_DEF, SKILLS, STEAL_MP, SkillDefinition, SkillId, skillBonusDamage
@@ -26,8 +26,11 @@ import { AuraKind, aura, burst, effectScene, explosion, heavyHit, impact, impact
  * and the AI simulation can apply them all at once.
  */
 export type AttackEvent =
-  /** `forced`: a critical forced by Special, which earns no MP */
-  | { kind: 'strike', attacker: Unit, defender: Unit, outcome: AttackOutcome, counter: boolean, forced?: boolean }
+  /**
+   * `forced`: a critical forced by Special, which earns no MP; `hitChance`:
+   * odds of hitting before the dice were rolled (combat log)
+   */
+  | { kind: 'strike', attacker: Unit, defender: Unit, outcome: AttackOutcome, counter: boolean, forced?: boolean, hitChance?: number }
   | { kind: 'heal', unit: Unit, amount: number }
   | { kind: 'steal', from: Unit, to: Unit, amount: number }
   | { kind: 'pin', unit: Unit }
@@ -589,7 +592,8 @@ export class Unit extends ex.Actor {
     const skill = this.pendingSkill?.id
     const [d20, d6] = rolls()
     const outcome = resolveAttack(this.combatStats(), other.combatStats(), context, d20, d6)
-    const events: AttackEvent[] = [{ kind: 'strike', attacker: this, defender: other, outcome, counter: false, forced: context.forcesCritical }]
+    const hitChance = forecastAttack(this.combatStats(), other.combatStats(), context, other.health).hitChance
+    const events: AttackEvent[] = [{ kind: 'strike', attacker: this, defender: other, outcome, counter: false, forced: context.forcesCritical, hitChance }]
     let healthAfter = other.health - outcome.damage
 
     // skill effects that follow the hit
@@ -611,7 +615,8 @@ export class Unit extends ex.Actor {
     if (healthAfter > 0 && other.canCounter(this, context)) {
       const [c20, c6] = rolls()
       const counter = resolveAttack(other.combatStats(), this.combatStats(), PLAIN_ATTACK, c20, c6)
-      events.push({ kind: 'strike', attacker: other, defender: this, outcome: counter, counter: true })
+      const counterChance = forecastAttack(other.combatStats(), this.combatStats(), PLAIN_ATTACK, this.health).hitChance
+      events.push({ kind: 'strike', attacker: other, defender: this, outcome: counter, counter: true, hitChance: counterChance })
     }
     return events
   }
@@ -773,7 +778,12 @@ export function applyAttackEvent(event: AttackEvent) {
   const target = event.kind === 'strike' ? event.defender : event.kind === 'splash' ? event.unit : null
   const before = target?.health ?? 0
   applyEvent(event)
-  if (!target) return
+  if (!target) {
+    // heal, steal, pin: nothing for the statistics, but the combat log shows them
+    const unit = event.kind === 'steal' ? event.to : event.kind === 'heal' || event.kind === 'pin' ? event.unit : null
+    unit?.board.onAttackEvent?.(event, { dealt: 0, killed: false })
+    return
+  }
   const dealt = Math.max(0, before) - Math.max(0, target.health)
   const killed = before > 0 && target.health <= 0
   // kills and real critical hits (not Special's) give MP back to whoever landed them (counters and Fireball burns too)

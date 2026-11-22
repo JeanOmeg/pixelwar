@@ -19,9 +19,6 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
 - [x] **MP nunca volta** (P, regra): no fim da partida quase ninguém tem skill. Todas as unidades ganham 1 de MP pra cada abate, e 1 de MP a cada critico, não pode ultrapassar o maximo de 4MP Exige rodar `yarn balance:sim`. Feito: +1 PM por abate e por crítico de verdade (o do Special não conta), teto de 4 sem exceção (Steal incluso). `balance:sim` (3000 partidas) antes × depois: todas as classes mudaram dentro do ruído (±2,5%); Warrior já estava em 46%, não foi a regra.
 
 ### Novos objetivos e modos
-- [ ] ⭐ **Objetivos além de eliminar** (G): Comandante (perde quem perder o líder), Capturar ponto (altares do Ruined Temple / Fallen Citadel), Sobreviver N rodadas. Dá vida nova aos 12 mapas.
-- [ ] **Desafios / puzzles** (M): "vença em 1 turno" com exército e posições fixas. O motor do tutorial (`script.ts`, `ActionGate`) e o `applyAction` ajudam muito.
-- [ ] **Campanha curta** (G): sequência de mapas com exército que evolui (desbloqueia classes, mantém sobreviventes).
 - [x] ⭐ **Gelo escorregadio** (M, muda regra): hoje o gelo (tiles 208–209 e o lago congelado 277–299, só no Frozen Pass) é marcado como chão rápido (`isFast`), igual à grama. Proposta: custa **2 de movimento**, como a floresta, e quem está nele fica com **−2 DEF** (é difícil se defender escorregando).
   - **Nova flag:** precisa de uma flag nova (`isIce`) no tileset, gerada por `yarn tileset` (`scripts/tileset/`). Só tirar o `isFast` não basta, porque o jogo trataria o gelo como floresta (+2 DEF e custo de alcance).
   - **Onde mexer:** custo no `PathFinder`, −2 DEF em `Unit.combatStats()` (ao lado do bônus da floresta) e uma constante `ICE_DEFENSE` em `combat.ts`.
@@ -48,7 +45,6 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
 
 ## 3. Interface
 
-- [ ] ⭐ **Tela de Opções** (M): reunir volume de música/efeitos, velocidade, confirmar End turn, mostrar grade, animações reduzidas, tamanho do texto. Hoje as opções estão espalhadas (canto da tela, HUD, pausa).
 - [x] ⭐ **Card de terreno** (M): mouse parado sobre um tile com regra especial mostra um card no mesmo estilo do `unit-card`, com o nome do terreno e as regras dele:
   - **Floresta:** custa 2 de movimento (Thief/Assassin/Ranger pagam 1), dá +2 DEF a quem está nela e custa 2 de alcance para Archer, Mage, Spearman, Ranger e Necromancer.
   - **Porta:** custa 2 de movimento, bloqueia ataques e quem está nela não ataca nem é atacado.
@@ -58,19 +54,18 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
   - **Unidade em cima de um terreno especial:** o card do terreno aparece **acima** do card da unidade, os dois juntos.
   - **Sem card:** paredes, pedras, árvores e outros tiles que só bloqueiam (é óbvio), e chão comum.
   - **Implementação:** as regras vêm das flags do tile (`PathNodeComponent`: `iswalkable`, `isattackable`, `isfast`, `isdoor`, `iswater`, `isice`) e de `TERRAIN_RULES`, sem tabela por id de tile. Os textos entram em `en.ts` e `pt-br.ts`. No toque, o card aparece ao tocar no tile; no teclado e no controle, junto com o cursor.
-  - **Feito:** [src/terrain-info.ts](src/terrain-info.ts) (`terrainKind` pelas flags, `terrainView` com as classes lidas de `TERRAIN_RULES`), painel no `unit-card` empilhado acima do card da unidade (título com a cor do terreno), textos em `t().terrain`, `tests/terrain-info.test.ts`. Sem card na prévia de combate. Correção: na água **todos** atacam por cima (o `getRangeAttack` segue a linha); `targetsWater` só põe o tile de água no destaque. O card diz "Ataques passam por cima".
-- [ ] **Grade do tabuleiro opcional** (P): ajuda a contar tiles de alcance.
-- [ ] **Histórico de combate** (M): painel recolhível com "Archer → Cleric: 4 dano (68%)". O online já tem o `ActionFeed`; o local poderia reaproveitar.
-- [ ] **Prévia de combate em todos os modos** (P): ao escolher um ataque, o card com as probabilidades (acerto, crítico, dano, chance de matar e contra-ataque) deve aparecer no modo online e no tutorial, não só nas partidas locais. Hoje a prévia vem do `GameUI.forecastView` ([src/game-ui.ts](src/game-ui.ts)); falta investigar por que ela não aparece nesses dois modos (a causa ainda não foi verificada).
+  - **Feito:** [src/terrain-info.ts](src/terrain-info.ts) (`terrainKind` pelas flags, `terrainView` com as classes lidas de `TERRAIN_RULES`), painel no `unit-card` empilhado acima do card da unidade (título com a cor do terreno), textos em `t().terrain`, `tests/terrain-info.test.ts`. Sem card na prévia de combate. Correção: na água **todos** atacam por cima (o `getRangeAttack` segue a linha); `targetsWater` só põe o tile de água no destaque. O card diz "Ataques passam por cima". Card de unidade e de terreno a 80% do tamanho da HUD (`CARD_SIZE` em `unit-card.ts`; a prévia de combate continua no tamanho cheio). README atualizado (Interface e Terreno).
+- [x] **Histórico de combate** (M): painel recolhível com "Archer → Cleric: 4 dano (68%)". O online já tem o `ActionFeed`; o local poderia reaproveitar.
+  - **Feito:** em vez do `ActionFeed` (só existe no online e não tem o resultado), o histórico sai do `Board.onAttackEvent`, que já vale em local, online, tutorial e catch-up: [src/combat-log.ts](src/combat-log.ts) (`CombatLog`, últimos 60 eventos) + painel `<combat-log>` no canto inferior direito (botão ou **L**, aberto/fechado lembrado, some com o olho). Mostra por rodada golpe, contra-ataque, chance de acerto que o golpe tinha (`hitChance` novo no evento `strike`), crítico, pelas costas, derrotado, queimadura da Fireball, cura do Drain, MP roubado e Pinned. `tests/combat-log.test.ts`.
+- [x] **Prévia de combate em todos os modos** (P): ao escolher um ataque, o card com as probabilidades (acerto, crítico, dano, chance de matar e contra-ataque) deve aparecer no modo online e no tutorial, não só nas partidas locais. Hoje a prévia vem do `GameUI.forecastView` ([src/game-ui.ts](src/game-ui.ts)); falta investigar por que ela não aparece nesses dois modos (a causa ainda não foi verificada).
   - **Online:** conferir no jogador local (`isLocal`) e no espelhamento do tabuleiro; no turno do adversário não precisa aparecer.
   - **Tutorial:** conferir se o `ActionGate` ou o `TutorialMatch` escondem o card; a prévia ajuda a ensinar as chances, então deve aparecer no passo de ataque sem atrapalhar o balão.
   - **Testar:** local, online (duas abas com `?localnet`) e tutorial, com mouse, toque e controle.
-- [ ] **Card com as skills** (P): no hover, mostrar quais skills a unidade inimiga ainda pode pagar com o MP que sobra (ameaça de Backstab, Rage...).
-- [ ] **Dica ociosa longa demais** (P): "[Left click] select unit · [Right click] move range · [Middle click]..." é muita coisa todo turno. Encurtar depois que o jogador já usou cada comando.
-- [ ] **Descrições de classe** (P): Cleric diz "Sturdy and mobile. Holds the line well." e não fala da cura, que é o papel dele. Mage, Archer e Ranger têm o mesmo papel "Ranged".
-- [ ] **Exércitos salvos** (P/M): guardar 3–5 composições com nome na tela de exército, além do "último usado".
-- [ ] **Daltonismo** (P): opção de padrão/borda diferente por time além de azul × vermelho.
-- [ ] **Itens pendentes do tutorial** ([CHECKLIST-TUTORIAL.md](CHECKLIST-TUTORIAL.md)): botão em "How to play" que abre o tutorial, teste do `ActionGate`, teste em celular e controle.
+  - **Investigado:** a prévia **já aparecia** nos dois modos. Conferido no Chrome headless: tutorial no passo "Fire" com mouse e com toque (primeiro toque = prévia), e online com duas abas `?localnet` nos dois lados (Azul e Vermelho com tabuleiro espelhado). O `ActionGate` e o `TutorialMatch` não escondem o card. Único defeito achado: no tabuleiro espelhado a seta de direção dos cards (unidade e prévia) apontava para o lado real, não para o da tela; agora usa `screenFacing`.
+- [x] **Card com as skills** (P): no hover, mostrar quais skills a unidade inimiga ainda pode pagar com o MP que sobra (ameaça de Backstab, Rage...). — feito: chips com nome e custo de cada skill no `unit-card` (de qualquer unidade); as que o MP não paga ficam apagadas e riscadas (`UnitView.skills`).
+- [x] **Dica ociosa longa demais** (P): "[Left click] select unit · [Right click] move range · [Middle click]..." é muita coisa todo turno. Encurtar depois que o jogador já usou cada comando. — feito: a dica ociosa é montada por partes e cada uma some quando o comando é usado ([src/hint-progress.ts](src/hint-progress.ts), salvo por entrada: mouse/teclado, toque e controle, porque os botões mudam). Usou tudo: a dica ociosa fica vazia.
+- [x] **Descrições de classe** (P): Cleric diz "Sturdy and mobile. Holds the line well." e não fala da cura, que é o papel dele. Mage, Archer e Ranger têm o mesmo papel "Ranged". — feito (en e pt-BR): papéis distintos (Archer Sniper/Atirador, Mage Battle mage, Ranger Woodland archer, Cleric Healer/Curandeiro, Spearman Line breaker × Halberdier Pike wall, Paladin Guardian, e Berserker/Assassin deixaram de repetir o nome da classe) e as descrições citam o que a skill própria muda no papel (cura, Fireball em área, Pinning Shot, Drain, Shield Wall, Brace, Pierce).
+- [x] **Exércitos salvos** (P/M): guardar 3–5 composições com nome na tela de exército, além do "último usado". — feito: botão **Saved armies** no `<army-select>` (também no online) abre um diálogo com até 5 exércitos com nome ([src/saved-armies.ts](src/saved-armies.ts)): salvar o atual (nome sugerido "Army N"; mesmo nome substitui), carregar (só se o número de unidades bater com os slots do mapa e couber no orçamento; senão diz o motivo) e apagar. Só as classes; posições continuam as do mapa/última usada. `tests/saved-armies.test.ts`.
 
 ---
 
@@ -79,8 +74,6 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
 - [ ] **Estatísticas locais** (P): vitórias por mapa, dificuldade e classe em `localStorage`, numa tela "Records".
 - [ ] **Conquistas** (M): "vença sem perder unidade", "3 ataques pelas costas em um turno", "vença no Hard em cada mapa".
 - [ ] **Desafio diário** (M): mapa + exércitos sorteados com a data como semente, todos jogam o mesmo.
-- [ ] **Salvar e continuar partida local** (M): fechar a aba hoje perde a partida contra a CPU. Gravar a lista de ações (como o online já faz) e reaplicar.
-- [ ] **Replay** (M): com o histórico de ações acima, rever uma partida e exportar/importar um código.
 
 ---
 

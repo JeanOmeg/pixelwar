@@ -101,7 +101,8 @@ O menu também tem **How to play** (regras resumidas), **Units** (as 14 classes,
 | **R** / **F** | Mostra o alcance de movimento/ataque da unidade sob o cursor |
 | **E** | Encerra o turno (pede confirmação se ainda houver unidades com ações) |
 | **P** | Pausa |
-| **H** | Esconde/mostra a interface (barras, dica e card) |
+| **H** | Esconde/mostra a interface (barras, dica, card e histórico) |
+| **L** | Abre/fecha o histórico de combate |
 | **T** | Abre/fecha as mensagens rápidas (online) |
 | **Esc** | Fecha o menu, cancela, pula o anúncio de fase ou pausa |
 | Menu da unidade | **↑/↓** escolhem, **→/←** abrem/fecham as skills, **Enter** confirma |
@@ -145,9 +146,11 @@ O jogo roda em telas de toque, **na horizontal** (com o aparelho de pé aparece 
 - **Skill usada:** quando uma unidade (sua ou da CPU) usa uma skill, o nome e o custo aparecem em cima dela (ex.: "Guard -2 MP"). Só aparece se a skill for de fato executada: escolher e cancelar não mostra nada.
 - **Barra de HP** embaixo de cada unidade no mapa (verde, amarela abaixo de 50%, vermelha abaixo de 25%). A **seta** à esquerda da barra mostra para onde a unidade está virada: atacar vindo desse lado é ataque pelas costas.
 - **Prévia do movimento:** no modo mover, passe o mouse (ou o cursor, ou toque uma vez) sobre um destino. Aparece a seta da direção em que a unidade vai parar, os inimigos que ela poderá atacar dali ficam marcados em vermelho, e uma **espada dourada** aparece sobre os que seriam atacados pelas costas.
-- **Card da unidade:** passe o mouse sobre qualquer unidade para ver HP, MP, atributos (em verde/vermelho quando uma skill, a floresta ou o gelo os altera), o alcance em tiles, para onde ela está virada e o estado no turno.
-- **Prévia de combate:** no modo de ataque, passe o mouse sobre um inimigo ao alcance para ver a chance de acerto, a faixa de dano, a chance de matar, se o ataque é pelas costas e o contra-ataque que você vai levar se ele sobreviver.
-- **Rodapé:** dica do que fazer no momento.
+- **Card da unidade:** passe o mouse sobre qualquer unidade para ver HP, MP, atributos (em verde/vermelho quando uma skill, a floresta ou o gelo os altera), o alcance em tiles, para onde ela está virada, o estado no turno e as **skills** dela com o custo: as que o MP que sobrou ainda paga ficam acesas, as outras apagadas e riscadas (ex.: dá para ver se o Assassino inimigo ainda tem MP para o Backstab).
+- **Card de terreno:** passe o mouse (ou o cursor, ou toque) sobre um tile de floresta (inclui arbustos, capim alto e entulho), porta, água ou gelo para ver o nome do terreno e as regras dele: custo de movimento (e quem paga menos), efeito na DEF e no alcance. Se houver uma unidade em cima, o card do terreno aparece logo acima do card dela. Chão comum, paredes, pedras e árvores não têm card.
+- **Prévia de combate:** no modo de ataque, passe o mouse sobre um inimigo ao alcance (ou toque nele uma vez) para ver a chance de acerto, a faixa de dano, a chance de matar, se o ataque é pelas costas e o contra-ataque que você vai levar se ele sobreviver. Vale em todos os modos (local, online e tutorial).
+- **Histórico de combate:** botão **Combat log** no canto inferior direito (ou **L**). Lista os ataques da partida por rodada, inclusive os do adversário: quem atacou quem, o dano, a chance de acerto que o ataque tinha, crítico, pelas costas, contra-ataques, queimaduras da Fireball, curas do Drain, MP roubado e unidades derrotadas. Fica aberto ou fechado como você deixou.
+- **Rodapé:** dica do que fazer no momento. Os atalhos da dica (selecionar, alcance de movimento/ataque, próxima unidade...) somem depois que você usa cada um, separadamente para mouse/teclado, toque e controle.
 
 ---
 
@@ -204,6 +207,8 @@ Cada ataque envolve três rolagens:
 
 Antes de cada partida você escolhe a classe de cada uma das 8 unidades do seu time, gastando até **100 pontos** (custo na tabela acima), e **onde cada uma começa**: em qualquer tile andável (sem porta) da sua **zona de posicionamento**, as **6 colunas** mais próximas da sua borda (Azul à esquerda, Vermelho à direita). Nos mapas em que o exército desenhado já começa mais à frente, a zona vai até ele. Para mover, selecione a unidade e clique num tile iluminado. O botão **Classic army** volta para o exército desenhado no mapa, que custa exatamente 100, nas posições originais. Todos os times passam pela tela de montagem, na ordem Azul → Vermelho, inclusive a CPU (e no CPU vs CPU, para testar listas de exército em partidas IA vs IA). Para a CPU a tela já vem com uma sugestão sorteada: cada posição mantém o papel da classe desenhada no mapa (de longe, alcance 2, flanco, corpo a corpo ou pesado) e recebe uma classe sorteada desse papel. O botão **Random** sorteia outra lista válida.
 
+**Exércitos salvos:** o botão **Saved armies** guarda até **5 exércitos com nome** (só as classes, na ordem dos slots) e carrega qualquer um deles em qualquer mapa com o mesmo número de unidades. Salvar com o nome de um exército que já existe substitui o antigo. Além disso, o último exército e as posições usados em cada mapa continuam sendo lembrados.
+
 ---
 
 ## Skills
@@ -245,6 +250,8 @@ Cada unidade possui **4 PM (Pontos de Magia)** e pode usar **uma skill por turno
 | **Água** | Ninguém atravessa andando. Ataques passam por cima dela. |
 | **Porta** | Todos passam, com custo 2. Bloqueia a linha de ataque, e quem está sobre ela não pode atacar nem ser atacado. |
 | **Árvores / Paredes** | Bloqueiam movimento e linha de ataque |
+
+> Na partida, o **card de terreno** mostra essas regras ao passar o mouse sobre floresta, porta, água ou gelo (ver "Interface").
 
 > O movimento é só nas 4 direções (sem diagonal). As unidades passam por cima de aliados, mas não param sobre eles; inimigos bloqueiam a passagem. O caminho escolhido é sempre o mais barato e, entre os de mesmo custo, o com menos curvas.
 

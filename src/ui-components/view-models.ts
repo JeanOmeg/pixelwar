@@ -75,7 +75,16 @@ export interface UnitView {
   movement: number
   facing: Facing
   status: UnitStatus[]
+  /** Skills of the unit and whether its MP still pays for them (an enemy's threat) */
+  skills: SkillChipView[]
   done: boolean
+}
+
+export interface SkillChipView {
+  name: string
+  cost: number
+  /** MP left covers the cost */
+  affordable: boolean
 }
 
 export interface ForecastView {
