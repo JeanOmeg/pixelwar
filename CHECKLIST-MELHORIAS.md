@@ -49,7 +49,7 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
 ## 3. Interface
 
 - [ ] ⭐ **Tela de Opções** (M): reunir volume de música/efeitos, velocidade, confirmar End turn, mostrar grade, animações reduzidas, tamanho do texto. Hoje as opções estão espalhadas (canto da tela, HUD, pausa).
-- [ ] ⭐ **Card de terreno** (M): mouse parado sobre um tile com regra especial mostra um card no mesmo estilo do `unit-card`, com o nome do terreno e as regras dele:
+- [x] ⭐ **Card de terreno** (M): mouse parado sobre um tile com regra especial mostra um card no mesmo estilo do `unit-card`, com o nome do terreno e as regras dele:
   - **Floresta:** custa 2 de movimento (Thief/Assassin/Ranger pagam 1), dá +2 DEF a quem está nela e custa 2 de alcance para Archer, Mage, Spearman, Ranger e Necromancer.
   - **Porta:** custa 2 de movimento, bloqueia ataques e quem está nela não ataca nem é atacado.
   - **Água:** não dá para andar nela; só Archer, Mage, Ranger e Necromancer atiram por cima.
@@ -58,6 +58,7 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
   - **Unidade em cima de um terreno especial:** o card do terreno aparece **acima** do card da unidade, os dois juntos.
   - **Sem card:** paredes, pedras, árvores e outros tiles que só bloqueiam (é óbvio), e chão comum.
   - **Implementação:** as regras vêm das flags do tile (`PathNodeComponent`: `iswalkable`, `isattackable`, `isfast`, `isdoor`, `iswater`, `isice`) e de `TERRAIN_RULES`, sem tabela por id de tile. Os textos entram em `en.ts` e `pt-br.ts`. No toque, o card aparece ao tocar no tile; no teclado e no controle, junto com o cursor.
+  - **Feito:** [src/terrain-info.ts](src/terrain-info.ts) (`terrainKind` pelas flags, `terrainView` com as classes lidas de `TERRAIN_RULES`), painel no `unit-card` empilhado acima do card da unidade (título com a cor do terreno), textos em `t().terrain`, `tests/terrain-info.test.ts`. Sem card na prévia de combate. Correção: na água **todos** atacam por cima (o `getRangeAttack` segue a linha); `targetsWater` só põe o tile de água no destaque. O card diz "Ataques passam por cima".
 - [ ] **Grade do tabuleiro opcional** (P): ajuda a contar tiles de alcance.
 - [ ] **Histórico de combate** (M): painel recolhível com "Archer → Cleric: 4 dano (68%)". O online já tem o `ActionFeed`; o local poderia reaproveitar.
 - [ ] **Prévia de combate em todos os modos** (P): ao escolher um ataque, o card com as probabilidades (acerto, crítico, dano, chance de matar e contra-ataque) deve aparecer no modo online e no tutorial, não só nas partidas locais. Hoje a prévia vem do `GameUI.forecastView` ([src/game-ui.ts](src/game-ui.ts)); falta investigar por que ela não aparece nesses dois modos (a causa ainda não foi verificada).

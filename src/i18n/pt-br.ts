@@ -355,6 +355,19 @@ export const ptBR: Strings = {
     critical: 'Crítico'
   },
 
+  terrain: {
+    names: { forest: 'Floresta', door: 'Porta', water: 'Água', ice: 'Gelo' },
+    and: 'e',
+    slowMove: fast => `Custa 2 de movimento. ${fast} pagam 1`,
+    defense: change => `${change} DEF para a unidade que estiver aqui`,
+    forestRange: classes => `${classes} pagam 2 pontos de alcance para atirar através dela`,
+    doorMove: 'Custa 2 de movimento',
+    doorAttacks: 'Bloqueia ataques: unidade na porta não ataca nem é atacada',
+    waterMove: 'Não dá para atravessar',
+    waterAttacks: 'Ataques passam por cima',
+    iceRange: 'Campo aberto para ataques: 1 ponto de alcance para todos'
+  },
+
   floating: {
     critical: n => `Crítico! ${n}`,
     backAttack: n => `Pelas costas! ${n}`,

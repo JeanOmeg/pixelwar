@@ -148,3 +148,6 @@ export interface UnitStatus {
   label: string
   hot?: boolean
 }
+
+/** Terrain card: name and rules of a special tile (built by terrain-info.ts) */
+export type { TerrainView, TerrainRuleView } from '../terrain-info'

@@ -361,6 +361,19 @@ export const en = {
     critical: 'Critical'
   },
 
+  terrain: {
+    names: { forest: 'Forest', door: 'Door', water: 'Water', ice: 'Ice' } as Record<'forest' | 'door' | 'water' | 'ice', string>,
+    and: 'and',
+    slowMove: (fast: string) => `Costs 2 movement. ${fast} pay 1`,
+    defense: (change: string) => `${change} DEF to the unit standing here`,
+    forestRange: (classes: string) => `${classes} pay 2 range points to shoot across it`,
+    doorMove: 'Costs 2 movement',
+    doorAttacks: 'Blocks attacks: a unit on a door can\'t attack or be attacked',
+    waterMove: 'Can\'t be crossed',
+    waterAttacks: 'Attacks fly over it',
+    iceRange: 'Open ground for attacks: 1 range point for everyone'
+  },
+
   floating: {
     critical: (n: number) => `Critical! ${n}`,
     backAttack: (n: number) => `Back attack! ${n}`,

@@ -1,10 +1,13 @@
-import { LitElement, css, html, nothing, svg } from 'lit'
+import { LitElement, css, html, nothing, svg, unsafeCSS } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { theme } from './theme'
 import { iconStyles } from './icons'
-import { ForecastView, UnitView, hpLevel, percent } from './view-models'
+import { ForecastView, TerrainView, UnitView, hpLevel, percent } from './view-models'
 import type { Facing } from '../combat'
 import { t } from '../i18n'
+
+/** Size of the unit and terrain cards relative to the rest of the match UI */
+const CARD_SIZE = unsafeCSS(0.8)
 
 const FACING_ROTATION: Record<Facing, number> = { up: 0, right: 90, down: 180, left: 270 }
 
@@ -66,6 +69,23 @@ export class UnitCard extends LitElement {
     .status .chip { color: var(--muted); }
     .status .chip.hot { color: var(--gold); }
 
+    /* Terrain card: above the unit card when a unit stands on special terrain */
+    .stack {
+      /* unit and terrain cards: 80% of the HUD size (the forecast keeps the full size) */
+      --u: calc(var(--s, 1) * var(--ui-scale, 1) * ${CARD_SIZE}px);
+      --t: calc(var(--u) * var(--text-scale, 1));
+      display: flex; flex-direction: column; gap: calc(10 * var(--u));
+    }
+    .terrain-forest { --team: #2f6b3a; }
+    .terrain-door { --team: #7a5230; }
+    .terrain-water { --team: #2a5a9a; }
+    .terrain-ice { --team: #4f8fa8; }
+    .rules { display: flex; flex-direction: column; gap: calc(8 * var(--u)); margin: 0; padding: calc(12 * var(--u)); list-style: none; }
+    .rules li { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: calc(8 * var(--u)); font-size: calc(15 * var(--t)); line-height: 1.2; }
+    .rules .icon { margin-top: calc(1 * var(--u)); color: var(--muted); }
+    .rules .up { color: var(--hp); }
+    .rules .down { color: var(--hp-low); }
+
     /* Forecast */
     .forecast { width: calc(560 * var(--u)); }
     .versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: calc(12 * var(--u)); padding: calc(12 * var(--u)); align-items: center; }
@@ -94,6 +114,10 @@ export class UnitCard extends LitElement {
 
   @property({ attribute: false })
     forecast: ForecastView | null = null
+
+  /** Rules of the hovered tile (forest, door, water, ice); null on plain ground */
+  @property({ attribute: false })
+    terrain: TerrainView | null = null
 
   @property({ reflect: true })
     side: 'left' | 'right' = 'left'
@@ -140,6 +164,19 @@ export class UnitCard extends LitElement {
             </div>
           ` : nothing}
         </div>
+      </div>
+    `
+  }
+
+  private renderTerrain(terrain: TerrainView) {
+    return html`
+      <div class="panel card terrain-${terrain.kind}">
+        <div class="panel-title"><span>${terrain.name}</span></div>
+        <ul class="rules">
+          ${terrain.rules.map(rule => html`
+            <li class="${rule.tone ?? ''}"><i class="icon i-${rule.icon}"></i><span>${rule.text}</span></li>
+          `)}
+        </ul>
       </div>
     `
   }
@@ -202,7 +239,13 @@ export class UnitCard extends LitElement {
 
   override render() {
     if (this.forecast) return this.renderForecast(this.forecast)
-    if (this.unit) return this.renderUnit(this.unit)
-    return nothing
+    if (!this.unit && !this.terrain) return nothing
+    // one wrapper, so GameUI measures both cards together (cardTopAvoiding)
+    return html`
+      <div class="stack">
+        ${this.terrain ? this.renderTerrain(this.terrain) : nothing}
+        ${this.unit ? this.renderUnit(this.unit) : nothing}
+      </div>
+    `
   }
 }

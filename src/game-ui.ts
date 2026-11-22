@@ -26,6 +26,7 @@ import { GameNotice, NoticeView } from './ui-components/game-notice'
 import { inputMode, onInputModeChange, padLabel, type GamepadMatch } from './gamepad/gamepad-input'
 import type { PadAnalog, PadButton } from './gamepad/controller'
 import { t } from './i18n'
+import { terrainView } from './terrain-info'
 
 export interface MenuOptions {
   move: () => void
@@ -613,6 +614,7 @@ export class GameUI implements GamepadMatch {
     if (this.matchOver || this.bannerActive) {
       this.card.unit = null
       this.card.forecast = null
+      this.card.terrain = null
       return
     }
 
@@ -620,17 +622,20 @@ export class GameUI implements GamepadMatch {
     const unit = this.hovered?.unit ?? this.menuUnit ?? this.selection.currentUnitSelection
     this.card.forecast = forecast
     this.card.unit = unit ? this.unitView(unit) : null
+    // rules of the tile under the pointer (or of the shown unit's tile), above the unit card
+    const terrainCell = this.hovered ?? unit?.cell
+    this.card.terrain = !forecast && terrainCell ? terrainView(terrainCell.pathNode) : null
 
     // under the bar of the unit's own team (Blue left, Red right; swapped on a mirrored board);
-    // the forecast goes under the attacker's team
-    const owner = forecast ? this.selection.currentUnitSelection : unit
+    // the forecast goes under the attacker's team, a terrain card alone under the team playing
+    const owner = (forecast ? this.selection.currentUnitSelection : unit)?.player ?? (this.card.terrain ? this.currentPlayer : null)
     if (this.touch && this.hovered) {
       // on a phone the card covers a big part of the map: keep it on the half
       // of the screen away from the tapped tile
       const cell = this.cellPageRect(this.hovered)
       this.card.side = (cell.left + cell.right) / 2 < window.innerWidth / 2 ? 'right' : 'left'
     } else if (owner) {
-      this.card.side = (this.teamOf(owner.player) === 'blue') !== this.board.mirrored ? 'left' : 'right'
+      this.card.side = (this.teamOf(owner) === 'blue') !== this.board.mirrored ? 'left' : 'right'
     }
 
     // the card sits over a corner of the map: if it would cover the unit under
