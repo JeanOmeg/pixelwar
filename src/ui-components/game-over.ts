@@ -1,7 +1,8 @@
 import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
-import { GameResultView, MatchStatsView, StandoutView } from './view-models'
+import { iconStyles } from './icons'
+import { AchievementView, GameResultView, MatchStatsView, StandoutView } from './view-models'
 import { t } from '../i18n'
 
 export type GameOverChoice = 'rematch' | 'menu'
@@ -9,7 +10,7 @@ export type GameOverChoice = 'rematch' | 'menu'
 /** End-of-match screen. `show()` resolves with the button the player picked. */
 @customElement('game-over')
 export class GameOver extends LitElement {
-  static styles = [theme, css`
+  static styles = [theme, iconStyles, css`
     :host { position: absolute; inset: 0; pointer-events: none; }
     .backdrop {
       position: absolute;
@@ -64,6 +65,22 @@ export class GameOver extends LitElement {
     .standout .what { font-size: calc(14 * var(--t)); color: var(--gold); }
     .standout .name { font-size: calc(18 * var(--t)); }
     .standout .detail { font-size: calc(14 * var(--t)); color: var(--muted); }
+    .achievements {
+      display: flex;
+      flex-direction: column;
+      gap: calc(6 * var(--u));
+      width: 100%;
+      box-sizing: border-box;
+      padding: calc(8 * var(--u)) calc(14 * var(--u));
+      border: calc(3 * var(--u)) solid var(--gold);
+      background: #1f1a0a;
+    }
+    .achievements .what { font-size: calc(16 * var(--t)); color: var(--gold); }
+    .achievement { display: flex; align-items: center; gap: calc(10 * var(--u)); animation: shine 600ms steps(6) both; }
+    @keyframes shine { from { opacity: 0; transform: scale(0.9); } }
+    .achievement .star { width: calc(22 * var(--u)); height: calc(22 * var(--u)); color: var(--gold); }
+    .achievement .name { font-size: calc(18 * var(--t)); }
+    .achievement .detail { font-size: calc(14 * var(--t)); color: var(--muted); }
   `]
 
   @state()
@@ -126,6 +143,20 @@ export class GameOver extends LitElement {
     `
   }
 
+  private renderAchievements(list: AchievementView[]) {
+    return html`
+      <div class="achievements">
+        <div class="what">${t().gameOver.achievementUnlocked(list.length)}</div>
+        ${list.map((achievement, i) => html`
+          <div class="achievement" style="animation-delay: ${600 + i * 250}ms">
+            <i class="icon i-star star" aria-hidden="true"></i>
+            <div><span class="name">${achievement.name}</span> <span class="detail">${achievement.description}</span></div>
+          </div>
+        `)}
+      </div>
+    `
+  }
+
   override render() {
     const result = this.result
     if (!result) return nothing
@@ -136,6 +167,7 @@ export class GameOver extends LitElement {
           <div class="title">${result.title}</div>
           <div class="subtitle">${result.subtitle}</div>
           ${result.stats ? this.renderStats(result.stats) : nothing}
+          ${result.achievements?.length ? this.renderAchievements(result.achievements) : nothing}
           <div class="actions">
             <button class="btn btn-solid" @click=${() => this.pick('rematch')}>${this.rematchLabel ?? t().gameOver.playAgain}</button>
             <button class="btn btn-solid" style="--team: #2a2d3a" @click=${() => this.pick('menu')}>${t().common.mainMenu}</button>

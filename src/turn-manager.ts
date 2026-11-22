@@ -15,6 +15,10 @@ import { className } from './unit-classes'
 import { unitClassOf } from './unit-types'
 import type { UnitType } from './config'
 import type { Unit } from './unit'
+import { MAPS, getMapInfo, spawnsWithArmies } from './maps'
+import { type MatchSummary, addMatch, loadRecords, saveRecords } from './records'
+import { type AchievementId, achievementText, loadUnlocked, newAchievements, unlock } from './achievements'
+import { todayKey } from './daily'
 
 /** From the last unit's death to the game over screen (its death animation takes ~0.8 s) */
 const GAME_OVER_DELAY_MS = 2000
@@ -127,6 +131,7 @@ export class TurnManager {
       this.ui.setTurn(this.currentPlayer, this.round, this.phasesLeft)
       if (!this.hooks.skipBanner?.()) await this.ui.playPhaseBanner(this.currentPlayer, this.round)
       if (this.aborted) return
+      this.stats.phaseStarted()
       await this.currentPlayer.turnStart()
       this.hooks.phaseStarted?.(this.currentPlayer)
 
@@ -198,9 +203,10 @@ export class TurnManager {
     this.hooks.ended?.(result)
     this.selectionManager.reset()
     MatchMusic.stop()
+    const earned = this.recordProgress(result)
     const view = this.hooks.describe?.(result) ?? this.describe(result)
     playSound(this.wonHere(result) ? Resources.VictorySound : Resources.DefeatSound)
-    const choice = await this.ui.showGameOver({ ...view, stats: this.statsView() })
+    const choice = await this.ui.showGameOver({ ...view, stats: this.statsView(), achievements: earned.map(achievementText) })
     if (this.hooks.finished) {
       await this.hooks.finished(result, choice)
     } else if (choice === 'rematch') {
@@ -208,6 +214,44 @@ export class TurnManager {
     } else {
       await this.returnToMainMenu()
     }
+  }
+
+  /**
+   * Records and achievements (Records screen): only with one player on this
+   * device, against the CPU, online or in the daily challenge (the tutorial
+   * only unlocks its own achievement). Returns the achievements this match
+   * unlocked.
+   */
+  private recordProgress(result: MatchResult): AchievementId[] {
+    const settings = this.level.settings
+    const locals = this.players.filter(p => p.isLocal)
+    if (locals.length !== 1 || result.reason === 'out-of-sync') return []
+    const me = locals[0]
+    const today = todayKey()
+    if (settings.mode === 'tutorial') return result.winner === me ? unlock(['graduate'], today) : []
+    if (settings.mode !== 'p1vscpu' && settings.mode !== 'online' && settings.mode !== 'daily') return []
+
+    const team = this.players.indexOf(me)
+    const army = spawnsWithArmies(getMapInfo(this.level.map), settings.armies, settings.placements)
+      .filter(spawn => spawn.team === team)
+      .map(spawn => unitClassOf(spawn.unitType))
+    const own = this.stats.team(me)
+    const match: MatchSummary = {
+      bucket: settings.mode === 'online' ? 'online' : settings.difficulty ?? 'normal',
+      mapId: this.level.map.id,
+      outcome: !result.winner ? 'drawn' : result.winner === me ? 'won' : 'lost',
+      rounds: this.playedRound,
+      army,
+      lost: own.lost,
+      survivors: this.level.board.getLivingUnits().filter(u => u.player === me).length,
+      kills: own.kills,
+      damage: own.damage,
+      feats: this.stats.feat(me),
+      daily: settings.mode === 'daily' ? settings.daily : undefined
+    }
+    const records = addMatch(loadRecords(), match)
+    saveRecords(records)
+    return unlock(newAchievements({ match, records, today, mapCount: MAPS.length }, loadUnlocked()), today)
   }
 
   /**

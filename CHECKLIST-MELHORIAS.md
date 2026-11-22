@@ -71,9 +71,12 @@ Esforço: **P** = pequeno (horas), **M** = médio (1–2 dias), **G** = grande (
 
 ## 4. Retenção / meta
 
-- [ ] **Estatísticas locais** (P): vitórias por mapa, dificuldade e classe em `localStorage`, numa tela "Records".
-- [ ] **Conquistas** (M): "vença sem perder unidade", "3 ataques pelas costas em um turno", "vença no Hard em cada mapa".
-- [ ] **Desafio diário** (M): mapa + exércitos sorteados com a data como semente, todos jogam o mesmo.
+- [x] **Estatísticas locais** (P): vitórias por mapa, dificuldade e classe em `localStorage`, numa tela "Records".
+  - **Feito:** botão **Records** no título ([src/records.ts](src/records.ts) + [records-page.ts](src/ui-components/records-page.ts)): totais (partidas, vitórias, derrotas, empates, aproveitamento, abates, dano, vitória mais rápida) e tabelas por dificuldade (Easy/Normal/Hard/Online), por mapa e por classe (partidas com a classe no exército). **Decidido:** só contam partidas com um jogador neste aparelho — contra a CPU, online e desafio diário; PvP local e CPU × CPU não. Sair pela pausa não conta. Gravado no `TurnManager.recordProgress`, antes da tela de fim.
+- [x] **Conquistas** (M): "vença sem perder unidade", "3 ataques pelas costas em um turno", "vença no Hard em cada mapa".
+  - **Feito:** 17 conquistas ([src/achievements.ts](src/achievements.ts)), anunciadas na tela de fim (um quadro dourado com todas as novas) e listadas na tela Records com a data ou o progresso (mapas, mapas no Hard, classes, 25 vitórias, sequência diária). As façanhas da partida (críticos, ataques pelas costas por fase, abate no contra-ataque, abate de vida cheia num golpe) saem do `MatchStats` (`feat`). Ícone de estrela novo em `icons.ts`. Lista no README.
+- [x] **Desafio diário** (M): mapa + exércitos sorteados com a data como semente, todos jogam o mesmo.
+  - **Feito:** botão **Daily challenge** no título ([src/daily.ts](src/daily.ts)): a data local vira semente (`seededRandom`) do mapa e dos dois exércitos (`buildCpuArmy`, mesmos papéis do mapa, até 100 pts). **Decidido:** jogador de Azul, CPU no **Hard** (`DAILY_DIFFICULTY`), posições do mapa, sem trocar exército nem posição, tentativas ilimitadas. A tela mostra mapa, os dois exércitos, o melhor resultado do dia e a sequência de dias vencidos. Modo novo `'daily'` (fora da tela de modo); "Play again" repete o mesmo desafio.
 
 ---
 

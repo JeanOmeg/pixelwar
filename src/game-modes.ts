@@ -3,7 +3,8 @@ import type { Difficulty } from './ai/weights'
 import type { Placement } from './deploy'
 import { t } from './i18n'
 
-export type GameMode = 'tutorial' | 'p1vscpu' | 'p1vsp2' | 'cpuvscpu' | 'online'
+/** 'daily' (daily challenge, daily.ts) is started from the title screen, not from the mode screen */
+export type GameMode = 'tutorial' | 'p1vscpu' | 'p1vsp2' | 'cpuvscpu' | 'online' | 'daily'
 
 export interface GameModeDefinition {
   id: GameMode
@@ -42,4 +43,6 @@ export interface MatchSettings {
   placements?: (Placement | null)[]
   /** How well the CPU plays (missing = normal) */
   difficulty?: Difficulty
+  /** Daily challenge: its date (YYYY-MM-DD), for the records */
+  daily?: string
 }

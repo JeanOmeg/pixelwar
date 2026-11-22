@@ -49,7 +49,37 @@ Dois jogadores, cada um no seu aparelho, mais até 8 espectadores. Não há serv
 
 **Tutorial:** cada passo aparece num balão embaixo da tela, com a unidade e o tile marcados em dourado; só a ação pedida funciona (o item certo do menu fica destacado). Passos só de texto avançam com **Next** (ou Enter). Tudo é roteirizado, inclusive os dados e as jogadas da CPU, então a partida é sempre a mesma (5 rodadas). A velocidade fica em x1 e o End turn não pede confirmação. **Skip tutorial** (ou Main menu na pausa) volta ao menu.
 
-O menu também tem **How to play** (regras resumidas), **Units** (as 14 classes, com atributos, custo e habilidades) e **Credits**.
+O menu também tem **How to play** (regras resumidas), **Units** (as 14 classes, com atributos, custo e habilidades), **Records** e **Credits**.
+
+### Desafio diário
+
+**Daily challenge**, no menu inicial: a data do dia sorteia o mapa e os **dois exércitos** (cada vaga mantém o papel da unidade desenhada no mapa, até 100 pontos), então todo mundo joga a mesma partida naquele dia. Você é o Azul, a CPU joga no **Hard**, as posições são as do mapa e não dá para trocar nada. Dá para tentar quantas vezes quiser: fica guardado o melhor resultado do dia (vitória, depois menos rodadas, depois menos perdas) e a **sequência** de dias seguidos vencidos. Um desafio novo começa à meia-noite (horário do aparelho).
+
+### Records e conquistas
+
+**Records**, no menu inicial: partidas, vitórias, derrotas, empates, aproveitamento, abates, dano e vitória mais rápida, separados por dificuldade (Easy/Normal/Hard/Online), por mapa e por classe (partidas com a classe no seu exército). Só contam partidas com **um** jogador neste aparelho: contra a CPU, online e o desafio diário (Player vs Player e CPU vs CPU não contam; sair pela pausa também não). Tudo fica salvo só no navegador.
+
+**Conquistas** (17, na mesma tela, com a data em que saíram; as longas mostram o progresso). Aparecem na tela de fim quando são desbloqueadas:
+
+| Conquista | Como |
+|---|---|
+| Graduate | Terminar o tutorial |
+| First victory | Vencer uma partida (CPU ou online) |
+| Flawless | Vencer sem perder nenhuma unidade |
+| Last one standing | Vencer com só uma unidade viva |
+| Blitz | Vencer em até 10 rodadas |
+| Backstabber | 3 ataques pelas costas no mesmo turno |
+| Lucky star | 4 críticos numa partida (o do Special não conta) |
+| One shot | Derrotar uma unidade de vida cheia com um golpe só |
+| Payback | Derrotar um inimigo com um contra-ataque |
+| Hardened | Vencer a CPU no Hard |
+| Cartographer | Vencer em todos os mapas |
+| Conqueror | Vencer no Hard em todos os mapas |
+| Jack of all trades | Vencer com cada uma das 14 classes no exército |
+| Veteran | 25 vitórias |
+| Duelist | Vencer uma partida online |
+| Challenger | Vencer um desafio diário |
+| Daily habit | Vencer o desafio diário 3 dias seguidos |
 
 ### Mapas
 

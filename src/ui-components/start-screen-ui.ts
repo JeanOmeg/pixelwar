@@ -25,11 +25,13 @@ import type { UnitClass } from '../path-finding/terrain-rules'
 import type { UnitType } from '../config'
 import { LANGUAGES, Language, language, onLanguageChange, setLanguage, t } from '../i18n'
 import { flagIcon } from './flags'
+import { DailyView, recordsStyles, renderDaily, renderRecords } from './records-page'
+import { type DailyChallenge, dailyChallenge, dailySettings, todayKey } from '../daily'
 
 /** Each language named in itself, so anyone finds their own */
 const LANGUAGE_NAMES: Record<Language, string> = { en: 'English', 'pt-BR': 'Português (Brasil)' }
 
-type Screen = 'title' | 'mode' | 'map' | 'army' | 'online' | 'howto' | 'units' | 'credits'
+type Screen = 'title' | 'mode' | 'map' | 'army' | 'online' | 'howto' | 'units' | 'credits' | 'daily' | 'records'
 
 const PREF_MODE = 'pixelfantasywar.mode'
 const PREF_DIFFICULTY = 'pixelfantasywar.difficulty'
@@ -54,7 +56,7 @@ function writePref(key: string, value: string) {
  */
 @customElement('start-screen-ui')
 export class StartScreenUi extends LitElement {
-  static styles = [theme, pageStyles, css`
+  static styles = [theme, pageStyles, recordsStyles, css`
     :host {
       position: fixed;
       inset: 0;
@@ -90,9 +92,12 @@ export class StartScreenUi extends LitElement {
     .armies .vs { font-size: calc(40 * var(--t)); color: var(--gold); margin: 0 calc(24 * var(--u)) calc(16 * var(--u)); text-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000; }
     @keyframes bob { 50% { transform: translateY(calc(-4 * var(--u))); } }
 
-    .menu { display: flex; flex-direction: column; gap: calc(12 * var(--u)); padding: calc(18 * var(--u)); width: calc(440 * var(--u)); }
+    .menu { display: flex; flex-direction: column; gap: calc(12 * var(--u)); padding: calc(18 * var(--u)); width: calc(600 * var(--u)); }
     .menu .btn { font-size: calc(32 * var(--t)); padding: calc(12 * var(--u)) calc(18 * var(--u)); --team: #2a2d3a; }
     .menu .btn.primary { --team: var(--blue); font-size: calc(40 * var(--t)); }
+    .menu .btn.daily { --team: #6b5300; }
+    .menu .pair { display: grid; grid-template-columns: 1fr 1fr; gap: calc(12 * var(--u)); }
+    .menu .pair .btn { font-size: calc(26 * var(--t)); white-space: nowrap; }
 
     /* Mode */
     .mode-screen { display: flex; flex-direction: column; align-items: center; gap: calc(28 * var(--u)); }
@@ -441,9 +446,13 @@ export class StartScreenUi extends LitElement {
         </div>
         <nav class="panel menu">
           <button class="btn btn-solid primary" @click=${() => this.go('mode')}>${t().title.play}</button>
-          <button class="btn btn-solid" @click=${() => this.go('howto')}>${t().title.howToPlay}</button>
-          <button class="btn btn-solid" @click=${() => this.go('units')}>${t().title.units}</button>
-          <button class="btn btn-solid" @click=${() => this.go('credits')}>${t().title.credits}</button>
+          <button class="btn btn-solid daily" @click=${() => this.go('daily')}>${t().title.dailyChallenge}</button>
+          <div class="pair">
+            <button class="btn btn-solid" @click=${() => this.go('howto')}>${t().title.howToPlay}</button>
+            <button class="btn btn-solid" @click=${() => this.go('units')}>${t().title.units}</button>
+            <button class="btn btn-solid" @click=${() => this.go('records')}>${t().title.records}</button>
+            <button class="btn btn-solid" @click=${() => this.go('credits')}>${t().title.credits}</button>
+          </div>
         </nav>
       </div>
     `
@@ -467,7 +476,8 @@ export class StartScreenUi extends LitElement {
       p1vscpu: ['FighterA', 'BarbarianB'],
       p1vsp2: ['ThiefA', 'ThiefB'],
       cpuvscpu: ['MageA', 'ArcherB'],
-      online: ['RangerA', 'AssassinB']
+      online: ['RangerA', 'AssassinB'],
+      daily: ['PaladinA', 'BerserkerB']
     }
     const tutorialDone = isTutorialDone()
     return html`
@@ -514,6 +524,56 @@ export class StartScreenUi extends LitElement {
     `
   }
 
+  /** Today's challenge, drawn once per date (it doesn't change while the menu is open) */
+  private daily: DailyChallenge | null = null
+
+  private todayChallenge(): DailyChallenge {
+    const today = todayKey()
+    if (this.daily?.date !== today) {
+      this.daily = dailyChallenge(today, MAPS.map(map => {
+        const info = getMapInfo(map)
+        return { id: map.id, classic: [defaultArmy(info, 0), defaultArmy(info, 1)] }
+      }))
+    }
+    return this.daily
+  }
+
+  /** Daily challenge: straight into the match, nothing to choose */
+  private async launchDaily() {
+    const challenge = this.todayChallenge()
+    const map = findMap(challenge.mapId)
+    if (!map || this.leaving) return
+    Resources.SelectSound.play()
+    this.leaving = true
+    await new Promise(resolve => window.setTimeout(resolve, 650))
+    this.engine.goToScene(sceneNameOf(map), { sceneActivationData: dailySettings(challenge) })
+    this.remove()
+  }
+
+  private renderDailyPage() {
+    const challenge = this.todayChallenge()
+    const map = findMap(challenge.mapId)
+    if (!map) return html``
+    const view: DailyView = {
+      date: challenge.date,
+      mapName: map.name,
+      mapDescription: map.description,
+      preview: mapPreview(map, false),
+      difficulty: DIFFICULTIES[challenge.difficulty].label,
+      armies: challenge.armies
+    }
+    return html`
+      <div class="screen panel page">
+        <div class="panel-title">${t().title.dailyChallenge}</div>
+        <div class="page-body">${renderDaily(view)}</div>
+        <div class="page-footer">
+          <button class="btn btn-solid" @click=${() => this.go('title')}>${t().common.back}</button>
+          <button class="btn btn-solid primary" @click=${() => void this.launchDaily()}>${t().daily.start}</button>
+        </div>
+      </div>
+    `
+  }
+
   private renderScreen() {
     switch (this.screen) {
     case 'title': return this.renderTitle()
@@ -542,6 +602,8 @@ export class StartScreenUi extends LitElement {
     case 'howto': return this.renderPage(t().title.howToPlay, renderHowToPlay())
     case 'units': return this.renderPage(t().title.units, renderUnits())
     case 'credits': return this.renderPage(t().title.credits, renderCredits())
+    case 'records': return this.renderPage(t().title.records, renderRecords(todayKey()))
+    case 'daily': return this.renderDailyPage()
     }
   }
 

@@ -1,6 +1,7 @@
 import type { UnitClass } from '../unit-types'
 import type { SkillId } from '../skills'
 import type { GameMode } from '../game-modes'
+import type { AchievementId } from '../achievements'
 
 /**
  * English texts: the source of every key. `pt-br.ts` must have the same shape
@@ -67,6 +68,8 @@ export const en = {
     howToPlay: 'How to play',
     units: 'Units',
     credits: 'Credits',
+    dailyChallenge: 'Daily challenge',
+    records: 'Records',
     language: 'Language'
   },
 
@@ -82,7 +85,8 @@ export const en = {
     online: { title: 'Online', description: 'Play or watch a friend on another device.', sides: ['You', 'Friend'] },
     p1vscpu: { title: 'Player vs CPU', description: 'Command the blue army against the computer.', sides: ['You', 'CPU'] },
     p1vsp2: { title: 'Player vs Player', description: 'Two players take turns on the same device.', sides: ['P1', 'P2'] },
-    cpuvscpu: { title: 'CPU vs CPU', description: 'Sit back and watch two AI armies fight it out.', sides: ['CPU', 'CPU'] }
+    cpuvscpu: { title: 'CPU vs CPU', description: 'Sit back and watch two AI armies fight it out.', sides: ['CPU', 'CPU'] },
+    daily: { title: 'Daily challenge', description: 'Today\'s map and armies, the same for everybody.', sides: ['You', 'CPU'] }
   } as Record<GameMode, { title: string, description: string, sides: [string, string] }>,
 
   difficulties: {
@@ -459,8 +463,67 @@ export const en = {
     mvp: 'MVP',
     bestCritical: 'Strongest critical',
     mvpDetail: (kills: number, damage: number) => `${kills} kill${s(kills)} · ${damage} damage`,
-    damageDetail: (damage: number) => `${damage} damage`
+    damageDetail: (damage: number) => `${damage} damage`,
+    achievementUnlocked: (n: number) => n === 1 ? 'Achievement unlocked!' : `${n} achievements unlocked!`
   },
+
+  daily: {
+    date: (date: string) => `Challenge of ${date}`,
+    intro: 'Everybody gets the same map and armies today. Your army is drawn for you: no changes, no redeploy.',
+    cpu: (difficulty: string) => `CPU: ${difficulty}`,
+    yourArmy: 'Your army',
+    enemyArmy: 'Enemy army',
+    todayBest: 'Your best today',
+    notPlayed: 'Not played yet',
+    bestWon: (rounds: number, lost: number) => `Won in ${rounds} round${s(rounds)}, ${lost} unit${s(lost)} lost`,
+    notWon: 'Not won yet - try again!',
+    streak: (days: number) => `Streak: ${days} day${s(days)}`,
+    start: 'Start',
+    newEveryDay: 'A new challenge every day at midnight.'
+  },
+
+  records: {
+    empty: 'Play against the CPU, online or the daily challenge to fill this page.',
+    played: 'Played',
+    won: 'Won',
+    lost: 'Lost',
+    drawn: 'Draws',
+    winRate: 'Win rate',
+    kills: 'Kills',
+    damage: 'Damage dealt',
+    fastestWin: 'Fastest win',
+    rounds: (n: number) => `${n} round${s(n)}`,
+    none: '-',
+    byDifficulty: 'By difficulty',
+    online: 'Online',
+    byMap: 'By map',
+    byClass: 'By class',
+    classHint: 'Matches with the class in your army',
+    achievements: 'Achievements',
+    unlocked: (n: number, total: number) => `${n} of ${total} unlocked`,
+    progress: (n: number, total: number) => `${n}/${total}`,
+    unlockedOn: (date: string) => `Unlocked on ${date}`
+  },
+
+  achievements: {
+    graduate: { name: 'Graduate', description: 'Finish the tutorial.' },
+    'first-win': { name: 'First victory', description: 'Win a match against the CPU or online.' },
+    flawless: { name: 'Flawless', description: 'Win without losing a single unit.' },
+    'last-stand': { name: 'Last one standing', description: 'Win with only one unit left.' },
+    blitz: { name: 'Blitz', description: 'Win in 10 rounds or fewer.' },
+    backstabber: { name: 'Backstabber', description: 'Land 3 back attacks in a single turn.' },
+    lucky: { name: 'Lucky star', description: 'Land 4 critical hits in one match (Special doesn\'t count).' },
+    'one-shot': { name: 'One shot', description: 'Defeat a unit at full HP with a single strike.' },
+    'counter-kill': { name: 'Payback', description: 'Defeat an enemy with a counterattack.' },
+    'hard-win': { name: 'Hardened', description: 'Beat the CPU on Hard.' },
+    'every-map': { name: 'Cartographer', description: 'Win on every map.' },
+    'hard-every-map': { name: 'Conqueror', description: 'Win on Hard on every map.' },
+    'every-class': { name: 'Jack of all trades', description: 'Win with each of the 14 classes in your army.' },
+    veteran: { name: 'Veteran', description: 'Win 25 matches.' },
+    'online-win': { name: 'Duelist', description: 'Win an online match.' },
+    'daily-win': { name: 'Challenger', description: 'Win a daily challenge.' },
+    'daily-streak': { name: 'Daily habit', description: 'Win the daily challenge 3 days in a row.' }
+  } as Record<AchievementId, { name: string, description: string }>,
 
   pause: {
     title: 'Paused',

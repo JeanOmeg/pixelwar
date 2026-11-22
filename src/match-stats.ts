@@ -15,6 +15,18 @@ export interface TeamRecord {
   lost: number
 }
 
+/** Feats of one team, for the achievements (achievements.ts) */
+export interface FeatRecord {
+  /** Real critical hits (not the ones forced by Special) */
+  criticals: number
+  /** Most back attacks (not counterattacks) in a single phase of this team */
+  backAttacksInPhase: number
+  /** Enemies killed by a counterattack */
+  counterKills: number
+  /** Enemies killed at full HP by a single strike */
+  oneShots: number
+}
+
 export interface CriticalRecord {
   unit: Unit
   damage: number
@@ -29,6 +41,14 @@ export class MatchStats {
   private units = new Map<Unit, UnitRecord>()
   private teams = new Map<Player, TeamRecord>()
   bestCritical: CriticalRecord | null = null
+  private feats = new Map<Player, FeatRecord>()
+  /** Back attacks of each team in the current phase */
+  private phaseBackAttacks = new Map<Player, number>()
+
+  /** A new phase starts (TurnManager): back attacks count per phase */
+  phaseStarted() {
+    this.phaseBackAttacks.clear()
+  }
 
   record(event: AttackEvent, result: AttackEventResult) {
     const attacker = event.kind === 'strike' ? event.attacker : event.kind === 'splash' ? event.by : null
@@ -46,6 +66,32 @@ export class MatchStats {
     if (event.kind === 'strike' && event.outcome.critical && event.outcome.damage > (this.bestCritical?.damage ?? 0)) {
       this.bestCritical = { unit: attacker, damage: event.outcome.damage }
     }
+    if (event.kind === 'strike') this.recordFeats(event, result)
+  }
+
+  private recordFeats(event: Extract<AttackEvent, { kind: 'strike' }>, result: AttackEventResult) {
+    const feats = this.featRecord(event.attacker.player)
+    if (event.outcome.critical && !event.forced) feats.criticals++
+    if (event.counter && result.killed) feats.counterKills++
+    if (!event.counter && result.killed && result.dealt >= event.defender.unitConfig.health) feats.oneShots++
+    if (!event.counter && event.outcome.backAttack) {
+      const count = (this.phaseBackAttacks.get(event.attacker.player) ?? 0) + 1
+      this.phaseBackAttacks.set(event.attacker.player, count)
+      feats.backAttacksInPhase = Math.max(feats.backAttacksInPhase, count)
+    }
+  }
+
+  feat(player: Player): FeatRecord {
+    return this.feats.get(player) ?? { criticals: 0, backAttacksInPhase: 0, counterKills: 0, oneShots: 0 }
+  }
+
+  private featRecord(player: Player): FeatRecord {
+    let record = this.feats.get(player)
+    if (!record) {
+      record = { criticals: 0, backAttacksInPhase: 0, counterKills: 0, oneShots: 0 }
+      this.feats.set(player, record)
+    }
+    return record
   }
 
   /** A unit dropped to 0 HP (whatever killed it) */

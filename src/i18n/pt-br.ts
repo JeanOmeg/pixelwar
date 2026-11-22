@@ -61,6 +61,8 @@ export const ptBR: Strings = {
     howToPlay: 'Como jogar',
     units: 'Unidades',
     credits: 'Créditos',
+    dailyChallenge: 'Desafio diário',
+    records: 'Recordes',
     language: 'Idioma'
   },
 
@@ -76,7 +78,8 @@ export const ptBR: Strings = {
     online: { title: 'Online', description: 'Jogue ou assista a um amigo em outro aparelho.', sides: ['Você', 'Amigo'] },
     p1vscpu: { title: 'Jogador vs IA', description: 'Comande o exército azul contra a IA.', sides: ['Você', 'IA'] },
     p1vsp2: { title: 'Jogador vs Jogador', description: 'Dois jogadores se revezam no mesmo dispositivo.', sides: ['J1', 'J2'] },
-    cpuvscpu: { title: 'IA vs IA', description: 'Relaxe e assista a dois exércitos da IA se enfrentarem.', sides: ['IA', 'IA'] }
+    cpuvscpu: { title: 'IA vs IA', description: 'Relaxe e assista a dois exércitos da IA se enfrentarem.', sides: ['IA', 'IA'] },
+    daily: { title: 'Desafio diário', description: 'O mapa e os exércitos de hoje, iguais para todos.', sides: ['Você', 'IA'] }
   },
 
   difficulties: {
@@ -451,7 +454,66 @@ export const ptBR: Strings = {
     mvp: 'Destaque',
     bestCritical: 'Crítico mais forte',
     mvpDetail: (kills, damage) => `${kills} abate${s(kills)} · ${damage} de dano`,
-    damageDetail: damage => `${damage} de dano`
+    damageDetail: damage => `${damage} de dano`,
+    achievementUnlocked: n => n === 1 ? 'Conquista desbloqueada!' : `${n} conquistas desbloqueadas!`
+  },
+
+  daily: {
+    date: date => `Desafio de ${date}`,
+    intro: 'Hoje todo mundo recebe o mesmo mapa e os mesmos exércitos. Seu exército vem sorteado: sem trocas nem reposicionamento.',
+    cpu: difficulty => `IA: ${difficulty}`,
+    yourArmy: 'Seu exército',
+    enemyArmy: 'Exército inimigo',
+    todayBest: 'Seu melhor hoje',
+    notPlayed: 'Ainda não jogado',
+    bestWon: (rounds, lost) => `Vitória em ${rounds} rodada${s(rounds)}, ${lost} unidade${s(lost)} perdida${s(lost)}`,
+    notWon: 'Ainda sem vitória: tente de novo!',
+    streak: days => `Sequência: ${days} dia${s(days)}`,
+    start: 'Começar',
+    newEveryDay: 'Um desafio novo todo dia à meia-noite.'
+  },
+
+  records: {
+    empty: 'Jogue contra a IA, online ou o desafio diário para preencher esta página.',
+    played: 'Partidas',
+    won: 'Vitórias',
+    lost: 'Derrotas',
+    drawn: 'Empates',
+    winRate: 'Aproveitamento',
+    kills: 'Abates',
+    damage: 'Dano causado',
+    fastestWin: 'Vitória mais rápida',
+    rounds: n => `${n} rodada${s(n)}`,
+    none: '-',
+    byDifficulty: 'Por dificuldade',
+    online: 'Online',
+    byMap: 'Por mapa',
+    byClass: 'Por classe',
+    classHint: 'Partidas com a classe no seu exército',
+    achievements: 'Conquistas',
+    unlocked: (n, total) => `${n} de ${total} desbloqueadas`,
+    progress: (n, total) => `${n}/${total}`,
+    unlockedOn: date => `Desbloqueada em ${date}`
+  },
+
+  achievements: {
+    graduate: { name: 'Formado', description: 'Termine o tutorial.' },
+    'first-win': { name: 'Primeira vitória', description: 'Vença uma partida contra a IA ou online.' },
+    flawless: { name: 'Impecável', description: 'Vença sem perder nenhuma unidade.' },
+    'last-stand': { name: 'Último de pé', description: 'Vença com só uma unidade viva.' },
+    blitz: { name: 'Blitz', description: 'Vença em 10 rodadas ou menos.' },
+    backstabber: { name: 'Traiçoeiro', description: 'Acerte 3 ataques pelas costas em um só turno.' },
+    lucky: { name: 'Estrela da sorte', description: 'Acerte 4 críticos em uma partida (o Especial não conta).' },
+    'one-shot': { name: 'Golpe único', description: 'Derrote uma unidade de vida cheia com um só golpe.' },
+    'counter-kill': { name: 'Troco', description: 'Derrote um inimigo com um contra-ataque.' },
+    'hard-win': { name: 'Calejado', description: 'Vença a IA no Difícil.' },
+    'every-map': { name: 'Cartógrafo', description: 'Vença em todos os mapas.' },
+    'hard-every-map': { name: 'Conquistador', description: 'Vença no Difícil em todos os mapas.' },
+    'every-class': { name: 'Versátil', description: 'Vença com cada uma das 14 classes no seu exército.' },
+    veteran: { name: 'Veterano', description: 'Vença 25 partidas.' },
+    'online-win': { name: 'Duelista', description: 'Vença uma partida online.' },
+    'daily-win': { name: 'Desafiante', description: 'Vença um desafio diário.' },
+    'daily-streak': { name: 'Hábito diário', description: 'Vença o desafio diário 3 dias seguidos.' }
   },
 
   pause: {

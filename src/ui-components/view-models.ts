@@ -115,6 +115,13 @@ export interface GameResultView {
   team: Team | null
   /** Damage, kills, MVP... (not shown when missing) */
   stats?: MatchStatsView
+  /** Achievements this match unlocked (achievements.ts) */
+  achievements?: AchievementView[]
+}
+
+export interface AchievementView {
+  name: string
+  description: string
 }
 
 export interface TeamStatsView {
