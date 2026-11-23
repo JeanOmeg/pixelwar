@@ -138,7 +138,7 @@ function keepScreenFitted() {
 /**
  * Touch devices: marks the page (`html.touch`) and keeps the canvas fitted to
  * the screen. Fullscreen is never forced: the player chooses it with the
- * corner button (<audio-menu>), which is always visible.
+ * fullscreen option (Options screen and pause menu).
  */
 export function setupTouchDevice() {
   if (!isTouchDevice()) return

@@ -68,7 +68,17 @@ export const en = {
     credits: 'Credits',
     dailyChallenge: 'Daily challenge',
     records: 'Records',
-    language: 'Language'
+    language: 'Language',
+    options: 'Options'
+  },
+
+  options: {
+    on: 'On',
+    off: 'Off',
+    interface: 'Match interface',
+    shown: 'Shown',
+    hidden: 'Hidden',
+    interfaceNote: 'Team bars, hints, unit card and combat log. While hidden, the eye button in the corner (or H) brings them back.'
   },
 
   modes: {
@@ -253,8 +263,6 @@ export const en = {
     undo: 'Undo move',
     wait: 'Wait',
     showInterface: 'Show interface (H)',
-    hideInterface: 'Hide interface (H)',
-    toggleInterface: 'Hide or show the interface',
     done: 'Done',
     moved: 'Moved',
     attacked: 'Attacked',
@@ -338,7 +346,7 @@ export const en = {
   },
 
   terrain: {
-    names: { forest: 'Forest', door: 'Door', water: 'Water', ice: 'Ice' } as Record<'forest' | 'door' | 'water' | 'ice', string>,
+    names: { forest: 'Forest', door: 'Door', water: 'Water', ice: 'Ice', obstacle: 'Obstacle' } as Record<'forest' | 'door' | 'water' | 'ice' | 'obstacle', string>,
     and: 'and',
     slowMove: (fast: string) => `Costs 2 movement. ${fast} pay 1`,
     defense: (change: string) => `${change} DEF to the unit standing here`,
@@ -347,6 +355,7 @@ export const en = {
     doorAttacks: 'Blocks attacks: a unit on a door can\'t attack or be attacked',
     waterMove: 'Can\'t be crossed',
     waterAttacks: 'Attacks fly over it',
+    obstacleAttacks: 'Blocks attacks: nobody can shoot through it',
     iceRange: 'Open ground for attacks: 1 range point for everyone'
   },
 

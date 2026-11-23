@@ -5,8 +5,8 @@ import { UNIT_CLASSES } from './unit-types'
 import { className } from './unit-classes'
 import { t } from './i18n'
 
-/** Terrain with rules of its own (walls, rocks and plain ground have no card) */
-export type TerrainKind = 'forest' | 'door' | 'water' | 'ice'
+/** Terrain with rules of its own (plain ground has no card) */
+export type TerrainKind = 'forest' | 'door' | 'water' | 'ice' | 'obstacle'
 
 export interface TerrainRuleView {
   icon: 'boot' | 'shield' | 'bow'
@@ -30,6 +30,7 @@ export function terrainKind(node: PathNodeComponent): TerrainKind | null {
   if (node.isDoor) return 'door'
   if (node.isIce) return 'ice'
   if (node.isWater && !node.isWalkable) return 'water'
+  if (!node.isWalkable) return 'obstacle'
   if (isForest(node)) return 'forest'
   return null
 }
@@ -65,6 +66,12 @@ export function terrainView(node: PathNodeComponent): TerrainView | null {
     rules.push(
       { icon: 'boot', text: text.waterMove },
       { icon: 'bow', text: text.waterAttacks }
+    )
+    break
+  case 'obstacle':
+    rules.push(
+      { icon: 'boot', text: text.waterMove },
+      { icon: 'bow', text: node.isAttackable ? text.waterAttacks : text.obstacleAttacks }
     )
     break
   case 'ice':

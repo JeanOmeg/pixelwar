@@ -2,13 +2,14 @@ import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { theme } from './theme'
 import { t } from '../i18n'
-import './volume-controls'
+import './settings-controls'
 
 export type PauseChoice = 'resume' | 'quit'
 
 /**
  * Pause dialog shown over the match. `show()` resolves with what the player
  * picked: keep playing, or leave the match for the main menu (asks twice).
+ * Also holds the settings (sound, fullscreen, interface), as in Options.
  */
 @customElement('pause-menu')
 export class PauseMenu extends LitElement {
@@ -32,7 +33,9 @@ export class PauseMenu extends LitElement {
     .resume { --team: var(--blue); }
     .quit { --team: #2a2d3a; }
     .quit.confirm { --team: var(--red); }
-    volume-controls { padding: calc(6 * var(--u)) calc(2 * var(--u)); border-top: calc(2 * var(--u)) solid #3d4155; margin-top: calc(4 * var(--u)); }
+    settings-controls { padding-top: calc(14 * var(--u)); border-top: calc(2 * var(--u)) solid #3d4155; margin-top: calc(4 * var(--u)); }
+    .dialog { max-height: 94vh; display: flex; flex-direction: column; }
+    .body { overflow-y: auto; }
     .warning { text-align: center; font-size: calc(14 * var(--t)); color: var(--muted); }
   `]
 
@@ -103,7 +106,7 @@ export class PauseMenu extends LitElement {
             ${this.emotesMuted !== null ? html`
               <button class="btn btn-solid quit" @click=${() => this.dispatchEvent(new Event('toggle-emotes'))}>${this.emotesMuted ? t().pause.showEmotes : t().pause.muteEmotes}</button>
             ` : nothing}
-            <volume-controls></volume-controls>
+            <settings-controls></settings-controls>
             <div class="warning">${this.confirming ? this.quitWarning ?? t().pause.quitWarning : ''}</div>
           </div>
         </div>

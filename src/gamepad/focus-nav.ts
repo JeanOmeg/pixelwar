@@ -49,8 +49,6 @@ export function pickInDirection(from: Box, candidates: Box[], direction: Directi
 const FOCUSABLE = 'button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])'
 /** The match's own dialogs: the only match UI the focus may enter */
 const MATCH_DIALOGS = new Set(['PAUSE-MENU', 'GAME-OVER', 'GAME-NOTICE', 'UNIT-MENU'])
-/** Buttons a controller should never land on (sound, fullscreen) */
-const NEVER = new Set(['AUDIO-MENU'])
 /** Preferred first focus when a screen or dialog opens */
 const DEFAULT_FOCUS = ['.resume', '.primary', '.confirm']
 
@@ -90,7 +88,6 @@ function allowedHere(el: Element): boolean {
   let inMatchUi = false
   let inDialog = false
   for (let node: Element | null = el; node; node = composedParent(node)) {
-    if (NEVER.has(node.tagName)) return false
     if (MATCH_DIALOGS.has(node.tagName) || node.classList.contains('emote-list')) inDialog = true
     if (node.classList.contains('game-ui')) inMatchUi = true
   }

@@ -8,10 +8,9 @@ const board = makeBoard(['.f#~Di'])
 const node = (x: number) => board.getCell(x, 0)!.pathNode
 
 describe('terrain card', () => {
-  test('kind comes from the tile flags; plain ground and walls have no card', () => {
-    expect([0, 1, 2, 3, 4, 5].map(x => terrainKind(node(x)))).toEqual([null, 'forest', null, 'water', 'door', 'ice'])
+  test('kind comes from the tile flags; plain ground has no card', () => {
+    expect([0, 1, 2, 3, 4, 5].map(x => terrainKind(node(x)))).toEqual([null, 'forest', 'obstacle', 'water', 'door', 'ice'])
     expect(terrainView(node(0))).toBeNull()
-    expect(terrainView(node(2))).toBeNull()
   })
 
   test('rules name the classes from TERRAIN_RULES', () => {
@@ -26,6 +25,9 @@ describe('terrain card', () => {
       const ice = terrainView(node(5))!
       expect(ice.rules[0].text).toBe('Costs 2 movement. Thief and Assassin pay 1')
       expect(ice.rules[1]).toMatchObject({ icon: 'shield', tone: 'down' })
+
+      const wall = terrainView(node(2))!.rules.map(r => r.text)
+      expect(wall).toEqual(['Can\'t be crossed', 'Blocks attacks: nobody can shoot through it'])
 
       setLanguage('pt-BR')
       expect(terrainView(node(5))!.name).toBe('Gelo')

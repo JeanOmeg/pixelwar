@@ -2,7 +2,6 @@ import * as ex from 'excalibur'
 import { loader } from './loader'
 import { LevelBase } from './levels/level-base'
 import { MAPS } from './maps'
-import './ui-components/audio-menu'
 import './ui-components/start-screen-ui'
 import { AudioManager } from './audio-manager'
 import { installDeniedSound } from './effects'
@@ -75,8 +74,6 @@ game.start(loader).then(() => {
     return hiddenButton
   }
   mountStartScreen()
-  // the fullscreen button is offered from the main menu on (never on the loader)
-  document.querySelector('audio-menu')?.setAttribute('fullscreen-ready', '')
   // the loader starts on pointerup: the click that follows a tap would land on
   // the start screen button under the finger, so ignore input for a moment
   const startScreen = document.querySelector<HTMLElement>('start-screen-ui')

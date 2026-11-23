@@ -33,6 +33,7 @@ import { CombatLogPanel } from './ui-components/combat-log'
 import type { AttackEventResult } from './board'
 import type { AttackEvent } from './unit'
 import { idleHint, noteHintUse, type HintCommand, type HintInput } from './hint-progress'
+import { interfaceHidden, onInterfaceChange, setInterfaceHidden } from './interface-visibility'
 
 export interface MenuOptions {
   move: () => void
@@ -105,9 +106,9 @@ export class GameUI implements GamepadMatch {
   /** Every attack of the match, for the combat log panel */
   readonly combatLog = new CombatLog(unit => ({ name: this.className(unit), team: this.teamOf(unit.player) }), () => this.round)
   private logVersion = -1
-  /** Eye button above the sound button: hides/shows the HUD, the hint and the unit card */
+  /** Eye button in the corner, only while the interface is hidden: brings it back */
   private eye = document.createElement('button')
-  private overlaysHidden = false
+  private stopInterface: () => void
 
   private players: Player[] = []
   private currentPlayer: Player | null = null
@@ -145,6 +146,9 @@ export class GameUI implements GamepadMatch {
     // the eye comes before the dialogs, so an open menu/pause/game over covers it
     this.root.append(this.hud, this.hint, this.logPanel, this.card, this.eye, this.menu, this.banner, this.notice, this.gameOver, this.pauseMenu)
     document.body.appendChild(this.root)
+    // the interface option (Options / pause menu / eye / H) is saved between matches
+    this.applyOverlays()
+    this.stopInterface = onInterfaceChange(() => this.applyOverlays())
 
     this.hud.addEventListener('end-turn', () => {
       this.noteCommand('end-turn')
@@ -397,39 +401,43 @@ export class GameUI implements GamepadMatch {
   }
 
   /**
-   * Hides or shows the HUD (team bars, pause, speed, End turn), the hint and
-   * the unit card, to see the whole map. The unit's action menu, the phase
+   * Hides or shows the HUD (team bars, pause, speed, End turn), the hint, the
+   * unit card and the combat log, to see the whole map (key H, the interface
+   * option in the pause menu and Options). The unit's action menu, the phase
    * banner and the pause/game over dialogs always show.
    */
   toggleOverlays() {
-    this.overlaysHidden = !this.overlaysHidden
-    for (const el of [this.hud, this.hint, this.card, this.logPanel]) el.style.display = this.overlaysHidden ? 'none' : ''
-    this.eye.textContent = this.overlaysHidden ? 'visibility_off' : 'visibility'
-    this.eye.title = this.overlaysHidden ? t().match.showInterface : t().match.hideInterface
-    this.eye.setAttribute('aria-pressed', String(this.overlaysHidden))
+    setInterfaceHidden(!interfaceHidden())
   }
 
-  /** Same look and spot as the <audio-menu> buttons (index.html), one row above them */
+  private applyOverlays() {
+    const hidden = interfaceHidden()
+    for (const el of [this.hud, this.hint, this.card, this.logPanel]) el.style.display = hidden ? 'none' : ''
+    // the eye only shows while the interface is hidden (the pause button is gone with the HUD)
+    this.eye.style.display = hidden ? '' : 'none'
+    this.eye.title = t().match.showInterface
+  }
+
+  /** Bottom-left corner of the screen */
   private setupEyeButton() {
     const eye = this.eye
     eye.type = 'button'
     eye.className = 'material-symbols-outlined'
     eye.textContent = 'visibility'
-    eye.title = t().match.hideInterface
-    eye.setAttribute('aria-label', t().match.toggleInterface)
-    eye.setAttribute('aria-pressed', 'false')
+    eye.setAttribute('aria-label', t().match.showInterface)
     Object.assign(eye.style, {
       position: 'fixed',
       left: 'max(16px, env(safe-area-inset-left, 0px))',
-      bottom: '56px',
+      bottom: 'max(16px, env(safe-area-inset-bottom, 0px))',
       margin: '0',
       padding: '0',
       border: 'none',
       background: 'none',
       color: 'white',
-      fontSize: '24px',
+      fontSize: '32px',
       lineHeight: '1',
       cursor: 'pointer',
+      textShadow: '2px 2px 0 #000',
       pointerEvents: 'auto'
     })
     eye.addEventListener('click', () => this.toggleOverlays())
@@ -440,6 +448,7 @@ export class GameUI implements GamepadMatch {
     if (this.pauseMenu.open) this.pauseMenu.resume()
     this.notice.close()
     this.stopInputMode()
+    this.stopInterface()
     window.removeEventListener('keydown', this.onKeyDown)
     this.subscriptions.forEach(s => s.close())
     this.subscriptions = []

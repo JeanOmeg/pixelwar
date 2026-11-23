@@ -61,7 +61,17 @@ export const ptBR: Strings = {
     credits: 'Créditos',
     dailyChallenge: 'Desafio diário',
     records: 'Recordes',
-    language: 'Idioma'
+    language: 'Idioma',
+    options: 'Opções'
+  },
+
+  options: {
+    on: 'Ligada',
+    off: 'Desligada',
+    interface: 'Interface da partida',
+    shown: 'Visível',
+    hidden: 'Escondida',
+    interfaceNote: 'Barras dos times, dicas, card da unidade e histórico de combate. Escondida, o botão de olho no canto (ou H) traz de volta.'
   },
 
   modes: {
@@ -246,8 +256,6 @@ export const ptBR: Strings = {
     undo: 'Desfazer movimento',
     wait: 'Esperar',
     showInterface: 'Mostrar interface (H)',
-    hideInterface: 'Esconder interface (H)',
-    toggleInterface: 'Esconder ou mostrar a interface',
     done: 'Pronta',
     moved: 'Moveu',
     attacked: 'Atacou',
@@ -329,7 +337,7 @@ export const ptBR: Strings = {
   },
 
   terrain: {
-    names: { forest: 'Floresta', door: 'Porta', water: 'Água', ice: 'Gelo' },
+    names: { forest: 'Floresta', door: 'Porta', water: 'Água', ice: 'Gelo', obstacle: 'Obstáculo' },
     and: 'e',
     slowMove: fast => `Custa 2 de movimento. ${fast} pagam 1`,
     defense: change => `${change} DEF para a unidade que estiver aqui`,
@@ -338,6 +346,7 @@ export const ptBR: Strings = {
     doorAttacks: 'Bloqueia ataques: unidade na porta não ataca nem é atacada',
     waterMove: 'Não dá para atravessar',
     waterAttacks: 'Ataques passam por cima',
+    obstacleAttacks: 'Bloqueia ataques: ninguém atira através dele',
     iceRange: 'Campo aberto para ataques: 1 ponto de alcance para todos'
   },
 

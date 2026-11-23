@@ -86,6 +86,7 @@ export class UnitCard extends LitElement {
     .terrain-door { --team: #7a5230; }
     .terrain-water { --team: #2a5a9a; }
     .terrain-ice { --team: #4f8fa8; }
+    .terrain-obstacle { --team: #5a5a66; }
     .rules { display: flex; flex-direction: column; gap: calc(8 * var(--u)); margin: 0; padding: calc(12 * var(--u)); list-style: none; }
     .rules li { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: calc(8 * var(--u)); font-size: calc(15 * var(--t)); line-height: 1.2; }
     .rules .icon { margin-top: calc(1 * var(--u)); color: var(--muted); }

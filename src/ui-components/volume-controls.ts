@@ -7,8 +7,8 @@ import { onLanguageChange, t } from '../i18n'
 
 /**
  * Music and effects volume (− / + buttons, so the controller and touch reach
- * them too) and the mute switch. Used in the corner sound panel (<audio-menu>)
- * and in the pause menu; sizes use --u/--t when inside the game theme, plain
+ * them too) and the mute switch. Used by <settings-controls> (Options screen
+ * and pause menu); sizes use --u/--t when inside the game theme, plain
  * pixels otherwise.
  */
 @customElement('volume-controls')

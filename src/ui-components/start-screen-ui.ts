@@ -23,15 +23,12 @@ import { saveArmy, savePlacement, savedArmy, savedPlacement } from './army-prefs
 import { Placement, defaultPlacement, deployCells } from '../deploy'
 import type { UnitClass } from '../path-finding/terrain-rules'
 import type { UnitType } from '../config'
-import { LANGUAGES, Language, language, onLanguageChange, setLanguage, t } from '../i18n'
-import { flagIcon } from './flags'
+import { onLanguageChange, t } from '../i18n'
+import './settings-controls'
 import { DailyView, recordsStyles, renderDaily, renderRecords } from './records-page'
 import { type DailyChallenge, dailyChallenge, dailySettings, todayKey } from '../daily'
 
-/** Each language named in itself, so anyone finds their own */
-const LANGUAGE_NAMES: Record<Language, string> = { en: 'English', 'pt-BR': 'Português (Brasil)' }
-
-type Screen = 'title' | 'mode' | 'map' | 'army' | 'online' | 'credits' | 'daily' | 'records'
+type Screen = 'title' | 'mode' | 'map' | 'army' | 'online' | 'credits' | 'daily' | 'records' | 'options'
 
 const PREF_MODE = 'pixelfantasywar.mode'
 const PREF_DIFFICULTY = 'pixelfantasywar.difficulty'
@@ -96,8 +93,6 @@ export class StartScreenUi extends LitElement {
     .menu .btn { font-size: calc(32 * var(--t)); padding: calc(12 * var(--u)) calc(18 * var(--u)); --team: #2a2d3a; }
     .menu .btn.primary { --team: var(--blue); font-size: calc(40 * var(--t)); }
     .menu .btn { text-align: center; white-space: nowrap; }
-    .menu .pair { display: grid; grid-template-columns: 1fr 1fr; gap: calc(12 * var(--u)); }
-    .menu .pair .btn { font-size: calc(26 * var(--t)); white-space: nowrap; }
 
     /* Mode */
     .mode-screen { display: flex; flex-direction: column; align-items: center; gap: calc(28 * var(--u)); }
@@ -148,22 +143,7 @@ export class StartScreenUi extends LitElement {
     .difficulty .btn { --team: #2a2d3a; font-size: calc(20 * var(--t)); padding: calc(8 * var(--u)) calc(20 * var(--u)); }
     .difficulty .btn.on { --team: var(--blue); }
 
-    .languages { position: absolute; top: calc(24 * var(--u)); right: calc(24 * var(--u)); display: flex; gap: calc(12 * var(--u)); }
-    .flag {
-      appearance: none;
-      display: grid;
-      place-items: center;
-      padding: calc(6 * var(--u));
-      background: rgba(0, 0, 0, 0.45);
-      border: calc(3 * var(--u)) solid var(--edge);
-      box-shadow: calc(4 * var(--u)) calc(4 * var(--u)) 0 #000;
-      cursor: pointer;
-      opacity: 0.6;
-      transition: transform 120ms steps(2);
-    }
-    .flag svg { display: block; width: calc(60 * var(--u)); height: calc(42 * var(--u)); image-rendering: pixelated; }
-    .flag:hover, .flag:focus-visible { opacity: 1; transform: translateY(calc(-3 * var(--u))); }
-    .flag.on { opacity: 1; border-color: var(--gold); }
+    .options-page { width: calc(760 * var(--u)); }
 
     .fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity 600ms steps(6); }
     .fade.visible { opacity: 1; pointer-events: auto; }
@@ -215,7 +195,7 @@ export class StartScreenUi extends LitElement {
 
   /**
    * Phones: the text is enlarged to stay readable (readableBoost), and the
-   * title screen (logo, armies, 4 buttons) then grew taller than a phone
+   * title screen (logo, armies, 5 buttons) then grew taller than a phone
    * held sideways, cutting off Credits. When it doesn't fit, shrink just
    * that screen to the height available (with a small margin).
    */
@@ -268,12 +248,6 @@ export class StartScreenUi extends LitElement {
   private go(screen: Screen) {
     Resources.SelectSound.play()
     this.screen = screen
-  }
-
-  private chooseLanguage(next: Language) {
-    if (next === language()) return
-    Resources.SelectSound.play()
-    setLanguage(next)
   }
 
   private chooseDifficulty(difficulty: Difficulty) {
@@ -447,23 +421,10 @@ export class StartScreenUi extends LitElement {
         <nav class="panel menu">
           <button class="btn btn-solid primary" @click=${() => this.go('mode')}>${t().title.play}</button>
           <button class="btn btn-solid" @click=${() => this.go('daily')}>${t().title.dailyChallenge}</button>
-          <div class="pair">
-            <button class="btn btn-solid" @click=${() => this.go('records')}>${t().title.records}</button>
-            <button class="btn btn-solid" @click=${() => this.go('credits')}>${t().title.credits}</button>
-          </div>
+          <button class="btn btn-solid" @click=${() => this.go('records')}>${t().title.records}</button>
+          <button class="btn btn-solid" @click=${() => this.go('options')}>${t().title.options}</button>
+          <button class="btn btn-solid" @click=${() => this.go('credits')}>${t().title.credits}</button>
         </nav>
-      </div>
-    `
-  }
-
-  /** Language flags (title screen only): the choice is saved for the next visit */
-  private renderLanguages() {
-    return html`
-      <div class="languages" role="group" aria-label=${t().title.language}>
-        ${LANGUAGES.map(lang => html`
-          <button class="flag ${lang === language() ? 'on' : ''}" title=${LANGUAGE_NAMES[lang]} aria-label=${LANGUAGE_NAMES[lang]}
-            aria-pressed=${lang === language()} @click=${() => this.chooseLanguage(lang)}>${flagIcon(lang)}</button>
-        `)}
       </div>
     `
   }
@@ -513,9 +474,9 @@ export class StartScreenUi extends LitElement {
   }
 
   /** split: the body doesn't scroll, its columns scroll on their own (Records) */
-  private renderPage(title: string, body: unknown, split = false) {
+  private renderPage(title: string, body: unknown, split = false, extraClass = '') {
     return html`
-      <div class="screen panel page ${split ? 'split-page' : ''}">
+      <div class="screen panel page ${split ? 'split-page' : ''} ${extraClass}">
         <div class="panel-title">${title}</div>
         <div class="page-body ${split ? 'split' : ''}">${body}</div>
         <div class="page-footer"><button class="btn btn-solid" @click=${() => this.go('title')}>${t().common.back}</button></div>
@@ -598,6 +559,7 @@ export class StartScreenUi extends LitElement {
         @back=${() => this.go('mode')}
       ></online-screen>
     `
+    case 'options': return this.renderPage(t().title.options, html`<settings-controls languages></settings-controls>`, false, 'options-page')
     case 'credits': return this.renderPage(t().title.credits, renderCredits())
     case 'records': return this.renderPage(t().title.records, renderRecords(todayKey()), true)
     case 'daily': return this.renderDailyPage()
@@ -608,7 +570,6 @@ export class StartScreenUi extends LitElement {
     return html`
       <div class="wrapper">
         ${this.renderScreen()}
-        ${this.screen === 'title' ? this.renderLanguages() : ''}
         <div class="fade ${this.leaving ? 'visible' : ''}"></div>
       </div>
     `
